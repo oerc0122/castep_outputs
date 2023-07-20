@@ -147,6 +147,8 @@ SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
 
 CASTEP_OUTPUT_NAMES = (
     "castep",
+    "param",
+    "cell",
     "geom",
     "md",
     "bands",

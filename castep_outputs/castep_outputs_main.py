@@ -7,6 +7,7 @@ import sys
 from .args import (parse_args, args_to_dict)
 from .utility import (json_safe_dict, flatten_dict, get_dumpers)
 from .parse_castep_file import parse_castep_file
+from .parse_cell_param_file import parse_cell_param_file
 from .parse_md_geom_file import parse_md_geom_file
 from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
                                 parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
@@ -15,6 +16,8 @@ from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_d
 
 PARSERS = {
     ".castep": parse_castep_file,
+    ".cell": parse_cell_param_file,
+    ".param": parse_cell_param_file,
     ".geom": parse_md_geom_file,
     ".md": parse_md_geom_file,
     ".bands": parse_bands_file,

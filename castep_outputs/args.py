@@ -38,8 +38,13 @@ AP.add_argument("-C", "--inc-chdiff_fmt", action="store_true", help="Extract .ch
 AP.add_argument("-P", "--inc-pot_fmt", action="store_true", help="Extract .pot_fmt information")
 AP.add_argument("-D", "--inc-den_fmt", action="store_true", help="Extract .den_fmt information")
 
+AP.add_argument('--inc-param', action="store_true", help="Extract .param information")
+AP.add_argument('--inc-cell', action="store_true", help="Extract .cell information")
+
 AP.add_argument("--castep", nargs="*", help="Extract from CASTEP as .castep type", default=[])
 AP.add_argument("--geom", nargs="*", help="Extract from GEOM as .geom type", default=[])
+AP.add_argument("--cell", nargs="*", help="Extract from CELL as .cell type", default=[])
+AP.add_argument("--param", nargs="*", help="Extract from PARAM as .param type", default=[])
 AP.add_argument("--md", nargs="*", help="Extract from MD as .md type", default=[])
 AP.add_argument("--bands", nargs="*", help="Extract from BANDS as .bands type", default=[])
 AP.add_argument("--hug", nargs="*", help="Extract from HUG as .hug type", default=[])
