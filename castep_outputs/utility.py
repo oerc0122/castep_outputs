@@ -6,6 +6,14 @@ import itertools
 import re
 
 
+def normalise_string(string):
+    """
+    Normalise a string removing leading/trailing space
+    and making all spacing single-space
+    """
+    return " ".join(string.strip().split())
+
+
 def json_safe_dict(obj):
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """

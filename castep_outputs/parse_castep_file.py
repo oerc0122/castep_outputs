@@ -14,7 +14,7 @@ import re
 from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
                       ATREG, SPECIES_RE, ATDAT3VEC, SHELLS,
                       labelled_floats, fix_data_types, add_aliases, to_type,
-                      stack_dict, get_block, get_numbers)
+                      stack_dict, get_block, get_numbers, normalise_string)
 from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
                                 parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
                                 parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file)
@@ -145,7 +145,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print(f"Found run {len(runs) + 1}")
 
         elif block := get_block(line, castep_file,
-                                r"^\s*\*+ Title \*+$",
+                                r"^\s*\*+ .* Parameters \*+$",
                                 r"^\s*\*+$"):
             if verbose:
                 print("Found options")
@@ -160,11 +160,31 @@ def parse_castep_file(castep_file, verbose=False):
                     curr_group = match.group(1)
                     curr_opt = {}
                 elif len(match := line.split(":")) > 1:
-                    *key, val = match
+                    *key, val = map(normalise_string, match)
                     curr_opt[" ".join(key).strip()] = val.strip()
 
             if opt:
                 curr_run["options"] = opt
+
+        # Build Info
+        elif block := get_block(line, castep_file,
+                                r"^\s*Compiled for",
+                                r"^\s*$"):
+
+            if verbose:
+                print("Found build info")
+
+            curr = {}
+            block = block.splitlines()
+
+            curr['summary'] = " ".join(map(normalise_string, block[0:2]))
+            for line in block[2:]:
+                if ':' in line:
+                    key, val = map(normalise_string, line.split(':', 1))
+                    curr[key.strip()] = val.strip()
+
+            if curr:
+                curr_run["build_info"] = curr
 
         # Pseudo-atomic energy
         elif match := re.match(
