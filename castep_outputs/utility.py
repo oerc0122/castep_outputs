@@ -14,6 +14,20 @@ def normalise_string(string):
     return " ".join(string.strip().split())
 
 
+def atreg_to_index(dict_in, clear=True):
+    """
+    Transform a matched atreg value to species index tuple
+    Also clear value from dictionary for easier processing
+    """
+    spec, ind = dict_in["spec"], dict_in["index"]
+
+    if isinstance(dict_in, dict) and clear:
+        del dict_in["spec"]
+        del dict_in["index"]
+
+    return (spec, int(ind))
+
+
 def json_safe_dict(obj):
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """
@@ -106,7 +120,7 @@ def get_block(line: str, in_file, start, end, cnt=1):
     return block
 
 
-def labelled_floats(labels, counts=(None,), sep=r"\s*?"):
+def labelled_floats(labels, counts=(None,), sep=r"\s+?"):
     """ Constructs a regex for extracting floats with assigned labels
     :param labels:iterable of labels to label each group
     :param counts:iterable of counts to group into each label (count must not exceed that of labels)
@@ -181,12 +195,13 @@ NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
 
 # Regexp to identify extended chemical species
 SPECIES_RE = r"[A-Z][a-z]?(?:[:]\w{1,2})?"
+ATOM_NAME_RE = rf"{SPECIES_RE}(?::\w+)?"
 
-SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{1,2}"  # Unless we have *VERY* exotic electron shells
-
+# Unless we have *VERY* exotic electron shells
+SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{1,2}}"
 
 # Atom regexp
-ATREG = rf"(?P<spec>{SPECIES_RE})\s+(?P<index>\d+)"
+ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
 
 # Atom reference with 3-vector
 
