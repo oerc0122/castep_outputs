@@ -4,6 +4,7 @@ Argument parser
 
 import os.path
 import argparse
+# pylint: disable=line-too-long
 
 from .utility import (CASTEP_OUTPUT_NAMES, SUPPORTED_FORMATS)
 

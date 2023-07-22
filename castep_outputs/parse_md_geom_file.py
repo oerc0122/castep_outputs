@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Parse castep .md or .geom files
 """
@@ -7,6 +6,7 @@ import re
 from collections import defaultdict
 
 from .utility import (ATDAT3VEC, TAG_RE, FST_D, to_type, get_numbers)
+# pylint: disable=unused-argument
 
 ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 
