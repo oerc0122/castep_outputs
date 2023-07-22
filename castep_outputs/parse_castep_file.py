@@ -14,7 +14,7 @@ import re
 from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
                       ATREG, SPECIES_RE, ATDAT3VEC, SHELLS,
                       labelled_floats, fix_data_types, add_aliases, to_type,
-                      stack_dict, get_block, get_numbers, normalise_string)
+                      stack_dict, get_block, get_numbers, normalise_string, atreg_to_index)
 from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
                                 parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
                                 parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file)
@@ -39,20 +39,20 @@ def parse_magres_block(task, inp):
     """ Parse MagRes data tables from inp according to task """
 
     data = defaultdict(list)
-    data["task"] = task
+    data["task"] = MAGRES_TASK[task]
     curr_re = MAGRES_RE[task]
     for line in inp:
         if match := curr_re.match(line):
-            stack_dict(data, match.groupdict())
+            match = match.groupdict()
+            ind = atreg_to_index(match)
+            fix_data_types(match, {key: float for key in ("iso", "aniso", "cq", "eta",
+                                                          "fc", "sd", "para", "dia", "tot")})
 
-    if data:
-        fix_data_types(data, {"index": int,
-                              "iso": float,
-                              "aniso": float,
-                              "cq": float,
-                              "eta": float})
-        if "asym" in data:
-            data["asym"] = [float(dat) if dat != "N/A" else None for dat in data["asym"]]
+            if "asym" in match:
+                match["asym"] = float(match["asym"]) if match["asym"] != "N/A" else None
+
+            data[ind] = match
+
 
     return data
 
@@ -84,7 +84,7 @@ TDDFT_RE = re.compile(
     rf"""\s*\+\s*
     (?P<state>{INTNUMBER_RE})
     {labelled_floats(("energy", "error"))}
-    \s*(?P<read>\w+)
+    \s*(?P<type>\w+)
     \s*\+TDDFT""", re.VERBOSE)
 
 BS_RE = re.compile(
@@ -98,9 +98,9 @@ BS_RE = re.compile(
 THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
 
 # Regexp to identify Mulliken ppoulation analysis line
-CASTEP_POPN_RE = re.compile(rf"""\s*{ATREG}\s*(?P<spin_sep>up:)?
-                            {labelled_floats((*SHELLS, "total", "charge", "spin"))}
-                            ?"""   # Spin is optional
+CASTEP_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
+                            labelled_floats((*SHELLS, "total", "charge", "spin")) +
+                            "?"   # Spin is optional
                             )
 
 CASTEP_POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
@@ -111,7 +111,7 @@ CASTEP_POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
 BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})")
 
 # MagRes REs
-MAGRES_RE = [
+MAGRES_RE = (
     # "Chemical Shielding Tensor" 0
     re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
@@ -123,23 +123,31 @@ MAGRES_RE = [
     re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('cq',))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "(?:I|Ani)sotropic J-coupling" 3
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
-               rf"(?P<asym>{FNUMBER_RE}|N/A){labelled_floats(('cq', 'eta'))}\s*\|\s*"),
+    re.compile(rf"\s*\|\**\s*{ATREG}{labelled_floats(('fc','sd','para','dia','tot'))}\s*\|\s*"),
     # "Hyperfine Tensor" 4
     re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*")
-    ]
+    )
+# MagRes Tasks
+MAGRES_TASK = (
+    "Chemical Shielding",
+    "Chemical Shielding and Electric Field Gradient",
+    "Electric Field Gradient",
+    "(An)Isotropic J-coupling",
+    "Hyperfine"
+    )
 
 
 def parse_castep_file(castep_file, verbose=False):
     """ Parse castep file into lists of dicts ready to JSONise """
     runs = []
-    curr_run = {}
+    curr_run = defaultdict(list)
 
     for line in castep_file:
         if re.search(r"Run started", line):
             if curr_run:
                 runs.append(curr_run)
             curr_run = defaultdict(list)
+            curr_run["time_started"] = line.split(":")[1]
             curr_run["species_properties"] = defaultdict(dict)
             if verbose:
                 print(f"Found run {len(runs) + 1}")
@@ -157,11 +165,14 @@ def parse_castep_file(castep_file, verbose=False):
                 if match := re.match(r"\s*\*+ ([A-Za-z ]+) Parameters \*+", line):
                     if curr_opt:
                         opt[curr_group] = curr_opt
-                    curr_group = match.group(1)
+                    curr_group = normalise_string(match.group(1)).lower()
                     curr_opt = {}
                 elif len(match := line.split(":")) > 1:
                     *key, val = map(normalise_string, match)
                     curr_opt[" ".join(key).strip()] = val.strip()
+
+            if curr_opt:
+                opt[curr_group] = curr_opt
 
             if opt:
                 curr_run["options"] = opt
@@ -188,10 +199,12 @@ def parse_castep_file(castep_file, verbose=False):
 
         # Pseudo-atomic energy
         elif match := re.match(
-                rf"\s*Pseudo atomic calculation performed for ({SPECIES_RE})(\s*{SHELL_RE})+",
+                rf"\s*Pseudo atomic calculation performed for ({SPECIES_RE})(\s+{SHELL_RE})+",
                 line):
+
             if verbose:
                 print("Found pseudo-atomic energy")
+
             spec = match.group(1)
             castep_file.readline()
             line = castep_file.readline()
@@ -266,10 +279,13 @@ def parse_castep_file(castep_file, verbose=False):
                 curr_run["forces"] = defaultdict(list)
             ftype = (ft_guess if (ft_guess := FORCES_BLOCK_RE.search(line).group(1))
                      else "non-descript")
+
+            ftype = normalise_string(ftype).lower()
+
             if verbose:
                 print(f"Found {ftype} forces")
 
-            accum = {match.group("spec", "index"): to_type(match.group("x", "y", "z"), float)
+            accum = {atreg_to_index(match, False): to_type(match.group("x", "y", "z"), float)
                      for line in block.splitlines()
                      if (match := ATDAT3VEC.search(line))}
             curr_run["forces"][ftype].append(accum)
@@ -327,7 +343,7 @@ def parse_castep_file(castep_file, verbose=False):
                     break
 
             else:
-                raise IOError(f"Unexpected end of file in {seedname}")
+                raise IOError(f"Unexpected end of file in {castep_file.name}")
 
             if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                                      for phonon in curr_run["phonons"]):
@@ -356,6 +372,7 @@ def parse_castep_file(castep_file, verbose=False):
 
                 elif re.search(r"^ \+\s+\+", line):  # End of 3x3+depol block
                     # Compute Invariants Tr(A) and Tr(A)^2-Tr(A^2) of Raman Tensor
+                    curr_mode["tensor"] = tuple(curr_mode["tensor"])
                     tensor = curr_mode["tensor"]
                     curr_mode["trace"] = sum(tensor[i][i] for i in range(3))
                     curr_mode["II"] = (tensor[0][0]*tensor[1][1] +
@@ -376,17 +393,17 @@ def parse_castep_file(castep_file, verbose=False):
             lines = block.splitlines()
 
             born_accum = {}
-
             i = 0
             while i < len(lines):
                 if match := BORN_RE.match(lines[i]):
-                    born_accum[(match.group("spec"), match.group("index"))] = [to_type(match.group("charges").split(), float),
-                                                                               to_type(lines[i+1].split(), float),
-                                                                               to_type(lines[i+2].split(), float)]
-                    curr_run["born"].append(born_accum)
+                    born_accum[atreg_to_index(match)] = (to_type(match.group("charges").split(), float),
+                                                         to_type(lines[i+1].split(), float),
+                                                         to_type(lines[i+2].split(), float))
                     i += 3
                 else:
                     i += 1
+
+            curr_run["born"].append(born_accum)
 
         # Permittivity and NLO Susceptibility
         elif block := get_block(line, castep_file, r"^ +Optical Permittivity", r"^ =+$"):
@@ -394,8 +411,11 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found optical permittivity")
 
             for line in block.splitlines():
-                if re.match(rf"(?:\s*{FNUMBER_RE}){{3}}$", line):
-                    curr_run["permittivity"].append(to_type(line.split(), float))
+                if re.match(rf"(?:\s*{FNUMBER_RE}){{3,6}}", line):
+                    vals = to_type(line.split(), float)
+                    curr_run["optical_permittivity"].append(vals[0:3])
+                    if len(vals) == 6:
+                        curr_run["dc_permittivity"].append(vals[3:6])
 
         # Polarisability
         elif block := get_block(line, castep_file, r"^ +Polarisabilit(y|ies)", r"^ =+$"):
@@ -403,8 +423,11 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found polarisability")
 
             for line in block.splitlines():
-                if re.match(rf"(?:\s*{FNUMBER_RE}){{3}}$", line):
-                    curr_run["polarisability"].append(to_type(line.split(), float))
+                if re.match(rf"(?:\s*{FNUMBER_RE}){{3,6}}$", line):
+                    vals = to_type(line.split(), float)
+                    curr_run["optical_polarisability"].append(vals[0:3])
+                    if len(vals) == 6:
+                        curr_run["static_polarisability"].append(vals[3:6])
 
         # Non-linear
         elif block := get_block(line, castep_file,
@@ -442,23 +465,37 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Mulliken")
 
-            for line in block.splitlines():
+            accum = {}
+
+            lines = iter(block.splitlines())
+
+            for line in lines:
                 if match := CASTEP_POPN_RE.match(line):
                     mull = match.groupdict()
-                    if match.group("spin_sep"):  # We have spin separation
+                    mull["spin_sep"] = bool(mull["spin_sep"])
+                    if mull["spin_sep"]:  # We have spin separation
                         add_aliases(mull,
                                     {orb: f"up_{orb}" for orb in (*SHELLS, "total")},
                                     replace=True)
-                        line = castep_file.readline()
+                        line = next(lines)
                         match = CASTEP_POPN_RE_DN.match(line)
-                        mull.update(match.groupdict())
+                        match = match.groupdict()
+
+                        add_aliases(match,
+                                    {orb: f"dn_{orb}" for orb in (*SHELLS, "total")},
+                                    replace=True)
+
+                        mull.update(match)
                         mull["total"] = float(mull["up_total"]) + float(mull["dn_total"])
-                    fix_data_types(mull, {"index": int,
-                                          **{f"{orb}": float for orb in (*SHELLS, "total",
+
+                    ind = atreg_to_index(mull)
+                    fix_data_types(mull, {**{f"{orb}": float for orb in (*SHELLS, "total",
                                                                          "charge", "spin")},
                                           **{f"up_{orb}": float for orb in (*SHELLS, "total")},
                                           **{f"dn_{orb}": float for orb in (*SHELLS, "total")}})
-                    curr_run["mull_popn"].append(mull)
+                    accum[ind] = mull
+
+            curr_run["mulliken_popn"] = accum
 
         # Hirshfeld Population Analysis
         elif block := get_block(line, castep_file,
@@ -467,9 +504,13 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Hirshfeld")
 
+            accum = {}
             for line in block.splitlines():
-                if match := re.match(rf"\s+HIRSHFELD\s+\d+\s+({FNUMBER_RE})", line):
-                    curr_run["hirshfeld"].append(to_type(match.group(1), float))
+                if match := re.match(rf"\s+{ATREG}\s+(?P<charge>{FNUMBER_RE})", line):
+                    accum[atreg_to_index(match)] = float(match["charge"])
+
+            if accum:
+                curr_run["hirshfeld"] = accum
 
         # ELF
         elif block := get_block(line, castep_file,
@@ -495,7 +536,7 @@ def parse_castep_file(castep_file, verbose=False):
                          if (match := re.search(r"x\s+"
                                                 r"(?P<key>[a-zA-Z][A-Za-z ]+):\s*"
                                                 rf"(?P<val>{FNUMBER_RE})", line))}
-            curr_run["md"].append(curr_data)
+            curr_run["md"].append({normalise_string(key): val for key, val in curr_data.items()})
 
         # GeomOpt
         elif block := get_block(line, castep_file,
@@ -505,7 +546,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found final geom configuration")
 
-            accum = {match.group("spec", "index"): to_type(match.group("x", "y", "z"), float)
+            accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
                      for line in block.splitlines()
                      if (match := ATDAT3VEC.search(line))}
             curr_run["final_configuration"].append(accum)
@@ -518,22 +559,24 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found TDDFT excitations")
 
-            tddata = defaultdict(list)
+            tddata = []
             for line in block.splitlines():
                 if match := TDDFT_RE.match(line):
-
-                    stack_dict(tddata, match.groupdict())
+                    match = match.groupdict()
+                    del match['state']
+                    fix_data_types(match, {'energy': float,
+                                           'error': float})
+                    tddata.append(match)
 
             if tddata:
-                fix_data_types(tddata, {"state": int, "energy": float, "error": float})
-                curr_run["tddft"].append(tddata)
+                curr_run["tddft"] = tddata
 
         # Old band structure
         elif block := get_block(line, castep_file,
-                                r"^\s+\+\s+B A N D",
+                                r"^\s+\+\s+(B A N D|Band Structure Calculation)",
                                 r"^\s+=+$"):
             if verbose:
-                print("Found old-style band-structure")
+                print("Found band-structure")
 
             qdata = defaultdict(list)
 
@@ -572,7 +615,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found Chemical Shielding Tensor")
 
             data = parse_magres_block(0, block.splitlines())
-            curr_run["chem_shield"].append(data)
+            curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
                                 r"Chemical Shielding and Electric Field Gradient Tensor",
@@ -581,7 +624,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found Chemical Shielding + EField Tensor")
 
             data = parse_magres_block(1, block.splitlines())
-            curr_run["chem_shield"].append(data)
+            curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
                                 r"Electric Field Gradient Tensor",
@@ -591,9 +634,8 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found EField Tensor")
 
             data = parse_magres_block(2, block.splitlines())
-            curr_run["chem_shield"].append(data)
+            curr_run["magres"].append(data)
 
-        # TODO: Check this is valid
         elif block := get_block(line, castep_file,
                                 r"(?:I|Ani)sotropic J-coupling",
                                 r"=+$"):
@@ -601,7 +643,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found J-coupling")
 
             data = parse_magres_block(3, block.splitlines())
-            curr_run["chem_shield"].append(data)
+            curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
                                 r"\|\s*Hyperfine Tensor\s*\|",
@@ -611,7 +653,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found Hyperfine tensor")
 
             data = parse_magres_block(4, block.splitlines())
-            curr_run["chem_shield"].append(data)
+            curr_run["magres"].append(data)
 
         # --- Extra blocks for testing
 
