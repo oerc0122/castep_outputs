@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import unittest
 import io
 from pathlib import Path

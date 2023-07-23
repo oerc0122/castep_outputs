@@ -1,3 +1,4 @@
+# pylint: skip-file
 from castep_outputs.castep_outputs_main import parse_all
 
 for typ in ('castep', 'bands', 'cell', 'param'):
