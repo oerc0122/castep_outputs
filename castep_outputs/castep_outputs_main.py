@@ -3,6 +3,7 @@ Run main castep parser
 """
 
 import sys
+import os.path
 
 from .args import (parse_args, args_to_dict)
 from .utility import (json_safe_dict, flatten_dict, get_dumpers)
@@ -34,7 +35,7 @@ PARSERS = {
 
 def parse_single(types: list[str], parser: callable):
     """
-    Use a single parser to parse a some classes of files and print to screen
+    Use a single parser to parse some classes of files and print to screen
     """
     args = parse_args()
     file_dumper = get_dumpers(args.out_format)

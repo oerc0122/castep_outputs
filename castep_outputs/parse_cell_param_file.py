@@ -9,8 +9,8 @@ from .utility import get_block
 def _parse_devel_code_block(in_block):
     """ Parse devel_code block to dict """
 
-    val_re = '[A-Za-z0-9_]+[:=]\S+'
-    block_re = f'([A-Za-z0-9_]+):(?:\s*{val_re}\s*)*:end\S+'
+    val_re = r'[A-Za-z0-9_]+[:=]\S+'
+    block_re = rf'([A-Za-z0-9_]+):(?:\s*{val_re}\s*)*:end\S+'
 
     matches = re.finditer(block_re, in_block, re.IGNORECASE | re.MULTILINE)
 
@@ -63,7 +63,7 @@ def parse_cell_param_file(cell_param_file, verbose=False):
                 curr[block_title] = [*map(lambda x: x.strip().split(), block[1:-1])]
         elif line := line.strip():
 
-            key, val = re.split('\s*[ :=]+\s*', line, maxsplit=1)
+            key, val = re.split(r'\s*[ :=]+\s*', line, maxsplit=1)
 
             key = key.lower()
             if verbose:

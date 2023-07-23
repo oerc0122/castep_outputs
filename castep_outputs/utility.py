@@ -62,14 +62,19 @@ def flatten_dict(dictionary, parent_key=False, separator='_'):
         if isinstance(value, collections.abc.MutableMapping):
             items.extend(flatten_dict(value, new_key, separator).items())
         elif isinstance(value, list):
-            for k, v in enumerate(value):
-                items.extend(flatten_dict({str(k): v}, new_key).items())
+            for keyx, val in enumerate(value):
+                items.extend(flatten_dict({str(keyx): val}, new_key).items())
         else:
             items.append((new_key, value))
     return dict(items)
 
 
 def get_dumpers(dump_fmt: str):
+    """
+    Get appropriate dump for unified interface
+    """
+
+    # pylint: disable=import-outside-toplevel,unnecessary-lambda-assignment
     if dump_fmt not in SUPPORTED_FORMATS:
         raise ValueError(f"Cannot output in {dump_fmt} format.")
 
@@ -146,9 +151,9 @@ def fix_data_types(in_dict, type_dict):
 
 def add_aliases(in_dict, alias_dict, replace=False):
     """ Adds aliases of known names into dictionary, if replace is true, remove original """
-    for frm, to in alias_dict.items():
+    for frm, new in alias_dict.items():
         if frm in in_dict:
-            in_dict[to] = in_dict[frm]
+            in_dict[new] = in_dict[frm]
             if replace:
                 in_dict.pop(frm)
 

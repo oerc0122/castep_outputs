@@ -3,6 +3,7 @@ Parse the following castep outputs:
 .bands
 
 """
+# pylint: disable=unused-argument
 
 import re
 from collections import defaultdict
@@ -130,7 +131,7 @@ def parse_bands_file(bands_file, verbose=False):
 
 def parse_phonon_dos_file(phonon_dos_file, verbose=False):
     """ Parse castep .phonon_dos file """
-
+    # pylint: disable=too-many-branches,redefined-outer-name
     phonon_dos_info = defaultdict(list)
     for line in phonon_dos_file:
         if block := get_block(line, phonon_dos_file,
@@ -146,12 +147,12 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
                 print("Found gradient block")
             qdata = defaultdict(list)
 
-            def fix(x):
-                fix_data_types(x, {'qpt': float,
-                                   'pth': float,
-                                   'n': int,
-                                   'f': float,
-                                   'Grad_qf': float})
+            def fix(qdat):
+                fix_data_types(qdat, {'qpt': float,
+                                      'pth': float,
+                                      'n': int,
+                                      'f': float,
+                                      'Grad_qf': float})
 
             for line in block.splitlines():
                 if match := PHONON_PHONON_RE.match(line):
@@ -191,6 +192,7 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
 
 def parse_efield_file(efield_file, verbose=False):
     """ Parse castep .efield file """
+    # pylint: disable=too-many-branches,redefined-outer-name
 
     efield_info = defaultdict(list)
 

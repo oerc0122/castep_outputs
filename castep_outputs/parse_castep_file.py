@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 """
 Extract results from .castep file for comparison and use
 by testcode.pl.
@@ -52,7 +50,6 @@ def parse_magres_block(task, inp):
                 match["asym"] = float(match["asym"]) if match["asym"] != "N/A" else None
 
             data[ind] = match
-
 
     return data
 
@@ -139,6 +136,8 @@ MAGRES_TASK = (
 
 def parse_castep_file(castep_file, verbose=False):
     """ Parse castep file into lists of dicts ready to JSONise """
+    # pylint: disable=too-many-locals, too-many-branches, too-many-statements, redefined-outer-name
+
     runs = []
     curr_run = defaultdict(list)
 
@@ -396,7 +395,7 @@ def parse_castep_file(castep_file, verbose=False):
             i = 0
             while i < len(lines):
                 if match := BORN_RE.match(lines[i]):
-                    born_accum[atreg_to_index(match)] = (to_type(match.group("charges").split(), float),
+                    born_accum[atreg_to_index(match)] = (to_type(match["charges"].split(), float),
                                                          to_type(lines[i+1].split(), float),
                                                          to_type(lines[i+2].split(), float))
                     i += 3
