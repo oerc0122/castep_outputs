@@ -1,0 +1,17 @@
+[
+  {
+    "task": "singlepoint",
+    "xc_functional": "lda",
+    "metals_method": "dm",
+    "mix_spin_amp": "0.5",
+    "cut_off_energy": "500 eV",
+    "opt_strategy": "speed",
+    "spin_treatment": "vector",
+    "max_scf_cycles": "50",
+    "elec_energy_tol": "1e-3 eV",
+    "write_bib": "false",
+    "devel_code": {
+      "improve_wvfn": "off"
+    }
+  }
+]

@@ -2,6 +2,7 @@
 Run main castep parser
 """
 
+import io
 import sys
 import os.path
 
@@ -33,7 +34,7 @@ PARSERS = {
     }
 
 
-def parse_single(types: list[str], parser: callable):
+def parse_single(types: list[str], parser: callable, output=sys.stdout):
     """
     Use a single parser to parse some classes of files and print to screen
     """
@@ -54,7 +55,7 @@ def parse_single(types: list[str], parser: callable):
         if args.testing:
             data = [flatten_dict(run) for run in data]
 
-        file_dumper(data, sys.stdout)
+        file_dumper(data, output)
 
 
 def parse_all(output=None, verbose=False, testing=False, out_format="json", **files):
@@ -68,13 +69,22 @@ def parse_all(output=None, verbose=False, testing=False, out_format="json", **fi
                 data = parser(in_file, verbose)
 
             if out_format == "json" or testing:
-                data = [json_safe_dict(run) for run in data]
+                if isinstance(data, list):
+                    data = [json_safe_dict(run) for run in data]
+                else:
+                    data = json_safe_dict(data)
 
             if testing:
-                data = [flatten_dict(run) for run in data]
+                if isinstance(data, list):
+                    data = [flatten_dict(run) for run in data]
+                else:
+                    data = flatten_dict(data)
 
             if output is None:
                 file_dumper(data, sys.stdout)
+                print()
+            elif isinstance(output, io.TextIOBase):
+                file_dumper(data, output)
             else:
                 with open(output, 'a+', encoding='utf-8') as out_file:
                     file_dumper(data, out_file)

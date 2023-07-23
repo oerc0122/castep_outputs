@@ -1,0 +1,9 @@
+Error with dsytrf in nlpot_prepare_precon_ks
+Current trace stack:
+ nlpot_prepare_precon_ks
+ hamiltonian_diagonalise_ks
+ electronic_approx_minimisation
+ castep_calc_approx_wvfn
+ check_elec_ground_state
+ castep_find_groundstate
+ castep

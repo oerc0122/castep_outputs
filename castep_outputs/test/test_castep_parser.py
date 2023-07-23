@@ -1,3 +1,5 @@
+# pylint: skip-file
+
 import pprint
 import io
 from unittest import (TestCase, main)

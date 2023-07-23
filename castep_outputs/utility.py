@@ -32,9 +32,10 @@ def json_safe_dict(obj):
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """
     obj_out = {}
+
     for key, val in obj.items():
         if isinstance(key, (tuple, list)):
-            key = "_".join(key)
+            key = "_".join(map(str, key))
         if isinstance(val, dict):
             val = json_safe_dict(val)
         elif isinstance(val, list):
