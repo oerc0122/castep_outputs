@@ -18,47 +18,16 @@ from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_d
                                 parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file)
 
 
-def process_qdata(qdata):
-    """ Special parse for phonon qdata """
-    qdata = {key: val
-             for key, val in qdata.items()
-             if any(val) or key == "qpt"}
-    fix_data_types(qdata,
-                   {"qpt": float,
-                    "N": int,
-                    "frequency": float,
-                    "intensity": float,
-                    "raman_intensity": float
-                    })
-    return qdata
-
-
-def parse_magres_block(task, inp):
-    """ Parse MagRes data tables from inp according to task """
-
-    data = defaultdict(list)
-    data["task"] = MAGRES_TASK[task]
-    curr_re = MAGRES_RE[task]
-    for line in inp:
-        if match := curr_re.match(line):
-            match = match.groupdict()
-            ind = atreg_to_index(match)
-            fix_data_types(match, {key: float for key in ("iso", "aniso", "cq", "eta",
-                                                          "fc", "sd", "para", "dia", "tot")})
-
-            if "asym" in match:
-                match["asym"] = float(match["asym"]) if match["asym"] != "N/A" else None
-
-            data[ind] = match
-
-    return data
-
-
+# PS Energy
+_PS_SHELL_RE = re.compile(
+    rf"\s*Pseudo atomic calculation performed for (?P<spec>{SPECIES_RE})(\s+{SHELL_RE})+")
 # Forces block
-FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)[Ff]orces \*+$")
+_FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Forces \*+\s*$", re.IGNORECASE)
+# Stresses block
+_STRESSES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Stress Tensor \*+\s*$", re.IGNORECASE)
 
 # Regexp to identify phonon block in .castep file
-CASTEP_PHONON_RE = re.compile(
+_CASTEP_PHONON_RE = re.compile(
     rf"""
     \s+\+\s+
     q-pt=\s*{INTNUMBER_RE}\s+
@@ -67,7 +36,7 @@ CASTEP_PHONON_RE = re.compile(
     ({FNUMBER_RE})\s+\+
     """, re.VERBOSE)
 
-PROCESS_PHONON_RE = re.compile(
+_PROCESS_PHONON_RE = re.compile(
     rf"""\s+\+\s+
     (?P<N>\d+)\s+
     (?P<frequency>{FNUMBER_RE})\s*
@@ -77,14 +46,14 @@ PROCESS_PHONON_RE = re.compile(
     (?P<raman_intensity>{FNUMBER_RE})?\s*
     (?P<raman_active>[YN])?\s*\+""", re.VERBOSE)
 
-TDDFT_RE = re.compile(
+_TDDFT_RE = re.compile(
     rf"""\s*\+\s*
-    (?P<state>{INTNUMBER_RE})
+    {INTNUMBER_RE}
     {labelled_floats(("energy", "error"))}
     \s*(?P<type>\w+)
     \s*\+TDDFT""", re.VERBOSE)
 
-BS_RE = re.compile(
+_BS_RE = re.compile(
     rf"""
     Spin=\s*(?P<spin>{INTNUMBER_RE})\s*
     kpt=\s*{INTNUMBER_RE}\s*
@@ -92,23 +61,23 @@ BS_RE = re.compile(
     kpt-group=\s*(?P<kpgrp>{INTNUMBER_RE})
     """, re.VERBOSE)
 
-THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
+_THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
 
 # Regexp to identify Mulliken ppoulation analysis line
-CASTEP_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
-                            labelled_floats((*SHELLS, "total", "charge", "spin")) +
-                            "?"   # Spin is optional
-                            )
+_CASTEP_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
+                             labelled_floats((*SHELLS, "total", "charge", "spin")) +
+                             "?"   # Spin is optional
+                             )
 
-CASTEP_POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
-                               labelled_floats((*SHELLS, "total"))
-                               )
+_CASTEP_POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
+                                labelled_floats((*SHELLS, "total"))
+                                )
 
 # Regexp for born charges
-BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})")
+_BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})")
 
 # MagRes REs
-MAGRES_RE = (
+_MAGRES_RE = (
     # "Chemical Shielding Tensor" 0
     re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
@@ -125,7 +94,7 @@ MAGRES_RE = (
     re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*")
     )
 # MagRes Tasks
-MAGRES_TASK = (
+_MAGRES_TASK = (
     "Chemical Shielding",
     "Chemical Shielding and Electric Field Gradient",
     "Electric Field Gradient",
@@ -157,21 +126,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found options")
 
-            opt = {}
-            curr_opt = {}
-            curr_group = ""
-            for line in block.splitlines():
-                if match := re.match(r"\s*\*+ ([A-Za-z ]+) Parameters \*+", line):
-                    if curr_opt:
-                        opt[curr_group] = curr_opt
-                    curr_group = normalise_string(match.group(1)).lower()
-                    curr_opt = {}
-                elif len(match := line.split(":")) > 1:
-                    *key, val = map(normalise_string, match)
-                    curr_opt[" ".join(key).strip()] = val.strip()
-
-            if curr_opt:
-                opt[curr_group] = curr_opt
+            opt = _process_params(block)
 
             if opt:
                 curr_run["options"] = opt
@@ -184,31 +139,20 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found build info")
 
-            curr = {}
-            block = block.splitlines()
-
-            curr['summary'] = " ".join(map(normalise_string, block[0:2]))
-            for line in block[2:]:
-                if ':' in line:
-                    key, val = map(normalise_string, line.split(':', 1))
-                    curr[key.strip()] = val.strip()
+            curr = _process_buildinfo(block)
 
             if curr:
                 curr_run["build_info"] = curr
 
         # Pseudo-atomic energy
-        elif match := re.match(
-                rf"\s*Pseudo atomic calculation performed for ({SPECIES_RE})(\s+{SHELL_RE})+",
-                line):
+        elif block := get_block(line, castep_file, _PS_SHELL_RE, r"^\s*$", 2):
 
             if verbose:
                 print("Found pseudo-atomic energy")
 
-            spec = match.group(1)
-            castep_file.readline()
-            line = castep_file.readline()
-            energy = get_numbers(line)[1]
-            curr_run["species_properties"][spec]["pseudo_atomic_energy"] = float(energy)
+            lines = iter(block.splitlines())
+            spec, energy = _process_ps_energy(lines)
+            curr_run["species_properties"][spec]["pseudo_atomic_energy"] = energy
 
         # Mass
         elif block := get_block(line, castep_file, r"Mass of species in AMU", r"^ *$"):
@@ -256,15 +200,14 @@ def parse_castep_file(castep_file, verbose=False):
             curr_run["solvation_energies"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
-        elif match := re.search(rf"Integrated Spin Density\s+=\s+({EXPNUMBER_RE})", line):
+        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({EXPNUMBER_RE})", line):
             if verbose:
                 print("Found spin")
-            curr_run["spin"].append(to_type(match.group(1), float))
 
-        elif match := re.search(rf"Integrated \|Spin Density\|\s+=\s+({EXPNUMBER_RE})", line):
-            if verbose:
-                print("Found |spin|")
-            curr_run["modspin"].append(to_type(match.group(1), float))
+            if "|" in line:
+                curr_run["modspin"].append(to_type(match.group(1), float))
+            else:
+                curr_run["spin"].append(to_type(match.group(1), float))
 
         # Finite basis correction parameter
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({FNUMBER_RE})", line):
@@ -273,40 +216,33 @@ def parse_castep_file(castep_file, verbose=False):
             curr_run["dedlne"].append(to_type(match.group(1), float))
 
         # Forces blocks
-        elif block := get_block(line, castep_file, FORCES_BLOCK_RE.pattern, r"^ \*+$"):
+        elif block := get_block(line, castep_file, _FORCES_BLOCK_RE, r"^ \*+$"):
             if "forces" not in curr_run:
                 curr_run["forces"] = defaultdict(list)
-            ftype = (ft_guess if (ft_guess := FORCES_BLOCK_RE.search(line).group(1))
-                     else "non-descript")
 
-            ftype = normalise_string(ftype).lower()
+            lines = iter(block.splitlines())
+            ftype, accum = _process_forces(lines)
 
             if verbose:
                 print(f"Found {ftype} forces")
 
-            accum = {atreg_to_index(match, False): to_type(match.group("x", "y", "z"), float)
-                     for line in block.splitlines()
-                     if (match := ATDAT3VEC.search(line))}
             curr_run["forces"][ftype].append(accum)
 
         # Stress tensor block
-        elif block := get_block(line, castep_file, r" Stress Tensor \*{11}", r"^ \*+$"):
-            if verbose:
-                print("Found Stress")
+        elif block := get_block(line, castep_file, _STRESSES_BLOCK_RE, r"^ \*+$"):
+            if "stresses" not in curr_run:
+                curr_run["stresses"] = defaultdict(list)
 
-            accum = []
-            for line in block.splitlines():
-                numbers = get_numbers(line)
-                if "*  x" in line:
-                    accum += numbers[0:]
-                elif "*  y" in line:
-                    accum += numbers[1:]
-                elif "*  z" in line:
-                    accum += numbers[2:]
-            curr_run["stress"] = to_type(accum, float)
+            lines = iter(block.splitlines())
+            ftype, accum = _process_stresses(lines)
+
+            if verbose:
+                print(f"Found {ftype} stress")
+
+            curr_run["stresses"][ftype].append(accum)
 
         # Phonon block
-        elif match := CASTEP_PHONON_RE.match(line):
+        elif match := _CASTEP_PHONON_RE.match(line):
             if verbose:
                 print("Found phonon")
 
@@ -315,11 +251,11 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Reading qpt {' '.join(qdata['qpt'])}")
 
-            while line := castep_file.readline():
-                if match := CASTEP_PHONON_RE.match(line):
+            for line in castep_file:
+                if match := _CASTEP_PHONON_RE.match(line):
                     if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                                              for phonon in curr_run["phonons"]):
-                        curr_run["phonons"].append(process_qdata(qdata))
+                        curr_run["phonons"].append(_process_qdata(qdata))
                     qdata = defaultdict(list)
                     qdata["qpt"] = match.group("qpt").split()
                     if verbose:
@@ -329,7 +265,7 @@ def parse_castep_file(castep_file, verbose=False):
                       re.match(rf"\s+\+\s+q->0 along \((\s*{FNUMBER_RE}){{3}}\)\s+\+", line) or
                       re.match(r"\s+\+ -+ \+", line)):
                     continue
-                elif match := PROCESS_PHONON_RE.match(line):
+                elif match := _PROCESS_PHONON_RE.match(line):
 
                     # ==By mode
                     # qdata["modes"].append(match.groupdict())
@@ -346,7 +282,7 @@ def parse_castep_file(castep_file, verbose=False):
 
             if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                                      for phonon in curr_run["phonons"]):
-                curr_run["phonons"].append(process_qdata(qdata))
+                curr_run["phonons"].append(_process_qdata(qdata))
 
             if verbose:
                 print(f"Found {len(curr_run['phonons'])} phonon samples")
@@ -357,76 +293,36 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Raman")
 
-            modes = []
-            curr_mode = {}
-            for line in block.splitlines()[1:]:
-                if "Mode number" in line:
-                    if curr_mode:
-                        modes.append(curr_mode)
-                    curr_mode = {"tensor": [], "depolarisation": None}
-                elif numbers := get_numbers(line):
-                    curr_mode["tensor"].append(to_type(numbers[0:3], float))
-                    if len(numbers) == 4:
-                        curr_mode["depolarisation"] = to_type(numbers[3], float)
-
-                elif re.search(r"^ \+\s+\+", line):  # End of 3x3+depol block
-                    # Compute Invariants Tr(A) and Tr(A)^2-Tr(A^2) of Raman Tensor
-                    curr_mode["tensor"] = tuple(curr_mode["tensor"])
-                    tensor = curr_mode["tensor"]
-                    curr_mode["trace"] = sum(tensor[i][i] for i in range(3))
-                    curr_mode["II"] = (tensor[0][0]*tensor[1][1] +
-                                       tensor[0][0]*tensor[2][2] +
-                                       tensor[1][1]*tensor[2][2] -
-                                       tensor[0][1]*tensor[1][0] -
-                                       tensor[0][2]*tensor[2][0] -
-                                       tensor[1][2]*tensor[2][1])
-            if curr_mode:
-                modes.append(curr_mode)
-            curr_run["raman"].append(modes)
+            lines = block.splitlines()[1:]
+            curr_run["raman"].append(_process_raman(lines))
 
         # Born charges
         elif block := get_block(line, castep_file, r"^\s*Born Effective Charges\s*$", r"^ =+$"):
             if verbose:
                 print("Found Born")
 
-            lines = block.splitlines()
-
-            born_accum = {}
-            i = 0
-            while i < len(lines):
-                if match := BORN_RE.match(lines[i]):
-                    born_accum[atreg_to_index(match)] = (to_type(match["charges"].split(), float),
-                                                         to_type(lines[i+1].split(), float),
-                                                         to_type(lines[i+2].split(), float))
-                    i += 3
-                else:
-                    i += 1
-
-            curr_run["born"].append(born_accum)
+            lines = iter(block.splitlines())
+            curr_run["born"].append(_process_born(lines))
 
         # Permittivity and NLO Susceptibility
         elif block := get_block(line, castep_file, r"^ +Optical Permittivity", r"^ =+$"):
             if verbose:
                 print("Found optical permittivity")
 
-            for line in block.splitlines():
-                if re.match(rf"(?:\s*{FNUMBER_RE}){{3,6}}", line):
-                    vals = to_type(line.split(), float)
-                    curr_run["optical_permittivity"].append(vals[0:3])
-                    if len(vals) == 6:
-                        curr_run["dc_permittivity"].append(vals[3:6])
+            opt_perm, dc_perm = _process_3_6_matrix(block.splitlines(), True)
+            curr_run["optical_permittivity"] = opt_perm
+            if dc_perm:
+                curr_run["dc_permittivity"] = dc_perm
 
         # Polarisability
         elif block := get_block(line, castep_file, r"^ +Polarisabilit(y|ies)", r"^ =+$"):
             if verbose:
                 print("Found polarisability")
 
-            for line in block.splitlines():
-                if re.match(rf"(?:\s*{FNUMBER_RE}){{3,6}}$", line):
-                    vals = to_type(line.split(), float)
-                    curr_run["optical_polarisability"].append(vals[0:3])
-                    if len(vals) == 6:
-                        curr_run["static_polarisability"].append(vals[3:6])
+            opt, stat = _process_3_6_matrix(block.splitlines(), True)
+            curr_run["optical_polarisability"] = opt
+            if stat:
+                curr_run["static_polarisability"] = stat
 
         # Non-linear
         elif block := get_block(line, castep_file,
@@ -434,9 +330,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found NLO")
 
-            for line in block.splitlines():
-                if re.match(rf"(?:\s*{FNUMBER_RE}){{6}}$", line):
-                    curr_run["nlo"].append(line.split())
+            curr_run["nlo"], _ = _process_3_6_matrix(block.splitlines(), False)
 
         # Thermodynamics
         elif block := get_block(line, castep_file,
@@ -445,16 +339,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found thermodynamics")
 
-            accum = defaultdict(list)
-            for line in block.splitlines():
-                if match := THERMODYNAMICS_DATA_RE.match(line):
-                    stack_dict(accum, match.groupdict())
-                # elif re.match(r"\s+T\(", line):  # Can make dict/re based on labels
-                #     thermo_label = line.split()
-
-            fix_data_types(accum, {key: float for
-                                   key in ("T", "E", "F", "S", "Cv")})
-
+            accum = _process_thermodynamics(block.splitlines())
             curr_run["thermodynamics"].append(accum)
 
         # Mulliken Population Analysis
@@ -464,37 +349,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Mulliken")
 
-            accum = {}
-
-            lines = iter(block.splitlines())
-
-            for line in lines:
-                if match := CASTEP_POPN_RE.match(line):
-                    mull = match.groupdict()
-                    mull["spin_sep"] = bool(mull["spin_sep"])
-                    if mull["spin_sep"]:  # We have spin separation
-                        add_aliases(mull,
-                                    {orb: f"up_{orb}" for orb in (*SHELLS, "total")},
-                                    replace=True)
-                        line = next(lines)
-                        match = CASTEP_POPN_RE_DN.match(line)
-                        match = match.groupdict()
-
-                        add_aliases(match,
-                                    {orb: f"dn_{orb}" for orb in (*SHELLS, "total")},
-                                    replace=True)
-
-                        mull.update(match)
-                        mull["total"] = float(mull["up_total"]) + float(mull["dn_total"])
-
-                    ind = atreg_to_index(mull)
-                    fix_data_types(mull, {**{f"{orb}": float for orb in (*SHELLS, "total",
-                                                                         "charge", "spin")},
-                                          **{f"up_{orb}": float for orb in (*SHELLS, "total")},
-                                          **{f"dn_{orb}": float for orb in (*SHELLS, "total")}})
-                    accum[ind] = mull
-
-            curr_run["mulliken_popn"] = accum
+            curr_run["mulliken_popn"] = _process_mulliken(iter(block.splitlines()))
 
         # Hirshfeld Population Analysis
         elif block := get_block(line, castep_file,
@@ -503,13 +358,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Hirshfeld")
 
-            accum = {}
-            for line in block.splitlines():
-                if match := re.match(rf"\s+{ATREG}\s+(?P<charge>{FNUMBER_RE})", line):
-                    accum[atreg_to_index(match)] = float(match["charge"])
-
-            if accum:
-                curr_run["hirshfeld"] = accum
+            curr_run["hirshfeld"] = _process_hirshfeld(block.splitlines())
 
         # ELF
         elif block := get_block(line, castep_file,
@@ -518,9 +367,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found ELF")
 
-            for line in block.splitlines():
-                if match := re.match(rf"\s+ELF\s+\d+\s+({FNUMBER_RE})", line):
-                    curr_run["elf"].append(to_type(match.group(1), float))
+            curr_run["elf"] = _process_elf(block.splitlines())
 
         # MD Block
         elif block := get_block(line, castep_file,
@@ -530,12 +377,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Found MD Block (step {len(curr_run['md'])+1})")
 
-            curr_data = {match.group("key").strip(): float(match.group("val"))
-                         for line in block.splitlines()
-                         if (match := re.search(r"x\s+"
-                                                r"(?P<key>[a-zA-Z][A-Za-z ]+):\s*"
-                                                rf"(?P<val>{FNUMBER_RE})", line))}
-            curr_run["md"].append({normalise_string(key): val for key, val in curr_data.items()})
+            accum = _process_md(block.splitlines())
+            curr_run["md"].append(accum)
 
         # GeomOpt
         elif block := get_block(line, castep_file,
@@ -545,9 +388,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found final geom configuration")
 
-            accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
-                     for line in block.splitlines()
-                     if (match := ATDAT3VEC.search(line))}
+            accum = _process_geomopt(block.splitlines())
             curr_run["final_configuration"].append(accum)
 
         # TDDFT
@@ -558,17 +399,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found TDDFT excitations")
 
-            tddata = []
-            for line in block.splitlines():
-                if match := TDDFT_RE.match(line):
-                    match = match.groupdict()
-                    del match['state']
-                    fix_data_types(match, {'energy': float,
-                                           'error': float})
-                    tddata.append(match)
-
-            if tddata:
-                curr_run["tddft"] = tddata
+            curr_run["tddft"] = _process_tddft(block.splitlines())
 
         # Old band structure
         elif block := get_block(line, castep_file,
@@ -577,34 +408,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found band-structure")
 
-            qdata = defaultdict(list)
-
-            for line in block.splitlines():
-                if match := BS_RE.search(line):
-                    if qdata:
-                        fix_data_types(qdata, {"spin": int,
-                                               "kx": float,
-                                               "ky": float,
-                                               "kz": float,
-                                               "kpgrp": int,
-                                               "band": int,
-                                               "energy": float})
-                        curr_run["bs"].append(qdata)
-                    qdata = defaultdict(list)
-                    qdata.update(match.groupdict())
-
-                elif match := re.search(labelled_floats(("band", "energy"), sep=r"\s+"), line):
-                    stack_dict(qdata, match.groupdict())
-
-            if qdata:
-                fix_data_types(qdata, {"spin": int,
-                                       "kx": float,
-                                       "ky": float,
-                                       "kz": float,
-                                       "kpgrp": int,
-                                       "band": int,
-                                       "energy": float})
-                curr_run["bs"].append(qdata)
+            curr_run["bs"] = _process_band_structure(block)
 
         # Chemical shielding
         elif block := get_block(line, castep_file,
@@ -613,7 +417,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Chemical Shielding Tensor")
 
-            data = parse_magres_block(0, block.splitlines())
+            data = _parse_magres_block(0, block.splitlines())
             curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
@@ -622,7 +426,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Chemical Shielding + EField Tensor")
 
-            data = parse_magres_block(1, block.splitlines())
+            data = _parse_magres_block(1, block.splitlines())
             curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
@@ -632,7 +436,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found EField Tensor")
 
-            data = parse_magres_block(2, block.splitlines())
+            data = _parse_magres_block(2, block.splitlines())
             curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
@@ -641,7 +445,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found J-coupling")
 
-            data = parse_magres_block(3, block.splitlines())
+            data = _parse_magres_block(3, block.splitlines())
             curr_run["magres"].append(data)
 
         elif block := get_block(line, castep_file,
@@ -651,7 +455,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Hyperfine tensor")
 
-            data = parse_magres_block(4, block.splitlines())
+            data = _parse_magres_block(4, block.splitlines())
             curr_run["magres"].append(data)
 
         # --- Extra blocks for testing
@@ -785,3 +589,291 @@ def parse_castep_file(castep_file, verbose=False):
                                   "solvation": float})
         runs.append(curr_run)
     return runs
+
+
+def _process_ps_energy(block):
+    match = _PS_SHELL_RE.search(next(block))
+    spec = match['spec']
+    next(block)
+    energy = get_numbers(next(block))[1]
+    return spec, float(energy)
+
+
+def _process_tddft(block):
+    tddata = [{"energy": float(match["energy"]),
+               "error": float(match["error"]),
+               "type": match["type"]}
+              for line in block
+              if (match := _TDDFT_RE.match(line))]
+    return tddata
+
+
+def _process_geomopt(block):
+    accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
+             for line in block
+             if (match := ATDAT3VEC.search(line))}
+    return accum
+
+
+def _process_md(block):
+    curr_data = {match.group("key").strip(): float(match.group("val"))
+                 for line in block
+                 if (match := re.search(r"x\s+"
+                                        r"(?P<key>[a-zA-Z][A-Za-z ]+):\s*"
+                                        rf"(?P<val>{FNUMBER_RE})", line))}
+
+    return {normalise_string(key): val for key, val in curr_data.items()}
+
+
+def _process_elf(block):
+    curr_data = [to_type(match.group(1), float) for line in block
+                 if (match := re.match(rf"\s+ELF\s+\d+\s+({FNUMBER_RE})", line))]
+    return curr_data
+
+
+def _process_hirshfeld(block):
+    """ Process Hirshfeld block to dict of charges """
+    accum = {atreg_to_index(match): float(match["charge"]) for line in block
+             if (match := re.match(rf"\s+{ATREG}\s+(?P<charge>{FNUMBER_RE})", line))}
+    return accum
+
+
+def _process_thermodynamics(block):
+    """ Process a thermodynamics block into a dict of lists """
+    accum = defaultdict(list)
+    for line in block:
+        if match := _THERMODYNAMICS_DATA_RE.match(line):
+            stack_dict(accum, match.groupdict())
+        # elif re.match(r"\s+T\(", line):  # Can make dict/re based on labels
+        #     thermo_label = line.split()
+
+    fix_data_types(accum, {key: float for
+                           key in ("T", "E", "F", "S", "Cv")})
+    return accum
+
+
+def _process_3_6_matrix(block, split):
+    """ Process a single or pair of 3x3 matrices or 3x6 matrix """
+    fst = [to_type(vals, float) for line in block
+           if (vals := get_numbers(line)) and len(vals) in (3, 6)]
+    if split and len(fst[0]) == 6:
+        fst, snd = [tuple(line[0:3]) for line in fst], [tuple(line[3:6]) for line in fst]
+    else:
+        snd = []
+
+    return fst, snd
+
+
+def _process_params(block):
+    """ Process a parameters block into a dict of params """
+
+    opt = {}
+    curr_opt = {}
+    curr_group = ""
+
+    for line in block.splitlines():
+        if match := re.match(r"\s*\*+ ([A-Za-z ]+) Parameters \*+", line):
+            if curr_opt:
+                opt[curr_group] = curr_opt
+            curr_group = normalise_string(match.group(1)).lower()
+            curr_opt = {}
+        elif len(match := line.split(":")) > 1:
+            *key, val = map(normalise_string, match)
+            curr_opt[" ".join(key).strip()] = val.strip()
+
+    if curr_opt:
+        opt[curr_group] = curr_opt
+
+    return opt
+
+
+def _process_buildinfo(block):
+    info = {}
+    block = block.splitlines()
+
+    info['summary'] = " ".join(map(normalise_string, block[0:2]))
+    for line in block[2:]:
+        if ':' in line:
+            key, val = map(normalise_string, line.split(':', 1))
+            info[key.strip()] = val.strip()
+    return info
+
+
+def _process_forces(block):
+    ftype = (ft_guess if (ft_guess := _FORCES_BLOCK_RE.search(next(block)).group(1))
+             else "non-descript")
+
+    ftype = normalise_string(ftype).lower()
+
+    accum = {atreg_to_index(match, False): to_type(match.group("x", "y", "z"), float)
+             for line in block
+             if (match := ATDAT3VEC.search(line))}
+
+    return ftype, accum
+
+
+def _process_stresses(block):
+
+    ftype = (ft_guess if (ft_guess := _STRESSES_BLOCK_RE.search(next(block)).group(1))
+             else "non-descript")
+
+    ftype = normalise_string(ftype).lower()
+
+    accum = []
+    for line in block:
+        numbers = get_numbers(line)
+        if "*  x" in line:
+            accum += numbers[0:]
+        elif "*  y" in line:
+            accum += numbers[1:]
+        elif "*  z" in line:
+            accum += numbers[2:]
+
+    accum = to_type(accum, float)
+
+    return ftype, accum
+
+
+def _process_born(block):
+    """ Process a Born block into a dict of charges """
+
+    born_accum = {}
+    for line in block:
+        if match := _BORN_RE.match(line):
+            born_accum[atreg_to_index(match)] = (to_type(match["charges"].split(), float),
+                                                 to_type(next(block).split(), float),
+                                                 to_type(next(block).split(), float))
+    return born_accum
+
+
+def _process_raman(block):
+    """ Process a Mulliken block into a list of modes """
+
+    modes = []
+    curr_mode = {}
+    for line in block:
+        if "Mode number" in line:
+            if curr_mode:
+                modes.append(curr_mode)
+            curr_mode = {"tensor": [], "depolarisation": None}
+        elif numbers := get_numbers(line):
+            curr_mode["tensor"].append(to_type(numbers[0:3], float))
+            if len(numbers) == 4:
+                curr_mode["depolarisation"] = to_type(numbers[3], float)
+
+        elif re.search(r"^ \+\s+\+", line):  # End of 3x3+depol block
+            # Compute Invariants Tr(A) and Tr(A)^2-Tr(A^2) of Raman Tensor
+            curr_mode["tensor"] = tuple(curr_mode["tensor"])
+            tensor = curr_mode["tensor"]
+            curr_mode["trace"] = sum(tensor[i][i] for i in range(3))
+            curr_mode["II"] = (tensor[0][0]*tensor[1][1] +
+                               tensor[0][0]*tensor[2][2] +
+                               tensor[1][1]*tensor[2][2] -
+                               tensor[0][1]*tensor[1][0] -
+                               tensor[0][2]*tensor[2][0] -
+                               tensor[1][2]*tensor[2][1])
+    if curr_mode:
+        modes.append(curr_mode)
+
+    return modes
+
+
+def _process_mulliken(block):
+    """ Process a mulliken block into a dict of points """
+    accum = {}
+
+    for line in block:
+        if match := _CASTEP_POPN_RE.match(line):
+            mull = match.groupdict()
+            mull["spin_sep"] = bool(mull["spin_sep"])
+            if mull["spin_sep"]:  # We have spin separation
+                add_aliases(mull,
+                            {orb: f"up_{orb}" for orb in (*SHELLS, "total")},
+                            replace=True)
+                line = next(block)
+                match = _CASTEP_POPN_RE_DN.match(line)
+                match = match.groupdict()
+
+                add_aliases(match,
+                            {orb: f"dn_{orb}" for orb in (*SHELLS, "total")},
+                            replace=True)
+
+                mull.update(match)
+                mull["total"] = float(mull["up_total"]) + float(mull["dn_total"])
+
+            ind = atreg_to_index(mull)
+            fix_data_types(mull, {**{f"{orb}": float for orb in (*SHELLS, "total",
+                                                                 "charge", "spin")},
+                                  **{f"up_{orb}": float for orb in (*SHELLS, "total")},
+                                  **{f"dn_{orb}": float for orb in (*SHELLS, "total")}})
+            accum[ind] = mull
+
+    return accum
+
+
+def _process_band_structure(block):
+    """ Process a band structure into a list of kpts"""
+
+    def fdt(qdat):
+        fix_data_types(qdat, {"spin": int,
+                              "kx": float,
+                              "ky": float,
+                              "kz": float,
+                              "kpgrp": int,
+                              "band": int,
+                              "energy": float})
+
+    bands = []
+    qdata = {}
+
+    for line in block.splitlines():
+        if match := _BS_RE.search(line):
+            if qdata:
+                fdt(qdata)
+                bands.append(qdata)
+            qdata = {"band": [], "energy": [], **match.groupdict()}
+
+        elif match := re.search(labelled_floats(("band", "energy"), sep=r"\s+"), line):
+            stack_dict(qdata, match.groupdict())
+
+    if qdata:
+        fdt(qdata)
+        bands.append(qdata)
+
+    return bands
+
+
+def _process_qdata(qdata):
+    """ Special parse for phonon qdata """
+    qdata = {key: val
+             for key, val in qdata.items()
+             if any(val) or key == "qpt"}
+    fix_data_types(qdata,
+                   {"qpt": float,
+                    "N": int,
+                    "frequency": float,
+                    "intensity": float,
+                    "raman_intensity": float
+                    })
+    return qdata
+
+
+def _parse_magres_block(task, inp):
+    """ Parse MagRes data tables from inp according to task """
+
+    data = defaultdict(list)
+    data["task"] = _MAGRES_TASK[task]
+    curr_re = _MAGRES_RE[task]
+    for line in inp:
+        if match := curr_re.match(line):
+            match = match.groupdict()
+            ind = atreg_to_index(match)
+            fix_data_types(match, {key: float for key in ("iso", "aniso", "cq", "eta",
+                                                          "fc", "sd", "para", "dia", "tot")})
+
+            if "asym" in match:
+                match["asym"] = float(match["asym"]) if match["asym"] != "N/A" else None
+
+            data[ind] = match
+
+    return data
