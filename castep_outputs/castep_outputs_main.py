@@ -34,51 +34,46 @@ PARSERS = {
     }
 
 
-def parse_single(types: list[str], parser: callable, output=sys.stdout):
+def parse_single(in_file, parser: callable = None,
+                 verbose=False, out_format="json", *, testing=False):
     """
-    Use a single parser to parse some classes of files and print to screen
+    Parse a file using the given parser and post-process according to options
     """
-    args = parse_args()
-    file_dumper = get_dumpers(args.out_format)
+    if parser is None:
+        _, ext = os.path.splitext(in_file)
+        parser = PARSERS.get(ext, None)
+        if not parser:
+            raise KeyError(f"Parser for file {in_file} (assumed type: {ext}) not found")
 
-    files = {file for typ in types for file in getattr(args, typ, [])}
-    # Handle cases where seedname passed but not as appropriate arg type for
-    files |= {arg for arg in args.seedname if os.path.isfile(arg) and arg not in files}
+    if isinstance(in_file, io.TextIOBase):
+        data = parser(in_file, verbose)
+    else:
+        with open(in_file, 'r', encoding='utf-8') as file:
+            data = parser(file, verbose)
 
-    for seed in files:
-        with open(seed, "r", encoding="utf-8") as in_file:
-            data = parser(in_file, verbose=True)
-
-        if args.out_format == "json" or args.testing:
+    if out_format == "json" or testing:
+        if isinstance(data, list):
             data = [json_safe_dict(run) for run in data]
+        else:
+            data = json_safe_dict(data)
 
-        if args.testing:
+    if testing:
+        if isinstance(data, list):
             data = [flatten_dict(run) for run in data]
+        else:
+            data = flatten_dict(data)
 
-        file_dumper(data, output)
+    return data
 
 
-def parse_all(output=None, verbose=False, testing=False, out_format="json", **files):
+def parse_all(output=None, out_format="json", verbose=False, *, testing=False, **files):
     """ Parse all files in files dict """
     file_dumper = get_dumpers(out_format)
 
     for typ, paths in files.items():
         parser = PARSERS[f".{typ}"]
         for path in paths:
-            with open(path, 'r', encoding='utf-8') as in_file:
-                data = parser(in_file, verbose)
-
-            if out_format == "json" or testing:
-                if isinstance(data, list):
-                    data = [json_safe_dict(run) for run in data]
-                else:
-                    data = json_safe_dict(data)
-
-            if testing:
-                if isinstance(data, list):
-                    data = [flatten_dict(run) for run in data]
-                else:
-                    data = flatten_dict(data)
+            data = parse_single(path, parser, verbose, out_format, testing=testing)
 
             if output is None:
                 file_dumper(data, sys.stdout)
