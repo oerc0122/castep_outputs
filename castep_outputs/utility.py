@@ -50,7 +50,7 @@ def json_safe_dict(obj):
             key = "_".join(map(str, key))
         if isinstance(val, dict):
             val = json_safe_dict(val)
-        elif isinstance(val, list):
+        elif isinstance(val, (tuple, list)):
             val = [v if not isinstance(v, dict) else json_safe_dict(v) for v in val]
         obj_out[key] = val
     return obj_out
@@ -89,7 +89,7 @@ def json_dumper(data, file):
 
 def ruamel_dumper(data, file):
     """ Basic ruamel.yaml format dumper """
-    yaml_eng = yaml.YAML()
+    yaml_eng = yaml.YAML(typ='unsafe')
     yaml_eng.dump(data, file)
 
 
