@@ -3,17 +3,17 @@
   dictitems:
     build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
         FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
-        2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: Compiled for GNU 12.2.1
+        2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
         on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr
-        14 15:13:22 2023 +0100}
+        14 15:13:22 2023 +0100'}
 - !!python/object/apply:collections.defaultdict
   args: [*id001]
   dictitems:
     build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
         FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
-        2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: Compiled for GNU 12.2.1
+        2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
         on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr
-        14 15:13:22 2023 +0100}
+        14 15:13:22 2023 +0100'}
     options:
       basis set: {finite basis set correction: none, plane wave basis set cut-off: 500.0000
           eV, size of fine gmax: 20.0476 1/A, size of standard grid: '1.7500'}
@@ -50,7 +50,7 @@
     species_properties: !!python/object/apply:collections.defaultdict
       args: [&id002 !!python/name:builtins.dict '']
       dictitems:
-        Mn: {elec_quad: 0.33, mass: 54.93805, pseudo_atomic_energy: -2901.7207, pseudopot: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)}
+        Mn: {elec_quad: 0.33, mass: 54.93805, pseudo_atomic_energy: -2901.7207, pseudopot: '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'}
     time_started: ' Tue, 30 May 2023 11'
 - !!python/object/apply:collections.defaultdict
   args: [*id001]
@@ -95,5 +95,5 @@
     species_properties: !!python/object/apply:collections.defaultdict
       args: [*id002]
       dictitems:
-        Mn: {elec_quad: 0.33, mass: 54.93805, pseudo_atomic_energy: -2901.7207, pseudopot: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)}
+        Mn: {elec_quad: 0.33, mass: 54.93805, pseudo_atomic_energy: -2901.7207, pseudopot: '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'}
     time_started: ' Fri, 14 Jul 2023 19'

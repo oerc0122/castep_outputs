@@ -4,6 +4,18 @@ Utility functions for parsing castep outputs
 import collections.abc
 import itertools
 import re
+import json
+import pprint
+try:
+    from ruamel import yaml
+    _YAML_TYPE = "ruamel"
+except ImportError:
+    try:
+        import yaml
+        _YAML_TYPE = "yaml"
+    except ImportError:
+        _YAML_TYPE = None
+
 
 
 def normalise_string(string):
@@ -38,7 +50,7 @@ def json_safe_dict(obj):
             key = "_".join(map(str, key))
         if isinstance(val, dict):
             val = json_safe_dict(val)
-        elif isinstance(val, list):
+        elif isinstance(val, (tuple, list)):
             val = [v if not isinstance(v, dict) else json_safe_dict(v) for v in val]
         obj_out[key] = val
     return obj_out
@@ -70,32 +82,52 @@ def flatten_dict(dictionary, parent_key=False, separator='_'):
     return dict(items)
 
 
+def json_dumper(data, file):
+    """ Basic JSON format dumper """
+    json.dump(data, file, indent=2)
+
+
+def ruamel_dumper(data, file):
+    """ Basic ruamel.yaml format dumper """
+    yaml_eng = yaml.YAML(typ='unsafe')
+    yaml_eng.dump(data, file)
+
+
+def yaml_dumper(data, file):
+    """ Basic yaml format dumper """
+    yaml.dump(data, file)
+
+
+def pprint_dumper(data, file):
+    """ PPrint dumper """
+    print(pprint.pformat(data), file=file)
+
+
+def print_dumper(data, file):
+    """ Print dumper """
+    print(data, file=file)
+
+
+SUPPORTED_FORMATS = {"json": json_dumper,
+                     "ruamel": ruamel_dumper,
+                     "yaml": yaml_dumper,
+                     "pprint": pprint_dumper,
+                     "print": print_dumper}
+
 def get_dumpers(dump_fmt: str):
     """
     Get appropriate dump for unified interface
     """
-
-    # pylint: disable=import-outside-toplevel,unnecessary-lambda-assignment
     if dump_fmt not in SUPPORTED_FORMATS:
         raise ValueError(f"Cannot output in {dump_fmt} format.")
 
-    if dump_fmt == "json":
-        import json
-        file_dumper = lambda data, file: json.dump(data, file, indent=2)
-    elif dump_fmt == "yaml":
-        try:
-            from ruamel import yaml
-        except ImportError:
-            import yaml
+    if dump_fmt == "yaml":
+        if _YAML_TYPE is None:
+            raise ImportError("Couldn't find valid yaml dumper (ruamel.yaml / yaml)"
+                              "please install and try again.")
+        dump_fmt = _YAML_TYPE
 
-        file_dumper = yaml.dump
-    elif dump_fmt == "pprint":
-        import pprint
-        file_dumper = lambda data, file: print(pprint.pformat(data), file=file)
-    elif dump_fmt == "print":
-        file_dumper = lambda data, file: print(data, file=file)
-
-    return file_dumper
+    return SUPPORTED_FORMATS[dump_fmt]
 
 
 def get_numbers(line: str):
@@ -189,7 +221,6 @@ CASTEP_OUTPUT_NAMES = (
     "pot_fmt",
     "den_fmt"
 )
-SUPPORTED_FORMATS = ("json", "yaml", "pprint", "print")
 
 
 # --- RegExes
