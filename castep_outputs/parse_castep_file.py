@@ -10,7 +10,7 @@ import io
 import re
 
 from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
-                      ATREG, SPECIES_RE, ATDAT3VEC, SHELLS,
+                      ATREG, ATOM_NAME_RE, SPECIES_RE, ATDAT3VEC, SHELLS,
                       labelled_floats, fix_data_types, add_aliases, to_type,
                       stack_dict, get_block, get_numbers, normalise_string, atreg_to_index)
 from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
@@ -47,6 +47,13 @@ _PSPOT_RE = re.compile(labelled_floats(('local_channel',
 _FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Forces \*+\s*$", re.IGNORECASE)
 # Stresses block
 _STRESSES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Stress Tensor \*+\s*$", re.IGNORECASE)
+
+_BOND_RE = re.compile(rf"""\s*
+                       (?P<spec1>{ATOM_NAME_RE})\s*(?P<ind1>\d+)\s*
+                       --\s*
+                       (?P<spec2>{ATOM_NAME_RE})\s*(?P<ind2>\d+)\s*
+                       {labelled_floats(('population', 'length'))}
+                       """, re.VERBOSE)
 
 # Regexp to identify phonon block in .castep file
 _CASTEP_PHONON_RE = re.compile(
@@ -142,12 +149,14 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Found run {len(runs) + 1}")
 
+        # Finalisation
         elif block := get_block(line, castep_file, "Initialisation time", r"^\s*$"):
             if verbose:
                 print("Found finalisation")
 
             curr_run.update(_process_finalisation(block.splitlines()))
 
+        # Title
         elif re.match(r"^\*+\s*Title\s*\*+$", line):
             if verbose:
                 print("Found title")
@@ -156,6 +165,7 @@ def parse_castep_file(castep_file, verbose=False):
             if title:
                 curr_run["title"] = title.strip()
 
+        # Memory estimate
         elif block := get_block(line, castep_file,
                                 r"\s*\+-+\sMEMORY AND SCRATCH",
                                 r"\s*\+-+\+"):
@@ -164,6 +174,7 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["memory_estimate"].append(_process_memory_est(block.splitlines()))
 
+        # Parameters
         elif block := get_block(line, castep_file,
                                 r"^\s*\*+ .* Parameters \*+$",
                                 r"^\s*\*+$"):
@@ -263,6 +274,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found dE/dlog(E)")
             curr_run["dedlne"].append(to_type(match.group(1), float))
 
+        # K-Points
         elif block := get_block(line, castep_file, "k-Points For BZ Sampling", r"^\s*$"):
             if verbose:
                 print("Found k-points")
@@ -350,7 +362,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Found {len(curr_run['phonons'])} phonon samples")
 
-            # Phonon Symmetry
+        # Phonon Symmetry
         elif block := get_block(line, castep_file,
                                 "Phonon Symmetry Analysis", r"^\s*$"):
 
@@ -361,7 +373,7 @@ def parse_castep_file(castep_file, verbose=False):
             accum = _process_phonon_sym_analysis(lines)
             curr_run["phonon_symmetry_analysis"].append(accum)
 
-            # Dynamical Matrix
+        # Dynamical Matrix
         elif block := get_block(line, castep_file,
                                 "Dynamical matrix", r"^\s*-+\s*$"):
 
@@ -435,6 +447,14 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found Mulliken")
 
             curr_run["mulliken_popn"] = _process_mulliken(iter(block.splitlines()))
+
+        # Bond analysis
+        elif block := get_block(line, castep_file,
+                                r"Bond\s*Population\s*Length", "=+", cnt=2):
+            if verbose:
+                print("Found bond info")
+
+            curr_run["bonds"] = _process_bond_analysis(iter(block.splitlines()))
 
         # Hirshfeld Population Analysis
         elif block := get_block(line, castep_file,
@@ -1063,3 +1083,12 @@ def _process_pspot_string(string):
     pspot["proj"] = tuple(projectors)
 
     return pspot
+
+
+def _process_bond_analysis(block):
+    accum = {((match['spec1'], int(match['ind1'])),
+              (match['spec2'], int(match['ind2']))): {'population': float(match['population']),
+                                                      'length': float(match['length'])}
+             for line in block
+             if (match := _BOND_RE.match(line))}
+    return accum

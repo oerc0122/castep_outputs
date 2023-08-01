@@ -852,10 +852,15 @@ The total projected population is   19.999   0.000
                  Bond                   Population      Length (A)
 ======================================================================
               Si 1 -- Si 2                   3.06        2.33434
+              C  1 -- Si 1                  99.10        3.14159
 ======================================================================
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'bonds': {(('C', 1), ('Si', 1)): {'length': 3.14159,
+                                                                       'population': 99.1},
+                                               (('Si', 1), ('Si', 2)): {'length': 2.33434,
+                                                                        'population': 3.06}}})
 
     def test_get_pair_params(self):
         test_text = io.StringIO("""
