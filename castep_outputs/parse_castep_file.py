@@ -21,6 +21,28 @@ from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_d
 # PS Energy
 _PS_SHELL_RE = re.compile(
     rf"\s*Pseudo atomic calculation performed for (?P<spec>{SPECIES_RE})(\s+{SHELL_RE})+")
+
+# PS Projector
+_PSPOT_PROJ_RE = re.compile(r"(?P<orbital>\d)(?P<shell>\d)(?P<type>U|UU|N)?")
+_UNLABELLED_PROJ_RE = r"\d\d(?:UU|U|N)?"
+
+# PSPot String
+_PSPOT_RE = re.compile(labelled_floats(('local_channel',
+                                        'core_radius',
+                                        'beta_radius',
+                                        'r_inner',
+                                        'coarse',
+                                        'medium',
+                                        'fine'), sep=r"\|?")
+                       +
+                       r"\|"
+                       rf"(?P<proj>{_UNLABELLED_PROJ_RE}(?::{_UNLABELLED_PROJ_RE})*)"
+                       rf"(?:\{{(?P<shell_swp>{SHELL_RE}(?:,{SHELL_RE})*)\}})?"
+                       rf"\((?P<opt>[^)]+)\)"
+                       rf"(?P<debug>#)?"
+                       rf"(?:\[(?P<shell_swp2>{SHELL_RE}(?:,{SHELL_RE})*)\])?"
+                       )
+
 # Forces block
 _FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Forces \*+\s*$", re.IGNORECASE)
 # Stresses block
@@ -198,6 +220,10 @@ def parse_castep_file(castep_file, verbose=False):
             for line in block.splitlines():
                 if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
                     spec, pspot = words
+                    if "|" in pspot:
+                        curr_run["species_properties"][spec]["pspot_string"] = pspot
+                        pspot = _process_pspot_string(pspot)
+
                     curr_run["species_properties"][spec]["pseudopot"] = pspot
 
         # Energies
@@ -1017,6 +1043,23 @@ def _process_dynamical_matrix(block):
 
     accum = []
     for real_row, imag_row in zip(real_part, imag_part):
-        accum.append(tuple(complex(float(real), float(imag)) for real, imag in zip(real_row, imag_row)))
+        accum.append(tuple(complex(float(real), float(imag))
+                           for real, imag in zip(real_row, imag_row)))
 
     return tuple(accum)
+
+
+def _process_pspot_string(string):
+    if not (match := _PSPOT_RE.match(string)):
+        raise IOError(f"Attempt to parse {string} as PSPot failed")
+
+    pspot = match.groupdict()
+    projectors = []
+    for proj in pspot["proj"].split(":"):
+        pdict = _PSPOT_PROJ_RE.match(proj).groupdict()
+        pdict["shell"] = SHELLS[int(pdict["shell"])]
+        projectors.append(pdict)
+
+    pspot["proj"] = tuple(projectors)
+
+    return pspot

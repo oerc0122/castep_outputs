@@ -186,8 +186,15 @@ def labelled_floats(labels, counts=(None,), sep=r"\s+?", suff=""):
     """
     if suff and any(cnt for cnt in counts):
         raise NotImplementedError("Suffix and counts not currently supported")
-    return ''.join(rf"(?:(?P<{label}>(?:{sep}{EXPNUMBER_RE}){f'{{{cnt}}}' if cnt else ''}){suff})"
-                   for label, cnt in itertools.zip_longest(labels, counts))
+
+    outstr = ""
+    for label, cnt in itertools.zip_longest(labels, counts):
+        if cnt:
+            outstr += f"(?:(?P<{label}>(?:{sep}{EXPNUMBER_RE}{suff}){{{cnt}}}))"
+        else:
+            outstr += f"(?:{sep}(?P<{label}>{EXPNUMBER_RE}){suff})"
+
+    return outstr
 
 
 def stack_dict(out_dict, in_dict):
