@@ -39,8 +39,13 @@ Peak Memory Use     = 149108 kB
 
 Overall parallel efficiency rating: Satisfactory (64%)
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'calculation time': 135.01,
+                                     'finalisation time': 0.03,
+                                     'initialisation time': 1.07,
+                                     'peak memory use': 149108.0,
+                                     'total time': 136.11})
 
     def test_get_title(self):
         test_text = io.StringIO("""
@@ -48,10 +53,9 @@ Overall parallel efficiency rating: Satisfactory (64%)
  CASTEP calculation for SSEC2016
 
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'title': 'CASTEP calculation for SSEC2016'})
 
     def test_get_warning(self):
         test_text = io.StringIO("""
@@ -98,8 +102,18 @@ Overall parallel efficiency rating: Satisfactory (64%)
         | Requirements will fluctuate during execution and may exceed these estimates |
         +-----------------------------------------------------------------------------+
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'memory_estimate':
+                                     [{'BLAS internal memory storage': {'disk': 0.0,
+                                                                        'memory': 0.0},
+                                       'Electronic energy minimisation requirements': {'disk': 0.0,
+                                                                                       'memory': 6100.6},
+                                       'Force calculation requirements': {'disk': 0.0,
+                                                                          'memory': 9.8},
+                                       'Model and support data': {'disk': 0.0,
+                                                                  'memory': 3780.5}}]})
+
 
     def test_get_cell_structure(self):
 
@@ -328,15 +342,38 @@ Overall parallel efficiency rating: Satisfactory (64%)
                             with an offset of   0.000  0.000  0.000
                        Number of kpoints used =            32
 
+        """)
+
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'k-points': {'kpoint_mp_grid': (4, 4, 4),
+                                                  'kpoint_mp_offset': (0.0, 0.0, 0.0),
+                                                  'num_kpoints': (32,)}})
+
+        test_text = io.StringIO("""
+                           -------------------------------
+                              k-Points For BZ Sampling
+                           -------------------------------
+                       Number of kpoints used =             2
+
+        """)
+
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'k-points': {'num_kpoints': (2,)}})
+
+        test_text = io.StringIO("""
              +++++++++++++++++++++++++++++++++++++++++++++++++++++++
              +  Number       Fractional coordinates        Weight  +
              +-----------------------------------------------------+
              +     1   0.000000   0.000000   0.000000   1.0000000  +
+             +     2   4.000000   6.000000   8.000000   5.0000000  +
              +++++++++++++++++++++++++++++++++++++++++++++++++++++++
-
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'k-points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
+                                                  {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}]})
 
     def test_get_symmetry(self):
         test_text = io.StringIO("""
@@ -417,13 +454,6 @@ SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
 Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
       1  -8.55962165E+002  6.11993396E+000   1.51730885E+000       3.54  <-- SCF
       2  -8.55990255E+002  6.11946292E+000   3.51127330E-003       4.50  <-- SCF
-      3  -8.55296355E+002  6.32342274E+000  -8.67376091E-002       5.43  <-- SCF
-      4  -8.55251213E+002  6.40840823E+000  -5.64263304E-003       6.35  <-- SCF
-      5  -8.55252149E+002  6.41285289E+000   1.16974969E-004       7.32  <-- SCF
-      6  -8.55252287E+002  6.41587053E+000   1.72377084E-005       8.24  <-- SCF
-      7  -8.55252287E+002  6.41594067E+000   3.26253889E-008       9.06  <-- SCF
-      8  -8.55252287E+002  6.41596323E+000   3.51299774E-009       9.66  <-- SCF
-      9  -8.55252287E+002  6.41596472E+000   5.97688637E-011      10.30  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
         self.skipTest("Not implemented yet")
@@ -931,40 +961,6 @@ The total projected population is   19.999   0.000
      8     0    18    22     0    26     4     0    15    20     0    25
 
   ************************************************************************
-   Phonon Symmetry Analysis:    Phase of dynamical matrix elements
-   Normalized to range (-pi/2,pi/2] to remove x,-x ambiguity.
-  ************************************************************************
-  -0.0   0.0  -0.0   0.0   0.0   0.0   0.0   0.0   0.0  -0.0   0.0   0.0
-   0.0   0.0   0.0   0.0  -0.0   0.0   0.0  -0.0   0.0   0.0  -0.0   0.0
-   0.0   0.0   0.0   0.0   0.0  -0.0   0.0   0.0   0.0   0.0   0.0   0.0
-   0.0   0.0   0.0  -0.0   0.0  -0.0  60.0   0.0  60.0   0.0   0.0  -0.0
-   0.0  -0.0   0.0   0.0   0.0   0.0   0.0  60.0   0.0   0.0   0.0   0.0
-  -0.0   0.0   0.0   0.0   0.0  -0.0  60.0   0.0  60.0  -0.0   0.0   0.0
-  -0.0   0.0  -0.0 -60.0   0.0 -60.0  -0.0   0.0  -0.0 -60.0   0.0 -60.0
-   0.0   0.0   0.0   0.0 -60.0   0.0   0.0   0.0   0.0   0.0 -60.0   0.0
-  -0.0   0.0  -0.0 -60.0   0.0 -60.0  -0.0   0.0  -0.0 -60.0   0.0 -60.0
-   0.0   0.0  -0.0  -0.0   0.0   0.0  60.0   0.0  60.0   0.0   0.0   0.0
-   0.0   0.0   0.0   0.0  -0.0   0.0   0.0  60.0   0.0   0.0   0.0   0.0
-   0.0   0.0   0.0   0.0   0.0  -0.0  60.0   0.0  60.0  -0.0   0.0   0.0
-
-  ************************************************************************
-  Phonon Symmetry Analysis:     Rotation sense of phase +/0/- (0==absolute)
-  ************************************************************************
-     0     0    -1    -1     0    -1    -1     0    -1    -1     0    -1
-     0     0     0     0    -1     0     0    -1     0     0    -1     0
-     1     0     0    -1     0    -1    -1     0    -1    -1     0    -1
-     1     0     1     0     0    -1    -1     0    -1    -1     0    -1
-     0     1     0     0     0     0     0    -1     0     0    -1     0
-     1     0     1     1     0     0    -1     0    -1    -1     0    -1
-     1     0     1     1     0     1     0     0     1     1     0     1
-     0     1     0     0     1     0     0     0     0     0     1     0
-     1     0     1     1     0     1    -1     0     0     1     0     1
-     1     0     1     1     0     1    -1     0    -1     0     0     1
-     0     1     0     0     1     0     0    -1     0     0     0     0
-     1     0     1     1     0     1    -1     0    -1    -1     0     0
-
-
-  ************************************************************************
   Phonon Symmetry Analysis: Elements of BEC  with same absolute magnitude
   ************************************************************************
      1     0     0
@@ -978,35 +974,59 @@ The total projected population is   19.999   0.000
    0.0   0.0   0.0
    0.0   0.0   0.0
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict,
+                         {'phonon_symmetry_analysis': [{'mat': [(1, 0, 2, 3, 0, 4, 5, 0, 6, 7, 0, 8),
+                                                                (0, 9, 0, 0, 10, 0, 0, 11, 0, 0, 12, 0),
+                                                                (2, 0, 13, 14, 0, 15, 6, 0, 16, 17, 0, 18),
+                                                                (3, 0, 14, 19, 0, 20, 7, 0, 17, 21, 0, 22),
+                                                                (0, 10, 0, 0, 23, 0, 0, 12, 0, 0, 24, 0),
+                                                                (4, 0, 15, 20, 0, 25, 8, 0, 18, 22, 0, 26),
+                                                                (5, 0, 6, 7, 0, 8, 1, 0, 2, 3, 0, 4),
+                                                                (0, 11, 0, 0, 12, 0, 0, 9, 0, 0, 10, 0),
+                                                                (6, 0, 16, 17, 0, 18, 2, 0, 13, 14, 0, 15),
+                                                                (7, 0, 17, 21, 0, 22, 3, 0, 14, 19, 0, 20),
+                                                                (0, 12, 0, 0, 24, 0, 0, 10, 0, 0, 23, 0),
+                                                                (8, 0, 18, 22, 0, 26, 4, 0, 15, 20, 0, 25)],
+                                                        'title': 'Elements of D with same absolute magnitude'},
+                                                       {'mat': [(1, 0, 0),
+                                                                (0, 1, 0),
+                                                                (0, 0, 1)],
+                                                        'title': 'Elements of BEC with same absolute magnitude'},
+                                                       {'mat': [(0.0, 0.0, 0.0),
+                                                                (0.0, 0.0, 0.0),
+                                                                (0.0, 0.0, 0.0)],
+                                                        'title': 'Phase of Born Effective Charge elements'}]})
 
     def test_get_dynamical_matrix(self):
         test_text = io.StringIO("""
   ------------------------------------------------------------------------------------------------------------------
             Dynamical matrix
  Ion XYZ        real part  ((cm-1)**2)
-   1   1       5500.924553          0.000000         -0.000000      -5318.574282         -0.000000          0.000000
-   1   2          0.000000       5500.924553         -0.000000         -0.000000      -5318.574282          0.000000
-   1   3          0.000000         -0.000000       5500.924553         -0.000000          0.000000      -5318.574282
-   2   1      -5318.574282         -0.000000          0.000000       5142.268276          0.000000         -0.000000
-   2   2         -0.000000      -5318.574282          0.000000          0.000000       5142.268276         -0.000000
-   2   3         -0.000000          0.000000      -5318.574282         -0.000000         -0.000000       5142.268276
+   1   1          2.000000          0.000000         -0.000000          6.000000         -0.000000          0.000000
+   1   2          0.000000          2.000000         -0.000000         -0.000000          6.000000          0.000000
+   1   3          0.000000         -0.000000          2.000000         -0.000000          0.000000          6.000000
+   2   1          6.000000         -0.000000          0.000000         -4.000000          0.000000         -0.000000
+   2   2         -0.000000          6.000000          0.000000          0.000000         -4.000000         -0.000000
+   2   3         -0.000000          0.000000          6.000000         -0.000000         -0.000000         -4.000000
  Ion XYZ        imaginary part  ((cm-1)**2)
-   1   1          0.000000          0.000000          0.000000          0.000000          0.000000          0.000000
-   1   2          0.000000          0.000000          0.000000          0.000000          0.000000          0.000000
-   1   3          0.000000          0.000000          0.000000          0.000000          0.000000          0.000000
-   2   1          0.000000          0.000000          0.000000          0.000000          0.000000          0.000000
-   2   2          0.000000          0.000000          0.000000          0.000000          0.000000          0.000000
-   2   3          0.000000          0.000000          0.000000          0.000000          0.000000          0.000000
+   1   1         10.000000          0.000000          0.000000          0.000000          3.000000          0.000000
+   1   2          0.000000         10.000000          0.000000         -1.000000          0.000000         -1.000000
+   1   3          0.000000          0.000000         10.000000          0.000000          3.000000          0.000000
+   2   1          7.000000          0.000000          0.000000          2.000000          2.000000          2.000000
+   2   2          0.000000          7.000000          0.000000          2.000000          2.000000          2.000000
+   2   3          0.000000          0.000000          7.000000          2.000000          2.000000          2.000000
   ------------------------------------------------------------------------------------------------------------------
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+        self.assertEqual(test_dict, {'dynamical_matrix':
+                                     ((2+10j, 0j, 0j, 6, 3j, 0j),
+                                      (0j, 2+10j, 0j, -1j, 6, -1j),
+                                      (0j, 0j, 2+10j, 0j, 3j, 6),
+                                      (6+7j, 0j, 0j, -4+2j, 2j, 2j),
+                                      (0j, 6+7j, 0j, 2j, -4+2j, 2j),
+                                      (0j, 0j, 6+7j, 2j, 2j, -4+2j))})
 
     def test_get_optical_permittivity(self):
         test_text = io.StringIO("""
@@ -1040,8 +1060,8 @@ The total projected population is   19.999   0.000
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'optical_permittivity': [(8.50261, 0.0, 0.0),
-                                                               (0.0, 8.50261, 0.0),
-                                                               (0.0, 0.0, 8.50261)]})
+                                                              (0.0, 8.50261, 0.0),
+                                                              (0.0, 0.0, 8.50261)]})
 
     def test_get_polarisabilities(self):
         test_text = io.StringIO("""
@@ -1224,23 +1244,9 @@ Species   Ion     Hirshfeld Charge (e)
         test_text = io.StringIO("""
  LBFGS: finished iteration     0 with enthalpy= -1.31770077E+003 eV
 
- +-----------+-----------------+-----------------+------------+-----+ <-- LBFGS
- | Parameter |      value      |    tolerance    |    units   | OK? | <-- LBFGS
- +-----------+-----------------+-----------------+------------+-----+ <-- LBFGS
- |  dE/ion   |   0.000000E+000 |   2.000000E-005 |         eV | No  | <-- LBFGS
- |  |F|max   |   3.553106E-001 |   5.000000E-003 |       eV/A | No  | <-- LBFGS
- |  |dR|max  |   0.000000E+000 |   1.000000E-003 |          A | No  | <-- LBFGS
- +-----------+-----------------+-----------------+------------+-----+ <-- LBFGS
-
 ================================================================================
  Starting LBFGS iteration          1 ...
 ================================================================================
-
- +------------+-------------+-------------+-----------------+ <-- min LBFGS
- |    Step    |   lambda    |   F.delta'  |    enthalpy     | <-- min LBFGS
- +------------+-------------+-------------+-----------------+ <-- min LBFGS
- |  previous  |    0.000000 |    0.073978 |    -1317.700775 | <-- min LBFGS
- +------------+-------------+-------------+-----------------+ <-- min LBFGS
 
  TPSD: finished iteration     0 with enthalpy= -2.16058016E+002 eV
 
@@ -1262,7 +1268,7 @@ Species   Ion     Hirshfeld Charge (e)
  +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
  |  dE/ion   |   0.000000E+000 |   2.000000E-005 |         eV | No  | <-- TPSD
  |  |F|max   |   5.299770E-001 |   5.000000E-002 |       eV/A | No  | <-- TPSD
- |  |dR|max  |   0.000000E+000 |   1.000000E-003 |          A | No  | <-- TPSD
+ |  |dR|max  |   0.000000E+000 |   1.000000E-003 |          A | Yes | <-- TPSD
  |   Smax    |   1.736649E+001 |   1.000000E-001 |        GPa | No  | <-- TPSD
  +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
 

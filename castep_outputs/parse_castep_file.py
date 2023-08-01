@@ -120,6 +120,28 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Found run {len(runs) + 1}")
 
+        elif block := get_block(line, castep_file, "Initialisation time", r"^\s*$"):
+            if verbose:
+                print("Found finalisation")
+
+            curr_run.update(_process_finalisation(block.splitlines()))
+
+        elif re.match(r"^\*+\s*Title\s*\*+$", line):
+            if verbose:
+                print("Found title")
+
+            title = next(castep_file)
+            if title:
+                curr_run["title"] = title.strip()
+
+        elif block := get_block(line, castep_file,
+                                r"\s*\+-+\sMEMORY AND SCRATCH",
+                                r"\s*\+-+\+"):
+            if verbose:
+                print("Found memory estimate")
+
+            curr_run["memory_estimate"].append(_process_memory_est(block.splitlines()))
+
         elif block := get_block(line, castep_file,
                                 r"^\s*\*+ .* Parameters \*+$",
                                 r"^\s*\*+$"):
@@ -215,6 +237,20 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found dE/dlog(E)")
             curr_run["dedlne"].append(to_type(match.group(1), float))
 
+        elif block := get_block(line, castep_file, "k-Points For BZ Sampling", r"^\s*$"):
+            if verbose:
+                print("Found k-points")
+
+            curr_run["k-points"] = _process_kpoint_blocks(block.splitlines(), True)
+
+        elif block := get_block(line, castep_file,
+                                r"\s*\+\s*Number\s*Fractional coordinates\s*Weight\s*\+",
+                                r"^\s*\++\s*$"):
+            if verbose:
+                print("Found k-points")
+
+            curr_run["k-points"] = _process_kpoint_blocks(block.splitlines(), False)
+
         # Forces blocks
         elif block := get_block(line, castep_file, _FORCES_BLOCK_RE, r"^ \*+$"):
             if "forces" not in curr_run:
@@ -247,6 +283,7 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found phonon")
 
             qdata = defaultdict(list)
+
             qdata["qpt"] = match.group("qpt").split()
             if verbose:
                 print(f"Reading qpt {' '.join(qdata['qpt'])}")
@@ -287,9 +324,31 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Found {len(curr_run['phonons'])} phonon samples")
 
+            # Phonon Symmetry
+        elif block := get_block(line, castep_file,
+                                "Phonon Symmetry Analysis", r"^\s*$"):
+
+            if verbose:
+                print("Found phonon symmetry analysis")
+
+            lines = iter(block.splitlines())
+            accum = _process_phonon_sym_analysis(lines)
+            curr_run["phonon_symmetry_analysis"].append(accum)
+
+            # Dynamical Matrix
+        elif block := get_block(line, castep_file,
+                                "Dynamical matrix", r"^\s*-+\s*$"):
+
+            if verbose:
+                print("Found dynamical matrix")
+
+            lines = iter(block.splitlines())
+            accum = _process_dynamical_matrix(lines)
+            curr_run["dynamical_matrix"] = accum
+
         # Raman tensors
         elif block := get_block(line, castep_file,
-                                r"^ \+\s+Raman Susceptibility Tensors", r"^\s+$"):
+                                r"^ \+\s+Raman Susceptibility Tensors", r"^\s*$"):
             if verbose:
                 print("Found Raman")
 
@@ -877,3 +936,87 @@ def _parse_magres_block(task, inp):
             data[ind] = match
 
     return data
+
+
+def _process_finalisation(block):
+
+    out = {}
+
+    for line in block:
+        if line.strip():
+            key, val = line.split('=')
+            out[normalise_string(key.lower())] = to_type(get_numbers(val)[0], float)
+    return out
+
+
+def _process_memory_est(block):
+
+    accum = {}
+
+    for line in block:
+        if match := re.match(rf"\s*\|([A-Za-z ]+){labelled_floats(('memory', 'disk'), suff=' MB')}", line):
+            key, memory, disk = match.groups()
+            accum[normalise_string(key)] = {"memory": float(memory),
+                                            "disk": float(disk)}
+
+    return accum
+
+
+def _process_phonon_sym_analysis(block):
+
+    accum = {}
+    accum["title"] = normalise_string(next(block).split(':')[1])
+    next(block)
+    accum["mat"] = [to_type(numbers, int) if all(map(lambda x: x.isdigit(), numbers))
+                    else to_type(numbers, float)
+                    for line in block if (numbers := get_numbers(line))]
+    return accum
+
+
+def _process_kpoint_blocks(block, explicit_kpoints):
+
+    if explicit_kpoints:
+        accum = {}
+        for line in block:
+            if "MP grid size" in line:
+                accum["kpoint_mp_grid"] = to_type(get_numbers(line), int)
+            elif "offset" in line:
+                accum["kpoint_mp_offset"] = to_type(get_numbers(line), float)
+            elif "Number of kpoints" in line:
+                accum["num_kpoints"] = to_type(get_numbers(line), int)
+    else:
+        accum = [{'qpt': to_type(match.group('qx', 'qy', 'qx'), float),
+                  'weight': to_type(match["wt"], float)}
+                 for line in block
+                 if (match := re.match(rf"\s*\+\s*\d\s*{labelled_floats(('qx', 'qy', 'qz', 'wt'))}",
+                                       line))]
+
+    return accum
+
+
+def _process_symmetry(block):
+    ...
+
+
+def _process_dynamical_matrix(block):
+    next(block)  # Skip header line
+    next(block)
+
+    real_part = []
+    for line in block:
+        if "Ion" in line:
+            break
+        numbers = get_numbers(line)
+        real_part.append(numbers[2:])
+
+    imag_part = []
+    # Get remainder
+    for line in block:
+        if numbers := get_numbers(line):
+            imag_part.append(numbers[2:])
+
+    accum = []
+    for real_row, imag_row in zip(real_part, imag_part):
+        accum.append(tuple(complex(float(real), float(imag)) for real, imag in zip(real_row, imag_row)))
+
+    return tuple(accum)

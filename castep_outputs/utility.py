@@ -2,6 +2,7 @@
 Utility functions for parsing castep outputs
 """
 import collections.abc
+from collections import defaultdict
 import itertools
 import re
 import json
@@ -40,6 +41,25 @@ def atreg_to_index(dict_in, clear=True):
     return (spec, int(ind))
 
 
+def de_default_dict(obj):
+    """
+    Turns defaultdicts into regular dicts
+    """
+    obj_out = {}
+
+    for key, val in obj.items():
+        if isinstance(val, defaultdict):
+            val = dict(val)
+        if isinstance(val, dict):
+            val = de_default_dict(val)
+        elif isinstance(val, (tuple, list)):
+            val = [de_default_dict(v) if isinstance(v, dict) else v for v in val]
+
+        obj_out[key] = val
+
+    return obj_out
+
+
 def json_safe_dict(obj):
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """
@@ -51,7 +71,7 @@ def json_safe_dict(obj):
         if isinstance(val, dict):
             val = json_safe_dict(val)
         elif isinstance(val, (tuple, list)):
-            val = [v if not isinstance(v, dict) else json_safe_dict(v) for v in val]
+            val = [json_safe_dict(v) if isinstance(v, dict) else v for v in val]
         obj_out[key] = val
     return obj_out
 
@@ -146,7 +166,7 @@ def get_block(line: str, in_file, start, end, cnt=1):
 
     block = line
     fnd = cnt
-    while line := in_file.readline():
+    for line in in_file:
         block += line
         if re.search(end, line):
             fnd -= 1
@@ -158,14 +178,15 @@ def get_block(line: str, in_file, start, end, cnt=1):
     return block
 
 
-def labelled_floats(labels, counts=(None,), sep=r"\s+?"):
+def labelled_floats(labels, counts=(None,), sep=r"\s+?", suff=""):
     """ Constructs a regex for extracting floats with assigned labels
     :param labels:iterable of labels to label each group
     :param counts:iterable of counts to group into each label (count must not exceed that of labels)
     :param sep:separator between floats
     """
-    assert len(labels) >= len(counts)
-    return ''.join(rf"(?P<{label}>(?:{sep}{EXPNUMBER_RE}){f'{{{cnt}}}' if cnt else ''})"
+    if suff and any(cnt for cnt in counts):
+        raise NotImplementedError("Suffix and counts not currently supported")
+    return ''.join(rf"(?:(?P<{label}>(?:{sep}{EXPNUMBER_RE}){f'{{{cnt}}}' if cnt else ''}){suff})"
                    for label, cnt in itertools.zip_longest(labels, counts))
 
 
