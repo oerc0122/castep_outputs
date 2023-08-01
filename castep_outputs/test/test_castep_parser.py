@@ -137,15 +137,18 @@ Overall parallel efficiency rating: Satisfactory (64%)
         """)
         self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
 
     def test_get_supercell(self):
         test_text = io.StringIO("""
     Supercell generated using matrix  [1,1,-1; 1,-1,1; -1,1,1]
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'supercell': ((1.0, 1.0, -1.0),
+                                                   (1.0, -1.0, 1.0),
+                                                   (-1.0, 1.0, 1.0))})
 
     def test_get_atom_structure(self):
         test_text = io.StringIO("""
@@ -263,6 +266,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         self.assertEqual(test_dict, {'species_properties':
                                      {'Mn': {'pseudo_atomic_energy': -2901.7207}}
                                      })
+        self.skipTest("Not implemented yet")
 
     def test_get_species_prop(self):
         test_text = io.StringIO("""

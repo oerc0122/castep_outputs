@@ -272,6 +272,14 @@ def parse_castep_file(castep_file, verbose=False):
             else:
                 curr_run["spin"].append(to_type(match.group(1), float))
 
+                # Initial cell
+        elif block := get_block(line, castep_file,
+                                "Unit Cell", r"^\s+$", cnt=3):
+            if verbose:
+                print("Found cell")
+
+            curr_run["initial_cell"] = _parse_unit_cell(block)
+
         # Initial pos
         elif block := get_block(line, castep_file,
                                 "Fractional coordinates of atoms", r"^\s*x+\s*$"):
@@ -279,6 +287,10 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found initial positions")
 
             curr_run["initial_positions"] = _process_atreg_block(block.splitlines())
+
+        elif "Supercell generated" in line:
+            accum = iter(get_numbers(line))
+            curr_run["supercell"] = tuple(to_type([next(accum) for _ in range(3)], float) for _ in range(3))
 
         # Initial vel
         elif block := get_block(line, castep_file,
