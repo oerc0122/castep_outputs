@@ -259,7 +259,7 @@ INTNUMBER_RE = r"(?:\d+)"
 NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
 
 # Regexp to identify extended chemical species
-SPECIES_RE = r"[A-Z][a-z]?(?:[:]\w{1,2})?"
+SPECIES_RE = r"[A-Z][a-z]{0,2}"
 ATOM_NAME_RE = rf"{SPECIES_RE}(?::\w+)?"
 
 # Unless we have *VERY* exotic electron shells

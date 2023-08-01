@@ -836,16 +836,26 @@ Species          Ion Spin      s       p       d       f      Total   Charge(e) 
       N     1      Px                   1.329
       N     1      Py                   0.979
       N     1      Pz                   1.284
+      C     2      S                    3.000
+      C     2      Px                   2.000
   -------------------------------------------
                            Total:      19.999
   -------------------------------------------
 The total projected population is   19.999   0.000
 
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'orbital_popn':
+                                     {'total': 19.999,
+                                      'total_projected': (19.999, 0.0),
+                                      ('N', 1): {'Px': 1.329,
+                                                 'Py': 0.979,
+                                                 'Pz': 1.284,
+                                                 'S': 1.39},
+                                      ('C', 2): {'S': 3.0,
+                                                 'Px': 2.0}}})
 
     def test_get_bond(self):
         test_text = io.StringIO("""

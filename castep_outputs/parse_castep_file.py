@@ -27,13 +27,13 @@ _PSPOT_PROJ_RE = re.compile(r"(?P<orbital>\d)(?P<shell>\d)(?P<type>U|UU|N)?")
 _UNLABELLED_PROJ_RE = r"\d\d(?:UU|U|N)?"
 
 # PSPot String
-_PSPOT_RE = re.compile(labelled_floats(('local_channel',
-                                        'core_radius',
-                                        'beta_radius',
-                                        'r_inner',
-                                        'coarse',
-                                        'medium',
-                                        'fine'), sep=r"\|?")
+_PSPOT_RE = re.compile(labelled_floats(("local_channel",
+                                        "core_radius",
+                                        "beta_radius",
+                                        "r_inner",
+                                        "coarse",
+                                        "medium",
+                                        "fine"), sep=r"\|?")
                        +
                        r"\|"
                        rf"(?P<proj>{_UNLABELLED_PROJ_RE}(?::{_UNLABELLED_PROJ_RE})*)"
@@ -48,12 +48,16 @@ _FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Forces \*+\s*$", re.IGNORECASE)
 # Stresses block
 _STRESSES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Stress Tensor \*+\s*$", re.IGNORECASE)
 
+# Bonds
 _BOND_RE = re.compile(rf"""\s*
                        (?P<spec1>{ATOM_NAME_RE})\s*(?P<ind1>\d+)\s*
                        --\s*
                        (?P<spec2>{ATOM_NAME_RE})\s*(?P<ind2>\d+)\s*
-                       {labelled_floats(('population', 'length'))}
+                       {labelled_floats(("population", "length"))}
                        """, re.VERBOSE)
+
+# Orbital population
+_ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)\s*{labelled_floats(('charge',))}")
 
 # Regexp to identify phonon block in .castep file
 _CASTEP_PHONON_RE = re.compile(
@@ -448,6 +452,15 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["mulliken_popn"] = _process_mulliken(iter(block.splitlines()))
 
+        # Orbital populations
+        elif block := get_block(line, castep_file,
+                                r"Orbital Populations",
+                                r"The total projected population"):
+            if verbose:
+                print("Found Orbital populations")
+
+            curr_run["orbital_popn"] = _process_orbital_populations(iter(block.splitlines()))
+
         # Bond analysis
         elif block := get_block(line, castep_file,
                                 r"Bond\s*Population\s*Length", "=+", cnt=2):
@@ -698,7 +711,7 @@ def parse_castep_file(castep_file, verbose=False):
 
 def _process_ps_energy(block):
     match = _PS_SHELL_RE.search(next(block))
-    spec = match['spec']
+    spec = match["spec"]
     next(block)
     energy = get_numbers(next(block))[1]
     return spec, float(energy)
@@ -796,10 +809,10 @@ def _process_buildinfo(block):
     info = {}
     block = block.splitlines()
 
-    info['summary'] = " ".join(map(normalise_string, block[0:2]))
+    info["summary"] = " ".join(map(normalise_string, block[0:2]))
     for line in block[2:]:
-        if ':' in line:
-            key, val = map(normalise_string, line.split(':', 1))
+        if ":" in line:
+            key, val = map(normalise_string, line.split(":", 1))
             info[key.strip()] = val.strip()
     return info
 
@@ -990,7 +1003,7 @@ def _process_finalisation(block):
 
     for line in block:
         if line.strip():
-            key, val = line.split('=')
+            key, val = line.split("=")
             out[normalise_string(key.lower())] = to_type(get_numbers(val)[0], float)
     return out
 
@@ -1011,7 +1024,7 @@ def _process_memory_est(block):
 def _process_phonon_sym_analysis(block):
 
     accum = {}
-    accum["title"] = normalise_string(next(block).split(':')[1])
+    accum["title"] = normalise_string(next(block).split(":")[1])
     next(block)
     accum["mat"] = [to_type(numbers, int) if all(map(lambda x: x.isdigit(), numbers))
                     else to_type(numbers, float)
@@ -1031,8 +1044,8 @@ def _process_kpoint_blocks(block, explicit_kpoints):
             elif "Number of kpoints" in line:
                 accum["num_kpoints"] = to_type(get_numbers(line), int)
     else:
-        accum = [{'qpt': to_type(match.group('qx', 'qy', 'qx'), float),
-                  'weight': to_type(match["wt"], float)}
+        accum = [{"qpt": to_type(match.group("qx", "qy", "qx"), float),
+                  "weight": to_type(match["wt"], float)}
                  for line in block
                  if (match := re.match(rf"\s*\+\s*\d\s*{labelled_floats(('qx', 'qy', 'qz', 'wt'))}",
                                        line))]
@@ -1086,9 +1099,25 @@ def _process_pspot_string(string):
 
 
 def _process_bond_analysis(block):
-    accum = {((match['spec1'], int(match['ind1'])),
-              (match['spec2'], int(match['ind2']))): {'population': float(match['population']),
-                                                      'length': float(match['length'])}
+    accum = {((match["spec1"], int(match["ind1"])),
+              (match["spec2"], int(match["ind2"]))): {"population": float(match["population"]),
+                                                      "length": float(match["length"])}
              for line in block
              if (match := _BOND_RE.match(line))}
+    return accum
+
+
+def _process_orbital_populations(block):
+
+    accum = defaultdict(dict)
+    for line in block:
+        if match := _ORBITAL_POPN_RE.match(line):
+            ind = match.groupdict()
+            ind = atreg_to_index(ind)
+            accum[ind][match["orb"]] = to_type(match["charge"], float)
+        elif match := re.match(f"\s*Total:\s*{labelled_floats(('charge',))}", line):
+            accum["total"] = float(match["charge"])
+        elif "total projected" in line:
+            accum["total_projected"] = to_type(get_numbers(line), float)
+
     return accum
