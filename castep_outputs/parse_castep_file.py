@@ -272,6 +272,30 @@ def parse_castep_file(castep_file, verbose=False):
             else:
                 curr_run["spin"].append(to_type(match.group(1), float))
 
+        # Initial pos
+        elif block := get_block(line, castep_file,
+                                "Fractional coordinates of atoms", r"^\s*x+\s*$"):
+            if verbose:
+                print("Found initial positions")
+
+            curr_run["initial_positions"] = _process_atreg_block(block.splitlines())
+
+        # Initial vel
+        elif block := get_block(line, castep_file,
+                                "User Supplied Ionic Velocities", r"^\s*x+\s*$"):
+            if verbose:
+                print("Found initial velocities")
+
+            curr_run["initial_velocities"] = _process_atreg_block(block.splitlines())
+
+        # Initial spins
+        elif block := get_block(line, castep_file,
+                                "Initial magnetic", r"^\s*x+\s*$"):
+            if verbose:
+                print("Found initial spins")
+
+            curr_run["initial_spins"] = _process_initial_spins(block.splitlines())
+
         # Finite basis correction parameter
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({FNUMBER_RE})", line):
             if verbose:
@@ -506,7 +530,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found final geom configuration")
 
-            accum = _process_geomopt(block.splitlines())
+            accum = _process_atreg_block(block.splitlines())
             curr_run["final_configuration"].append(accum)
 
         # TDDFT
@@ -726,7 +750,7 @@ def _process_tddft(block):
     return tddata
 
 
-def _process_geomopt(block):
+def _process_atreg_block(block):
     accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
              for line in block
              if (match := ATDAT3VEC.search(line))}
@@ -823,9 +847,7 @@ def _process_forces(block):
 
     ftype = normalise_string(ftype).lower()
 
-    accum = {atreg_to_index(match, False): to_type(match.group("x", "y", "z"), float)
-             for line in block
-             if (match := ATDAT3VEC.search(line))}
+    accum = _process_atreg_block(block)
 
     return ftype, accum
 
@@ -850,6 +872,19 @@ def _process_stresses(block):
     accum = to_type(accum, float)
 
     return ftype, accum
+
+
+def _process_initial_spins(block):
+
+    accum = {}
+    for line in block:
+        if match := re.match(rf"\s*\|\s*{ATREG}\s*"
+                             rf"{labelled_floats(('spin', 'magmom'))}\s*"
+                             r"(?P<fix>[TF])\s*\|", line):
+            match = match.groupdict()
+            ind = atreg_to_index(match)
+            accum[ind] = match
+    return accum
 
 
 def _process_born(block):

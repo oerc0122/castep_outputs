@@ -162,8 +162,12 @@ Overall parallel efficiency rating: Satisfactory (64%)
         x  Mn:aTag      3         0.939000   0.561000   0.439000   x
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'initial_positions':
+                                     {('Mn', 1): (0.061, 0.061, 0.061),
+                                      ('Mn', 2): (0.811, 0.311, 0.189),
+                                      ('Mn:aTag', 3): (0.939, 0.561, 0.439)}})
 
     def test_get_atom_velocities(self):
         test_text = io.StringIO("""
@@ -173,11 +177,15 @@ Overall parallel efficiency rating: Satisfactory (64%)
             x----------------------------------------------------------x
             x  Si           1         3.601230   0.986420   2.774470   x
             x  Si           2         1.855230   3.245360   6.707270   x
-            x  Si           3         5.867920   2.404810   1.768580   x
+            x  Si:aTag      3         5.867920   2.404810   1.768580   x
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'initial_velocities':
+                                     {('Si', 1): (3.60123, 0.98642, 2.77447),
+                                      ('Si', 2): (1.85523, 3.24536, 6.70727),
+                                      ('Si:aTag', 3): (5.86792, 2.40481, 1.76858)}})
 
     def test_get_atom_spin_params(self):
         test_text = io.StringIO("""
@@ -189,10 +197,15 @@ Overall parallel efficiency rating: Satisfactory (64%)
          | Cr             2        -0.500000             -3.000       F       |
          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'initial_spins': {('Cr', 1): {'fix': 'F',
+                                                                   'magmom': '3.000',
+                                                                   'spin': '0.500000'},
+                                                       ('Cr', 2): {'fix': 'F',
+                                                                   'magmom': '-3.000',
+                                                                   'spin': '-0.500000'}}})
 
     def test_get_pspot(self):
         test_text = io.StringIO("""
