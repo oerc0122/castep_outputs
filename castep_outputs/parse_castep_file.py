@@ -338,6 +338,16 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["initial_spins"] = _process_initial_spins(block.splitlines())
 
+        # Target Stress
+        elif block := get_block(line, castep_file, "External pressure/stress", r"^\s*$"):
+
+            if verbose:
+                print("Found target stress")
+
+            for line in block.splitlines():
+                curr_run["target_stress"].extend(to_type(get_numbers(line), float))
+
+
         # Finite basis correction parameter
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({FNUMBER_RE})", line):
             if verbose:

@@ -501,12 +501,14 @@ Overall parallel efficiency rating: Satisfactory (64%)
     def test_get_target_stress(self):
         test_text = io.StringIO("""
                          External pressure/stress (GPa)
-                          0.00000   0.00000   0.00000
-                                    0.00000   0.00000
-                                              0.00000
+                          1.00000   2.00000   3.00000
+                                    4.00000   5.00000
+                                              6.00000
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'target_stress': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]})
 
     def test_get_scf(self):
         test_text = io.StringIO("""
