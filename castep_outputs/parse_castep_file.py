@@ -270,6 +270,14 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["scf"].append(_process_scf(block.splitlines()))
 
+        # Occupancy
+        elif block := get_block(line, castep_file,
+                                "Occupancy", "Have a nice day"):
+            if verbose:
+                print("Found occupancies")
+
+            curr_run["occupancies"].append(_process_occupancies(block.splitlines()))
+
         # Energies
         elif any((line.startswith("Final energy, E"),
                   line.startswith("Final energy"),
@@ -1312,3 +1320,14 @@ def _process_dftd(block):
                                               "R0": float(match["R0"])}
 
     return dftd
+
+
+def _process_occupancies(block):
+    label = ("band", "eigenvalue", "occupancy")
+
+    accum = [dict(zip(label, numbers)) for line in block if (numbers := get_numbers(line))]
+    for elem in accum:
+        fix_data_types(elem, {"band": int,
+                              "eigenvalue": float,
+                              "occupancy": float})
+    return accum

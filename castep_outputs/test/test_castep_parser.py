@@ -675,10 +675,15 @@ Spin 1, kpoint ( 0.000000  0.000000  0.000000 ) weight = 1.000000
 +--------+-------------------+----------------+                   <- occ
 Have a nice day.
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'occupancies': [[{'band': 1,
+                                                       'eigenvalue': -10.3844,
+                                                       'occupancy': 1.0},
+                                                      {'band': 2,
+                                                       'eigenvalue': 0.32633,
+                                                       'occupancy': 1.11022e-16}]]})
 
     def test_get_line_min(self):
         test_text = io.StringIO("""
