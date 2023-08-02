@@ -9,8 +9,8 @@ from collections import defaultdict
 import io
 import re
 
-from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
-                      ATREG, ATOM_NAME_RE, SPECIES_RE, ATDAT3VEC, SHELLS,
+from .utility import (NUMBER_RE, EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
+                      ATREG, ATOM_NAME_RE, SPECIES_RE, ATDAT3VEC, SHELLS, MINIMISERS,
                       labelled_floats, fix_data_types, add_aliases, to_type,
                       stack_dict, get_block, get_numbers, normalise_string, atreg_to_index)
 from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
@@ -613,11 +613,27 @@ def parse_castep_file(castep_file, verbose=False):
                                 "Final Configuration",
                                 r"^\s+x+$", cnt=2):
 
+            if "geom_opt" not in curr_run:
+                curr_run["geom_opt"] = {}
+
             if verbose:
                 print("Found final geom configuration")
+            curr_run["geom_opt"]["final_configuration"] = _process_atreg_block(block.splitlines())
 
-            accum = _process_atreg_block(block.splitlines())
-            curr_run["final_configuration"].append(accum)
+        elif match := re.match(rf"^\s*(?:{'|'.join(MINIMISERS)}):"
+                               r"(?P<key>[^=]+)=\s*"
+                               f"(?P<value>{EXPNUMBER_RE}).*",
+                               line, re.IGNORECASE):
+
+            if "geom_opt" not in curr_run:
+                curr_run["geom_opt"] = {}
+
+            key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
+
+            if verbose:
+                print(f"Found geomopt {key}")
+
+            curr_run["geom_opt"][key] = val
 
         # TDDFT
         elif block := get_block(line, castep_file,

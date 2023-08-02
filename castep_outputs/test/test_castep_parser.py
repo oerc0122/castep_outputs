@@ -1418,10 +1418,11 @@ Species   Ion     Hirshfeld Charge (e)
  LBFGS: Final Enthalpy     = -1.31770414E+003 eV
  LBFGS: Final <frequency>  =    1073.37660 cm-1
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'geom_opt': {'final <frequency>': 1073.3766,
+                                                  'final enthalpy': -1317.70414}})
 
     def test_get_tss_structure(self):
         test_text = io.StringIO("""
