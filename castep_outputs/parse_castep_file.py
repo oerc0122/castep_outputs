@@ -1,3 +1,4 @@
+# pylint: disable=too-many-lines
 """
 Extract results from .castep file for comparison and use
 by testcode.pl.
@@ -9,7 +10,7 @@ from collections import defaultdict
 import io
 import re
 
-from .utility import (NUMBER_RE, EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
+from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
                       ATREG, ATOM_NAME_RE, SPECIES_RE, ATDAT3VEC, SHELLS, MINIMISERS,
                       labelled_floats, fix_data_types, add_aliases, to_type,
                       stack_dict, get_block, get_numbers, normalise_string, atreg_to_index)
@@ -272,7 +273,7 @@ def parse_castep_file(castep_file, verbose=False):
 
         # Line min
         elif block := get_block(line, castep_file,
-                                "WAVEFUNCTION LINE MINIMISATION", "\s*\+(-+\+){2}", cnt=2):
+                                "WAVEFUNCTION LINE MINIMISATION", r"\s*\+(-+\+){2}", cnt=2):
             if verbose:
                 print("Found wvfn line min")
 
@@ -481,7 +482,7 @@ def parse_castep_file(castep_file, verbose=False):
 
             # Solvation
         elif block := get_block(line, castep_file,
-                                "AUTOSOLVATION", "^\s*\*+\s*$"):
+                                "AUTOSOLVATION", r"^\s*\*+\s*$"):
             if verbose:
                 print("Found autosolvation")
 
@@ -1261,8 +1262,8 @@ def _process_kpoint_blocks(block, explicit_kpoints):
     return accum
 
 
-def _process_symmetry(block):
-    ...
+# def _process_symmetry(block):
+#     ...
 
 
 def _process_dynamical_matrix(block):
@@ -1357,7 +1358,8 @@ def _process_dftd(block):
                 val = to_type(get_numbers(val)[0], float)
             dftd[normalise_string(key).lower()] = val
 
-        elif match := re.match(rf"\s*x\s*(?P<spec>{ATOM_NAME_RE})\s*{labelled_floats(('C6', 'R0'))}", line):
+        elif match := re.match(rf"\s*x\s*(?P<spec>{ATOM_NAME_RE})\s*" +
+                               labelled_floats(('C6', 'R0')), line):
             dftd["species"][match["spec"]] = {"C6": float(match["C6"]),
                                               "R0": float(match["R0"])}
 

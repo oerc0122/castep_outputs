@@ -991,6 +991,8 @@ The total projected population is   19.999   0.000
         """)
         self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
 
     def test_get_vibrational_frequencies(self):
         test_text = io.StringIO("""

@@ -156,16 +156,16 @@ def get_numbers(line: str):
     return NUMBER_RE.findall(line)
 
 
-def get_block(line: str, in_file, start, end, *, cnt=1, out_fmt=str):
+def get_block(init_line: str, in_file, start, end, *, cnt=1, out_fmt=str):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
 
     block = ""
 
-    if not re.search(start, line):
+    if not re.search(start, init_line):
         return block
 
-    block = line
+    block = init_line
     fnd = cnt
     for line in in_file:
         block += line

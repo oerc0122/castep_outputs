@@ -75,43 +75,43 @@
 
  Converged in 96 iterations to an ae energy of -31436.261 eV
 
-   ============================================================
-   | Pseudopotential Report - Date of generation 30-05-2023   |
-   ------------------------------------------------------------
-   | Element: Mn Ionic charge: 15.00 Level of theory: LDA     |
-   | Atomic Solver: Koelling-Harmon                           |
-   |                                                          |
-   |               Reference Electronic Structure             |
-   |         Orbital         Occupation         Energy        |
-   |          3s1/2            2.000           -3.132         |
-   |          3p1/2            2.000           -2.001         |
-   |          3p1/2            2.000           -2.001         |
-   |          3d3/2            2.000           -0.258         |
-   |          3d3/2            2.000           -0.258         |
-   |          4s1/2            2.000           -0.194         |
-   |                                                          |
-   |                 Pseudopotential Definition               |
-   |      Beta    l   2j     e      Rc     scheme   norm      |
-   |        1     0    1   -3.132   1.803     qc     0        |
-   |        2     0    1   -0.194   1.803     qc     0        |
-   |        3     0    1    0.250   1.803     qc     0        |
-   |        4     1    3   -2.001   1.803     qc     0        |
-   |        5     1    1   -2.001   1.803     qc     0        |
-   |        6     1    3    0.250   1.803     qc     0        |
-   |        7     1    1    0.250   1.803     qc     0        |
-   |        8     2    5   -0.258   1.803     qc     0        |
-   |        9     2    3   -0.258   1.803     qc     0        |
-   |       10     2    5    0.250   1.803     qc     0        |
-   |       11     2    3    0.250   1.803     qc     0        |
-   |       loc    3    0    0.000   1.803     pn     0        |
-   |                                                          |
-   | Augmentation charge Rinner = 0.600                       |
-   | Partial core correction Rc = 0.600                       |
-   ------------------------------------------------------------
-   | "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"              |
-   ------------------------------------------------------------
-   |      Author: Chris J. Pickard, Cambridge University      |
-   ============================================================
+   ============================================================                
+   | Pseudopotential Report - Date of generation 30-05-2023   |                
+   ------------------------------------------------------------                
+   | Element: Mn Ionic charge: 15.00 Level of theory: LDA     |                
+   | Atomic Solver: Koelling-Harmon                           |                
+   |                                                          |                
+   |               Reference Electronic Structure             |                
+   |         Orbital         Occupation         Energy        |                
+   |          3s1/2            2.000           -3.132         |                
+   |          3p1/2            2.000           -2.001         |                
+   |          3p1/2            2.000           -2.001         |                
+   |          3d3/2            2.000           -0.258         |                
+   |          3d3/2            2.000           -0.258         |                
+   |          4s1/2            2.000           -0.194         |                
+   |                                                          |                
+   |                 Pseudopotential Definition               |                
+   |      Beta    l   2j     e      Rc     scheme   norm      |                
+   |        1     0    1   -3.132   1.803     qc     0        |                
+   |        2     0    1   -0.194   1.803     qc     0        |                
+   |        3     0    1    0.250   1.803     qc     0        |                
+   |        4     1    3   -2.001   1.803     qc     0        |                
+   |        5     1    1   -2.001   1.803     qc     0        |                
+   |        6     1    3    0.250   1.803     qc     0        |                
+   |        7     1    1    0.250   1.803     qc     0        |                
+   |        8     2    5   -0.258   1.803     qc     0        |                
+   |        9     2    3   -0.258   1.803     qc     0        |                
+   |       10     2    5    0.250   1.803     qc     0        |                
+   |       11     2    3    0.250   1.803     qc     0        |                
+   |       loc    3    0    0.000   1.803     pn     0        |                
+   |                                                          |                
+   | Augmentation charge Rinner = 0.600                       |                
+   | Partial core correction Rc = 0.600                       |                
+   ------------------------------------------------------------                
+   | "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"              |                
+   ------------------------------------------------------------                
+   |      Author: Chris J. Pickard, Cambridge University      |                
+   ============================================================                
 
  Pseudo atomic calculation performed for Mn 3s2 3p6 3d5 4s2
 
@@ -119,10 +119,10 @@
  Calculation not parallelised.
 
  ************************************ Title ************************************
-
+ 
 
  ***************************** General Parameters ******************************
-
+  
  output verbosity                               : normal  (1)
  write checkpoint data to                       : beta-mn.check
  type of calculation                            : single point energy
@@ -144,7 +144,7 @@
  write electrostatic potential file             : on
  write bands file                               : on
  checkpoint writing                             : both castep_bin and check files
-
+  
  output         length unit                     : A
  output           mass unit                     : amu
  output           time unit                     : ps
@@ -163,45 +163,45 @@
  output         efield unit                     : eV/A/e
  output        entropy unit                     : J/mol/K
  output    efield chi2 unit                     : pm/V
-
+  
  wavefunctions paging                           : none
  random number generator seed                   :  115718445
  data distribution                              : optimal for this architecture
  optimization strategy                          : maximize speed(+++)
 
  *********************** Exchange-Correlation Parameters ***********************
-
+  
  using functional                               : Local Density Approximation
  relativistic treatment                         : Koelling-Harmon
  DFT+D: Semi-empirical dispersion correction    : off
 
  ************************* Pseudopotential Parameters **************************
-
+  
  pseudopotential representation                 : reciprocal space
  <beta|phi> representation                      : reciprocal space
  spin-orbit coupling                            : on
 
  **************************** Basis Set Parameters *****************************
-
+  
  plane wave basis set cut-off                   :   500.0000   eV
  size of standard grid                          :     1.7500
  size of   fine   gmax                          :    20.0476   1/A
  finite basis set correction                    : none
 
  **************************** Electronic Parameters ****************************
-
- number of  electrons                           :  300.0
- net charge of system                           :  0.000
+  
+ number of  electrons                           :  300.0    
+ net charge of system                           :  0.000    
  treating system as non-collinear spin
  number of bands                                :        420
  electron temperature                           :     0.0000   K
 
  ********************* Electronic Minimization Parameters **********************
-
+  
  Method: Treating system as metallic with ensemble DFT treatment of electrons,
          and number of  SD  steps               :          1
          and number of  CG  steps               :          4
-
+  
  total energy / atom convergence tol.           : 0.1000E-02   eV
  max force / atom convergence tol.              : ignored
  convergence tolerance window                   :          3   cycles
@@ -214,7 +214,7 @@
  periodic dipole correction                     : NONE
 
  *******************************************************************************
-
+  
 
                            -------------------------------
                                       Unit Cell
@@ -244,26 +244,26 @@
             x  Element    Atom        Fractional coordinates of atoms  x
             x            Number           u          v          w      x
             x----------------------------------------------------------x
-            x  Mn           1         0.061000   0.061000   0.061000   x
-            x  Mn           2         0.811000   0.311000   0.189000   x
-            x  Mn           3         0.939000   0.561000   0.439000   x
-            x  Mn           4         0.439000   0.939000   0.561000   x
-            x  Mn           5         0.561000   0.439000   0.939000   x
-            x  Mn           6         0.311000   0.189000   0.811000   x
-            x  Mn           7         0.689000   0.689000   0.689000   x
-            x  Mn           8         0.189000   0.811000   0.311000   x
-            x  Mn           9         0.125000   0.206000   0.456000   x
-            x  Mn          10         0.875000   0.706000   0.044000   x
-            x  Mn          11         0.544000   0.625000   0.294000   x
-            x  Mn          12         0.294000   0.544000   0.625000   x
-            x  Mn          13         0.456000   0.125000   0.206000   x
-            x  Mn          14         0.206000   0.456000   0.125000   x
-            x  Mn          15         0.625000   0.294000   0.544000   x
-            x  Mn          16         0.794000   0.956000   0.375000   x
-            x  Mn          17         0.375000   0.794000   0.956000   x
-            x  Mn          18         0.044000   0.875000   0.706000   x
-            x  Mn          19         0.956000   0.375000   0.794000   x
-            x  Mn          20         0.706000   0.044000   0.875000   x
+            x  Mn           1         0.061000   0.061000   0.061000   x 
+            x  Mn           2         0.811000   0.311000   0.189000   x 
+            x  Mn           3         0.939000   0.561000   0.439000   x 
+            x  Mn           4         0.439000   0.939000   0.561000   x 
+            x  Mn           5         0.561000   0.439000   0.939000   x 
+            x  Mn           6         0.311000   0.189000   0.811000   x 
+            x  Mn           7         0.689000   0.689000   0.689000   x 
+            x  Mn           8         0.189000   0.811000   0.311000   x 
+            x  Mn           9         0.125000   0.206000   0.456000   x 
+            x  Mn          10         0.875000   0.706000   0.044000   x 
+            x  Mn          11         0.544000   0.625000   0.294000   x 
+            x  Mn          12         0.294000   0.544000   0.625000   x 
+            x  Mn          13         0.456000   0.125000   0.206000   x 
+            x  Mn          14         0.206000   0.456000   0.125000   x 
+            x  Mn          15         0.625000   0.294000   0.544000   x 
+            x  Mn          16         0.794000   0.956000   0.375000   x 
+            x  Mn          17         0.375000   0.794000   0.956000   x 
+            x  Mn          18         0.044000   0.875000   0.706000   x 
+            x  Mn          19         0.956000   0.375000   0.794000   x 
+            x  Mn          20         0.706000   0.044000   0.875000   x 
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
@@ -338,7 +338,7 @@
                           0.00000   0.00000   0.00000
                                     0.00000   0.00000
                                               0.00000
-
+ 
 +---------------- MEMORY AND SCRATCH DISK ESTIMATES PER PROCESS --------------+
 |                                                     Memory          Disk    |
 | Baseline code, static data and system overhead      239.0 MB         0.0 MB |
@@ -429,43 +429,43 @@ Cut-off for approx. calculation is  131.752 eV
 
  Converged in 96 iterations to an ae energy of -31436.261 eV
 
-   ============================================================
-   | Pseudopotential Report - Date of generation 14-07-2023   |
-   ------------------------------------------------------------
-   | Element: Mn Ionic charge: 15.00 Level of theory: LDA     |
-   | Atomic Solver: Koelling-Harmon                           |
-   |                                                          |
-   |               Reference Electronic Structure             |
-   |         Orbital         Occupation         Energy        |
-   |          3s1/2            2.000           -3.132         |
-   |          3p1/2            2.000           -2.001         |
-   |          3p1/2            2.000           -2.001         |
-   |          3d3/2            2.000           -0.258         |
-   |          3d3/2            2.000           -0.258         |
-   |          4s1/2            2.000           -0.194         |
-   |                                                          |
-   |                 Pseudopotential Definition               |
-   |      Beta    l   2j     e      Rc     scheme   norm      |
-   |        1     0    1   -3.132   1.803     qc     0        |
-   |        2     0    1   -0.194   1.803     qc     0        |
-   |        3     0    1    0.250   1.803     qc     0        |
-   |        4     1    3   -2.001   1.803     qc     0        |
-   |        5     1    1   -2.001   1.803     qc     0        |
-   |        6     1    3    0.250   1.803     qc     0        |
-   |        7     1    1    0.250   1.803     qc     0        |
-   |        8     2    5   -0.258   1.803     qc     0        |
-   |        9     2    3   -0.258   1.803     qc     0        |
-   |       10     2    5    0.250   1.803     qc     0        |
-   |       11     2    3    0.250   1.803     qc     0        |
-   |       loc    3    0    0.000   1.803     pn     0        |
-   |                                                          |
-   | Augmentation charge Rinner = 0.600                       |
-   | Partial core correction Rc = 0.600                       |
-   ------------------------------------------------------------
-   | "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"              |
-   ------------------------------------------------------------
-   |      Author: Chris J. Pickard, Cambridge University      |
-   ============================================================
+   ============================================================                
+   | Pseudopotential Report - Date of generation 14-07-2023   |                
+   ------------------------------------------------------------                
+   | Element: Mn Ionic charge: 15.00 Level of theory: LDA     |                
+   | Atomic Solver: Koelling-Harmon                           |                
+   |                                                          |                
+   |               Reference Electronic Structure             |                
+   |         Orbital         Occupation         Energy        |                
+   |          3s1/2            2.000           -3.132         |                
+   |          3p1/2            2.000           -2.001         |                
+   |          3p1/2            2.000           -2.001         |                
+   |          3d3/2            2.000           -0.258         |                
+   |          3d3/2            2.000           -0.258         |                
+   |          4s1/2            2.000           -0.194         |                
+   |                                                          |                
+   |                 Pseudopotential Definition               |                
+   |      Beta    l   2j     e      Rc     scheme   norm      |                
+   |        1     0    1   -3.132   1.803     qc     0        |                
+   |        2     0    1   -0.194   1.803     qc     0        |                
+   |        3     0    1    0.250   1.803     qc     0        |                
+   |        4     1    3   -2.001   1.803     qc     0        |                
+   |        5     1    1   -2.001   1.803     qc     0        |                
+   |        6     1    3    0.250   1.803     qc     0        |                
+   |        7     1    1    0.250   1.803     qc     0        |                
+   |        8     2    5   -0.258   1.803     qc     0        |                
+   |        9     2    3   -0.258   1.803     qc     0        |                
+   |       10     2    5    0.250   1.803     qc     0        |                
+   |       11     2    3    0.250   1.803     qc     0        |                
+   |       loc    3    0    0.000   1.803     pn     0        |                
+   |                                                          |                
+   | Augmentation charge Rinner = 0.600                       |                
+   | Partial core correction Rc = 0.600                       |                
+   ------------------------------------------------------------                
+   | "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"              |                
+   ------------------------------------------------------------                
+   |      Author: Chris J. Pickard, Cambridge University      |                
+   ============================================================                
 
  Pseudo atomic calculation performed for Mn 3s2 3p6 3d5 4s2
 
@@ -473,10 +473,10 @@ Cut-off for approx. calculation is  131.752 eV
  Calculation not parallelised.
 
  ************************************ Title ************************************
-
+ 
 
  ***************************** General Parameters ******************************
-
+  
  output verbosity                               : normal  (1)
  write checkpoint data to                       : beta-mn.check
  type of calculation                            : single point energy
@@ -498,7 +498,7 @@ Cut-off for approx. calculation is  131.752 eV
  write electrostatic potential file             : on
  write bands file                               : on
  checkpoint writing                             : both castep_bin and check files
-
+  
  output         length unit                     : A
  output           mass unit                     : amu
  output           time unit                     : ps
@@ -517,26 +517,26 @@ Cut-off for approx. calculation is  131.752 eV
  output         efield unit                     : eV/A/e
  output        entropy unit                     : J/mol/K
  output    efield chi2 unit                     : pm/V
-
+  
  wavefunctions paging                           : none
  random number generator seed                   :  194517207
  data distribution                              : optimal for this architecture
  optimization strategy                          : maximize speed(+++)
 
  *********************** Exchange-Correlation Parameters ***********************
-
+  
  using functional                               : Local Density Approximation
  relativistic treatment                         : Koelling-Harmon
  DFT+D: Semi-empirical dispersion correction    : off
 
  ************************* Pseudopotential Parameters **************************
-
+  
  pseudopotential representation                 : reciprocal space
  <beta|phi> representation                      : reciprocal space
  spin-orbit coupling                            : on
 
  **************************** Basis Set Parameters *****************************
-
+  
  plane wave basis set cut-off                   :   500.0000   eV
  size of standard grid                          :     1.7500
  size of   fine   gmax                          :    20.0476   1/A
@@ -544,18 +544,18 @@ Cut-off for approx. calculation is  131.752 eV
  finite basis set correction                    : none
 
  **************************** Electronic Parameters ****************************
-
- number of  electrons                           :  300.0
- net charge of system                           :  0.000
+  
+ number of  electrons                           :  300.0    
+ net charge of system                           :  0.000    
  treating system as non-collinear spin
  number of bands                                :        420
 
  ********************* Electronic Minimization Parameters **********************
-
+  
  Method: Treating system as metallic with density mixing treatment of electrons,
          and number of  SD  steps               :          1
          and number of  CG  steps               :          4
-
+  
  total energy / atom convergence tol.           : 0.1000E-02   eV
  eigen-energy convergence tolerance             : 0.1000E-05   eV
  max force / atom convergence tol.              : ignored
@@ -568,21 +568,21 @@ Cut-off for approx. calculation is  131.752 eV
  periodic dipole correction                     : NONE
 
  ************************** Density Mixing Parameters **************************
-
+  
  density-mixing scheme                          : Broyden
  max. length of mixing history                  :         20
- charge density mixing amplitude                : 0.8000
-   spin density mixing amplitude                : 0.5000
+ charge density mixing amplitude                : 0.8000    
+   spin density mixing amplitude                : 0.5000    
  cut-off energy for mixing                      :  500.0       eV
  charge density mixing g-vector                 :  1.500       1/A
    spin density mixing g-vector                 :  1.500       1/A
 
  ******************************* Developer Code ********************************
-
+  
  improve_wvfn=off
 
  *******************************************************************************
-
+  
 
                            -------------------------------
                                       Unit Cell
@@ -612,26 +612,26 @@ Cut-off for approx. calculation is  131.752 eV
             x  Element    Atom        Fractional coordinates of atoms  x
             x            Number           u          v          w      x
             x----------------------------------------------------------x
-            x  Mn           1         0.061000   0.061000   0.061000   x
-            x  Mn           2         0.811000   0.311000   0.189000   x
-            x  Mn           3         0.939000   0.561000   0.439000   x
-            x  Mn           4         0.439000   0.939000   0.561000   x
-            x  Mn           5         0.561000   0.439000   0.939000   x
-            x  Mn           6         0.311000   0.189000   0.811000   x
-            x  Mn           7         0.689000   0.689000   0.689000   x
-            x  Mn           8         0.189000   0.811000   0.311000   x
-            x  Mn           9         0.125000   0.206000   0.456000   x
-            x  Mn          10         0.875000   0.706000   0.044000   x
-            x  Mn          11         0.544000   0.625000   0.294000   x
-            x  Mn          12         0.294000   0.544000   0.625000   x
-            x  Mn          13         0.456000   0.125000   0.206000   x
-            x  Mn          14         0.206000   0.456000   0.125000   x
-            x  Mn          15         0.625000   0.294000   0.544000   x
-            x  Mn          16         0.794000   0.956000   0.375000   x
-            x  Mn          17         0.375000   0.794000   0.956000   x
-            x  Mn          18         0.044000   0.875000   0.706000   x
-            x  Mn          19         0.956000   0.375000   0.794000   x
-            x  Mn          20         0.706000   0.044000   0.875000   x
+            x  Mn           1         0.061000   0.061000   0.061000   x 
+            x  Mn           2         0.811000   0.311000   0.189000   x 
+            x  Mn           3         0.939000   0.561000   0.439000   x 
+            x  Mn           4         0.439000   0.939000   0.561000   x 
+            x  Mn           5         0.561000   0.439000   0.939000   x 
+            x  Mn           6         0.311000   0.189000   0.811000   x 
+            x  Mn           7         0.689000   0.689000   0.689000   x 
+            x  Mn           8         0.189000   0.811000   0.311000   x 
+            x  Mn           9         0.125000   0.206000   0.456000   x 
+            x  Mn          10         0.875000   0.706000   0.044000   x 
+            x  Mn          11         0.544000   0.625000   0.294000   x 
+            x  Mn          12         0.294000   0.544000   0.625000   x 
+            x  Mn          13         0.456000   0.125000   0.206000   x 
+            x  Mn          14         0.206000   0.456000   0.125000   x 
+            x  Mn          15         0.625000   0.294000   0.544000   x 
+            x  Mn          16         0.794000   0.956000   0.375000   x 
+            x  Mn          17         0.375000   0.794000   0.956000   x 
+            x  Mn          18         0.044000   0.875000   0.706000   x 
+            x  Mn          19         0.956000   0.375000   0.794000   x 
+            x  Mn          20         0.706000   0.044000   0.875000   x 
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 
@@ -706,7 +706,7 @@ Cut-off for approx. calculation is  131.752 eV
                           0.00000   0.00000   0.00000
                                     0.00000   0.00000
                                               0.00000
-
+ 
 +---------------- MEMORY AND SCRATCH DISK ESTIMATES PER PROCESS --------------+
 |                                                     Memory          Disk    |
 | Baseline code, static data and system overhead      239.0 MB         0.0 MB |
