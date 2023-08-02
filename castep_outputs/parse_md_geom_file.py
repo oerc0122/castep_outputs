@@ -32,7 +32,7 @@ def parse_md_geom_file(md_geom_file, verbose=False):
         if not line.strip():  # Next step
             if curr:
                 add_aliases(curr, ALIASES)
-                for ion in filter(lambda x: type(x) is tuple, curr):
+                for ion in filter(lambda x: isinstance(x, tuple), curr):
                     add_aliases(curr[ion], ALIASES)
                 steps.append(curr)
             curr = defaultdict(list)

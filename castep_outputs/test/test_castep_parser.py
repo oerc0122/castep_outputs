@@ -135,10 +135,28 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                    density =             4.364016   AMU/A**3
                                            =             7.246619     g/cm^3
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'initial_cell':
+                                     {'cell_angles': [90.0, 90.0, 90.0],
+                                      'density_amu': 4.364016,
+                                      'density_g': 7.246619,
+                                      'lattice_parameters': [6.3145,
+                                                             6.3145,
+                                                             6.3145],
+                                      'real_lattice': [(6.3145, 0.0, 0.0),
+                                                       (0.0, 6.3145, 0.0),
+                                                       (0.0, 0.0, 6.3145)],
+                                      'recip_lattice': [(0.995040828,
+                                                         0.0,
+                                                         0.0),
+                                                        (0.0,
+                                                         0.995040828,
+                                                         0.0),
+                                                        (0.0,
+                                                         0.0,
+                                                         0.995040828)],
+                                      'volume': 251.777492}})
 
     def test_get_supercell(self):
         test_text = io.StringIO("""
@@ -312,9 +330,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                                                                           {'orbital': '3',
                                                                                            'shell': 'd',
                                                                                            'type': None}),
-                                                                                 'r_inner': '0.6',
-                                                                                 'shell_swp': None,
-                                                                                 'shell_swp2': None},
+                                                                                 'r_inner': '0.6'},
                                                                    'pspot_string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'},
                                                             'O': {'mass': 15.9993815,
                                                                   'elec_quad': 1.0,

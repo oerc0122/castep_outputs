@@ -1,6 +1,7 @@
 """
 Utility functions for parsing castep outputs
 """
+import io
 import collections.abc
 from collections import defaultdict
 import itertools
@@ -16,7 +17,6 @@ except ImportError:
         _YAML_TYPE = "yaml"
     except ImportError:
         _YAML_TYPE = None
-
 
 
 def normalise_string(string):
@@ -60,6 +60,17 @@ def de_default_dict(obj):
     return obj_out
 
 
+def json_safe(obj):
+    """ Transform datatypes into JSON safe variants"""
+    if isinstance(obj, (tuple, list)):
+        obj = [json_safe(v) for v in obj]
+    elif isinstance(obj, dict):
+        obj = json_safe_dict(obj)
+    elif isinstance(obj, complex):
+        obj = (obj.real, obj.imag)
+    return obj
+
+
 def json_safe_dict(obj):
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """
@@ -68,11 +79,7 @@ def json_safe_dict(obj):
     for key, val in obj.items():
         if isinstance(key, (tuple, list)):
             key = "_".join(map(str, key))
-        if isinstance(val, dict):
-            val = json_safe_dict(val)
-        elif isinstance(val, (tuple, list)):
-            val = [json_safe_dict(v) if isinstance(v, dict) else v for v in val]
-        obj_out[key] = val
+        obj_out[key] = json_safe(val)
     return obj_out
 
 
@@ -134,6 +141,7 @@ SUPPORTED_FORMATS = {"json": json_dumper,
                      "pprint": pprint_dumper,
                      "print": print_dumper}
 
+
 def get_dumpers(dump_fmt: str):
     """
     Get appropriate dump for unified interface
@@ -155,7 +163,7 @@ def get_numbers(line: str):
     return NUMBER_RE.findall(line)
 
 
-def get_block(line: str, in_file, start, end, cnt=1):
+def get_block(line: str, in_file, start, end, cnt=1, out_fmt=str):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
 
@@ -175,7 +183,14 @@ def get_block(line: str, in_file, start, end, cnt=1):
     else:
         raise IOError(f"Unexpected end of file in {in_file.name}")
 
-    return block
+    if not block:
+        return ""
+    if out_fmt is str:
+        return block
+    if out_fmt is list:
+        return block.splitlines()
+    if out_fmt is io.StringIO:
+        return io.StringIO(block)
 
 
 def labelled_floats(labels, counts=(None,), sep=r"\s+?", suff=""):

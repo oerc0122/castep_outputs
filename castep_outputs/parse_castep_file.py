@@ -57,7 +57,8 @@ _BOND_RE = re.compile(rf"""\s*
                        """, re.VERBOSE)
 
 # Orbital population
-_ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)\s*{labelled_floats(('charge',))}")
+_ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)"
+                              rf"\s*{labelled_floats(('charge',))}")
 
 # Regexp to identify phonon block in .castep file
 _CASTEP_PHONON_RE = re.compile(
@@ -241,6 +242,14 @@ def parse_castep_file(castep_file, verbose=False):
 
                     curr_run["species_properties"][spec]["pseudopot"] = pspot
 
+            # SCF
+        elif block := get_block(line, castep_file,
+                                "SCF loop", "^-+", cnt=2):
+            if verbose:
+                print("Found SCF")
+
+            curr_run["scf"].append(_process_scf(block.splitlines()))
+
         # Energies
         elif any((line.startswith("Final energy, E"),
                   line.startswith("Final energy"),
@@ -278,7 +287,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found cell")
 
-            curr_run["initial_cell"] = _parse_unit_cell(block)
+            curr_run["initial_cell"] = _process_unit_cell(block.splitlines())
 
         # Initial pos
         elif block := get_block(line, castep_file,
@@ -290,7 +299,8 @@ def parse_castep_file(castep_file, verbose=False):
 
         elif "Supercell generated" in line:
             accum = iter(get_numbers(line))
-            curr_run["supercell"] = tuple(to_type([next(accum) for _ in range(3)], float) for _ in range(3))
+            curr_run["supercell"] = tuple(to_type([next(accum) for _ in range(3)], float)
+                                          for _ in range(3))
 
         # Initial vel
         elif block := get_block(line, castep_file,
@@ -853,6 +863,30 @@ def _process_buildinfo(block):
     return info
 
 
+def _process_unit_cell(block):
+    cell = defaultdict(list)
+    prop = []
+    for line in block:
+        numbers = get_numbers(line)
+        if len(numbers) == 6:
+            cell['real_lattice'].append(to_type(numbers[0:3], float))
+            cell['recip_lattice'].append(to_type(numbers[3:6], float))
+        elif len(numbers) == 2:
+            if any(ang in line for ang in ('alpha', 'beta', 'gamma')):
+                cell['lattice_parameters'].append(to_type(numbers[0], float))
+                cell['cell_angles'].append(to_type(numbers[1], float))
+            else:
+                prop.append(to_type(numbers[0], float))
+
+    cell.update({name: val for val, name in zip(prop, ('volume', 'density_amu', 'density_g'))})
+
+    return cell
+
+
+def _process_scf(block):
+    pass
+
+
 def _process_forces(block):
     ftype = (ft_guess if (ft_guess := _FORCES_BLOCK_RE.search(next(block)).group(1))
              else "non-descript")
@@ -1060,7 +1094,8 @@ def _process_memory_est(block):
     accum = {}
 
     for line in block:
-        if match := re.match(rf"\s*\|([A-Za-z ]+){labelled_floats(('memory', 'disk'), suff=' MB')}", line):
+        if match := re.match(r"\s*\|([A-Za-z ]+)" +
+                             labelled_floats(('memory', 'disk'), suff=' MB'), line):
             key, memory, disk = match.groups()
             accum[normalise_string(key)] = {"memory": float(memory),
                                             "disk": float(disk)}
@@ -1140,6 +1175,12 @@ def _process_pspot_string(string):
         pdict["shell"] = SHELLS[int(pdict["shell"])]
         projectors.append(pdict)
 
+    if not pspot["shell_swp"]:
+        del pspot["shell_swp"]
+
+    if not pspot["shell_swp2"]:
+        del pspot["shell_swp2"]
+
     pspot["proj"] = tuple(projectors)
 
     return pspot
@@ -1162,7 +1203,7 @@ def _process_orbital_populations(block):
             ind = match.groupdict()
             ind = atreg_to_index(ind)
             accum[ind][match["orb"]] = to_type(match["charge"], float)
-        elif match := re.match(f"\s*Total:\s*{labelled_floats(('charge',))}", line):
+        elif match := re.match(rf"\s*Total:\s*{labelled_floats(('charge',))}", line):
             accum["total"] = float(match["charge"])
         elif "total projected" in line:
             accum["total_projected"] = to_type(get_numbers(line), float)
