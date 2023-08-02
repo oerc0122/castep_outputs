@@ -697,10 +697,13 @@ Have a nice day.
 +--------+--------------------------------------------------------------+<- line
  * indicates the final, accepted state (should have the lowest energy)
             """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'wvfn_line_min': [{'gain': (0.1469, 0.1518),
+                                                        'init_de_dstep': -0.2376,
+                                                        'init_energy': -1031.551,
+                                                        'steps': (1.5, 1.276)}]})
 
     def test_get_energies(self):
         test_text = io.StringIO("""

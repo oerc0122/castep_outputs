@@ -270,6 +270,14 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["scf"].append(_process_scf(block.splitlines()))
 
+        # Line min
+        elif block := get_block(line, castep_file,
+                                "WAVEFUNCTION LINE MINIMISATION", "\s*\+(-+\+){2}", cnt=2):
+            if verbose:
+                print("Found wvfn line min")
+
+            curr_run["wvfn_line_min"].append(_process_wvfn_line_min(block.splitlines()))
+
         # Occupancy
         elif block := get_block(line, castep_file,
                                 "Occupancy", "Have a nice day"):
@@ -1330,4 +1338,17 @@ def _process_occupancies(block):
         fix_data_types(elem, {"band": int,
                               "eigenvalue": float,
                               "occupancy": float})
+    return accum
+
+
+def _process_wvfn_line_min(block):
+    accum = {}
+    for line in block:
+        if "initial" in line:
+            accum["init_energy"], accum["init_de_dstep"] = to_type(get_numbers(line), float)
+        elif line.strip().startswith("| step"):
+            accum["steps"] = to_type(get_numbers(line), float)
+        elif line.strip().startswith("| gain"):
+            accum["gain"] = to_type(get_numbers(line), float)
+
     return accum
