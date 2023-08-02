@@ -223,6 +223,9 @@ def parse_castep_file(castep_file, verbose=False):
         # Mass
         elif block := get_block(line, castep_file, r"Mass of species in AMU", r"^ *$"):
 
+            if verbose:
+                print("Found mass")
+
             for line in block.splitlines():
                 if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
                     spec, mass = words
@@ -231,10 +234,21 @@ def parse_castep_file(castep_file, verbose=False):
         # Electric Quadrupole Moment
         elif block := get_block(line, castep_file, r"Electric Quadrupole Moment", r"^ *$"):
 
+            if verbose:
+                print("Found electric quadrupole moment")
+
             for line in block.splitlines():
                 if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
                     spec, quad = words[0:2]
                     curr_run["species_properties"][spec]["elec_quad"] = float(quad)
+
+        # DFTD
+        elif block := get_block(line, castep_file, "DFT-D parameters", r"^\s*x+\s*$", cnt=2):
+
+            if verbose:
+                print("Found DFTD block")
+
+            curr_run["dftd"] = _process_dftd(block.splitlines())
 
         # Pseudopots
         elif block := get_block(line, castep_file, r"Files used for pseudopotentials", r"^ *$"):
@@ -1270,3 +1284,21 @@ def _process_orbital_populations(block):
             accum["total_projected"] = to_type(get_numbers(line), float)
 
     return accum
+
+
+def _process_dftd(block):
+    dftd = {"species": {}}
+
+    for line in block:
+        if len(match := line.split(":")) == 2:
+            key, val = match
+            val = normalise_string(val)
+            if "Parameter" in key:
+                val = to_type(get_numbers(val)[0], float)
+            dftd[normalise_string(key).lower()] = val
+
+        elif match := re.match(rf"\s*x\s*(?P<spec>{ATOM_NAME_RE})\s*{labelled_floats(('C6', 'R0'))}", line):
+            dftd["species"][match["spec"]] = {"C6": float(match["C6"]),
+                                              "R0": float(match["R0"])}
+
+    return dftd

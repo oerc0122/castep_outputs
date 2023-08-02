@@ -385,10 +385,16 @@ Overall parallel efficiency rating: Satisfactory (64%)
         x  N            12.7481       1.3970   (default)                   x
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'dftd': {'dispersion-correction scheme': 'G06',
+                                              'parameter d': 20.0,
+                                              'parameter s6': 0.75,
+                                              'species': {'H': {'C6': 1.451, 'R0': 1.001},
+                                                          'N': {'C6': 12.7481, 'R0': 1.397}}
+                                              }}
+                         )
 
     def test_get_k_pts(self):
         test_text = io.StringIO("""
