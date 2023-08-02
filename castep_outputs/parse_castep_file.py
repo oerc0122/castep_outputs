@@ -374,7 +374,6 @@ def parse_castep_file(castep_file, verbose=False):
             for line in block.splitlines():
                 curr_run["target_stress"].extend(to_type(get_numbers(line), float))
 
-
         # Finite basis correction parameter
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({FNUMBER_RE})", line):
             if verbose:
@@ -479,6 +478,14 @@ def parse_castep_file(castep_file, verbose=False):
             lines = iter(block.splitlines())
             accum = _process_phonon_sym_analysis(lines)
             curr_run["phonon_symmetry_analysis"].append(accum)
+
+            # Solvation
+        elif block := get_block(line, castep_file,
+                                "AUTOSOLVATION", "^\s*\*+\s*$"):
+            if verbose:
+                print("Found autosolvation")
+
+            curr_run["autosolvation"] = _process_autosolvation(block.splitlines())
 
         # Dynamical Matrix
         elif block := get_block(line, castep_file,
@@ -1361,5 +1368,17 @@ def _process_wvfn_line_min(block):
             accum["steps"] = to_type(get_numbers(line), float)
         elif line.strip().startswith("| gain"):
             accum["gain"] = to_type(get_numbers(line), float)
+
+    return accum
+
+
+def _process_autosolvation(block):
+
+    accum = {}
+    for line in block:
+        if len(match := line.split("=")) > 1:
+            key = normalise_string(match[0].strip("-( "))
+            val = to_type(get_numbers(line)[0], float)
+            accum[key] = val
 
     return accum

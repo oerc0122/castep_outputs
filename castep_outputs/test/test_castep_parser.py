@@ -1721,10 +1721,16 @@ Species   Ion     Hirshfeld Charge (e)
   (Total polar solvation energy   =        -0.04678618504666563 eV)
  *******************************************************************************
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'autosolvation': {'Apolar cavitation energy': 0.23174076832973722,
+                                                       'Apolar dis-rep energy': -0.16660423187145634,
+                                                       'Free energy of solvation': 0.01835035141161526,
+                                                       'Total apolar solvation energy': 0.0651365364582809,
+                                                       'Total energy in solvent': -30.701990109989108,
+                                                       'Total energy in vacuum': -30.720340461400724,
+                                                       'Total polar solvation energy': -0.04678618504666563}})
 
     def test_get_tddft(self):
         test_text = io.StringIO("""
