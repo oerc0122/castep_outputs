@@ -310,27 +310,28 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         self.assertEqual(test_dict, {'species_properties': {'Mn': {'mass': 54.93805,
                                                                    'elec_quad': 0.33,
-                                                                   'pseudopot': {'beta_radius': '1.8',
-                                                                                 'coarse': '12',
-                                                                                 'core_radius': '1.8',
+                                                                   'pseudopot': {'beta_radius': 1.8,
+                                                                                 'coarse': 12,
+                                                                                 'core_radius': 1.8,
                                                                                  'debug': None,
-                                                                                 'fine': '16',
-                                                                                 'local_channel': '3',
-                                                                                 'medium': '14',
+                                                                                 'fine': 16,
+                                                                                 'local_channel': 3,
+                                                                                 'medium': 14,
                                                                                  'opt': 'qc=7',
-                                                                                 'proj': ({'orbital': '3',
-                                                                                           'shell': 's',
-                                                                                           'type': 'U'},
-                                                                                          {'orbital': '4',
-                                                                                           'shell': 's',
-                                                                                           'type': None},
-                                                                                          {'orbital': '3',
-                                                                                           'shell': 'p',
-                                                                                           'type': None},
-                                                                                          {'orbital': '3',
-                                                                                           'shell': 'd',
-                                                                                           'type': None}),
-                                                                                 'r_inner': '0.6'},
+                                                                                 'proj': '30U:40:31:32',
+                                                                                 'projectors': ({'orbital': 3,
+                                                                                                 'shell': 's',
+                                                                                                 'type': 'U'},
+                                                                                                {'orbital': 4,
+                                                                                                 'shell': 's',
+                                                                                                 'type': None},
+                                                                                                {'orbital': 3,
+                                                                                                 'shell': 'p',
+                                                                                                 'type': None},
+                                                                                                {'orbital': 3,
+                                                                                                 'shell': 'd',
+                                                                                                 'type': None}),
+                                                                                 'r_inner': 0.6},
                                                                    'pspot_string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'},
                                                             'O': {'mass': 15.9993815,
                                                                   'elec_quad': 1.0,
@@ -512,8 +513,20 @@ Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
       2  -8.55990255E+002  6.11946292E+000   3.51127330E-003       4.50  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'scf': [[{'energy': -843.823694,
+                                               'energy_gain': None,
+                                               'fermi_energy': 0.0,
+                                               'time': 2.77},
+                                              {'energy': -855.962165,
+                                               'energy_gain': 1.51730885,
+                                               'fermi_energy': 6.11993396,
+                                               'time': 3.54},
+                                              {'energy': -855.990255,
+                                               'energy_gain': 0.0035112733,
+                                               'fermi_energy': 6.11946292,
+                                               'time': 4.5}]]})
 
         test_text = io.StringIO("""
 
@@ -527,85 +540,121 @@ Initial  -2.37153226E+001  0.00000000E+000                         0.17  <-- SCF
       2  -3.23439432E+001 -1.29587691E+000   7.86354909E-005       0.18  <-- SCF
  Norm of density residual is    9.1451037234902971E-002
       3  -3.20352173E+001 -1.10248324E+000  -1.54362953E-001       0.18  <-- SCF
- Norm of density residual is    1.8198587767920434E-002
-      4  -3.20251292E+001 -1.00896738E+000  -5.04402177E-003       0.19  <-- SCF
- Norm of density residual is    4.8336394509986705E-003
-      5  -3.20274863E+001 -9.34431339E-001   1.17854441E-003       0.20  <-- SCF
- Norm of density residual is    2.4445419297668830E-003
-      6  -3.20288644E+001 -8.52312336E-001   6.89044014E-004       0.21  <-- SCF
- Norm of density residual is    4.1821859010725970E-004
-      7  -3.20290142E+001 -8.38552464E-001   7.48852904E-005       0.22  <-- SCF
- Norm of density residual is    1.8888756088306457E-004
-      8  -3.20290606E+001 -8.30220252E-001   2.32236773E-005       0.22  <-- SCF
- Norm of density residual is    1.9031324234710340E-005
-      9  -3.20290615E+001 -8.29618993E-001   4.28146102E-007       0.23  <-- SCF
- Norm of density residual is    8.5739705761819795E-006
-     10  -3.20290616E+001 -8.29279474E-001   7.35217415E-008       0.24  <-- SCF
- Norm of density residual is    2.7992383582111372E-006
-     11  -3.20290616E+001 -8.29253836E-001   2.93980395E-011       0.25  <-- SCF
- Norm of density residual is    9.7598758436062017E-007
 ------------------------------------------------------------------------ <-- SCF
 Total energy has converged after 11 SCF iterations.
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'scf': [[{'energy': -23.7153226,
+                                               'energy_gain': None,
+                                               'fermi_energy': 0.0,
+                                               'time': 0.17},
+                                              {'density_residual': None,
+                                               'energy': -32.3437859,
+                                               'energy_gain': 4.31423163,
+                                               'fermi_energy': -1.29587284,
+                                               'time': 0.17},
+                                              {'density_residual': 0.09145103723490297,
+                                               'energy': -32.3439432,
+                                               'energy_gain': 7.86354909e-05,
+                                               'fermi_energy': -1.29587691,
+                                               'time': 0.18},
+                                              {'energy': -32.0352173,
+                                               'energy_gain': -0.154362953,
+                                               'fermi_energy': -1.10248324,
+                                               'time': 0.18}]]})
 
         test_text = io.StringIO("""
-Norm of density residual is    4.3364941873131582E-004
-Symmetrising density
-Calculating local potential
-Calculating non-local weights
-Starting SCF cycle     7 of up to    30
- no. bands in each block=           6
-Kinetic eigenvalue #   1 =     0.91360283E+01
-Kinetic eigenvalue #   2 =     0.17477724E+02
-Kinetic eigenvalue #   3 =     0.24139426E+02
-Kinetic eigenvalue #   4 =     0.36507521E+02
-Kinetic eigenvalue #   5 =     0.56139250E+02
-Kinetic eigenvalue #   6 =     0.62117028E+02
-Kinetic eigenvalue #   7 =     0.37538708E+02
-Kinetic eigenvalue #   8 =     0.48623103E+02
-Kinetic eigenvalue #   9 =     0.54559209E+02
-Kinetic eigenvalue #  10 =     0.59832639E+02
+
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -8.45018104E+002  0.00000000E+000                         3.81  <-- SCF
+Starting SCF cycle     1 of up to    30
+ no. bands in each block=           7
+Kinetic eigenvalue #   1 =     0.19929544E+02
+Kinetic eigenvalue #   2 =     0.12921903E+02
  Calculating the R matrix for the precon Sinv operator
  Diagonalising expanded subspace
  Copying updated data back
-eigenvalue    1 init= -20.09     fin= -20.09     change= 0.1500E-06
-eigenvalue    2 init= -15.74     fin= -15.74     change= 0.1570E-06
-eigenvalue    3 init= -7.181     fin= -7.181     change= 0.4702E-06
-eigenvalue    4 init= -4.213     fin= -4.213     change= 0.2768E-06
-eigenvalue    5 init= -1.423     fin= -1.423     change= 0.1818E-06
-eigenvalue    6 init= 0.6796     fin= 0.6796     change= 0.5603E-06
+eigenvalue    1 init= -27.89     fin= -28.57     change= 0.6761
+eigenvalue    2 init= -19.95     fin= -20.19     change= 0.2477
  Checking convergence criteria
+ Diagonalising expanded subspace
+ Copying updated data back
+eigenvalue    1 init= -27.89     fin= -28.61     change= 0.7169
+eigenvalue    2 init= -19.95     fin= -20.22     change= 0.2696
+ Checking convergence criteria
+(Entering electronic_find_fermi_free)
+Fermi energy = -1.0921E+000 eV [lower bound; range =  1.43E-014 eV]
+(Leaving electronic_find_fermi_free)
 Calculating KE and non-local eigenvalues to find total energy
 
 End of SCF cycle energies
-Exchange-correlation energy      =      -285.30695035635665135 eV
-+Hartree energy                  =       149.79508122031259632 eV
-+Local pseudopotential energy    =      -478.54332484459945363 eV
+Exchange-correlation energy      =      -232.32975595141911640 eV
++Hartree energy                  =       555.19121174858389622 eV
++Local pseudopotential energy    =     -1615.37738857285035010 eV
 ----------------------------------
-Potential energy (total)         =      -614.07079171278496688 eV
+Potential energy (total)         =     -1446.35569943465020515 eV
 
-+Kinetic energy                  =       776.02296679748712904 eV
-+Non-local energy                =      -288.24562390518951815 eV
-+Ewald energy (const)            =     -1089.18583097099849510 eV
-+non-Coulombic energy (const)    =       146.91503528947745849 eV
++Kinetic energy                  =       539.68227753812016090 eV
++Non-local energy                =       126.65142841537570462 eV
++Electronic entropy term (-TS)   =        -0.00000000000000212 eV
++Ewald energy (const)            =       -74.10820452501279476 eV
++non-Coulombic energy (const)    =         6.36149657571428406 eV
 ----------------------------------
-Total energy                     =     -1068.56424450200847787 eV
+Total free energy (E-TS)         =      -847.76870143045277928 eV
 
-(XC correction to eigenvalue sum =        86.52766346075705428 eV)
+NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
+
+(XC correction to eigenvalue sum =        65.01253419559009217 eV)
 (Apolar corr to eigenvalue sum   =         0.00000000000000000 eV)
 (Hubbard U correction to eigenvalu         0.00000000000000000 eV)
-        """)
-        self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
 
-        def test_get_occupancy(self):
-            test_text = io.StringIO("""
+      1  -8.47768701E+002 -1.09214177E+000   3.05621978E-001       3.84  <-- SCF
+------------------------------------------------------------------------ <-- SCF
+        """)
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'scf': [[{'apolar corr to eigenvalue sum': 0.0,
+                                               'eigenvalue': [[{'change': '0.6761',
+                                                                'final': '-28.57',
+                                                                'initial': '-27.89'},
+                                                               {'change': '0.2477',
+                                                                'final': '-20.19',
+                                                                'initial': '-19.95'}],
+                                                              [{'change': '0.7169',
+                                                                'final': '-28.61',
+                                                                'initial': '-27.89'},
+                                                               {'change': '0.2696',
+                                                                'final': '-20.22',
+                                                                'initial': '-19.95'}]],
+                                               'electronic entropy term (-ts)': -2.12e-15,
+                                               'energy': -845.018104,
+                                               'energy_gain': None,
+                                               'ewald energy (const)': -74.1082045250128,
+                                               'exchange-correlation energy': -232.32975595141912,
+                                               'fermi energy': -1.0921,
+                                               'fermi_energy': 0.0,
+                                               'hartree energy': 555.1912117485839,
+                                               'kinetic energy': 539.6822775381202,
+                                               'kinetic_eigenvalue': 12.921903,
+                                               'local pseudopotential energy': -1615.3773885728504,
+                                               'no_bands': 7,
+                                               'non-coulombic energy (const)': 6.361496575714284,
+                                               'non-local energy': 126.6514284153757,
+                                               'potential energy (total)': -1446.3556994346502,
+                                               'time': 3.81,
+                                               'total free energy (e-ts)': -847.7687014304528,
+                                               'xc correction to eigenvalue sum': 65.01253419559009},
+                                              {'energy': -847.768701,
+                                               'energy_gain': 0.305621978,
+                                               'fermi_energy': -1.09214177,
+                                               'time': 3.84}]]})
+
+    def test_get_occupancy(self):
+        test_text = io.StringIO("""
 Bands above band 2 are completely empty                           <- occ
 Band energies and occupancies for bands close to Fermi energy     <- occ
 Smearing width is  0.200 eV                                       <- occ
@@ -617,12 +666,11 @@ Spin 1, kpoint ( 0.000000  0.000000  0.000000 ) weight = 1.000000
 |     2  |   0.326330E+00    |  0.111022E-15  |                   <- occ
 +--------+-------------------+----------------+                   <- occ
 Have a nice day.
-
-            """)
-            self.skipTest("Not implemented yet")
-            test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-            pprint.pprint(test_dict)
-            self.assertEqual(test_dict, {})
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
 
     def test_get_line_min(self):
         test_text = io.StringIO("""

@@ -41,23 +41,16 @@ def atreg_to_index(dict_in, clear=True):
     return (spec, int(ind))
 
 
-def de_default_dict(obj):
+def normalise(obj):
     """
-    Turns defaultdicts into regular dicts
+    Standardises data after processing
     """
-    obj_out = {}
+    if isinstance(obj, (tuple, list)):
+        obj = tuple(normalise(v) for v in obj)
+    elif isinstance(obj, (dict, defaultdict)):
+        obj = {key: normalise(val) for key, val in obj.items()}
 
-    for key, val in obj.items():
-        if isinstance(val, defaultdict):
-            val = dict(val)
-        if isinstance(val, dict):
-            val = de_default_dict(val)
-        elif isinstance(val, (tuple, list)):
-            val = [de_default_dict(v) if isinstance(v, dict) else v for v in val]
-
-        obj_out[key] = val
-
-    return obj_out
+    return obj
 
 
 def json_safe(obj):
@@ -163,7 +156,7 @@ def get_numbers(line: str):
     return NUMBER_RE.findall(line)
 
 
-def get_block(line: str, in_file, start, end, cnt=1, out_fmt=str):
+def get_block(line: str, in_file, start, end, *, cnt=1, out_fmt=str):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
 
@@ -181,7 +174,9 @@ def get_block(line: str, in_file, start, end, cnt=1, out_fmt=str):
             if fnd == 0:
                 break
     else:
-        raise IOError(f"Unexpected end of file in {in_file.name}")
+        if hasattr(in_file, 'name'):
+            raise IOError(f"Unexpected end of file in {in_file.name}.")
+        raise IOError("Unexpected end of file.")
 
     if not block:
         return ""

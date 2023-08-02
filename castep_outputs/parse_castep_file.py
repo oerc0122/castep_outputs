@@ -18,6 +18,11 @@ from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_d
                                 parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file)
 
 
+# SCF Loop
+_SCF_LOOP_RE = re.compile(r"\s*(?:Initial|\d+)\s*"
+                          rf"{labelled_floats(('energy', 'fermi_energy', 'energy_gain'))}?\s*"
+                          f"{labelled_floats(('time',))}")
+
 # PS Energy
 _PS_SHELL_RE = re.compile(
     rf"\s*Pseudo atomic calculation performed for (?P<spec>{SPECIES_RE})(\s+{SHELL_RE})+")
@@ -25,6 +30,7 @@ _PS_SHELL_RE = re.compile(
 # PS Projector
 _PSPOT_PROJ_RE = re.compile(r"(?P<orbital>\d)(?P<shell>\d)(?P<type>U|UU|N)?")
 _UNLABELLED_PROJ_RE = r"\d\d(?:UU|U|N)?"
+
 
 # PSPot String
 _PSPOT_RE = re.compile(labelled_floats(("local_channel",
@@ -205,7 +211,7 @@ def parse_castep_file(castep_file, verbose=False):
                 curr_run["build_info"] = curr
 
         # Pseudo-atomic energy
-        elif block := get_block(line, castep_file, _PS_SHELL_RE, r"^\s*$", 2):
+        elif block := get_block(line, castep_file, _PS_SHELL_RE, r"^\s*$", cnt=2):
 
             if verbose:
                 print("Found pseudo-atomic energy")
@@ -242,9 +248,9 @@ def parse_castep_file(castep_file, verbose=False):
 
                     curr_run["species_properties"][spec]["pseudopot"] = pspot
 
-            # SCF
+        # SCF
         elif block := get_block(line, castep_file,
-                                "SCF loop", "^-+", cnt=2):
+                                "SCF loop", "^-+ <-- SCF", cnt=2):
             if verbose:
                 print("Found SCF")
 
@@ -869,22 +875,68 @@ def _process_unit_cell(block):
     for line in block:
         numbers = get_numbers(line)
         if len(numbers) == 6:
-            cell['real_lattice'].append(to_type(numbers[0:3], float))
-            cell['recip_lattice'].append(to_type(numbers[3:6], float))
+            cell["real_lattice"].append(to_type(numbers[0:3], float))
+            cell["recip_lattice"].append(to_type(numbers[3:6], float))
         elif len(numbers) == 2:
-            if any(ang in line for ang in ('alpha', 'beta', 'gamma')):
-                cell['lattice_parameters'].append(to_type(numbers[0], float))
-                cell['cell_angles'].append(to_type(numbers[1], float))
+            if any(ang in line for ang in ("alpha", "beta", "gamma")):
+                cell["lattice_parameters"].append(to_type(numbers[0], float))
+                cell["cell_angles"].append(to_type(numbers[1], float))
             else:
                 prop.append(to_type(numbers[0], float))
 
-    cell.update({name: val for val, name in zip(prop, ('volume', 'density_amu', 'density_g'))})
+    cell.update({name: val for val, name in zip(prop, ("volume", "density_amu", "density_g"))})
 
     return cell
 
 
 def _process_scf(block):
-    pass
+    scf = []
+    curr = {}
+    for line in block:
+        if match := _SCF_LOOP_RE.match(line):
+            if curr:
+                scf.append(curr)
+            curr = match.groupdict()
+            fix_data_types(curr, {"energy": float,
+                                  "energy_gain": float,
+                                  "fermi_energy": float,
+                                  "time": float})
+
+        elif "Density was not mixed" in line:
+            curr["density_residual"] = None
+
+        elif "Norm of density" in line:
+            curr["density_residual"] = to_type(get_numbers(line)[0], float)
+
+        elif "no. bands" in line:
+            curr["no_bands"] = to_type(get_numbers(line)[0], int)
+
+        elif "Kinetic eigenvalue" in line:
+            if "kinetic_eigenvalue" not in curr:
+                curr["kinetic_eigenvalue"] = []
+                curr["eigenvalue"] = []
+
+            curr["kinetic_eigenvalue"] = to_type(get_numbers(line)[1], float)
+            eig = []
+
+        elif re.match(r"eigenvalue\s*\d+\s*init=", line):
+            labels = ("initial", "final", "change")
+            numbers = get_numbers(line)
+            eig.append({key: val for val, key in zip(numbers[1:], labels)})
+
+        elif "Checking convergence criteria" in line:
+            curr["eigenvalue"].append(eig)
+            eig = []
+
+        elif match := re.match(r"[+(]?(?P<key>[()0-9A-Za-z -]+)="
+                               rf"\s*{labelled_floats(('val',))} eV\)?", line):
+            key, val = normalise_string(match["key"]).lower(), float(match["val"])
+            curr[key] = val
+
+    if curr:
+        scf.append(curr)
+
+    return scf
 
 
 def _process_forces(block):
@@ -1173,6 +1225,7 @@ def _process_pspot_string(string):
     for proj in pspot["proj"].split(":"):
         pdict = _PSPOT_PROJ_RE.match(proj).groupdict()
         pdict["shell"] = SHELLS[int(pdict["shell"])]
+        fix_data_types(pdict, {"orbital": int})
         projectors.append(pdict)
 
     if not pspot["shell_swp"]:
@@ -1181,7 +1234,15 @@ def _process_pspot_string(string):
     if not pspot["shell_swp2"]:
         del pspot["shell_swp2"]
 
-    pspot["proj"] = tuple(projectors)
+    pspot["projectors"] = tuple(projectors)
+
+    fix_data_types(pspot, {"beta_radius": float,
+                           "r_inner": float,
+                           "core_radius": float,
+                           "coarse": int,
+                           "medium": int,
+                           "fine": int,
+                           "local_channel": int})
 
     return pspot
 
