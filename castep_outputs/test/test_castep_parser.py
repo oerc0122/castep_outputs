@@ -1447,10 +1447,13 @@ Species   Ion     Hirshfeld Charge (e)
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'product': {('H', 1): (0.0, 0.0, 0.0),
+                                                 ('H', 2): (-0.0, -0.0, 0.805)},
+                                     'reactant': {('H', 1): (0.0, 0.0, 0.0),
+                                                  ('H', 2): (-0.0, -0.0, 0.195)}})
 
     def test_get_tss_info(self):
         test_text = io.StringIO("""

@@ -317,13 +317,24 @@ def parse_castep_file(castep_file, verbose=False):
             else:
                 curr_run["spin"].append(to_type(match.group(1), float))
 
-                # Initial cell
+        # Initial cell
         elif block := get_block(line, castep_file,
                                 "Unit Cell", r"^\s+$", cnt=3):
             if verbose:
                 print("Found cell")
 
             curr_run["initial_cell"] = _process_unit_cell(block.splitlines())
+
+        # TSS (must be ahead of initial pos)
+        elif block := get_block(line, castep_file,
+                                "(Reactant|Product)", r"^\s*x+\s*$", cnt=2):
+
+            mode = "reactant" if "Reactant" in line else "product"
+
+            if verbose:
+                print(f"Found {mode} initial states")
+
+            curr_run[mode] = _process_atreg_block(block.splitlines())
 
         # Initial pos
         elif block := get_block(line, castep_file,

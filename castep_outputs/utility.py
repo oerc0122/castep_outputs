@@ -242,6 +242,7 @@ def to_type(data_in, typ):
 SHELLS = ('s', 'p', 'd', 'f')
 FST_D = ('x', 'y', 'z')
 SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
+MINIMISERS = ('bfgs', 'lbfgs', 'fire')
 
 CASTEP_OUTPUT_NAMES = (
     "castep",
