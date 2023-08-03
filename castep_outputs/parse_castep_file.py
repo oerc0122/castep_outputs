@@ -397,8 +397,7 @@ def parse_castep_file(castep_file, verbose=False):
             if "forces" not in curr_run:
                 curr_run["forces"] = defaultdict(list)
 
-            lines = iter(block.splitlines())
-            key, val = _process_forces(lines)
+            key, val = _process_forces(iter(block.splitlines()))
 
             if verbose:
                 print(f"Found {key} forces")
@@ -410,8 +409,7 @@ def parse_castep_file(castep_file, verbose=False):
             if "stresses" not in curr_run:
                 curr_run["stresses"] = defaultdict(list)
 
-            lines = iter(block.splitlines())
-            key, val = _process_stresses(lines)
+            key, val = _process_stresses(iter(block.splitlines()))
 
             if verbose:
                 print(f"Found {key} stress")
@@ -638,7 +636,7 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["tddft"] = _process_tddft(block.splitlines())
 
-        # Old band structure
+        # Band structure
         elif block := get_block(line, castep_file,
                                 r"^\s+\+\s+(B A N D|Band Structure Calculation)",
                                 r"^\s+=+$"):
@@ -646,6 +644,14 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found band-structure")
 
             curr_run["bs"] = _process_band_structure(block)
+
+            # Molecular Dipole
+        elif block := get_block(line, castep_file,
+                                "D I P O L E", r"^\s*=+\s*$"):
+            if verbose:
+                print("Found molecular dipole")
+
+            curr_run["molecular_dipole"] = _process_dipole(iter(block.splitlines()))
 
         # Chemical shielding
         elif block := get_block(line, castep_file,
@@ -863,6 +869,7 @@ def _process_spec_prop(block):
             accum.append(words)
 
     return accum
+
 
 def _process_md(block):
     curr_data = {match.group("key").strip(): float(match.group("val"))
@@ -1454,5 +1461,29 @@ def _process_autosolvation(block):
             key = normalise_string(match[0].strip("-( "))
             val = to_type(get_numbers(line)[0], float)
             accum[key] = val
+
+    return accum
+
+
+# def _process_phonon(block):
+#     ...
+
+def _process_dipole(block):
+
+    accum = {}
+
+    for line in block:
+        if match := re.search("Total\s*(?P<type>\w+)", line):
+            accum[f"total_{match['type']}"] = float(get_numbers(line)[0])
+
+        elif "Centre" in line:
+            key = "centre_electronic" if "elec" in line else "centre_positive"
+            accum[key] = to_type(get_numbers(next(block)), float)
+
+        elif "Magnitude" in line:
+            accum["dipole_magnitude"] = to_type(get_numbers(line)[0], float)
+
+        elif "Direction" in line:
+            accum["dipole_direction"] = to_type(get_numbers(line), float)
 
     return accum

@@ -1374,7 +1374,7 @@ The total projected population is   19.999   0.000
                                                  'trace': -3.5}]]}
                          )
 
-    def test_get_mil_dipole(self):
+    def test_get_mol_dipole(self):
         test_text = io.StringIO("""
   =====================================================================
   +                                                                   +
@@ -1396,10 +1396,17 @@ The total projected population is   19.999   0.000
   +                                                                   +
   =====================================================================
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'molecular_dipole': {'centre_electronic': (3.0848, 3.0848, 3.0848),
+                                                          'centre_positive': (3.0448, 3.0448, 3.0448),
+                                                          'dipole_direction': (0.57735,
+                                                                               0.57735,
+                                                                               0.57735),
+                                                          'dipole_magnitude': 2.66023,
+                                                          'total_ionic': 8.0,
+                                                          'total_valence': 8.0}})
 
     def test_get_spin_density(self):
         test_text = io.StringIO("""
