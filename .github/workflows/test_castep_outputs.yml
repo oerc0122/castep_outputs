@@ -30,4 +30,5 @@ jobs:
     - name: Run tests
       run: |
         PYTHONPATH=. python castep_outputs/test/test_castep_parser.py
+        PYTHONPATH=. python castep_outputs/test/test_md_geom_parser.py
         PYTHONPATH=. python castep_outputs/test/test_dumpers.py
