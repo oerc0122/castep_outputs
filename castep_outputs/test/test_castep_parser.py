@@ -331,8 +331,8 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                                                                                 {'orbital': 3,
                                                                                                  'shell': 'd',
                                                                                                  'type': None}),
-                                                                                 'r_inner': 0.6},
-                                                                   'pspot_string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'},
+                                                                                 'r_inner': 0.6,
+                                                                                 'string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'}},
                                                             'O': {'mass': 15.9993815,
                                                                   'elec_quad': 1.0,
                                                                   'pseudopot': 'my_pot.usp'}

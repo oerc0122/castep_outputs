@@ -1,4 +1,4 @@
-# pylint: disable=too-many-lines
+# pylint: disable=too-many-lines, too-many-branches, too-many-statements
 """
 Extract results from .castep file for comparison and use
 by testcode.pl.
@@ -147,7 +147,7 @@ _MAGRES_TASK = (
 
 def parse_castep_file(castep_file, verbose=False):
     """ Parse castep file into lists of dicts ready to JSONise """
-    # pylint: disable=too-many-locals, too-many-branches, too-many-statements, redefined-outer-name
+    # pylint: disable=redefined-outer-name
 
     runs = []
     curr_run = defaultdict(list)
@@ -174,9 +174,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found title")
 
-            title = next(castep_file)
-            if title:
-                curr_run["title"] = title.strip()
+            curr_run["title"] = next(castep_file).strip()
 
         # Memory estimate
         elif block := get_block(line, castep_file,
@@ -194,10 +192,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found options")
 
-            opt = _process_params(block)
-
-            if opt:
-                curr_run["options"] = opt
+            curr_run["options"] = _process_params(block)
 
         # Build Info
         elif block := get_block(line, castep_file,
@@ -207,10 +202,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found build info")
 
-            curr = _process_buildinfo(block)
-
-            if curr:
-                curr_run["build_info"] = curr
+            curr_run["build_info"] = _process_buildinfo(block)
 
         # Pseudo-atomic energy
         elif block := get_block(line, castep_file, _PS_SHELL_RE, r"^\s*$", cnt=2):
@@ -218,9 +210,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found pseudo-atomic energy")
 
-            lines = iter(block.splitlines())
-            spec, energy = _process_ps_energy(lines)
-            curr_run["species_properties"][spec]["pseudo_atomic_energy"] = energy
+            key, val = _process_ps_energy(iter(block.splitlines()))
+            curr_run["species_properties"][key]["pseudo_atomic_energy"] = val
 
         # Mass
         elif block := get_block(line, castep_file, r"Mass of species in AMU", r"^ *$"):
@@ -230,8 +221,8 @@ def parse_castep_file(castep_file, verbose=False):
 
             for line in block.splitlines():
                 if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
-                    spec, mass = words
-                    curr_run["species_properties"][spec]["mass"] = float(mass)
+                    key, val = words
+                    curr_run["species_properties"][key]["mass"] = float(val)
 
         # Electric Quadrupole Moment
         elif block := get_block(line, castep_file, r"Electric Quadrupole Moment", r"^ *$"):
@@ -241,8 +232,8 @@ def parse_castep_file(castep_file, verbose=False):
 
             for line in block.splitlines():
                 if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
-                    spec, quad = words[0:2]
-                    curr_run["species_properties"][spec]["elec_quad"] = float(quad)
+                    key, val = words[0:2]
+                    curr_run["species_properties"][key]["elec_quad"] = float(val)
 
         # DFTD
         elif block := get_block(line, castep_file, "DFT-D parameters", r"^\s*x+\s*$", cnt=2):
@@ -257,12 +248,12 @@ def parse_castep_file(castep_file, verbose=False):
 
             for line in block.splitlines():
                 if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
-                    spec, pspot = words
-                    if "|" in pspot:
-                        curr_run["species_properties"][spec]["pspot_string"] = pspot
-                        pspot = _process_pspot_string(pspot)
+                    key, val = words
 
-                    curr_run["species_properties"][spec]["pseudopot"] = pspot
+                    if "|" in val:
+                        val = _process_pspot_string(val)
+
+                    curr_run["species_properties"][key]["pseudopot"] = val
 
         # SCF
         elif block := get_block(line, castep_file,
@@ -334,7 +325,9 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found symmetries")
 
-            curr_run["symmetries"], curr_run["constraints"] = _process_symmetry(iter(block.splitlines()))
+            curr_run["symmetries"], curr_run["constraints"] = _process_symmetry(
+                iter(block.splitlines())
+            )
 
         # TSS (must be ahead of initial pos)
         elif block := get_block(line, castep_file,
@@ -412,12 +405,12 @@ def parse_castep_file(castep_file, verbose=False):
                 curr_run["forces"] = defaultdict(list)
 
             lines = iter(block.splitlines())
-            ftype, accum = _process_forces(lines)
+            key, val = _process_forces(lines)
 
             if verbose:
-                print(f"Found {ftype} forces")
+                print(f"Found {key} forces")
 
-            curr_run["forces"][ftype].append(accum)
+            curr_run["forces"][key].append(val)
 
         # Stress tensor block
         elif block := get_block(line, castep_file, _STRESSES_BLOCK_RE, r"^ \*+$"):
@@ -425,12 +418,12 @@ def parse_castep_file(castep_file, verbose=False):
                 curr_run["stresses"] = defaultdict(list)
 
             lines = iter(block.splitlines())
-            ftype, accum = _process_stresses(lines)
+            key, val = _process_stresses(lines)
 
             if verbose:
-                print(f"Found {ftype} stress")
+                print(f"Found {key} stress")
 
-            curr_run["stresses"][ftype].append(accum)
+            curr_run["stresses"][key].append(val)
 
         # Phonon block
         elif match := _CASTEP_PHONON_RE.match(line):
@@ -486,9 +479,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found phonon symmetry analysis")
 
-            lines = iter(block.splitlines())
-            accum = _process_phonon_sym_analysis(lines)
-            curr_run["phonon_symmetry_analysis"].append(accum)
+            val = _process_phonon_sym_analysis(iter(block.splitlines()))
+            curr_run["phonon_symmetry_analysis"].append(val)
 
             # Solvation
         elif block := get_block(line, castep_file,
@@ -505,9 +497,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found dynamical matrix")
 
-            lines = iter(block.splitlines())
-            accum = _process_dynamical_matrix(lines)
-            curr_run["dynamical_matrix"] = accum
+            val = _process_dynamical_matrix(iter(block.splitlines()))
+            curr_run["dynamical_matrix"] = val
 
         # Raman tensors
         elif block := get_block(line, castep_file,
@@ -515,36 +506,34 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Raman")
 
-            lines = block.splitlines()[1:]
-            curr_run["raman"].append(_process_raman(lines))
+            curr_run["raman"].append(_process_raman(block.splitlines()[1:]))
 
         # Born charges
         elif block := get_block(line, castep_file, r"^\s*Born Effective Charges\s*$", r"^ =+$"):
             if verbose:
                 print("Found Born")
 
-            lines = iter(block.splitlines())
-            curr_run["born"].append(_process_born(lines))
+            curr_run["born"].append(_process_born(iter(block.splitlines())))
 
         # Permittivity and NLO Susceptibility
         elif block := get_block(line, castep_file, r"^ +Optical Permittivity", r"^ =+$"):
             if verbose:
                 print("Found optical permittivity")
 
-            opt_perm, dc_perm = _process_3_6_matrix(block.splitlines(), True)
-            curr_run["optical_permittivity"] = opt_perm
-            if dc_perm:
-                curr_run["dc_permittivity"] = dc_perm
+            val = _process_3_6_matrix(block.splitlines(), True)
+            curr_run["optical_permittivity"] = val[0]
+            if val[1]:
+                curr_run["dc_permittivity"] = val[1]
 
         # Polarisability
         elif block := get_block(line, castep_file, r"^ +Polarisabilit(y|ies)", r"^ =+$"):
             if verbose:
                 print("Found polarisability")
 
-            opt, stat = _process_3_6_matrix(block.splitlines(), True)
-            curr_run["optical_polarisability"] = opt
-            if stat:
-                curr_run["static_polarisability"] = stat
+            val = _process_3_6_matrix(block.splitlines(), True)
+            curr_run["optical_polarisability"] = val[0]
+            if val[1]:
+                curr_run["static_polarisability"] = val[1]
 
         # Non-linear
         elif block := get_block(line, castep_file,
@@ -616,8 +605,7 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print(f"Found MD Block (step {len(curr_run['md'])+1})")
 
-            accum = _process_md(block.splitlines())
-            curr_run["md"].append(accum)
+            curr_run["md"].append(_process_md(block.splitlines()))
 
         # GeomOpt
         elif block := get_block(line, castep_file,
@@ -629,6 +617,7 @@ def parse_castep_file(castep_file, verbose=False):
 
             if verbose:
                 print("Found final geom configuration")
+
             curr_run["geom_opt"]["final_configuration"] = _process_atreg_block(block.splitlines())
 
         elif match := re.match(rf"^\s*(?:{'|'.join(MINIMISERS)}):"
@@ -672,8 +661,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Chemical Shielding Tensor")
 
-            data = _parse_magres_block(0, block.splitlines())
-            curr_run["magres"].append(data)
+            val = _parse_magres_block(0, block.splitlines())
+            curr_run["magres"].append(val)
 
         elif block := get_block(line, castep_file,
                                 r"Chemical Shielding and Electric Field Gradient Tensor",
@@ -681,8 +670,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Chemical Shielding + EField Tensor")
 
-            data = _parse_magres_block(1, block.splitlines())
-            curr_run["magres"].append(data)
+            val = _parse_magres_block(1, block.splitlines())
+            curr_run["magres"].append(val)
 
         elif block := get_block(line, castep_file,
                                 r"Electric Field Gradient Tensor",
@@ -691,8 +680,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found EField Tensor")
 
-            data = _parse_magres_block(2, block.splitlines())
-            curr_run["magres"].append(data)
+            val = _parse_magres_block(2, block.splitlines())
+            curr_run["magres"].append(val)
 
         elif block := get_block(line, castep_file,
                                 r"(?:I|Ani)sotropic J-coupling",
@@ -700,8 +689,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found J-coupling")
 
-            data = _parse_magres_block(3, block.splitlines())
-            curr_run["magres"].append(data)
+            val = _parse_magres_block(3, block.splitlines())
+            curr_run["magres"].append(val)
 
         elif block := get_block(line, castep_file,
                                 r"\|\s*Hyperfine Tensor\s*\|",
@@ -710,8 +699,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found Hyperfine tensor")
 
-            data = _parse_magres_block(4, block.splitlines())
-            curr_run["magres"].append(data)
+            val = _parse_magres_block(4, block.splitlines())
+            curr_run["magres"].append(val)
 
         # --- Extra blocks for testing
 
@@ -723,8 +712,8 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found hug block")
 
             block = io.StringIO(block)
-            data = parse_hug_file(block)
-            curr_run["hug"].append(data)
+            val = parse_hug_file(block)
+            curr_run["hug"].append(val)
 
         # Bands block (spectral data)
         elif block := get_block(line, castep_file,
@@ -734,8 +723,8 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found bands block")
 
             block = io.StringIO(block)
-            data = parse_bands_file(block)
-            curr_run["bands"].append(data["bands"])
+            val = parse_bands_file(block)
+            curr_run["bands"].append(val["bands"])
 
         elif block := get_block(line, castep_file,
                                 r"BEGIN phonon_dos",
@@ -745,9 +734,9 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found phonon_dos block")
 
             block = io.StringIO(block)
-            data = parse_phonon_dos_file(block)
-            curr_run["phonon_dos"] = data["dos"]
-            curr_run["gradients"] = data["gradients"]
+            val = parse_phonon_dos_file(block)
+            curr_run["phonon_dos"] = val["dos"]
+            curr_run["gradients"] = val["gradients"]
 
         # E-Field
         elif block := get_block(line, castep_file,
@@ -757,9 +746,9 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found efield block")
 
             block = io.StringIO(block)
-            data = parse_efield_file(block)
-            curr_run["oscillator_strengths"] = data["oscillator_strengths"]
-            curr_run["permittivity"] = data["permittivity"]
+            val = parse_efield_file(block)
+            curr_run["oscillator_strengths"] = val["oscillator_strengths"]
+            curr_run["permittivity"] = val["permittivity"]
 
         # XRD Structure Factor
         elif block := get_block(line, castep_file,
@@ -771,9 +760,9 @@ def parse_castep_file(castep_file, verbose=False):
 
             block = "\n".join(block.splitlines()[1:-1])  # Strip begin/end tags lazily
             block = io.StringIO(block)
-            data = parse_xrd_sf_file(block)
+            val = parse_xrd_sf_file(block)
 
-            curr_run["xrd_sf"] = data
+            curr_run["xrd_sf"] = val
 
         # ELF FMT
         elif block := get_block(line, castep_file,
@@ -785,11 +774,11 @@ def parse_castep_file(castep_file, verbose=False):
 
             block = "\n".join(block.splitlines()[1:-1])  # Strip begin/end tags lazily
             block = io.StringIO(block)
-            data = parse_elf_fmt_file(block)
+            val = parse_elf_fmt_file(block)
             if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = data
+                curr_run["kpt-data"] = val
             else:
-                curr_run["kpt-data"].update(data)
+                curr_run["kpt-data"].update(val)
 
         # CHDIFF FMT
         elif block := get_block(line, castep_file,
@@ -801,11 +790,11 @@ def parse_castep_file(castep_file, verbose=False):
 
             block = "\n".join(block.splitlines()[1:-1])  # Strip begin/end tags lazily
             block = io.StringIO(block)
-            data = parse_chdiff_fmt_file(block)
+            val = parse_chdiff_fmt_file(block)
             if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = data
+                curr_run["kpt-data"] = val
             else:
-                curr_run["kpt-data"].update(data)
+                curr_run["kpt-data"].update(val)
 
         # POT FMT
         elif block := get_block(line, castep_file,
@@ -817,11 +806,11 @@ def parse_castep_file(castep_file, verbose=False):
 
             block = "\n".join(block.splitlines()[1:-1])  # Strip begin/end tags lazily
             block = io.StringIO(block)
-            data = parse_pot_fmt_file(block)
+            val = parse_pot_fmt_file(block)
             if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = data
+                curr_run["kpt-data"] = val
             else:
-                curr_run["kpt-data"].update(data)
+                curr_run["kpt-data"].update(val)
 
         # DEN FMT
         elif block := get_block(line, castep_file,
@@ -833,11 +822,11 @@ def parse_castep_file(castep_file, verbose=False):
 
             block = "\n".join(block.splitlines()[1:-1])  # Strip begin/end tags lazily
             block = io.StringIO(block)
-            data = parse_den_fmt_file(block)
+            val = parse_den_fmt_file(block)
             if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = data
+                curr_run["kpt-data"] = val
             else:
-                curr_run["kpt-data"].update(data)
+                curr_run["kpt-data"].update(val)
 
     if curr_run:
         fix_data_types(curr_run, {"energies": float,
@@ -1315,7 +1304,9 @@ def _process_symmetry(block):
 
         elif cons_block := get_block(line, block, r"constraints\.{5}", r"\s*x+\.{4}\s*"):
             con["ionic_constraints"] = defaultdict(list)
-            for match in re.finditer(rf"{ATREG}\s*[xyz]\s*{labelled_floats(('pos',), counts=(3,))}", cons_block):
+            for match in re.finditer(rf"{ATREG}\s*[xyz]\s*" +
+                                     labelled_floats(('pos',), counts=(3,)),
+                                     cons_block):
                 match = match.groupdict()
                 ind = atreg_to_index(match)
                 con["ionic_constraints"][ind].append(to_type(match["pos"].split(), float))
@@ -1323,6 +1314,7 @@ def _process_symmetry(block):
             con["cell_constraints"] = to_type(get_numbers(line), int)
 
     return sym, con
+
 
 def _process_dynamical_matrix(block):
     next(block)  # Skip header line
@@ -1368,6 +1360,7 @@ def _process_pspot_string(string):
         del pspot["shell_swp2"]
 
     pspot["projectors"] = tuple(projectors)
+    pspot["string"] = string
 
     fix_data_types(pspot, {"beta_radius": float,
                            "r_inner": float,
