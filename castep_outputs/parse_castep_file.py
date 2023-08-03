@@ -9,6 +9,7 @@ Port of extract_results.pl
 from collections import defaultdict
 import io
 import re
+import itertools
 
 from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
                       ATREG, ATOM_NAME_RE, SPECIES_RE, ATDAT3VEC, SHELLS, MINIMISERS,
@@ -326,6 +327,15 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["initial_cell"] = _process_unit_cell(block.splitlines())
 
+        # Cell Symmetry and contstraints
+        elif block := get_block(line, castep_file,
+                                "Symmetry and Constraints", "Cell constraints are"):
+
+            if verbose:
+                print("Found symmetries")
+
+            curr_run["symmetries"], curr_run["constraints"] = _process_symmetry(iter(block.splitlines()))
+
         # TSS (must be ahead of initial pos)
         elif block := get_block(line, castep_file,
                                 "(Reactant|Product)", r"^\s*x+\s*$", cnt=2):
@@ -392,7 +402,7 @@ def parse_castep_file(castep_file, verbose=False):
                                 r"\s*\+\s*Number\s*Fractional coordinates\s*Weight\s*\+",
                                 r"^\s*\++\s*$"):
             if verbose:
-                print("Found k-points")
+                print("Found k-points list")
 
             curr_run["k-points"] = _process_kpoint_blocks(block.splitlines(), False)
 
@@ -1262,9 +1272,57 @@ def _process_kpoint_blocks(block, explicit_kpoints):
     return accum
 
 
-# def _process_symmetry(block):
-#     ...
+def _process_symmetry(block):
 
+    sym = {}
+    con = {}
+
+    for line in block:
+        if "=" in line:
+            key, val = map(normalise_string, line.split("="))
+
+            if "Number of" in line:
+                val = to_type(val, int)
+
+            if "constraints" in key:
+                con[key] = val
+            else:
+                sym[key] = val
+
+        elif re.match(r"\s*\d+\s*rotation\s*", line):
+            if "symop" not in sym:
+                sym["symop"] = []
+
+            curr_sym = {"rotation": [], "symmetry_related": []}
+            for curr_ln in itertools.islice(block, 3):
+                curr_sym["rotation"].append(to_type(get_numbers(curr_ln), float))
+
+            next(block)  # elif re.match(r"\s*\d+\s*displacement\s*", line):
+
+            curr_sym["displacement"] = to_type(get_numbers(next(block)), float)
+
+            next(block)  # elif "symmetry related atoms:" in line:
+
+            while line := next(block).strip():
+                key, val = line.split(":")
+                curr_sym["symmetry_related"].extend((key, int(ind))
+                                                    for ind in val.split())
+
+            sym['symop'].append(curr_sym)
+
+        elif "Centre of mass" in line:
+            con["com_constrained"] = "NOT" not in line
+
+        elif cons_block := get_block(line, block, r"constraints\.{5}", r"\s*x+\.{4}\s*"):
+            con["ionic_constraints"] = defaultdict(list)
+            for match in re.finditer(rf"{ATREG}\s*[xyz]\s*{labelled_floats(('pos',), counts=(3,))}", cons_block):
+                match = match.groupdict()
+                ind = atreg_to_index(match)
+                con["ionic_constraints"][ind].append(to_type(match["pos"].split(), float))
+        elif "Cell constraints are:" in line:
+            con["cell_constraints"] = to_type(get_numbers(line), int)
+
+    return sym, con
 
 def _process_dynamical_matrix(block):
     next(block)  # Skip header line

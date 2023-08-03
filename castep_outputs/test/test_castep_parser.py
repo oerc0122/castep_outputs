@@ -438,7 +438,39 @@ Overall parallel efficiency rating: Satisfactory (64%)
         self.assertEqual(test_dict, {'k-points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
                                                   {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}]})
 
+
     def test_get_symmetry(self):
+        test_text = io.StringIO("""
+                           -------------------------------
+                               Symmetry and Constraints
+                           -------------------------------
+
+                      Maximum deviation from symmetry =  0.00000         ANG
+
+                      Number of symmetry operations   =           1
+                      Number of ionic constraints     =           3
+                      Point group of crystal =     1: C1, 1, 1
+                      Space group of crystal =     1: P1, P 1
+
+             Set iprint > 1 for details on symmetry rotations/translations
+
+                         Centre of mass is constrained
+             Set iprint > 1 for details of linear ionic constraints
+
+                         Number of cell constraints= 0
+                         Cell constraints are:  1 2 3 4 5 6
+
+        """)
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 0,
+                                                     'Number of ionic constraints': 3,
+                                                     'cell_constraints': (1, 2, 3, 4, 5, 6),
+                                                     'com_constrained': True},
+                                     'symmetries': {'Maximum deviation from symmetry': '0.00000 ANG',
+                                                    'Number of symmetry operations': 1,
+                                                    'Point group of crystal': '1: C1, 1, 1',
+                                                    'Space group of crystal': '1: P1, P 1'}})
+
         test_text = io.StringIO("""
                            -------------------------------
                                Symmetry and Constraints
@@ -462,41 +494,70 @@ Overall parallel efficiency rating: Satisfactory (64%)
              Br:    1
              Rb:    1
 
-        """)
-        self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-
-    def test_get_constraints(self):
-        test_text = io.StringIO("""
-             Set iprint > 1 for details on symmetry rotations/translations
-
-                         Centre of mass is constrained
-             Set iprint > 1 for details of linear ionic constraints
-
-                         Number of cell constraints= 0
-                         Cell constraints are:  1 2 3 4 5 6
-
+                    1 rotation
+                 (   1.00000000000   0.00000000000   0.00000000000 )
+                 (   0.00000000000   1.00000000000   0.00000000000 )
+                 (   0.00000000000   0.00000000000   1.00000000000 )
+                    1 displacement
+                 (   0.00000000000   0.00000000000   0.00000000000 )
+                      symmetry related atoms:
+             Se:    1    2    3
 
                          Centre of mass is constrained
 
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx....
             x  Species       atom   co-ordinate  constraints.....
             x-------------------------------------------------------------....
-            x Br                1       x       145656.0817      0.0000      0.0000
-            x Br                1       y            0.0000 145656.0817      0.0000
-            x Br                1       z            0.0000      0.0000 145656.0817
-            x Rb                1       x       155798.2686      0.0000      0.0000
-            x Rb                1       y            0.0000 155798.2686      0.0000
-            x Rb                1       z            0.0000      0.0000 155798.2686
+            x Se                1       x       143935.2749      0.0000      0.0000
+            x Se                1       y            0.0000 143935.2749      0.0000
+            x Se                1       z            0.0000      0.0000 143935.2749
+            x Se                2       x       143935.2749      0.0000      0.0000
+            x Se                2       y            0.0000 143935.2749      0.0000
+            x Se                2       z            0.0000      0.0000 143935.2749
+            x Se                3       x       143935.2749      0.0000      0.0000
+            x Se                3       y            0.0000 143935.2749      0.0000
+            x Se                3       z            0.0000      0.0000 143935.2749
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx....
 
-                         Number of cell constraints= 5
-                         Cell constraints are:  1 1 1 0 0 0
+                         Number of cell constraints= 6
+                         Cell constraints are:  0 0 0 0 0 0
+
 
         """)
 
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 6,
+                                                     'Number of ionic constraints': 3,
+                                                     'cell_constraints': (0, 0, 0, 0, 0, 0),
+                                                     'com_constrained': True,
+                                                     'ionic_constraints':
+                                                     {('Se', 1): [(143935.2749, 0.0, 0.0),
+                                                                  (0.0, 143935.2749, 0.0),
+                                                                  (0.0, 0.0, 143935.2749)],
+                                                      ('Se', 2): [(143935.2749, 0.0, 0.0),
+                                                                  (0.0, 143935.2749, 0.0),
+                                                                  (0.0, 0.0, 143935.2749)],
+                                                      ('Se', 3): [(143935.2749, 0.0, 0.0),
+                                                                  (0.0, 143935.2749, 0.0),
+                                                                  (0.0, 0.0, 143935.2749)]}},
+                                     'symmetries': {'Maximum deviation from symmetry': '0.00000 ANG',
+                                                    'Number of symmetry operations': 1,
+                                                    'Point group of crystal': '1: C1, 1, 1',
+                                                    'Space group of crystal': '213: P4_132, P 4bd 2ab 3',
+                                                    'symop': [{'displacement': (0.0, 0.0, -0.0),
+                                                               'rotation': [(1.0, 0.0, 0.0),
+                                                                            (0.0, 1.0, -0.0),
+                                                                            (-0.0, -0.0, 1.0)],
+                                                               'symmetry_related': [('Br', 1),
+                                                                                    ('Rb', 1)]},
+                                                              {'displacement': (0.0, 0.0, 0.0),
+                                                               'rotation': [(1.0, 0.0, 0.0),
+                                                                            (0.0, 1.0, 0.0),
+                                                                            (0.0, 0.0, 1.0)],
+                                                               'symmetry_related': [('Se', 1),
+                                                                                    ('Se', 2),
+                                                                                    ('Se', 3)]}]}})
 
     def test_get_target_stress(self):
         test_text = io.StringIO("""
@@ -978,14 +1039,16 @@ The total projected population is   19.999   0.000
    *    r      8.51250     8.51250     8.51250     8.51250   A        * <--   LJ
    *    e      0.00009     0.00017     0.00017     0.00017   eV       * <--   LJ
    *    s      1.00000     2.00000     2.00000     2.00000   A        * <--   LJ
-   *         H  -H       H  -N       N  -H       N  -N                *
-   *    r      8.51250     8.51250     8.51250     8.51250   A        * <--   LJ
-   *    e      0.00009     0.00026     0.00026     0.00026   eV       * <--   LJ
-   *    s      1.00000     3.00000     3.00000     3.00000   A        * <--   LJ
-   *         He -He      He -N       N  -He      N  -N                *
-   *    r      8.51250     8.51250     8.51250     8.51250   A        * <--   LJ
-   *    e      0.00017     0.00026     0.00026     0.00026   eV       * <--   LJ
-   *    s      2.00000     3.00000     3.00000     3.00000   A        * <--   LJ
+   ********************************************************************
+   *                             Three Body                           *
+   *                            H   H   H                             *
+   *    l                      1.0000000000                           * <--   SW
+   *    c                      0.1000000000                           * <--   SW
+   *    C                      0.0000000000                           * <--   SW
+   ********************************************************************
+   *                               SW Units                           *
+   *    e                      2.1682052121                  eV       * <--   SW
+   *    s                      0.1336587852                  A        * <--   SW
    ********************************************************************
 
         """)
@@ -1565,15 +1628,6 @@ Species   Ion     Hirshfeld Charge (e)
                                        'ky': 0.375,
                                        'kz': 0.375,
                                        'spin': 1}]})
-
-    def test_get_bs_time(self):
-        test_text = io.StringIO("""
-        Total time to compute matrix elements              1.36 sec |<-- SPEC
-        """)
-        self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
 
     def test_get_chem_shielding(self):
         test_text = io.StringIO("""
