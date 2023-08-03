@@ -33,6 +33,24 @@ _PS_SHELL_RE = re.compile(
 _PSPOT_PROJ_RE = re.compile(r"(?P<orbital>\d)(?P<shell>\d)(?P<type>U|UU|N)?")
 _UNLABELLED_PROJ_RE = r"\d\d(?:UU|U|N)?"
 
+_PSPOT_REFERENCE_STRUC_RE = re.compile(
+    rf"""
+    ^\s*\|\s*
+    (?P<orb>{SHELL_RE}(?:/\d+)?)\s*
+    {labelled_floats(('occupation', 'energy'))}
+    \s*\|\s*$
+    """, re.VERBOSE)
+_PSPOT_DEF_RE = re.compile(
+    rf"""
+    ^\s*\|\s*
+    (?P<beta>\d+|loc)\s*
+    (?P<l>\d+)\s*
+    (?P<j>\d+)?\s*
+    {labelled_floats(('e', 'Rc'))}\s*
+    (?P<scheme>\w+)\s*
+    (?P<norm>\d+)
+    \s*\|\s*$
+    """, re.VERBOSE)
 
 # PSPot String
 _PSPOT_RE = re.compile(labelled_floats(("local_channel",
@@ -285,6 +303,17 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["pspot_detail"].append(_process_pspot_report(block.splitlines()))
 
+        elif match := re.match(r"\s*(?P<type>AE|PS) eigenvalue nl (?P<nl>\d+) =" +
+                               labelled_floats(('eigenvalue',)), line):
+
+            if verbose:
+                print(f"Found PSPot debug for {match['type']} at {match['nl']}")
+
+            match = match.groupdict()
+            fix_data_types(match, {'nl': int, 'eigenvalue': float})
+
+            curr_run["pspot_debug"].append(match)
+
         # Pair Params
         elif block := get_block(line, castep_file, "PairParams", "^\s*$"):
 
@@ -329,9 +358,11 @@ def parse_castep_file(castep_file, verbose=False):
         elif any((line.startswith("Final energy, E"),
                   line.startswith("Final energy"),
                   "Total energy corrected for finite basis set" in line,
-                  re.search("(BFGS|TPSD): finished iteration.*with enthalpy", line))):
+                  re.search(f"({'|'.join(MINIMISERS)}): finished iteration.*with enthalpy", line))):
+
             if verbose:
                 print("Found energy")
+
             curr_run["energies"].append(to_type(get_numbers(line)[-1], float))
 
         # Free energies
@@ -1440,25 +1471,6 @@ def _process_pspot_string(string):
 
 
 def _process_pspot_report(block):
-    _PSPOT_REFERENCE_STRUC_RE = re.compile(
-        rf"""
-        ^\s*\|\s*
-        (?P<orb>{SHELL_RE}(?:/\d+)?)\s*
-        {labelled_floats(('occupation', 'energy'))}
-        \s*\|\s*$
-        """, re.VERBOSE)
-    _PSPOT_DEF_RE = re.compile(
-        rf"""
-        ^\s*\|\s*
-        (?P<beta>\d+|loc)\s*
-        (?P<l>\d+)\s*
-        (?P<j>\d+)?\s*
-        {labelled_floats(('e', 'Rc'))}\s*
-        (?P<scheme>\w+)\s*
-        (?P<norm>\d+)
-        \s*\|\s*$
-        """, re.VERBOSE)
-
 
     accum = {"reference_electronic_structure": [],
              "pseudopotential_definition": []}

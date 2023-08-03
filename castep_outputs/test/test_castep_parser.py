@@ -349,10 +349,16 @@ Overall parallel efficiency rating: Satisfactory (64%)
         PS eigenvalue nl 21 = -0.01829559
         ---------------------------------------
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'pspot_debug':
+                                     [{'eigenvalue': -18.40702924, 'nl': 10, 'type': 'AE'},
+                                      {'eigenvalue': -0.54031716, 'nl': 20, 'type': 'AE'},
+                                      {'eigenvalue': -0.0183688, 'nl': 21, 'type': 'AE'},
+                                      {'eigenvalue': -0.5402629, 'nl': 20, 'type': 'PS'},
+                                      {'eigenvalue': -0.01829559, 'nl': 21, 'type': 'PS'}
+                                      ]})
 
     def test_get_species_prop(self):
         test_text = io.StringIO("""
