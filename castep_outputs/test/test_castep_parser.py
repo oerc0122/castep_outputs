@@ -1640,8 +1640,8 @@ Species   Ion     Hirshfeld Charge (e)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text, True)[0]
-        pprint.pprint(test_dict)
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
         self.assertEqual(test_dict, {'energies': (-1317.70077, -216.058016),
                                      'geom_opt_min': [{'previous': {'Fdelta': 0.203755,
                                                                     'enthalpy': -216.058941,

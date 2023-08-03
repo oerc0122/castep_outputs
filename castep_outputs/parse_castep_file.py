@@ -730,7 +730,7 @@ def parse_castep_file(castep_file, verbose=False):
             typ = re.search(_MINIMISERS_RE, line)
 
             if verbose:
-                print(f"Found {typ} geom_block")
+                print(f"Found {typ.group(0)} geom_block")
 
             curr_run["geom_opt_min"].append(_process_geom_table(block.splitlines()))
 
@@ -1701,7 +1701,6 @@ def _process_geom_table(block):
 
     accum = {}
     for line in block:
-        print("HE", line)
         if match := _GEOMOPT_MIN_TABLE_RE.match(line):
             match = match.groupdict()
             fix_data_types(match, {key: float for key in ('lambda', 'Fdelta', 'enthalpy')})
