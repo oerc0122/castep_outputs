@@ -37,27 +37,22 @@ CASTEP_BANDS_FERMI_RE = re.compile(r"Fermi energ(ies|y) \(in atomic units\)\s*" 
 def parse_regular_header(block, extra_opts=tuple()):
     """ Parse (semi-)standard castep file header block (given as iterable over lines) """
 
-    i = 0
     data = {}
     coords = defaultdict(list)
-    while i < len(block):
-        line = block[i]
-        print(line)
+    for line in block:
+
         if line.strip().startswith("Number of"):
             _, _, *key, val = line.split()
             data[" ".join(key)] = int(float(val))
         elif "Unit cell vectors" in line:
-            data['unit_cell'] = [to_type(line.split(), float)
-                                 for line in block[i+1:i+4]]
-            i += 3
+            data['unit_cell'] = [to_type(next(line).split(), float)
+                                 for _ in range(3)]
 
         elif match := FRACCOORDS_RE.match(line):
             stack_dict(coords, match.groupdict())
 
         elif match := re.search(f"({'|'.join(extra_opts)})", line):
             data[match.group(0)] = to_type(get_numbers(line), float)
-
-        i += 1
 
     fix_data_types(coords, {'index': int,
                             'u': float,
@@ -87,11 +82,9 @@ def parse_bands_file(bands_file, verbose=False):
     bands_info = defaultdict(list)
     qdata = {}
     for line in bands_file:
-        if block := get_block(line, bands_file,
-                              r"BEGIN header",
-                              r"END header"):
+        if block := get_block(line, bands_file, "BEGIN header", "END header"):
 
-            data = parse_regular_header(block.splitlines())
+            data = parse_regular_header(block)
             bands_info.update(data)
 
         elif line.startswith("K-point"):
@@ -134,15 +127,11 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
     # pylint: disable=too-many-branches,redefined-outer-name
     phonon_dos_info = defaultdict(list)
     for line in phonon_dos_file:
-        if block := get_block(line, phonon_dos_file,
-                              r"BEGIN header",
-                              r"END header"):
-            data = parse_regular_header(block.splitlines())
+        if block := get_block(line, phonon_dos_file, "BEGIN header", "END header"):
+            data = parse_regular_header(block)
             phonon_dos_info.update(data)
 
-        elif block := get_block(line, phonon_dos_file,
-                                r"BEGIN GRADIENTS",
-                                r"END GRADIENTS"):
+        elif block := get_block(line, phonon_dos_file, "BEGIN GRADIENTS", "END GRADIENTS"):
             if verbose:
                 print("Found gradient block")
             qdata = defaultdict(list)
@@ -154,7 +143,7 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
                                       'f': float,
                                       'Grad_qf': float})
 
-            for line in block.splitlines():
+            for line in block:
                 if match := PHONON_PHONON_RE.match(line):
                     if qdata:
                         fix(qdata)
@@ -163,6 +152,7 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
 
                     for key, val in match.groupdict().items():
                         qdata[key] = val.split()
+
                 elif match := PROCESS_PHONON_PHONON_RE.match(line):
                     stack_dict(qdata, match.groupdict())
 
@@ -170,14 +160,12 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
                 fix(qdata)
                 phonon_dos_info['gradients'].append(qdata)
 
-        elif block := get_block(line, phonon_dos_file,
-                                r"BEGIN DOS",
-                                r"END DOS"):
+        elif block := get_block(line, phonon_dos_file, "BEGIN DOS", "END DOS", out_fmt=list):
             if verbose:
                 print("Found DOS block")
 
             dos = defaultdict(list)
-            for line in block.splitlines()[1:-2]:
+            for line in block[1:-2]:
                 match = re.match(labelled_floats(('freq', 'g', 'si')), line)
                 stack_dict(dos, match.groupdict())
 
@@ -197,20 +185,18 @@ def parse_efield_file(efield_file, verbose=False):
     efield_info = defaultdict(list)
 
     for line in efield_file:
-        if block := get_block(line, efield_file,
-                              r"BEGIN header",
-                              r"END header"):
-            data = parse_regular_header(block.splitlines(), ('Oscillator Q',))
+        if block := get_block(line, efield_file, "BEGIN header", "END header"):
+            data = parse_regular_header(block, ('Oscillator Q',))
             efield_info.update(data)
 
-        elif block := get_block(line, efield_file,
-                                r"BEGIN Oscillator Strengths",
-                                r"END Oscillator Strengths"):
+        elif block := get_block(line, efield_file, "BEGIN Oscillator Strengths",
+                                "END Oscillator Strengths",
+                                out_fmt=list):
             if verbose:
                 print("Found Oscillator Strengths")
 
             osc = defaultdict(list)
-            for line in block.splitlines()[1:-2]:
+            for line in block[1:-2]:
                 match = re.match(rf"\s*(?P<freq>{INTNUMBER_RE})" +
                                  labelled_floats([*(f'S{d}' for d in SND_D)]), line)
                 stack_dict(osc, match.groupdict())
@@ -220,14 +206,13 @@ def parse_efield_file(efield_file, verbose=False):
                                      **{f'S{d}': float for d in SND_D}})
                 efield_info['oscillator_strengths'].append(osc)
 
-        elif block := get_block(line, efield_file,
-                                r"BEGIN permittivity",
-                                r"END permittivity"):
+        elif block := get_block(line, efield_file, "BEGIN permittivity", "END permittivity",
+                                out_fmt=list):
             if verbose:
                 print("Found permittivity")
 
             perm = defaultdict(list)
-            for line in block.splitlines()[1:-2]:
+            for line in block[1:-2]:
                 match = re.match(labelled_floats(['freq',
                                                   *(f'e_r_{d}' for d in SND_D)]), line)
                 stack_dict(perm, match.groupdict())
