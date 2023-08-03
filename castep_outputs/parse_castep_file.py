@@ -166,7 +166,7 @@ _GEOMOPT_MIN_TABLE_RE = re.compile(
 _GEOMOPT_TABLE_RE = re.compile(
     r"\s*\|\s* (?P<parameter>\S+)" +
     labelled_floats(('value', 'tolerance'), sep=r"\s*\|\s*") +
-    rf"\s*\|\s* \S+ (?#Units) \s*\|\s* (?P<converged>No|Yes) \s*\|", re.VERBOSE)
+    r"\s*\|\s* \S+ (?#Units) \s*\|\s* (?P<converged>No|Yes) \s*\|", re.VERBOSE)
 
 
 # Regexp to identify Mulliken ppoulation analysis line
@@ -212,6 +212,7 @@ _MAGRES_TASK = (
 
 def parse_castep_file(castep_file, verbose=False):
     """ Parse castep file into lists of dicts ready to JSONise """
+    # pylint: disable=redefined-outer-name
 
     runs = []
     curr_run = defaultdict(list)
@@ -326,7 +327,7 @@ def parse_castep_file(castep_file, verbose=False):
             curr_run["pspot_debug"].append(match)
 
         # Pair Params
-        elif block := get_block(line, castep_file, "PairParams", "^\s*$"):
+        elif block := get_block(line, castep_file, "PairParams", r"^\s*$"):
 
             if verbose:
                 print("Found pair params")
@@ -1527,8 +1528,6 @@ def _process_pspot_report(block):
 
         elif "Partial core correction Rc" in line:
             accum["partial_core_correction"] = to_type(get_numbers(line), float)
-
-
 
     return accum
 
