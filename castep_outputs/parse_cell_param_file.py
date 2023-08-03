@@ -49,7 +49,8 @@ def parse_cell_param_file(cell_param_file, verbose=False):
 
         if block := get_block(line, cell_param_file,
                               re.compile('^%block ', re.IGNORECASE),
-                              re.compile('^%endblock', re.IGNORECASE)):
+                              re.compile('^%endblock', re.IGNORECASE),
+                              out_fmt=str):
 
             block_title = block.splitlines()[0].split()[1].lower()
 
