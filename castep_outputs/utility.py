@@ -1,7 +1,9 @@
 """
 Utility functions for parsing castep outputs
 """
+import io
 import collections.abc
+from collections import defaultdict
 import itertools
 import re
 import json
@@ -15,7 +17,6 @@ except ImportError:
         _YAML_TYPE = "yaml"
     except ImportError:
         _YAML_TYPE = None
-
 
 
 def normalise_string(string):
@@ -40,6 +41,29 @@ def atreg_to_index(dict_in, clear=True):
     return (spec, int(ind))
 
 
+def normalise(obj):
+    """
+    Standardises data after processing
+    """
+    if isinstance(obj, (tuple, list)):
+        obj = tuple(normalise(v) for v in obj)
+    elif isinstance(obj, (dict, defaultdict)):
+        obj = {key: normalise(val) for key, val in obj.items()}
+
+    return obj
+
+
+def json_safe(obj):
+    """ Transform datatypes into JSON safe variants"""
+    if isinstance(obj, (tuple, list)):
+        obj = [json_safe(v) for v in obj]
+    elif isinstance(obj, dict):
+        obj = json_safe_dict(obj)
+    elif isinstance(obj, complex):
+        obj = (obj.real, obj.imag)
+    return obj
+
+
 def json_safe_dict(obj):
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """
@@ -48,11 +72,7 @@ def json_safe_dict(obj):
     for key, val in obj.items():
         if isinstance(key, (tuple, list)):
             key = "_".join(map(str, key))
-        if isinstance(val, dict):
-            val = json_safe_dict(val)
-        elif isinstance(val, (tuple, list)):
-            val = [v if not isinstance(v, dict) else json_safe_dict(v) for v in val]
-        obj_out[key] = val
+        obj_out[key] = json_safe(val)
     return obj_out
 
 
@@ -114,6 +134,7 @@ SUPPORTED_FORMATS = {"json": json_dumper,
                      "pprint": pprint_dumper,
                      "print": print_dumper}
 
+
 def get_dumpers(dump_fmt: str):
     """
     Get appropriate dump for unified interface
@@ -135,38 +156,55 @@ def get_numbers(line: str):
     return NUMBER_RE.findall(line)
 
 
-def get_block(line: str, in_file, start, end, cnt=1):
+def get_block(init_line: str, in_file, start, end, *, cnt=1, out_fmt=str):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
 
     block = ""
 
-    if not re.search(start, line):
+    if not re.search(start, init_line):
         return block
 
-    block = line
+    block = init_line
     fnd = cnt
-    while line := in_file.readline():
+    for line in in_file:
         block += line
         if re.search(end, line):
             fnd -= 1
             if fnd == 0:
                 break
     else:
-        raise IOError(f"Unexpected end of file in {in_file.name}")
+        if hasattr(in_file, 'name'):
+            raise IOError(f"Unexpected end of file in {in_file.name}.")
+        raise IOError("Unexpected end of file.")
 
-    return block
+    if not block:
+        return ""
+    if out_fmt is str:
+        return block
+    if out_fmt is list:
+        return block.splitlines()
+    if out_fmt is io.StringIO:
+        return io.StringIO(block)
 
 
-def labelled_floats(labels, counts=(None,), sep=r"\s+?"):
+def labelled_floats(labels, counts=(None,), sep=r"\s+?", suff=""):
     """ Constructs a regex for extracting floats with assigned labels
     :param labels:iterable of labels to label each group
     :param counts:iterable of counts to group into each label (count must not exceed that of labels)
     :param sep:separator between floats
     """
-    assert len(labels) >= len(counts)
-    return ''.join(rf"(?P<{label}>(?:{sep}{EXPNUMBER_RE}){f'{{{cnt}}}' if cnt else ''})"
-                   for label, cnt in itertools.zip_longest(labels, counts))
+    if suff and any(cnt for cnt in counts):
+        raise NotImplementedError("Suffix and counts not currently supported")
+
+    outstr = ""
+    for label, cnt in itertools.zip_longest(labels, counts):
+        if cnt:
+            outstr += f"(?:(?P<{label}>(?:{sep}{EXPNUMBER_RE}{suff}){{{cnt}}}))"
+        else:
+            outstr += f"(?:{sep}(?P<{label}>{EXPNUMBER_RE}){suff})"
+
+    return outstr
 
 
 def stack_dict(out_dict, in_dict):
@@ -204,6 +242,9 @@ def to_type(data_in, typ):
 SHELLS = ('s', 'p', 'd', 'f')
 FST_D = ('x', 'y', 'z')
 SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
+MINIMISERS = ('bfgs', 'lbfgs', 'fire', 'tpsd', 'dmd')
+PAIR_POTS = ('LJ', 'BUCK', 'COUL', 'DZ', 'POL', 'BB', 'SHO',
+             'SW', 'MORS', 'POLM', 'LJ_S', 'PES', 'BU_S', 'TIP4', 'QUIP')
 
 CASTEP_OUTPUT_NAMES = (
     "castep",
@@ -231,11 +272,11 @@ INTNUMBER_RE = r"(?:\d+)"
 NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
 
 # Regexp to identify extended chemical species
-SPECIES_RE = r"[A-Z][a-z]?(?:[:]\w{1,2})?"
-ATOM_NAME_RE = rf"{SPECIES_RE}(?::\w+)?"
+SPECIES_RE = r"[A-Z][a-z]{0,2}"
+ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
 
 # Unless we have *VERY* exotic electron shells
-SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{1,2}}"
+SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
 
 # Atom regexp
 ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"

@@ -7,7 +7,7 @@ import sys
 import os.path
 
 from .args import (parse_args, args_to_dict)
-from .utility import (json_safe_dict, flatten_dict, get_dumpers)
+from .utility import (json_safe, flatten_dict, get_dumpers)
 from .parse_castep_file import parse_castep_file
 from .parse_cell_param_file import parse_cell_param_file
 from .parse_md_geom_file import parse_md_geom_file
@@ -52,10 +52,7 @@ def parse_single(in_file, parser: callable = None,
             data = parser(file, verbose)
 
     if out_format == "json" or testing:
-        if isinstance(data, list):
-            data = [json_safe_dict(run) for run in data]
-        else:
-            data = json_safe_dict(data)
+        data = json_safe(data)
 
     if testing:
         if isinstance(data, list):
