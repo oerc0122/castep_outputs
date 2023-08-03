@@ -15,10 +15,235 @@
       "Mn": {
         "pseudo_atomic_energy": -2901.7207,
         "mass": 54.93805,
-        "elec_quad": 0.33,
-        "pseudopot": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        "electric_quadrupole_moment": 0.33,
+        "pseudopot": {
+          "local_channel": 3,
+          "core_radius": 1.8,
+          "beta_radius": 1.8,
+          "r_inner": 0.6,
+          "coarse": 12,
+          "medium": 14,
+          "fine": 16,
+          "proj": "30U:40:31:32",
+          "opt": "qc=7",
+          "debug": null,
+          "projectors": [
+            {
+              "orbital": 3,
+              "shell": "s",
+              "type": "U"
+            },
+            {
+              "orbital": 4,
+              "shell": "s",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "p",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "d",
+              "type": null
+            }
+          ],
+          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        }
       }
     },
+    "pspot_detail": [
+      {
+        "reference_electronic_structure": [
+          {
+            "orb": "3s1/2",
+            "occupation": 2.0,
+            "energy": -3.132
+          },
+          {
+            "orb": "3p1/2",
+            "occupation": 2.0,
+            "energy": -2.001
+          },
+          {
+            "orb": "3p1/2",
+            "occupation": 2.0,
+            "energy": -2.001
+          },
+          {
+            "orb": "3d3/2",
+            "occupation": 2.0,
+            "energy": -0.258
+          },
+          {
+            "orb": "3d3/2",
+            "occupation": 2.0,
+            "energy": -0.258
+          },
+          {
+            "orb": "4s1/2",
+            "occupation": 2.0,
+            "energy": -0.194
+          }
+        ],
+        "pseudopotential_definition": [
+          {
+            "beta": 1,
+            "l": 0,
+            "j": 1,
+            "e": -3.132,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 2,
+            "l": 0,
+            "j": 1,
+            "e": -0.194,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 3,
+            "l": 0,
+            "j": 1,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 4,
+            "l": 1,
+            "j": 3,
+            "e": -2.001,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 5,
+            "l": 1,
+            "j": 1,
+            "e": -2.001,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 6,
+            "l": 1,
+            "j": 3,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 7,
+            "l": 1,
+            "j": 1,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 8,
+            "l": 2,
+            "j": 5,
+            "e": -0.258,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 9,
+            "l": 2,
+            "j": 3,
+            "e": -0.258,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 10,
+            "l": 2,
+            "j": 5,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 11,
+            "l": 2,
+            "j": 3,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": "loc",
+            "l": 3,
+            "j": 0,
+            "e": 0.0,
+            "Rc": 1.803,
+            "scheme": "pn",
+            "norm": 0
+          }
+        ],
+        "element": "Mn",
+        "ionic_charge": 15.0,
+        "level_of_theory": "LDA",
+        "solver": "Koelling-Harmon",
+        "augmentation_charge_rinner": [
+          0.6
+        ],
+        "partial_core_correction": [
+          0.6
+        ],
+        "detail": {
+          "local_channel": 3,
+          "core_radius": 1.8,
+          "beta_radius": 1.8,
+          "r_inner": 0.6,
+          "coarse": 12,
+          "medium": 14,
+          "fine": 16,
+          "proj": "30U:40:31:32",
+          "opt": "qc=7",
+          "debug": null,
+          "projectors": [
+            {
+              "orbital": 3,
+              "shell": "s",
+              "type": "U"
+            },
+            {
+              "orbital": 4,
+              "shell": "s",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "p",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "d",
+              "type": null
+            }
+          ],
+          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        }
+      }
+    ],
     "options": {
       "general": {
         "output verbosity": "normal (1)",
@@ -100,6 +325,219 @@
         "periodic dipole correction": "NONE"
       }
     },
+    "initial_cell": {
+      "real_lattice": [
+        [
+          6.3145,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          6.3145,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          6.3145
+        ]
+      ],
+      "recip_lattice": [
+        [
+          0.995040828,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.995040828,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.995040828
+        ]
+      ],
+      "lattice_parameters": [
+        6.3145,
+        6.3145,
+        6.3145
+      ],
+      "cell_angles": [
+        90.0,
+        90.0,
+        90.0
+      ],
+      "volume": 251.777492,
+      "density_amu": 4.364016,
+      "density_g": 7.246619
+    },
+    "initial_positions": {
+      "Mn_1": [
+        0.061,
+        0.061,
+        0.061
+      ],
+      "Mn_2": [
+        0.811,
+        0.311,
+        0.189
+      ],
+      "Mn_3": [
+        0.939,
+        0.561,
+        0.439
+      ],
+      "Mn_4": [
+        0.439,
+        0.939,
+        0.561
+      ],
+      "Mn_5": [
+        0.561,
+        0.439,
+        0.939
+      ],
+      "Mn_6": [
+        0.311,
+        0.189,
+        0.811
+      ],
+      "Mn_7": [
+        0.689,
+        0.689,
+        0.689
+      ],
+      "Mn_8": [
+        0.189,
+        0.811,
+        0.311
+      ],
+      "Mn_9": [
+        0.125,
+        0.206,
+        0.456
+      ],
+      "Mn_10": [
+        0.875,
+        0.706,
+        0.044
+      ],
+      "Mn_11": [
+        0.544,
+        0.625,
+        0.294
+      ],
+      "Mn_12": [
+        0.294,
+        0.544,
+        0.625
+      ],
+      "Mn_13": [
+        0.456,
+        0.125,
+        0.206
+      ],
+      "Mn_14": [
+        0.206,
+        0.456,
+        0.125
+      ],
+      "Mn_15": [
+        0.625,
+        0.294,
+        0.544
+      ],
+      "Mn_16": [
+        0.794,
+        0.956,
+        0.375
+      ],
+      "Mn_17": [
+        0.375,
+        0.794,
+        0.956
+      ],
+      "Mn_18": [
+        0.044,
+        0.875,
+        0.706
+      ],
+      "Mn_19": [
+        0.956,
+        0.375,
+        0.794
+      ],
+      "Mn_20": [
+        0.706,
+        0.044,
+        0.875
+      ]
+    },
+    "k-points": {
+      "kpoint_mp_grid": [
+        4,
+        4,
+        4
+      ],
+      "kpoint_mp_offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "num_kpoints": [
+        32
+      ]
+    },
+    "symmetries": {
+      "Maximum deviation from symmetry": "0.00000 ANG",
+      "Number of symmetry operations": 1,
+      "Point group of crystal": "1: C1, 1, 1",
+      "Space group of crystal": "213: P4_132, P 4bd 2ab 3"
+    },
+    "constraints": {
+      "Number of ionic constraints": 3,
+      "com_constrained": true,
+      "Number of cell constraints": 0,
+      "cell_constraints": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "target_stress": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "memory_estimate": [
+      {
+        "BLAS internal memory storage": {
+          "memory": 0.0,
+          "disk": 0.0
+        },
+        "Model and support data": {
+          "memory": 3776.4,
+          "disk": 0.0
+        },
+        "Electronic energy minimisation requirements": {
+          "memory": 15189.3,
+          "disk": 0.0
+        },
+        "Force calculation requirements": {
+          "memory": 9.8,
+          "disk": 0.0
+        }
+      }
+    ],
     "build_info": {
       "summary": "Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr 14 15:13:22 2023 +0100",
       "Compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
@@ -115,10 +553,235 @@
       "Mn": {
         "pseudo_atomic_energy": -2901.7207,
         "mass": 54.93805,
-        "elec_quad": 0.33,
-        "pseudopot": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        "electric_quadrupole_moment": 0.33,
+        "pseudopot": {
+          "local_channel": 3,
+          "core_radius": 1.8,
+          "beta_radius": 1.8,
+          "r_inner": 0.6,
+          "coarse": 12,
+          "medium": 14,
+          "fine": 16,
+          "proj": "30U:40:31:32",
+          "opt": "qc=7",
+          "debug": null,
+          "projectors": [
+            {
+              "orbital": 3,
+              "shell": "s",
+              "type": "U"
+            },
+            {
+              "orbital": 4,
+              "shell": "s",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "p",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "d",
+              "type": null
+            }
+          ],
+          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        }
       }
     },
+    "pspot_detail": [
+      {
+        "reference_electronic_structure": [
+          {
+            "orb": "3s1/2",
+            "occupation": 2.0,
+            "energy": -3.132
+          },
+          {
+            "orb": "3p1/2",
+            "occupation": 2.0,
+            "energy": -2.001
+          },
+          {
+            "orb": "3p1/2",
+            "occupation": 2.0,
+            "energy": -2.001
+          },
+          {
+            "orb": "3d3/2",
+            "occupation": 2.0,
+            "energy": -0.258
+          },
+          {
+            "orb": "3d3/2",
+            "occupation": 2.0,
+            "energy": -0.258
+          },
+          {
+            "orb": "4s1/2",
+            "occupation": 2.0,
+            "energy": -0.194
+          }
+        ],
+        "pseudopotential_definition": [
+          {
+            "beta": 1,
+            "l": 0,
+            "j": 1,
+            "e": -3.132,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 2,
+            "l": 0,
+            "j": 1,
+            "e": -0.194,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 3,
+            "l": 0,
+            "j": 1,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 4,
+            "l": 1,
+            "j": 3,
+            "e": -2.001,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 5,
+            "l": 1,
+            "j": 1,
+            "e": -2.001,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 6,
+            "l": 1,
+            "j": 3,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 7,
+            "l": 1,
+            "j": 1,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 8,
+            "l": 2,
+            "j": 5,
+            "e": -0.258,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 9,
+            "l": 2,
+            "j": 3,
+            "e": -0.258,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 10,
+            "l": 2,
+            "j": 5,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": 11,
+            "l": 2,
+            "j": 3,
+            "e": 0.25,
+            "Rc": 1.803,
+            "scheme": "qc",
+            "norm": 0
+          },
+          {
+            "beta": "loc",
+            "l": 3,
+            "j": 0,
+            "e": 0.0,
+            "Rc": 1.803,
+            "scheme": "pn",
+            "norm": 0
+          }
+        ],
+        "element": "Mn",
+        "ionic_charge": 15.0,
+        "level_of_theory": "LDA",
+        "solver": "Koelling-Harmon",
+        "augmentation_charge_rinner": [
+          0.6
+        ],
+        "partial_core_correction": [
+          0.6
+        ],
+        "detail": {
+          "local_channel": 3,
+          "core_radius": 1.8,
+          "beta_radius": 1.8,
+          "r_inner": 0.6,
+          "coarse": 12,
+          "medium": 14,
+          "fine": 16,
+          "proj": "30U:40:31:32",
+          "opt": "qc=7",
+          "debug": null,
+          "projectors": [
+            {
+              "orbital": 3,
+              "shell": "s",
+              "type": "U"
+            },
+            {
+              "orbital": 4,
+              "shell": "s",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "p",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "d",
+              "type": null
+            }
+          ],
+          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        }
+      }
+    ],
     "options": {
       "general": {
         "output verbosity": "normal (1)",
@@ -208,6 +871,219 @@
         "charge density mixing g-vector": "1.500 1/A",
         "spin density mixing g-vector": "1.500 1/A"
       }
-    }
+    },
+    "initial_cell": {
+      "real_lattice": [
+        [
+          6.3145,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          6.3145,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          6.3145
+        ]
+      ],
+      "recip_lattice": [
+        [
+          0.995040828,
+          0.0,
+          0.0
+        ],
+        [
+          0.0,
+          0.995040828,
+          0.0
+        ],
+        [
+          0.0,
+          0.0,
+          0.995040828
+        ]
+      ],
+      "lattice_parameters": [
+        6.3145,
+        6.3145,
+        6.3145
+      ],
+      "cell_angles": [
+        90.0,
+        90.0,
+        90.0
+      ],
+      "volume": 251.777492,
+      "density_amu": 4.364016,
+      "density_g": 7.246619
+    },
+    "initial_positions": {
+      "Mn_1": [
+        0.061,
+        0.061,
+        0.061
+      ],
+      "Mn_2": [
+        0.811,
+        0.311,
+        0.189
+      ],
+      "Mn_3": [
+        0.939,
+        0.561,
+        0.439
+      ],
+      "Mn_4": [
+        0.439,
+        0.939,
+        0.561
+      ],
+      "Mn_5": [
+        0.561,
+        0.439,
+        0.939
+      ],
+      "Mn_6": [
+        0.311,
+        0.189,
+        0.811
+      ],
+      "Mn_7": [
+        0.689,
+        0.689,
+        0.689
+      ],
+      "Mn_8": [
+        0.189,
+        0.811,
+        0.311
+      ],
+      "Mn_9": [
+        0.125,
+        0.206,
+        0.456
+      ],
+      "Mn_10": [
+        0.875,
+        0.706,
+        0.044
+      ],
+      "Mn_11": [
+        0.544,
+        0.625,
+        0.294
+      ],
+      "Mn_12": [
+        0.294,
+        0.544,
+        0.625
+      ],
+      "Mn_13": [
+        0.456,
+        0.125,
+        0.206
+      ],
+      "Mn_14": [
+        0.206,
+        0.456,
+        0.125
+      ],
+      "Mn_15": [
+        0.625,
+        0.294,
+        0.544
+      ],
+      "Mn_16": [
+        0.794,
+        0.956,
+        0.375
+      ],
+      "Mn_17": [
+        0.375,
+        0.794,
+        0.956
+      ],
+      "Mn_18": [
+        0.044,
+        0.875,
+        0.706
+      ],
+      "Mn_19": [
+        0.956,
+        0.375,
+        0.794
+      ],
+      "Mn_20": [
+        0.706,
+        0.044,
+        0.875
+      ]
+    },
+    "k-points": {
+      "kpoint_mp_grid": [
+        4,
+        4,
+        4
+      ],
+      "kpoint_mp_offset": [
+        0.0,
+        0.0,
+        0.0
+      ],
+      "num_kpoints": [
+        32
+      ]
+    },
+    "symmetries": {
+      "Maximum deviation from symmetry": "0.00000 ANG",
+      "Number of symmetry operations": 1,
+      "Point group of crystal": "1: C1, 1, 1",
+      "Space group of crystal": "213: P4_132, P 4bd 2ab 3"
+    },
+    "constraints": {
+      "Number of ionic constraints": 3,
+      "com_constrained": true,
+      "Number of cell constraints": 0,
+      "cell_constraints": [
+        1,
+        2,
+        3,
+        4,
+        5,
+        6
+      ]
+    },
+    "target_stress": [
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ],
+    "memory_estimate": [
+      {
+        "BLAS internal memory storage": {
+          "memory": 0.0,
+          "disk": 0.0
+        },
+        "Model and support data": {
+          "memory": 3780.5,
+          "disk": 0.0
+        },
+        "Electronic energy minimisation requirements": {
+          "memory": 6100.6,
+          "disk": 0.0
+        },
+        "Force calculation requirements": {
+          "memory": 9.8,
+          "disk": 0.0
+        }
+      }
+    ]
   }
 ]
