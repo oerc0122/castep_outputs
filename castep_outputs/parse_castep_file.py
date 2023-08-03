@@ -64,6 +64,42 @@ _BOND_RE = re.compile(rf"""\s*
                        {labelled_floats(("population", "length"))}
                        """, re.VERBOSE)
 
+# Pair pot
+_PAIR_POT_RES = {
+    'two_body_one_spec': re.compile(
+        rf"^(?P<tag>\w+)?\s*\*\s*(?P<spec>{ATOM_NAME_RE})\s*\*\s*$"
+    ),
+    'two_body_spec':  re.compile(
+        rf"(?P<spec1>{ATOM_NAME_RE})\s*-\s*"
+        rf"(?P<spec2>{ATOM_NAME_RE})"
+    ),
+    'two_body_val': re.compile(
+        rf"""
+            (?P<tag>\w+)?\s*\*\s*
+            (?P<label>\w+)\s*
+            {labelled_floats(('params',), counts=('1,4',))}\s*
+            [\w^/*]+\s* \* \s*
+            <--\s*(?P<type>\w+)
+            """, re.ASCII | re.VERBOSE
+    ),
+    'three_body_spec': re.compile(
+        rf"""
+        ^(?P<tag>\w+)?\s*\*\s*
+        (?P<spec>(?:{ATOM_NAME_RE}\s*){{3}})
+        \s*\*\s*$""", re.VERBOSE
+    ),
+    'three_body_val': re.compile(
+        rf"""
+        ^(?P<tag>\w+)?\s*\*\s*
+        (?P<label>\w+)\s*
+        {labelled_floats(('params',))}\s*
+        [\w^/*]+\s* \* \s*
+        <--\s*(?P<type>\w+)
+        """, re.VERBOSE
+    )
+}
+
+
 # Orbital population
 _ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)"
                               rf"\s*{labelled_floats(('charge',))}")
@@ -233,11 +269,22 @@ def parse_castep_file(castep_file, verbose=False):
         # Pseudopots
         elif block := get_block(line, castep_file, r"Files used for pseudopotentials", r"^ *$"):
 
+            if verbose:
+                print("Found pseudopotentials")
+
             for key, val in _process_spec_prop(block.splitlines()):
                 if "|" in val:
                     val = _process_pspot_string(val)
 
                 curr_run["species_properties"][key]["pseudopot"] = val
+
+        # Pair Params
+        elif block := get_block(line, castep_file, "PairParams", "^\s*$"):
+
+            if verbose:
+                print("Found pair params")
+
+            curr_run["pair_params"].append(_process_pair_params(io.StringIO(block)))
 
         # DFTD
         elif block := get_block(line, castep_file, "DFT-D parameters", r"^\s*x+\s*$", cnt=2):
@@ -1473,7 +1520,7 @@ def _process_dipole(block):
     accum = {}
 
     for line in block:
-        if match := re.search("Total\s*(?P<type>\w+)", line):
+        if match := re.search(r"Total\s*(?P<type>\w+)", line):
             accum[f"total_{match['type']}"] = float(get_numbers(line)[0])
 
         elif "Centre" in line:
@@ -1485,5 +1532,66 @@ def _process_dipole(block):
 
         elif "Direction" in line:
             accum["dipole_direction"] = to_type(get_numbers(line), float)
+
+    return accum
+
+
+def _process_pair_params(block_in):
+
+    accum = {}
+    for line in block_in:
+        # Two-body
+        if block := get_block(line, block_in, "Two Body", r"^\w*\s*\*+\s*$"):
+            for blk_line in block.splitlines():
+                if _PAIR_POT_RES['two_body_spec'].search(blk_line):
+                    match = _PAIR_POT_RES['two_body_spec'].finditer(blk_line)
+                    labels = tuple(mch.groups() for mch in match)
+
+                elif match := _PAIR_POT_RES['two_body_val'].match(blk_line):
+                    tag, typ, lab = match.group("tag", "type", "label")
+                    if tag:
+                        typ = f"{tag}_{typ}"
+                    if typ not in accum:
+                        accum[typ] = {}
+                    if lab not in accum[typ]:
+                        accum[typ][lab] = {}
+
+                    accum[typ][lab].update(zip(labels,
+                                               to_type(match["params"].split(),
+                                                       float)))
+
+                elif match := _PAIR_POT_RES['two_body_one_spec'].match(blk_line):
+                    labels = (match["spec"],)
+
+        # Three-body
+        elif block := get_block(line, block_in, "Three Body", r"^\s*\*+\s*$"):
+            for blk_line in block.splitlines():
+                if match := _PAIR_POT_RES['three_body_spec'].match(blk_line):
+                    labels = (tuple(match["spec"].split()),)
+
+                elif match := _PAIR_POT_RES["three_body_val"].match(blk_line):
+                    tag, typ, lab = match.group("tag", "type", "label")
+
+                    if tag:
+                        typ = f"{tag}_{typ}"
+                    if typ not in accum:
+                        accum[typ] = {}
+                    if lab not in accum[typ]:
+                        accum[typ][lab] = {}
+
+                    accum[typ][lab].update(zip(labels,
+                                               to_type(match["params"].split(),
+                                                       float)))
+
+        # Globals
+        elif match := _PAIR_POT_RES["three_body_val"].match(line):
+            tag, typ, lab = match.group("tag", "type", "label")
+
+            if tag:
+                typ = f"{tag}_{typ}"
+            if typ not in accum:
+                accum[typ] = {}
+
+            accum[typ][lab] = to_type(match["params"], float)
 
     return accum

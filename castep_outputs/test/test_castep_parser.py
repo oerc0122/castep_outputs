@@ -1050,12 +1050,80 @@ The total projected population is   19.999   0.000
    *    e                      2.1682052121                  eV       * <--   SW
    *    s                      0.1336587852                  A        * <--   SW
    ********************************************************************
+   *    A                      0.4000000000                           * <--   DZ
+   *    B                      0.1000000000                           * <--   DZ
+   *    C                      1.5000000000                           * <--   DZ
+   *    D                      0.1000000000                           * <--   DZ
+   * CUT1                      1.4000000000                           * <--   DZ
+   * CUT2                      3.0000000000                           * <--   DZ
+   *  EPS                      0.0002721139                  eV       * <--   DZ
+   *  SIG                      4.0000000000                  A        * <--   DZ
+   *    m                     18.0000000000                           * <--   DZ
+   ********************************************************************
 
+SR ************************     PairParams     ************************
+SR *                                                                  *
+SR *                               Two Body                           *
+SR *                               H                                  *
+SR *    r                      3.0000000000                  A        * <--  SHO
+SR *  r_d                      3.0000000000                  A        * <--  SHO
+SR *    k                      1.0000000000                  eV/A^2   * <--  SHO
+SR ********************************************************************
+
+WL ************************     PairParams     ************************
+WL *                                                                  *
+WL *                               Two Body                           *
+WL *                               H                                  *
+WL *    r                      3.0000000000                  A        * <--  SHO
+WL *  r_d                      3.0000000000                  A        * <--  SHO
+WL *    k                      1.0000000000                  eV/A^2   * <--  SHO
+WL ********************************************************************
+ VERBOSE    = T
+ NL         = F
+ FD_CHECK   = F
+ PRINT_POT  = T
+ FIXED_CELL = T
+ 1BODY      = T
+ 2BODY      = F
+ 3BODY      = F
+ EWALD      = F
+ SPINS      = F
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'pair_params': [{'DZ': {'A': 0.4,
+                                                             'B': 0.1,
+                                                             'C': 1.5,
+                                                             'CUT1': 1.4,
+                                                             'CUT2': 3.0,
+                                                             'D': 0.1,
+                                                             'EPS': 0.0002721139,
+                                                             'SIG': 4.0,
+                                                             'm': 18.0},
+                                                      'LJ': {'e': {('H', 'H'): 9e-05,
+                                                                   ('H', 'He'): 0.00017,
+                                                                   ('He', 'H'): 0.00017,
+                                                                   ('He', 'He'): 0.00017},
+                                                             'r': {('H', 'H'): 8.5125,
+                                                                   ('H', 'He'): 8.5125,
+                                                                   ('He', 'H'): 8.5125,
+                                                                   ('He', 'He'): 8.5125},
+                                                             's': {('H', 'H'): 1.0,
+                                                                   ('H', 'He'): 2.0,
+                                                                   ('He', 'H'): 2.0,
+                                                                   ('He', 'He'): 2.0}},
+                                                      'SW': {'C': {('H', 'H', 'H'): 0.0},
+                                                             'c': {('H', 'H', 'H'): 0.1},
+                                                             'e': 2.1682052121,
+                                                             'l': {('H', 'H', 'H'): 1.0},
+                                                             's': 0.1336587852}},
+                                                     {'SR_SHO': {'k': {'H': 1.0},
+                                                                 'r': {'H': 3.0},
+                                                                 'r_d': {'H': 3.0}}},
+                                                     {'WL_SHO': {'k': {'H': 1.0},
+                                                                 'r': {'H': 3.0},
+                                                                 'r_d': {'H': 3.0}}}]})
 
     def test_get_vibrational_frequencies(self):
         test_text = io.StringIO("""
@@ -1700,7 +1768,7 @@ Species   Ion     Hirshfeld Charge (e)
   |    Species            Ion    Iso(ppm)   Aniso(ppm)  Asym    Cq(MHz)    Eta  |
   |    H                  1       28.24       8.55      0.11   1.968E-01   0.02 |
   |    H                  2       28.75       9.29      0.22   1.932E-01   0.03 |
-  |    H:T                3       28.71       7.26      N/A   1.996E-01   0.01 |
+  |    H:T                3       28.71       7.26      N/A    1.996E-01   0.01 |
   ===============================================================================
         """)
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]

@@ -242,7 +242,9 @@ def to_type(data_in, typ):
 SHELLS = ('s', 'p', 'd', 'f')
 FST_D = ('x', 'y', 'z')
 SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
-MINIMISERS = ('bfgs', 'lbfgs', 'fire')
+MINIMISERS = ('bfgs', 'lbfgs', 'fire', 'tpsd', 'dmd')
+PAIR_POTS = ('LJ', 'BUCK', 'COUL', 'DZ', 'POL', 'BB', 'SHO',
+             'SW', 'MORS', 'POLM', 'LJ_S', 'PES', 'BU_S', 'TIP4', 'QUIP')
 
 CASTEP_OUTPUT_NAMES = (
     "castep",
@@ -271,7 +273,7 @@ NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
 
 # Regexp to identify extended chemical species
 SPECIES_RE = r"[A-Z][a-z]{0,2}"
-ATOM_NAME_RE = rf"{SPECIES_RE}(?::\w+)?"
+ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
 
 # Unless we have *VERY* exotic electron shells
 SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{1,2}}"
