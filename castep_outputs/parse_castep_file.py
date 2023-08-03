@@ -19,7 +19,6 @@ from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_d
                                 parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
                                 parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file)
 
-
 # SCF Loop
 _SCF_LOOP_RE = re.compile(r"\s*(?:Initial|\d+)\s*"
                           rf"{labelled_floats(('energy', 'fermi_energy', 'energy_gain'))}?\s*"
@@ -117,7 +116,6 @@ _PAIR_POT_RES = {
     )
 }
 
-
 # Orbital population
 _ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)"
                               rf"\s*{labelled_floats(('charge',))}")
@@ -159,6 +157,18 @@ _BS_RE = re.compile(
 
 _THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
 
+_MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
+_GEOMOPT_MIN_TABLE_RE = re.compile(
+    r"\s*\|\s* (?P<step>[^|]+)" +
+    labelled_floats(("lambda", "Fdelta", "enthalpy"), sep=r"\s*\|\s*") +
+    r"\s* \|", re.VERBOSE)
+
+_GEOMOPT_TABLE_RE = re.compile(
+    r"\s*\|\s* (?P<parameter>\S+)" +
+    labelled_floats(('value', 'tolerance'), sep=r"\s*\|\s*") +
+    rf"\s*\|\s* \S+ (?#Units) \s*\|\s* (?P<converged>No|Yes) \s*\|", re.VERBOSE)
+
+
 # Regexp to identify Mulliken ppoulation analysis line
 _CASTEP_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
                              labelled_floats((*SHELLS, "total", "charge", "spin")) +
@@ -189,6 +199,7 @@ _MAGRES_RE = (
     # "Hyperfine Tensor" 4
     re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*")
     )
+
 # MagRes Tasks
 _MAGRES_TASK = (
     "Chemical Shielding",
@@ -358,7 +369,7 @@ def parse_castep_file(castep_file, verbose=False):
         elif any((line.startswith("Final energy, E"),
                   line.startswith("Final energy"),
                   "Total energy corrected for finite basis set" in line,
-                  re.search(f"({'|'.join(MINIMISERS)}): finished iteration.*with enthalpy", line))):
+                  re.search(f"({_MINIMISERS_RE}): finished iteration.*with enthalpy", line))):
 
             if verbose:
                 print("Found energy")
@@ -696,7 +707,7 @@ def parse_castep_file(castep_file, verbose=False):
 
             curr_run["geom_opt"]["final_configuration"] = _process_atreg_block(block.splitlines())
 
-        elif match := re.match(rf"^\s*(?:{'|'.join(MINIMISERS)}):"
+        elif match := re.match(rf"^\s*(?:{_MINIMISERS_RE}):"
                                r"(?P<key>[^=]+)=\s*"
                                f"(?P<value>{EXPNUMBER_RE}).*",
                                line, re.IGNORECASE):
@@ -710,6 +721,17 @@ def parse_castep_file(castep_file, verbose=False):
                 print(f"Found geomopt {key}")
 
             curr_run["geom_opt"][key] = val
+
+        elif block := get_block(line, castep_file,
+                                f"<--( min)? {_MINIMISERS_RE}$",
+                                r"\+(?:-+\+){4,5}", cnt=2):
+
+            typ = re.search(_MINIMISERS_RE, line)
+
+            if verbose:
+                print(f"Found {typ} geom_block")
+
+            curr_run["geom_opt_min"].append(_process_geom_table(block.splitlines()))
 
         # TDDFT
         elif block := get_block(line, castep_file,
@@ -1672,5 +1694,31 @@ def _process_pair_params(block_in):
                 accum[typ] = {}
 
             accum[typ][lab] = to_type(match["params"], float)
+
+    return accum
+
+
+def _process_geom_table(block):
+
+    accum = {}
+    for line in block:
+        print("HE", line)
+        if match := _GEOMOPT_MIN_TABLE_RE.match(line):
+            match = match.groupdict()
+            fix_data_types(match, {key: float for key in ('lambda', 'Fdelta', 'enthalpy')})
+
+            key = normalise_string(match["step"])
+            del match["step"]
+            accum[key] = match
+
+        elif match := _GEOMOPT_TABLE_RE.match(line):
+            match = match.groupdict()
+            fix_data_types(match, {key: float for key in ('value', 'tolerance')})
+
+            match["converged"] = match["converged"] == "Yes"
+
+            key = normalise_string(match["parameter"])
+            del match["parameter"]
+            accum[key] = match
 
     return accum

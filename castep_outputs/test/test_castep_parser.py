@@ -1639,10 +1639,31 @@ Species   Ion     Hirshfeld Charge (e)
  +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
 
         """)
-        self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+
+        test_dict = parse_castep_file.parse_castep_file(test_text, True)[0]
         pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+        self.assertEqual(test_dict, {'energies': (-1317.70077, -216.058016),
+                                     'geom_opt_min': [{'previous': {'Fdelta': 0.203755,
+                                                                    'enthalpy': -216.058941,
+                                                                    'lambda': 0.0}},
+                                                      {'previous': {'Fdelta': 0.204256,
+                                                                    'enthalpy': -216.058016,
+                                                                    'lambda': 0.0},
+                                                       'trial step': {'Fdelta': 0.204121,
+                                                                      'enthalpy': -216.058941,
+                                                                      'lambda': 0.001727}},
+                                                      {'Smax': {'converged': False,
+                                                                'tolerance': 0.1,
+                                                                'value': 17.36649},
+                                                       'dE/ion': {'converged': False,
+                                                                  'tolerance': 2e-05,
+                                                                  'value': 0.0},
+                                                       '|F|max': {'converged': False,
+                                                                  'tolerance': 0.05,
+                                                                  'value': 0.529977},
+                                                       '|dR|max': {'converged': True,
+                                                                   'tolerance': 0.001,
+                                                                   'value': 0.0}}]})
 
     def test_get_lbfgs_info(self):
         test_text = io.StringIO("""
