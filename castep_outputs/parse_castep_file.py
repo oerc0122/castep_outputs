@@ -278,6 +278,13 @@ def parse_castep_file(castep_file, verbose=False):
 
                 curr_run["species_properties"][key]["pseudopot"] = val
 
+        elif block := get_block(line, castep_file, "Pseudopotential Report", r"^\s*=+\s*$"):
+
+            if verbose:
+                print("Found pseudopotential report")
+
+            curr_run["pspot_detail"].append(_process_pspot_report(block.splitlines()))
+
         # Pair Params
         elif block := get_block(line, castep_file, "PairParams", "^\s*$"):
 
@@ -1430,6 +1437,66 @@ def _process_pspot_string(string):
                            "local_channel": int})
 
     return pspot
+
+
+def _process_pspot_report(block):
+    _PSPOT_REFERENCE_STRUC_RE = re.compile(
+        rf"""
+        ^\s*\|\s*
+        (?P<orb>{SHELL_RE}(?:/\d+)?)\s*
+        {labelled_floats(('occupation', 'energy'))}
+        \s*\|\s*$
+        """, re.VERBOSE)
+    _PSPOT_DEF_RE = re.compile(
+        rf"""
+        ^\s*\|\s*
+        (?P<beta>\d+|loc)\s*
+        (?P<l>\d+)\s*
+        (?P<j>\d+)?\s*
+        {labelled_floats(('e', 'Rc'))}\s*
+        (?P<scheme>\w+)\s*
+        (?P<norm>\d+)
+        \s*\|\s*$
+        """, re.VERBOSE)
+
+
+    accum = {"reference_electronic_structure": [],
+             "pseudopotential_definition": []}
+
+    for line in block:
+        if match := _PSPOT_REFERENCE_STRUC_RE.match(line):
+            match = match.groupdict()
+            fix_data_types(match, {"occupation": float, "energy": float})
+            accum["reference_electronic_structure"].append(match)
+        elif match := _PSPOT_DEF_RE.match(line):
+            match = match.groupdict()
+            # Account for "loc"
+            match["beta"] = int(match["beta"]) if match["beta"].isnumeric() else match["beta"]
+            fix_data_types(match, {"l": int, "j": int,
+                                   "e": float, "Rc": float, "norm": int})
+            accum["pseudopotential_definition"].append(match)
+        elif match := re.search(rf"Element: (?P<element>{SPECIES_RE})\s+"
+                                rf"Ionic charge: (?P<ionic_charge>{FNUMBER_RE})\s+"
+                                r"Level of theory: (?P<level_of_theory>[\w\d]+)", line):
+            match = match.groupdict()
+            match["ionic_charge"] = float(match["ionic_charge"])
+            accum.update(match)
+
+        elif match := re.search(r"Atomic Solver:\s*(?P<solver>[\w\s-]+)", line):
+            accum["solver"] = normalise_string(match["solver"])
+
+        elif match := _PSPOT_RE.search(line):
+            accum["detail"] = _process_pspot_string(match.group(0))
+
+        elif "Augmentation charge Rinner" in line:
+            accum["augmentation_charge_rinner"] = to_type(get_numbers(line), float)
+
+        elif "Partial core correction Rc" in line:
+            accum["partial_core_correction"] = to_type(get_numbers(line), float)
+
+
+
+    return accum
 
 
 def _process_bond_analysis(block):

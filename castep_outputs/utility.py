@@ -276,7 +276,7 @@ SPECIES_RE = r"[A-Z][a-z]{0,2}"
 ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
 
 # Unless we have *VERY* exotic electron shells
-SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{1,2}}"
+SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
 
 # Atom regexp
 ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"

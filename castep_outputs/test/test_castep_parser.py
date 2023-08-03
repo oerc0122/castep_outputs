@@ -243,27 +243,16 @@ Overall parallel efficiency rating: Satisfactory (64%)
    |                                                          |
    |               Reference Electronic Structure             |
    |         Orbital         Occupation         Energy        |
+   |          2s               2.000           -0.501         |
    |          3s1/2            2.000           -3.132         |
    |          3p1/2            2.000           -2.001         |
-   |          3p1/2            2.000           -2.001         |
-   |          3d3/2            2.000           -0.258         |
-   |          3d3/2            2.000           -0.258         |
-   |          4s1/2            2.000           -0.194         |
    |                                                          |
    |                 Pseudopotential Definition               |
    |      Beta    l   2j     e      Rc     scheme   norm      |
    |        1     0    1   -3.132   1.803     qc     0        |
-   |        2     0    1   -0.194   1.803     qc     0        |
-   |        3     0    1    0.250   1.803     qc     0        |
-   |        4     1    3   -2.001   1.803     qc     0        |
-   |        5     1    1   -2.001   1.803     qc     0        |
-   |        6     1    3    0.250   1.803     qc     0        |
-   |        7     1    1    0.250   1.803     qc     0        |
-   |        8     2    5   -0.258   1.803     qc     0        |
-   |        9     2    3   -0.258   1.803     qc     0        |
-   |       10     2    5    0.250   1.803     qc     0        |
-   |       11     2    3    0.250   1.803     qc     0        |
    |       loc    3    0    0.000   1.803     pn     0        |
+   |        3     0        -0.501   1.395     qc     0        |
+   |       loc    3         0.000   1.803     pn     0        |
    |                                                          |
    | Augmentation charge Rinner = 0.600                       |
    | Partial core correction Rc = 0.600                       |
@@ -281,10 +270,89 @@ Overall parallel efficiency rating: Satisfactory (64%)
         test_dict = parse_castep_file.parse_castep_file(test_text)[0]
         del test_dict["time_started"]
 
-        self.assertEqual(test_dict, {'species_properties':
-                                     {'Mn': {'pseudo_atomic_energy': -2901.7207}}
-                                     })
+        self.assertEqual(test_dict, {'pspot_detail': [{'augmentation_charge_rinner': (0.6,),
+                                                       'detail': {'beta_radius': 1.8,
+                                                                  'coarse': 12,
+                                                                  'core_radius': 1.8,
+                                                                  'debug': None,
+                                                                  'fine': 16,
+                                                                  'local_channel': 3,
+                                                                  'medium': 14,
+                                                                  'opt': 'qc=7',
+                                                                  'proj': '30U:40:31:32',
+                                                                  'projectors': ({'orbital': 3,
+                                                                                  'shell': 's',
+                                                                                  'type': 'U'},
+                                                                                 {'orbital': 4,
+                                                                                  'shell': 's',
+                                                                                  'type': None},
+                                                                                 {'orbital': 3,
+                                                                                  'shell': 'p',
+                                                                                  'type': None},
+                                                                                 {'orbital': 3,
+                                                                                  'shell': 'd',
+                                                                                  'type': None}),
+                                                                  'r_inner': 0.6,
+                                                                  'string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'},
+                                                       'element': 'Mn',
+                                                       'ionic_charge': 15.0,
+                                                       'level_of_theory': 'LDA',
+                                                       'partial_core_correction': (0.6,),
+                                                       'pseudopotential_definition': [{'Rc': 1.803,
+                                                                                       'beta': 1,
+                                                                                       'e': -3.132,
+                                                                                       'j': 1,
+                                                                                       'l': 0,
+                                                                                       'norm': 0,
+                                                                                       'scheme': 'qc'},
+                                                                                      {'Rc': 1.803,
+                                                                                       'beta': 'loc',
+                                                                                       'e': 0.0,
+                                                                                       'j': 0,
+                                                                                       'l': 3,
+                                                                                       'norm': 0,
+                                                                                       'scheme': 'pn'},
+                                                                                      {'Rc': 1.395,
+                                                                                       'beta': 3,
+                                                                                       'e': -0.501,
+                                                                                       'j': None,
+                                                                                       'l': 0,
+                                                                                       'norm': 0,
+                                                                                       'scheme': 'qc'},
+                                                                                      {'Rc': 1.803,
+                                                                                       'beta': 'loc',
+                                                                                       'e': 0.0,
+                                                                                       'j': None,
+                                                                                       'l': 3,
+                                                                                       'norm': 0,
+                                                                                       'scheme': 'pn'}],
+                                                       'reference_electronic_structure': [{'energy': -0.501,
+                                                                                           'occupation': 2.0,
+                                                                                           'orb': '2s'},
+                                                                                          {'energy': -3.132,
+                                                                                           'occupation': 2.0,
+                                                                                           'orb': '3s1/2'},
+                                                                                          {'energy': -2.001,
+                                                                                           'occupation': 2.0,
+                                                                                           'orb': '3p1/2'}],
+                                                       'solver': 'Koelling-Harmon'}],
+                                     'species_properties': {'Mn': {'pseudo_atomic_energy': -2901.7207}}})
+
+    def test_get_pspot_debug(self):
+        test_text = io.StringIO("""
+        ---------------------------------------
+        AE eigenvalue nl 10 = -18.40702924
+        AE eigenvalue nl 20 = -0.54031716
+        AE eigenvalue nl 21 = -0.01836880
+        ---------------------------------------
+        PS eigenvalue nl 20 = -0.54026290
+        PS eigenvalue nl 21 = -0.01829559
+        ---------------------------------------
+        """)
         self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
 
     def test_get_species_prop(self):
         test_text = io.StringIO("""
