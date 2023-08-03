@@ -147,7 +147,6 @@ _MAGRES_TASK = (
 
 def parse_castep_file(castep_file, verbose=False):
     """ Parse castep file into lists of dicts ready to JSONise """
-    # pylint: disable=redefined-outer-name
 
     runs = []
     curr_run = defaultdict(list)
@@ -219,10 +218,8 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found mass")
 
-            for line in block.splitlines():
-                if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
-                    key, val = words
-                    curr_run["species_properties"][key]["mass"] = float(val)
+            for key, val in _process_spec_prop(block.splitlines()):
+                curr_run["species_properties"][key]["mass"] = float(val)
 
         # Electric Quadrupole Moment
         elif block := get_block(line, castep_file, r"Electric Quadrupole Moment", r"^ *$"):
@@ -230,10 +227,17 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found electric quadrupole moment")
 
-            for line in block.splitlines():
-                if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
-                    key, val = words[0:2]
-                    curr_run["species_properties"][key]["elec_quad"] = float(val)
+            for key, val, *_ in _process_spec_prop(block.splitlines()):
+                curr_run["species_properties"][key]["electric_quadrupole_moment"] = float(val)
+
+        # Pseudopots
+        elif block := get_block(line, castep_file, r"Files used for pseudopotentials", r"^ *$"):
+
+            for key, val in _process_spec_prop(block.splitlines()):
+                if "|" in val:
+                    val = _process_pspot_string(val)
+
+                curr_run["species_properties"][key]["pseudopot"] = val
 
         # DFTD
         elif block := get_block(line, castep_file, "DFT-D parameters", r"^\s*x+\s*$", cnt=2):
@@ -242,18 +246,6 @@ def parse_castep_file(castep_file, verbose=False):
                 print("Found DFTD block")
 
             curr_run["dftd"] = _process_dftd(block.splitlines())
-
-        # Pseudopots
-        elif block := get_block(line, castep_file, r"Files used for pseudopotentials", r"^ *$"):
-
-            for line in block.splitlines():
-                if (words := line.split()) and re.match(rf"{SPECIES_RE}\b", words[0]):
-                    key, val = words
-
-                    if "|" in val:
-                        val = _process_pspot_string(val)
-
-                    curr_run["species_properties"][key]["pseudopot"] = val
 
         # SCF
         elif block := get_block(line, castep_file,
@@ -375,8 +367,9 @@ def parse_castep_file(castep_file, verbose=False):
             if verbose:
                 print("Found target stress")
 
-            for line in block.splitlines():
-                curr_run["target_stress"].extend(to_type(get_numbers(line), float))
+            curr_run["target_stress"].extend(number
+                                             for line in block.splitlines()
+                                             for number in to_type(get_numbers(line), float))
 
         # Finite basis correction parameter
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({FNUMBER_RE})", line):
@@ -858,6 +851,18 @@ def _process_atreg_block(block):
              if (match := ATDAT3VEC.search(line))}
     return accum
 
+
+def _process_spec_prop(block):
+
+    accum = []
+
+    for line in block:
+        words = line.split()
+        if words and re.match(rf"{SPECIES_RE}\b", words[0]):
+
+            accum.append(words)
+
+    return accum
 
 def _process_md(block):
     curr_data = {match.group("key").strip(): float(match.group("val"))

@@ -309,7 +309,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         del test_dict['time_started']
 
         self.assertEqual(test_dict, {'species_properties': {'Mn': {'mass': 54.93805,
-                                                                   'elec_quad': 0.33,
+                                                                   'electric_quadrupole_moment': 0.33,
                                                                    'pseudopot': {'beta_radius': 1.8,
                                                                                  'coarse': 12,
                                                                                  'core_radius': 1.8,
@@ -334,7 +334,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                                                                  'r_inner': 0.6,
                                                                                  'string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'}},
                                                             'O': {'mass': 15.9993815,
-                                                                  'elec_quad': 1.0,
+                                                                  'electric_quadrupole_moment': 1.0,
                                                                   'pseudopot': 'my_pot.usp'}
                                                             }
                                      })
