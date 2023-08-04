@@ -28,7 +28,8 @@ from .parse_extra_files import (parse_bands_file,
                                 parse_elf_fmt_file,
                                 parse_chdiff_fmt_file,
                                 parse_pot_fmt_file,
-                                parse_den_fmt_file)
+                                parse_den_fmt_file,
+                                parse_elastic_file)
 
 AtomIndex = Tuple[str, float]
 ThreeVector = Tuple[float, float, float]
@@ -582,6 +583,46 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             val = _parse_magres_block(4, block)
             curr_run["magres"].append(val)
 
+        # Elastic
+        elif block := get_block(line, castep_file, "Elastic Constants Tensor", "=+$"):
+
+            logger("Found elastic constants tensor")
+
+            if "elastic" not in curr_run:
+                curr_run["elastic"] = {}
+            val, _ = _process_3_6_matrix(block, False)
+            curr_run["elastic"]["elastic_constants"] = val
+
+        elif block := get_block(line, castep_file, "Compliance Matrix", "=+$"):
+
+            logger("Found compliance matrix")
+
+            if "elastic" not in curr_run:
+                curr_run["elastic"] = {}
+            val, _ = _process_3_6_matrix(block, False)
+            curr_run["elastic"]["compliance_matrix"] = val
+
+        elif block := get_block(line, castep_file, "Contribution ::", r"^\s*$"):
+            typ = re.match("(?P<type>.* Contribution)", line).group("type")
+            next(block)
+
+            logger("Found elastic %s contribution", typ)
+
+            if "elastic" not in curr_run:
+                curr_run["elastic"] = {}
+
+            val, _ = _process_3_6_matrix(block, False)
+            curr_run["elastic"][typ] = val
+
+        elif block := get_block(line, castep_file, "Elastic Properties", "=+$"):
+
+            logger("Found elastic properties")
+
+            if "elastic" not in curr_run:
+                curr_run["elastic"] = {}
+
+            curr_run["elastic"].update(_process_elastic_properties(block))
+
         # --- Extra blocks for testing
 
         # Hugoniot data
@@ -616,6 +657,15 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             val = parse_efield_file(block)
             curr_run["oscillator_strengths"] = val["oscillator_strengths"]
             curr_run["permittivity"] = val["permittivity"]
+
+        # Elastic
+        elif block := get_block(line, castep_file, "<BEGIN elastic>", "<END elastic>"):
+
+            logger("Found elastic block")
+
+            val = parse_elastic_file(block)
+            curr_run["oscillator_strengths"] = val["elastic_constants"]
+            curr_run["permittivity"] = val["compliance_matrix"]
 
         # XRD Structure Factor
         elif block := get_block(line, castep_file, "BEGIN xrd_sf", "END xrd_sf",
@@ -1473,5 +1523,26 @@ def _process_geom_table(block: TextIO) -> Dict[str, Union[bool, float]]:
             key = normalise_string(match["parameter"])
             del match["parameter"]
             accum[key] = match
+
+    return accum
+
+
+def _process_elastic_properties(block: TextIO) -> Dict[str, Tuple[float]]:
+    accum = {}
+
+    for line in block:
+        if "::" in line:
+            key = line.split("::")[0]
+            val = to_type(get_numbers(line), float)
+
+            if len(val) == 1:
+                val = val[0]
+
+            accum[normalise_string(key)] = val
+        elif blk := get_block(line, block, "Speed of Sound", r"^\s*$"):
+
+            accum["Speed of Sound"] = [to_type(numbers, float)
+                                       for blk_line in blk
+                                       if (numbers := get_numbers(blk_line))]
 
     return accum

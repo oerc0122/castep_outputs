@@ -231,6 +231,31 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> Dict[str, Union[int, float]]:
     return xrd
 
 
+def parse_elastic_file(block: TextIO) -> Dict[str, List[List[float]]]:
+    """ Parse castep .elastic files """
+    accum = defaultdict(list)
+
+    for line in block:
+        if match := get_block(line, block,
+                              "^BEGIN Elastic Constants",
+                              "^END Elastic Constants"):
+
+            accum["elastic_constants"] = [to_type(numbers, float)
+                                          for blk_line in match
+                                          if (numbers := get_numbers(blk_line))]
+
+        elif match := get_block(line, block,
+                                "^BEGIN Compliance Matrix",
+                                "^END Compliance Matrix"):
+            next(match)  # Skip Begin line w/units
+
+            accum["compliance_matrix"] = [to_type(numbers, float)
+                                          for blk_line in match
+                                          if (numbers := get_numbers(blk_line))]
+
+    return accum
+
+
 def parse_kpt_info(inp: TextIO, prop: str) -> Dict[str, List[Union[int, float]]]:
     """ Parse standard form of kpt related .*_fmt files """
 
