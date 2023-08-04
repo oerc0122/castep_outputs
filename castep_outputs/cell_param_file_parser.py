@@ -70,3 +70,7 @@ def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, 
 
             curr[key] = val
     return [curr]
+
+
+parse_cell_file = parse_cell_param_file
+parse_param_file = parse_cell_param_file
