@@ -1,15 +1,13 @@
 """
 Argument parser
 """
-
+from typing import Sequence, Dict, List
 import os.path
 import argparse
 # pylint: disable=line-too-long
 
 from .utility import SUPPORTED_FORMATS
-from .constants import CASTEP_OUTPUT_NAMES
-
-CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
+from .constants import CASTEP_OUTPUT_NAMES, CASTEP_FILE_FORMATS
 
 AP = argparse.ArgumentParser(
     prog="CASTEP outputs",
@@ -60,7 +58,7 @@ AP.add_argument("--pot_fmt", nargs="*", help="Extract from POT_FMT as .pot_fmt t
 AP.add_argument("--den_fmt", nargs="*", help="Extract from DEN_FMT as .den_fmt type", default=[])
 
 
-def parse_args(to_parse=()):
+def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
     """ Parse all arguments and add those caught by flags """
     args = AP.parse_args()
 
@@ -87,7 +85,7 @@ def parse_args(to_parse=()):
     return args
 
 
-def args_to_dict(args):
+def args_to_dict(args: argparse.Namespace) -> Dict[str, List[str]]:
     """ Convert args namespace to dictionary """
     out_dict = {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
     return out_dict

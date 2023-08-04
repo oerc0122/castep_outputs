@@ -7,6 +7,7 @@ Port of extract_results.pl
 """
 
 from collections import defaultdict
+from typing import TextIO, List, Dict, Any, Union, Sequence, Tuple, Optional
 import io
 import re
 import itertools
@@ -29,8 +30,12 @@ from .parse_extra_files import (parse_bands_file,
                                 parse_pot_fmt_file,
                                 parse_den_fmt_file)
 
+AtomIndex = Tuple[str, float]
+ThreeVector = Tuple[float, float, float]
+ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]
 
-def parse_castep_file(castep_file):
+
+def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
     """ Parse castep file into lists of dicts ready to JSONise """
     # pylint: disable=redefined-outer-name
 
@@ -687,7 +692,7 @@ def parse_castep_file(castep_file):
     return runs
 
 
-def _process_ps_energy(block):
+def _process_ps_energy(block: TextIO) -> Tuple[str, float]:
     match = REs.PS_SHELL_RE.search(next(block))
     spec = match["spec"]
     next(block)
@@ -695,7 +700,7 @@ def _process_ps_energy(block):
     return spec, float(energy)
 
 
-def _process_tddft(block):
+def _process_tddft(block: TextIO) -> List[Dict[str, Union[str, float]]]:
     tddata = [{"energy": float(match["energy"]),
                "error": float(match["error"]),
                "type": match["type"]}
@@ -704,14 +709,14 @@ def _process_tddft(block):
     return tddata
 
 
-def _process_atreg_block(block):
+def _process_atreg_block(block: TextIO) -> Dict[AtomIndex, ThreeVector]:
     accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
              for line in block
              if (match := REs.ATDAT3VEC.search(line))}
     return accum
 
 
-def _process_spec_prop(block):
+def _process_spec_prop(block: TextIO) -> List[List[str]]:
 
     accum = []
 
@@ -724,7 +729,7 @@ def _process_spec_prop(block):
     return accum
 
 
-def _process_md(block):
+def _process_md(block: TextIO) -> Dict[str, float]:
     curr_data = {match.group("key").strip(): float(match.group("val"))
                  for line in block
                  if (match := re.search(r"x\s+"
@@ -734,20 +739,20 @@ def _process_md(block):
     return {normalise_string(key): val for key, val in curr_data.items()}
 
 
-def _process_elf(block):
+def _process_elf(block: TextIO) -> List[float]:
     curr_data = [to_type(match.group(1), float) for line in block
                  if (match := re.match(rf"\s+ELF\s+\d+\s+({REs.FNUMBER_RE})", line))]
     return curr_data
 
 
-def _process_hirshfeld(block):
+def _process_hirshfeld(block: TextIO) -> Dict[AtomIndex, float]:
     """ Process Hirshfeld block to dict of charges """
     accum = {atreg_to_index(match): float(match["charge"]) for line in block
              if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))}
     return accum
 
 
-def _process_thermodynamics(block):
+def _process_thermodynamics(block: TextIO) -> Dict[str, List[float]]:
     """ Process a thermodynamics block into a dict of lists """
     accum = defaultdict(list)
     for line in block:
@@ -761,7 +766,8 @@ def _process_thermodynamics(block):
     return accum
 
 
-def _process_3_6_matrix(block, split):
+def _process_3_6_matrix(block: TextIO, split: bool) -> Tuple[ThreeByThreeMatrix,
+                                                             Optional[ThreeByThreeMatrix]]:
     """ Process a single or pair of 3x3 matrices or 3x6 matrix """
     fst = [to_type(vals, float) for line in block
            if (vals := get_numbers(line)) and len(vals) in (3, 6)]
@@ -773,7 +779,7 @@ def _process_3_6_matrix(block, split):
     return fst, snd
 
 
-def _process_params(block):
+def _process_params(block: TextIO) -> Dict[str, str]:
     """ Process a parameters block into a dict of params """
 
     opt = {}
@@ -796,7 +802,7 @@ def _process_params(block):
     return opt
 
 
-def _process_buildinfo(block):
+def _process_buildinfo(block: Sequence[str]) -> Dict[str, str]:
     info = {}
 
     info["summary"] = " ".join(map(normalise_string, block[0:2]))
@@ -807,7 +813,7 @@ def _process_buildinfo(block):
     return info
 
 
-def _process_unit_cell(block):
+def _process_unit_cell(block: TextIO) -> Dict[str, Union[ThreeVector, ThreeByThreeMatrix]]:
     cell = defaultdict(list)
     prop = []
     for line in block:
@@ -827,7 +833,7 @@ def _process_unit_cell(block):
     return cell
 
 
-def _process_scf(block):
+def _process_scf(block: TextIO) -> Dict[str, Any]:
     scf = []
     curr = {}
     for line in block:
@@ -877,7 +883,7 @@ def _process_scf(block):
     return scf
 
 
-def _process_forces(block):
+def _process_forces(block: TextIO) -> Tuple[str, Dict[AtomIndex, ThreeVector]]:
     ftype = (ft_guess if (ft_guess := REs.FORCES_BLOCK_RE.search(next(block)).group(1))
              else "non-descript")
 
@@ -888,7 +894,7 @@ def _process_forces(block):
     return ftype, accum
 
 
-def _process_stresses(block):
+def _process_stresses(block: TextIO) -> Tuple[float]:
 
     ftype = (ft_guess if (ft_guess := REs.STRESSES_BLOCK_RE.search(next(block)).group(1))
              else "non-descript")
@@ -910,7 +916,7 @@ def _process_stresses(block):
     return ftype, accum
 
 
-def _process_initial_spins(block):
+def _process_initial_spins(block: TextIO) -> Dict[AtomIndex, Union[float, bool]]:
 
     accum = {}
     for line in block:
@@ -923,7 +929,7 @@ def _process_initial_spins(block):
     return accum
 
 
-def _process_born(block):
+def _process_born(block: TextIO) -> Dict[AtomIndex, ThreeByThreeMatrix]:
     """ Process a Born block into a dict of charges """
 
     born_accum = {}
@@ -935,7 +941,7 @@ def _process_born(block):
     return born_accum
 
 
-def _process_raman(block):
+def _process_raman(block: TextIO) -> List[Dict[str, Union[ThreeVector, ThreeByThreeMatrix]]]:
     """ Process a Mulliken block into a list of modes """
 
     next(block)  # Skip first captured line
@@ -968,7 +974,7 @@ def _process_raman(block):
     return modes
 
 
-def _process_mulliken(block):
+def _process_mulliken(block: TextIO) -> Dict[AtomIndex, Dict[str, float]]:
     """ Process a mulliken block into a dict of points """
     accum = {}
 
@@ -1001,7 +1007,7 @@ def _process_mulliken(block):
     return accum
 
 
-def _process_band_structure(block):
+def _process_band_structure(block: TextIO) -> List[Dict[str, Union[float, int]]]:
     """ Process a band structure into a list of kpts"""
 
     def fdt(qdat):
@@ -1033,7 +1039,7 @@ def _process_band_structure(block):
     return bands
 
 
-def _process_qdata(qdata):
+def _process_qdata(qdata: Dict[str, str]) -> Dict[str, Union[float, int]]:
     """ Special parse for phonon qdata """
     qdata = {key: val
              for key, val in qdata.items()
@@ -1048,7 +1054,7 @@ def _process_qdata(qdata):
     return qdata
 
 
-def _parse_magres_block(task, inp):
+def _parse_magres_block(task: int, inp: TextIO) -> Dict[str, Dict[AtomIndex, float]]:
     """ Parse MagRes data tables from inp according to task """
 
     data = defaultdict(list)
@@ -1069,7 +1075,7 @@ def _parse_magres_block(task, inp):
     return data
 
 
-def _process_finalisation(block):
+def _process_finalisation(block: TextIO) -> Dict[str, float]:
 
     out = {}
 
@@ -1080,7 +1086,7 @@ def _process_finalisation(block):
     return out
 
 
-def _process_memory_est(block):
+def _process_memory_est(block: TextIO) -> Dict[str, float]:
 
     accum = {}
 
@@ -1094,7 +1100,7 @@ def _process_memory_est(block):
     return accum
 
 
-def _process_phonon_sym_analysis(block):
+def _process_phonon_sym_analysis(block: TextIO) -> Dict[str, Union[str, List[List[float]]]]:
 
     accum = {}
     accum["title"] = normalise_string(next(block).split(":")[1])
@@ -1105,7 +1111,8 @@ def _process_phonon_sym_analysis(block):
     return accum
 
 
-def _process_kpoint_blocks(block, explicit_kpoints):
+def _process_kpoint_blocks(block: TextIO,
+                           explicit_kpoints: bool) -> Dict[str, Union[ThreeVector, float, int]]:
 
     if explicit_kpoints:
         accum = {}
@@ -1126,7 +1133,7 @@ def _process_kpoint_blocks(block, explicit_kpoints):
     return accum
 
 
-def _process_symmetry(block):
+def _process_symmetry(block: TextIO) -> Dict[str, Any]:
 
     sym = {}
     con = {}
@@ -1182,7 +1189,7 @@ def _process_symmetry(block):
     return sym, con
 
 
-def _process_dynamical_matrix(block):
+def _process_dynamical_matrix(block: TextIO) -> Tuple[complex]:
     next(block)  # Skip header line
     next(block)
 
@@ -1207,7 +1214,7 @@ def _process_dynamical_matrix(block):
     return tuple(accum)
 
 
-def _process_pspot_string(string):
+def _process_pspot_string(string: str) -> Dict[str, Union[float, int, str]]:
     if not (match := REs.PSPOT_RE.match(string)):
         raise IOError(f"Attempt to parse {string} as PSPot failed")
 
@@ -1239,7 +1246,7 @@ def _process_pspot_string(string):
     return pspot
 
 
-def _process_pspot_report(block):
+def _process_pspot_report(block: TextIO) -> Dict[str, Union[float, str]]:
 
     accum = {"reference_electronic_structure": [],
              "pseudopotential_definition": []}
@@ -1278,7 +1285,7 @@ def _process_pspot_report(block):
     return accum
 
 
-def _process_bond_analysis(block):
+def _process_bond_analysis(block: TextIO) -> Dict[Tuple[AtomIndex, AtomIndex], Dict[str, float]]:
     accum = {((match["spec1"], int(match["ind1"])),
               (match["spec2"], int(match["ind2"]))): {"population": float(match["population"]),
                                                       "length": float(match["length"])}
@@ -1287,7 +1294,9 @@ def _process_bond_analysis(block):
     return accum
 
 
-def _process_orbital_populations(block):
+def _process_orbital_populations(block: TextIO) -> Dict[str, Union[Dict[str, float],
+                                                                   float,
+                                                                   Tuple[float]]]:
 
     accum = defaultdict(dict)
     for line in block:
@@ -1303,7 +1312,7 @@ def _process_orbital_populations(block):
     return accum
 
 
-def _process_dftd(block):
+def _process_dftd(block: TextIO) -> Dict[str, Union[Dict[str, float], float]]:
     dftd = {"species": {}}
 
     for line in block:
@@ -1322,7 +1331,7 @@ def _process_dftd(block):
     return dftd
 
 
-def _process_occupancies(block):
+def _process_occupancies(block: TextIO) -> Dict[str, Union[int, float]]:
     label = ("band", "eigenvalue", "occupancy")
 
     accum = [dict(zip(label, numbers)) for line in block if (numbers := get_numbers(line))]
@@ -1333,7 +1342,7 @@ def _process_occupancies(block):
     return accum
 
 
-def _process_wvfn_line_min(block):
+def _process_wvfn_line_min(block: TextIO) -> Dict[str, Tuple[float]]:
     accum = {}
     for line in block:
         if "initial" in line:
@@ -1346,7 +1355,7 @@ def _process_wvfn_line_min(block):
     return accum
 
 
-def _process_autosolvation(block):
+def _process_autosolvation(block: TextIO) -> Dict[str, float]:
 
     accum = {}
     for line in block:
@@ -1358,10 +1367,10 @@ def _process_autosolvation(block):
     return accum
 
 
-# def _process_phonon(block):
+# def _process_phonon(block: TextIO):
 #     ...
 
-def _process_dipole(block):
+def _process_dipole(block: TextIO) -> Dict[str, Union[ThreeVector, float]]:
 
     accum = {}
 
@@ -1382,7 +1391,7 @@ def _process_dipole(block):
     return accum
 
 
-def _process_pair_params(block_in):
+def _process_pair_params(block_in: TextIO) -> Dict[Union[str, Tuple[str]], float]:
 
     accum = {}
     for line in block_in:
@@ -1443,7 +1452,7 @@ def _process_pair_params(block_in):
     return accum
 
 
-def _process_geom_table(block):
+def _process_geom_table(block: TextIO) -> Dict[str, Union[bool, float]]:
 
     accum = {}
     for line in block:

@@ -1,13 +1,13 @@
 """
 Parse castep .cell and .param files
 """
-
+from typing import Dict, TextIO, List, Union
 import re
 from .utility import log_factory
 from .castep_res import get_block, DEVEL_CODE_BLOCK_RE, DEVEL_CODE_VAL_RE
 
 
-def _parse_devel_code_block(in_block):
+def _parse_devel_code_block(in_block: str) -> Dict[str, str]:
     """ Parse devel_code block to dict """
 
     matches = re.finditer(DEVEL_CODE_BLOCK_RE, in_block, re.IGNORECASE | re.MULTILINE)
@@ -37,7 +37,7 @@ def _parse_devel_code_block(in_block):
     return devel_code_parsed
 
 
-def parse_cell_param_file(cell_param_file):
+def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, Dict[str, str]]]]:
     """ Parse .cell/.param files into dict ready to JSONise """
 
     logger = log_factory(cell_param_file)

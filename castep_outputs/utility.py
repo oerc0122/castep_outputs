@@ -1,6 +1,7 @@
 """
 Utility functions for parsing castep outputs
 """
+from typing import Tuple, Any, Dict, TextIO, List, Callable, Union
 import fileinput
 import logging
 import collections.abc
@@ -18,7 +19,7 @@ except ImportError:
         _YAML_TYPE = None
 
 
-def normalise_string(string):
+def normalise_string(string: str) -> str:
     """
     Normalise a string removing leading/trailing space
     and making all spacing single-space
@@ -26,7 +27,7 @@ def normalise_string(string):
     return " ".join(string.strip().split())
 
 
-def atreg_to_index(dict_in, clear=True):
+def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
     """
     Transform a matched atreg value to species index tuple
     Also clear value from dictionary for easier processing
@@ -40,7 +41,7 @@ def atreg_to_index(dict_in, clear=True):
     return (spec, int(ind))
 
 
-def normalise(obj):
+def normalise(obj: Any) -> Any:
     """
     Standardises data after processing
     """
@@ -52,7 +53,7 @@ def normalise(obj):
     return obj
 
 
-def json_safe(obj):
+def json_safe(obj: Any) -> Any:
     """ Transform datatypes into JSON safe variants"""
     if isinstance(obj, (tuple, list)):
         obj = [json_safe(v) for v in obj]
@@ -63,7 +64,7 @@ def json_safe(obj):
     return obj
 
 
-def json_safe_dict(obj):
+def json_safe_dict(obj: Dict) -> Dict:
     """ Transform a castep_output dict into a JSON safe variant
     i.e. convert tuple keys to conjoined strings """
     obj_out = {}
@@ -75,7 +76,9 @@ def json_safe_dict(obj):
     return obj_out
 
 
-def flatten_dict(dictionary, parent_key=False, separator='_'):
+def flatten_dict(dictionary: Dict,
+                 parent_key: bool = False,
+                 separator: str = '_') -> Dict[str, Any]:
     """
     Turn a nested dictionary into a flattened dictionary
 
@@ -101,28 +104,28 @@ def flatten_dict(dictionary, parent_key=False, separator='_'):
     return dict(items)
 
 
-def json_dumper(data, file):
+def json_dumper(data: Any, file: TextIO):
     """ Basic JSON format dumper """
     json.dump(data, file, indent=2)
 
 
-def ruamel_dumper(data, file):
+def ruamel_dumper(data: Any, file: TextIO):
     """ Basic ruamel.yaml format dumper """
     yaml_eng = yaml.YAML(typ='unsafe')
     yaml_eng.dump(data, file)
 
 
-def yaml_dumper(data, file):
+def yaml_dumper(data: Any, file: TextIO):
     """ Basic yaml format dumper """
     yaml.dump(data, file)
 
 
-def pprint_dumper(data, file):
+def pprint_dumper(data: Any, file: TextIO):
     """ PPrint dumper """
     print(pprint.pformat(data), file=file)
 
 
-def print_dumper(data, file):
+def print_dumper(data: Any, file: TextIO):
     """ Print dumper """
     print(data, file=file)
 
@@ -134,7 +137,7 @@ SUPPORTED_FORMATS = {"json": json_dumper,
                      "print": print_dumper}
 
 
-def get_dumpers(dump_fmt: str):
+def get_dumpers(dump_fmt: str) -> Callable:
     """
     Get appropriate dump for unified interface
     """
@@ -150,20 +153,22 @@ def get_dumpers(dump_fmt: str):
     return SUPPORTED_FORMATS[dump_fmt]
 
 
-def stack_dict(out_dict, in_dict):
+def stack_dict(out_dict: Dict[Any, List], in_dict: Dict[Any, List]) -> Dict[Any, List]:
     """ Append items in `in_dict` to the keys in `out_dict` """
     for key, val in in_dict.items():
         out_dict[key].append(val)
 
 
-def fix_data_types(in_dict, type_dict):
+def fix_data_types(in_dict: Dict, type_dict: Dict[str, type]) -> Dict:
     """ Applies correct types to elements of in_dict by mapping given in type_dict"""
     for key, typ in type_dict.items():
         if key in in_dict:
             in_dict[key] = to_type(in_dict[key], typ)
 
 
-def add_aliases(in_dict, alias_dict, replace=False):
+def add_aliases(in_dict: Dict[str, Any],
+                alias_dict: [str, str],
+                replace: bool = False) -> Dict[str, Any]:
     """ Adds aliases of known names into dictionary, if replace is true, remove original """
     for frm, new in alias_dict.items():
         if frm in in_dict:
@@ -172,7 +177,7 @@ def add_aliases(in_dict, alias_dict, replace=False):
                 in_dict.pop(frm)
 
 
-def to_type(data_in, typ):
+def to_type(data_in: Union[str, List, Tuple], typ: type) -> Union[Tuple[type], type]:
     """ Convert types to `typ` regardless of if data_in is iterable or otherwise """
     if isinstance(data_in, (list, tuple)):
         data_in = tuple(map(typ, data_in))
@@ -181,7 +186,7 @@ def to_type(data_in, typ):
     return data_in
 
 
-def log_factory(file):
+def log_factory(file: TextIO) -> Callable:
     """ Return logging function to add file info to logs """
     if isinstance(file, fileinput.FileInput):
         def log_file(message, *args, level="info"):

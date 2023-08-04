@@ -2,14 +2,12 @@
 Parse castep .md or .geom files
 """
 
-import re
+from typing import TextIO, List, Dict
 from collections import defaultdict
 
-from .castep_res import ATDAT3VEC, TAG_RE, get_numbers
+from .castep_res import ATDATTAG, TAG_RE, get_numbers
 from .constants import FST_D
 from .utility import to_type, add_aliases
-
-ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 
 ALIASES = {'E': 'energy',
            'T': 'temperature',
@@ -21,7 +19,7 @@ ALIASES = {'E': 'energy',
            'F': 'force'}
 
 
-def parse_md_geom_file(md_geom_file):
+def parse_md_geom_file(md_geom_file: TextIO) -> List[Dict[str, float]]:
     """ Parse standard MD and GEOM file formats """
 
     while "END header" not in md_geom_file.readline():
