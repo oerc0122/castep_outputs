@@ -25,3 +25,4 @@ CASTEP_OUTPUT_NAMES = (
     "pot_fmt",
     "den_fmt"
 )
+CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

@@ -1,5 +1,6 @@
 """ Module containing all regexes """
 
+from typing import List, Sequence, Optional, TextIO
 import re
 import io
 import itertools
@@ -7,12 +8,14 @@ import itertools
 from .constants import MINIMISERS, SHELLS, FST_D
 
 
-def get_numbers(line: str):
+def get_numbers(line: str) -> List[str]:
     """ Get all numbers in a string as a list """
     return NUMBER_RE.findall(line)
 
 
-def get_block(init_line: str, in_file, start, end, *, cnt=1, out_fmt=io.StringIO):
+def get_block(init_line: str, in_file: TextIO,
+              start: re.Pattern, end: re.Pattern, *, cnt: int = 1,
+              out_fmt: type = io.StringIO):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
 
@@ -44,7 +47,8 @@ def get_block(init_line: str, in_file, start, end, *, cnt=1, out_fmt=io.StringIO
         return io.StringIO(block)
 
 
-def labelled_floats(labels, counts=(None,), sep=r"\s+?", suff=""):
+def labelled_floats(labels: Sequence[str], counts: Sequence[Optional[int]] = (None,),
+                    sep: str = r"\s+?", suff: str = "") -> str:
     """ Constructs a regex for extracting floats with assigned labels
     :param labels:iterable of labels to label each group
     :param counts:iterable of counts to group into each label (count must not exceed that of labels)
@@ -77,14 +81,15 @@ ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
 # Unless we have *VERY* exotic electron shells
 SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
 
+TAG_RE = re.compile(r"<--\s*(?P<tag>\w+)")
+
 # Atom regexp
 ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
 
+
 # Atom reference with 3-vector
-
 ATDAT3VEC = re.compile(ATREG + labelled_floats(FST_D))
-
-TAG_RE = re.compile(r"<--\s*(?P<tag>\w+)")
+ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 
 # SCF Loop
 SCF_LOOP_RE = re.compile(r"\s*(?:Initial|\d+)\s*"

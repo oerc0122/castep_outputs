@@ -3,8 +3,7 @@ Parse the following castep outputs:
 .bands
 
 """
-# pylint: disable=unused-argument
-
+from typing import TextIO, Sequence, Dict, Union, List, Any
 import re
 from collections import defaultdict
 
@@ -14,7 +13,8 @@ from .constants import SND_D
 from .utility import (fix_data_types, stack_dict, to_type, log_factory)
 
 
-def parse_regular_header(block, extra_opts=tuple()):
+def parse_regular_header(block: TextIO,
+                         extra_opts: Sequence[str] = tuple()) -> Dict[str, Union[float, int]]:
     """ Parse (semi-)standard castep file header block (given as iterable over lines) """
 
     data = {}
@@ -43,7 +43,7 @@ def parse_regular_header(block, extra_opts=tuple()):
     return data
 
 
-def parse_hug_file(hug_file):
+def parse_hug_file(hug_file: TextIO) -> Dict[str, List[float]]:
     """ Parse castep .hug file """
 
     cols = ('compression', 'temperature', 'pressure', 'energy')
@@ -56,7 +56,7 @@ def parse_hug_file(hug_file):
     return data
 
 
-def parse_bands_file(bands_file):
+def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
     """ Parse castep .bonds file """
 
     bands_info = defaultdict(list)
@@ -102,7 +102,7 @@ def parse_bands_file(bands_file):
     return bands_info
 
 
-def parse_phonon_dos_file(phonon_dos_file):
+def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
     """ Parse castep .phonon_dos file """
     # pylint: disable=too-many-branches,redefined-outer-name
     logger = log_factory(phonon_dos_file)
@@ -160,7 +160,7 @@ def parse_phonon_dos_file(phonon_dos_file):
     return phonon_dos_info
 
 
-def parse_efield_file(efield_file):
+def parse_efield_file(efield_file: TextIO) -> Dict[str, Union[float, int]]:
     """ Parse castep .efield file """
     # pylint: disable=too-many-branches,redefined-outer-name
 
@@ -208,7 +208,7 @@ def parse_efield_file(efield_file):
     return efield_info
 
 
-def parse_xrd_sf_file(xrd_sf_file):
+def parse_xrd_sf_file(xrd_sf_file: TextIO) -> Dict[str, Union[int, float]]:
     """ Parse castep .xrd_sf file """
 
     # Get headers from first line
@@ -231,7 +231,7 @@ def parse_xrd_sf_file(xrd_sf_file):
     return xrd
 
 
-def parse_kpt_info(inp, prop):
+def parse_kpt_info(inp: TextIO, prop: str) -> Dict[str, List[Union[int, float]]]:
     """ Parse standard form of kpt related .*_fmt files """
 
     # Skip header
@@ -250,21 +250,21 @@ def parse_kpt_info(inp, prop):
     return qdata
 
 
-def parse_elf_fmt_file(elf_file):
+def parse_elf_fmt_file(elf_file: TextIO) -> Dict[str, List[Union[int, float]]]:
     """ Parse castep .elf_fmt files """
     return parse_kpt_info(elf_file, 'chi')
 
 
-def parse_chdiff_fmt_file(chdiff_file):
+def parse_chdiff_fmt_file(chdiff_file: TextIO) -> Dict[str, List[Union[int, float]]]:
     """ Parse castep .chdiff_fmt files """
     return parse_kpt_info(chdiff_file, 'chdiff')
 
 
-def parse_pot_fmt_file(pot_file):
+def parse_pot_fmt_file(pot_file: TextIO) -> Dict[str, List[Union[int, float]]]:
     """ Parse castep .pot_fmt files """
     return parse_kpt_info(pot_file, 'pot')
 
 
-def parse_den_fmt_file(den_file):
+def parse_den_fmt_file(den_file: TextIO) -> Dict[str, List[Union[int, float]]]:
     """ Parse castep .den_fmt files """
     return parse_kpt_info(den_file, 'density')
