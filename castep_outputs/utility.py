@@ -1,6 +1,8 @@
 """
 Utility functions for parsing castep outputs
 """
+import fileinput
+import logging
 import io
 import collections.abc
 from collections import defaultdict
@@ -236,6 +238,22 @@ def to_type(data_in, typ):
     elif isinstance(data_in, str):
         data_in = typ(data_in)
     return data_in
+
+
+def log_factory(file):
+    """ Return logging function to add file info to logs """
+    if isinstance(file, fileinput.FileInput):
+        def log_file(message, *args, level="info"):
+            getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
+                                    f" {message}", *args)
+    elif hasattr(file, 'name'):
+        def log_file(message, *args, level="info"):
+            getattr(logging, level)(f"[{file.name}] {message}", *args)
+    else:
+        def log_file(message, *args, level="info"):
+            getattr(logging, level)(message, *args)
+
+    return log_file
 
 
 # --- Constants

@@ -7,10 +7,8 @@
       "MATHLIBS": "blas (LAPACK version 3.11.0)",
       "FFT Lib": "fftw3 version fftw-3.3.10-sse2-avx",
       "Fundamental constants values": "CODATA 2018"
-    }
-  },
-  {
-    "time_started": " Tue, 30 May 2023 11",
+    },
+    "time_started": "Tue, 30 May 2023 11:57:18 +0100",
     "species_properties": {
       "Mn": {
         "pseudo_atomic_energy": -2901.7207,
@@ -537,7 +535,9 @@
           "disk": 0.0
         }
       }
-    ],
+    ]
+  },
+  {
     "build_info": {
       "summary": "Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr 14 15:13:22 2023 +0100",
       "Compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
@@ -545,10 +545,8 @@
       "MATHLIBS": "blas (LAPACK version 3.11.0)",
       "FFT Lib": "fftw3 version fftw-3.3.10-sse2-avx",
       "Fundamental constants values": "CODATA 2018"
-    }
-  },
-  {
-    "time_started": " Fri, 14 Jul 2023 19",
+    },
+    "time_started": "Fri, 14 Jul 2023 19:45:17 +0100",
     "species_properties": {
       "Mn": {
         "pseudo_atomic_energy": -2901.7207,

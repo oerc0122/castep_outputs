@@ -1,7 +1,8 @@
 """
 Run main castep parser
 """
-
+import logging
+import fileinput
 import io
 import sys
 import os.path
@@ -34,11 +35,14 @@ PARSERS = {
     }
 
 
-def parse_single(in_file, parser: callable = None,
-                 verbose=False, out_format="json", *, testing=False):
+def parse_single(in_file, parser: callable = None, out_format="json",
+                 *, loglevel=logging.WARNING, testing=False):
     """
     Parse a file using the given parser and post-process according to options
     """
+
+    logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
+
     if parser is None:
         _, ext = os.path.splitext(in_file)
         parser = PARSERS.get(ext, None)
@@ -46,10 +50,10 @@ def parse_single(in_file, parser: callable = None,
             raise KeyError(f"Parser for file {in_file} (assumed type: {ext}) not found")
 
     if isinstance(in_file, io.TextIOBase):
-        data = parser(in_file, verbose)
+        data = parser(in_file)
     else:
-        with open(in_file, 'r', encoding='utf-8') as file:
-            data = parser(file, verbose)
+        with fileinput.FileInput(in_file, mode='r', encoding='utf-8') as file:
+            data = parser(file)
 
     if out_format == "json" or testing:
         data = json_safe(data)
@@ -63,14 +67,14 @@ def parse_single(in_file, parser: callable = None,
     return data
 
 
-def parse_all(output=None, out_format="json", verbose=False, *, testing=False, **files):
+def parse_all(output=None, out_format="json", loglevel=logging.WARNING, *, testing=False, **files):
     """ Parse all files in files dict """
     file_dumper = get_dumpers(out_format)
 
     for typ, paths in files.items():
         parser = PARSERS[f".{typ}"]
         for path in paths:
-            data = parse_single(path, parser, verbose, out_format, testing=testing)
+            data = parse_single(path, parser, out_format, loglevel=loglevel, testing=testing)
 
             if output is None:
                 file_dumper(data, sys.stdout)
@@ -88,7 +92,7 @@ def main():
     dict_args = args_to_dict(args)
 
     parse_all(output=args.output,
-              verbose=args.verbose,
+              loglevel=getattr(logging, args.log.upper()),
               testing=args.testing,
               out_format=args.out_format,
               **dict_args)
