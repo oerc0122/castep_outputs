@@ -5,8 +5,9 @@ Parse castep .md or .geom files
 import re
 from collections import defaultdict
 
-from .utility import (ATDAT3VEC, TAG_RE, FST_D, to_type, get_numbers, add_aliases)
-# pylint: disable=unused-argument
+from .castep_res import ATDAT3VEC, TAG_RE, get_numbers
+from .constants import FST_D
+from .utility import to_type, add_aliases
 
 ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 

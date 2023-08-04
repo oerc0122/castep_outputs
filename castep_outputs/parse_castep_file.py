@@ -11,204 +11,23 @@ import io
 import re
 import itertools
 
-from .utility import (EXPNUMBER_RE, FNUMBER_RE, INTNUMBER_RE, SHELL_RE,
-                      ATREG, ATOM_NAME_RE, SPECIES_RE, ATDAT3VEC, SHELLS, MINIMISERS,
-                      labelled_floats, fix_data_types, add_aliases, to_type,
-                      stack_dict, get_block, get_numbers, normalise_string,
+from . import castep_res as REs
+from .castep_res import labelled_floats, get_numbers, get_block
+
+from .constants import SHELLS
+
+from .utility import (fix_data_types, add_aliases, to_type,
+                      stack_dict, normalise_string,
                       atreg_to_index, log_factory)
-from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
-                                parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
-                                parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file)
-
-# SCF Loop
-_SCF_LOOP_RE = re.compile(r"\s*(?:Initial|\d+)\s*"
-                          rf"{labelled_floats(('energy', 'fermi_energy', 'energy_gain'))}?\s*"
-                          f"{labelled_floats(('time',))}")
-
-# PS Energy
-_PS_SHELL_RE = re.compile(
-    rf"\s*Pseudo atomic calculation performed for (?P<spec>{SPECIES_RE})(\s+{SHELL_RE})+")
-
-# PS Projector
-_PSPOT_PROJ_RE = re.compile(r"(?P<orbital>\d)(?P<shell>\d)(?P<type>U|UU|N)?")
-_UNLABELLED_PROJ_RE = r"\d\d(?:UU|U|N)?"
-
-_PSPOT_REFERENCE_STRUC_RE = re.compile(
-    rf"""
-    ^\s*\|\s*
-    (?P<orb>{SHELL_RE}(?:/\d+)?)\s*
-    {labelled_floats(('occupation', 'energy'))}
-    \s*\|\s*$
-    """, re.VERBOSE)
-_PSPOT_DEF_RE = re.compile(
-    rf"""
-    ^\s*\|\s*
-    (?P<beta>\d+|loc)\s*
-    (?P<l>\d+)\s*
-    (?P<j>\d+)?\s*
-    {labelled_floats(('e', 'Rc'))}\s*
-    (?P<scheme>\w+)\s*
-    (?P<norm>\d+)
-    \s*\|\s*$
-    """, re.VERBOSE)
-
-# PSPot String
-_PSPOT_RE = re.compile(labelled_floats(("local_channel",
-                                        "core_radius",
-                                        "beta_radius",
-                                        "r_inner",
-                                        "coarse",
-                                        "medium",
-                                        "fine"), sep=r"\|?")
-                       +
-                       r"\|"
-                       rf"(?P<proj>{_UNLABELLED_PROJ_RE}(?::{_UNLABELLED_PROJ_RE})*)"
-                       rf"(?:\{{(?P<shell_swp>{SHELL_RE}(?:,{SHELL_RE})*)\}})?"
-                       rf"\((?P<opt>[^)]+)\)"
-                       rf"(?P<debug>#)?"
-                       rf"(?:\[(?P<shell_swp2>{SHELL_RE}(?:,{SHELL_RE})*)\])?"
-                       )
-
-# Forces block
-_FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Forces \*+\s*$", re.IGNORECASE)
-# Stresses block
-_STRESSES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Stress Tensor \*+\s*$", re.IGNORECASE)
-
-# Bonds
-_BOND_RE = re.compile(rf"""\s*
-                       (?P<spec1>{ATOM_NAME_RE})\s*(?P<ind1>\d+)\s*
-                       --\s*
-                       (?P<spec2>{ATOM_NAME_RE})\s*(?P<ind2>\d+)\s*
-                       {labelled_floats(("population", "length"))}
-                       """, re.VERBOSE)
-
-# Pair pot
-_PAIR_POT_RES = {
-    'two_body_one_spec': re.compile(
-        rf"^(?P<tag>\w+)?\s*\*\s*(?P<spec>{ATOM_NAME_RE})\s*\*\s*$"
-    ),
-    'two_body_spec':  re.compile(
-        rf"(?P<spec1>{ATOM_NAME_RE})\s*-\s*"
-        rf"(?P<spec2>{ATOM_NAME_RE})"
-    ),
-    'two_body_val': re.compile(
-        rf"""
-            (?P<tag>\w+)?\s*\*\s*
-            (?P<label>\w+)\s*
-            {labelled_floats(('params',), counts=('1,4',))}\s*
-            [\w^/*]+\s* \* \s*
-            <--\s*(?P<type>\w+)
-            """, re.ASCII | re.VERBOSE
-    ),
-    'three_body_spec': re.compile(
-        rf"""
-        ^(?P<tag>\w+)?\s*\*\s*
-        (?P<spec>(?:{ATOM_NAME_RE}\s*){{3}})
-        \s*\*\s*$""", re.VERBOSE
-    ),
-    'three_body_val': re.compile(
-        rf"""
-        ^(?P<tag>\w+)?\s*\*\s*
-        (?P<label>\w+)\s*
-        {labelled_floats(('params',))}\s*
-        [\w^/*]+\s* \* \s*
-        <--\s*(?P<type>\w+)
-        """, re.VERBOSE
-    )
-}
-
-# Orbital population
-_ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)"
-                              rf"\s*{labelled_floats(('charge',))}")
-
-# Regexp to identify phonon block in .castep file
-_CASTEP_PHONON_RE = re.compile(
-    rf"""
-    \s+\+\s+
-    q-pt=\s*{INTNUMBER_RE}\s+
-    \({labelled_floats(("qpt",), counts=(3,))}\)
-    \s+
-    ({FNUMBER_RE})\s+\+
-    """, re.VERBOSE)
-
-_PROCESS_PHONON_RE = re.compile(
-    rf"""\s+\+\s+
-    (?P<N>\d+)\s+
-    (?P<frequency>{FNUMBER_RE})\s*
-    (?P<irrep>[a-zA-V])?\s*
-    (?P<intensity>{FNUMBER_RE})?\s*
-    (?P<active>[YN])?\s*
-    (?P<raman_intensity>{FNUMBER_RE})?\s*
-    (?P<raman_active>[YN])?\s*\+""", re.VERBOSE)
-
-_TDDFT_RE = re.compile(
-    rf"""\s*\+\s*
-    {INTNUMBER_RE}
-    {labelled_floats(("energy", "error"))}
-    \s*(?P<type>\w+)
-    \s*\+TDDFT""", re.VERBOSE)
-
-_BS_RE = re.compile(
-    rf"""
-    Spin=\s*(?P<spin>{INTNUMBER_RE})\s*
-    kpt=\s*{INTNUMBER_RE}\s*
-    \({labelled_floats(("kx","ky","kz"))}\)\s*
-    kpt-group=\s*(?P<kpgrp>{INTNUMBER_RE})
-    """, re.VERBOSE)
-
-_THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
-
-_MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
-_GEOMOPT_MIN_TABLE_RE = re.compile(
-    r"\s*\|\s* (?P<step>[^|]+)" +
-    labelled_floats(("lambda", "Fdelta", "enthalpy"), sep=r"\s*\|\s*") +
-    r"\s* \|", re.VERBOSE)
-
-_GEOMOPT_TABLE_RE = re.compile(
-    r"\s*\|\s* (?P<parameter>\S+)" +
-    labelled_floats(('value', 'tolerance'), sep=r"\s*\|\s*") +
-    r"\s*\|\s* \S+ (?#Units) \s*\|\s* (?P<converged>No|Yes) \s*\|", re.VERBOSE)
-
-
-# Regexp to identify Mulliken ppoulation analysis line
-_CASTEP_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
-                             labelled_floats((*SHELLS, "total", "charge", "spin")) +
-                             "?"   # Spin is optional
-                             )
-
-_CASTEP_POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
-                                labelled_floats((*SHELLS, "total"))
-                                )
-
-# Regexp for born charges
-_BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})")
-
-# MagRes REs
-_MAGRES_RE = (
-    # "Chemical Shielding Tensor" 0
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
-               rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
-    # "Chemical Shielding and Electric Field Gradient Tensor" 1
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
-               rf"(?P<asym>{FNUMBER_RE}|N/A)"
-               rf"{labelled_floats(('cq', 'eta'))}\s*\|\s*"),
-    # "Electric Field Gradient Tensor" 2
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('cq',))}\s*"
-               rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
-    # "(?:I|Ani)sotropic J-coupling" 3
-    re.compile(rf"\s*\|\**\s*{ATREG}{labelled_floats(('fc','sd','para','dia','tot'))}\s*\|\s*"),
-    # "Hyperfine Tensor" 4
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*")
-    )
-
-# MagRes Tasks
-_MAGRES_TASK = (
-    "Chemical Shielding",
-    "Chemical Shielding and Electric Field Gradient",
-    "Electric Field Gradient",
-    "(An)Isotropic J-coupling",
-    "Hyperfine"
-    )
+from .parse_extra_files import (parse_bands_file,
+                                parse_hug_file,
+                                parse_phonon_dos_file,
+                                parse_efield_file,
+                                parse_xrd_sf_file,
+                                parse_elf_fmt_file,
+                                parse_chdiff_fmt_file,
+                                parse_pot_fmt_file,
+                                parse_den_fmt_file)
 
 
 def parse_castep_file(castep_file):
@@ -223,8 +42,8 @@ def parse_castep_file(castep_file):
     for line in castep_file:
         # Build Info
         if block := get_block(line, castep_file,
-                                r"^\s*Compiled for",
-                                r"^\s*$", out_fmt=list):
+                              r"^\s*Compiled for",
+                              r"^\s*$", out_fmt=list):
 
             if curr_run:
                 runs.append(curr_run)
@@ -269,7 +88,7 @@ def parse_castep_file(castep_file):
             curr_run["options"] = _process_params(block)
 
         # Pseudo-atomic energy
-        elif block := get_block(line, castep_file, _PS_SHELL_RE, r"^\s*$", cnt=2):
+        elif block := get_block(line, castep_file, REs.PS_SHELL_RE, r"^\s*$", cnt=2):
 
             logger("Found pseudo-atomic energy")
 
@@ -360,14 +179,14 @@ def parse_castep_file(castep_file):
         elif any((line.startswith("Final energy, E"),
                   line.startswith("Final energy"),
                   "Total energy corrected for finite basis set" in line,
-                  re.search(f"({_MINIMISERS_RE}): finished iteration.*with enthalpy", line))):
+                  re.search(f"({REs.MINIMISERS_RE}): finished iteration.*with enthalpy", line))):
 
             logger("Found energy")
 
             curr_run["energies"].append(to_type(get_numbers(line)[-1], float))
 
         # Free energies
-        elif re.match(rf"Final free energy \(E-TS\) += +({EXPNUMBER_RE})", line):
+        elif re.match(rf"Final free energy \(E-TS\) += +({REs.EXPNUMBER_RE})", line):
 
             logger("Found free energy (E-TS)")
             curr_run["free_energies"].append(to_type(get_numbers(line)[-1], float))
@@ -379,7 +198,7 @@ def parse_castep_file(castep_file):
             curr_run["solvation_energies"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
-        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({EXPNUMBER_RE})", line):
+        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({REs.EXPNUMBER_RE})", line):
 
             logger("Found spin")
 
@@ -451,7 +270,7 @@ def parse_castep_file(castep_file):
                                              for number in to_type(get_numbers(line), float))
 
         # Finite basis correction parameter
-        elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({FNUMBER_RE})", line):
+        elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({REs.FNUMBER_RE})", line):
 
             logger("Found dE/dlog(E)")
             curr_run["dedlne"].append(to_type(match.group(1), float))
@@ -472,7 +291,7 @@ def parse_castep_file(castep_file):
             curr_run["k-points"] = _process_kpoint_blocks(block, False)
 
         # Forces blocks
-        elif block := get_block(line, castep_file, _FORCES_BLOCK_RE, r"^ \*+$"):
+        elif block := get_block(line, castep_file, REs.FORCES_BLOCK_RE, r"^ \*+$"):
             if "forces" not in curr_run:
                 curr_run["forces"] = defaultdict(list)
 
@@ -483,7 +302,7 @@ def parse_castep_file(castep_file):
             curr_run["forces"][key].append(val)
 
         # Stress tensor block
-        elif block := get_block(line, castep_file, _STRESSES_BLOCK_RE, r"^ \*+$"):
+        elif block := get_block(line, castep_file, REs.STRESSES_BLOCK_RE, r"^ \*+$"):
             if "stresses" not in curr_run:
                 curr_run["stresses"] = defaultdict(list)
 
@@ -494,7 +313,7 @@ def parse_castep_file(castep_file):
             curr_run["stresses"][key].append(val)
 
         # Phonon block
-        elif match := _CASTEP_PHONON_RE.match(line):
+        elif match := REs.PHONON_RE.match(line):
 
             logger("Found phonon")
 
@@ -505,7 +324,7 @@ def parse_castep_file(castep_file):
             logger("Reading qpt %s", qdata['qpt'], level="debug")
 
             for line in castep_file:
-                if match := _CASTEP_PHONON_RE.match(line):
+                if match := REs.PHONON_RE.match(line):
                     if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                                              for phonon in curr_run["phonons"]):
                         curr_run["phonons"].append(_process_qdata(qdata))
@@ -515,10 +334,10 @@ def parse_castep_file(castep_file):
                     logger("Reading qpt %s", qdata['qpt'], level="debug")
 
                 elif (re.match(r"\s+\+\s+Effective cut-off =", line) or
-                      re.match(rf"\s+\+\s+q->0 along \((\s*{FNUMBER_RE}){{3}}\)\s+\+", line) or
+                      re.match(rf"\s+\+\s+q->0 along \((\s*{REs.FNUMBER_RE}){{3}}\)\s+\+", line) or
                       re.match(r"\s+\+ -+ \+", line)):
                     continue
-                elif match := _PROCESS_PHONON_RE.match(line):
+                elif match := REs.PROCESS_PHONON_RE.match(line):
 
                     # ==By mode
                     # qdata["modes"].append(match.groupdict())
@@ -672,9 +491,9 @@ def parse_castep_file(castep_file):
 
             curr_run["geom_opt"]["final_configuration"] = _process_atreg_block(block)
 
-        elif match := re.match(rf"^\s*(?:{_MINIMISERS_RE}):"
+        elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
                                r"(?P<key>[^=]+)=\s*"
-                               f"(?P<value>{EXPNUMBER_RE}).*",
+                               f"(?P<value>{REs.EXPNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
             if "geom_opt" not in curr_run:
@@ -687,9 +506,9 @@ def parse_castep_file(castep_file):
             curr_run["geom_opt"][key] = val
 
         elif block := get_block(line, castep_file,
-                                f"<--( min)? {_MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
+                                f"<--( min)? {REs.MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
 
-            typ = re.search(_MINIMISERS_RE, line).group(0)
+            typ = re.search(REs.MINIMISERS_RE, line).group(0)
 
             logger("Found %s geom_block", typ)
 
@@ -869,7 +688,7 @@ def parse_castep_file(castep_file):
 
 
 def _process_ps_energy(block):
-    match = _PS_SHELL_RE.search(next(block))
+    match = REs.PS_SHELL_RE.search(next(block))
     spec = match["spec"]
     next(block)
     energy = get_numbers(next(block))[1]
@@ -881,14 +700,14 @@ def _process_tddft(block):
                "error": float(match["error"]),
                "type": match["type"]}
               for line in block
-              if (match := _TDDFT_RE.match(line))]
+              if (match := REs.TDDFT_RE.match(line))]
     return tddata
 
 
 def _process_atreg_block(block):
     accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
              for line in block
-             if (match := ATDAT3VEC.search(line))}
+             if (match := REs.ATDAT3VEC.search(line))}
     return accum
 
 
@@ -898,7 +717,7 @@ def _process_spec_prop(block):
 
     for line in block:
         words = line.split()
-        if words and re.match(rf"{SPECIES_RE}\b", words[0]):
+        if words and re.match(rf"{REs.SPECIES_RE}\b", words[0]):
 
             accum.append(words)
 
@@ -910,21 +729,21 @@ def _process_md(block):
                  for line in block
                  if (match := re.search(r"x\s+"
                                         r"(?P<key>[a-zA-Z][A-Za-z ]+):\s*"
-                                        rf"(?P<val>{FNUMBER_RE})", line))}
+                                        rf"(?P<val>{REs.FNUMBER_RE})", line))}
 
     return {normalise_string(key): val for key, val in curr_data.items()}
 
 
 def _process_elf(block):
     curr_data = [to_type(match.group(1), float) for line in block
-                 if (match := re.match(rf"\s+ELF\s+\d+\s+({FNUMBER_RE})", line))]
+                 if (match := re.match(rf"\s+ELF\s+\d+\s+({REs.FNUMBER_RE})", line))]
     return curr_data
 
 
 def _process_hirshfeld(block):
     """ Process Hirshfeld block to dict of charges """
     accum = {atreg_to_index(match): float(match["charge"]) for line in block
-             if (match := re.match(rf"\s+{ATREG}\s+(?P<charge>{FNUMBER_RE})", line))}
+             if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))}
     return accum
 
 
@@ -932,7 +751,7 @@ def _process_thermodynamics(block):
     """ Process a thermodynamics block into a dict of lists """
     accum = defaultdict(list)
     for line in block:
-        if match := _THERMODYNAMICS_DATA_RE.match(line):
+        if match := REs.THERMODYNAMICS_DATA_RE.match(line):
             stack_dict(accum, match.groupdict())
         # elif re.match(r"\s+T\(", line):  # Can make dict/re based on labels
         #     thermo_label = line.split()
@@ -1012,7 +831,7 @@ def _process_scf(block):
     scf = []
     curr = {}
     for line in block:
-        if match := _SCF_LOOP_RE.match(line):
+        if match := REs.SCF_LOOP_RE.match(line):
             if curr:
                 scf.append(curr)
             curr = match.groupdict()
@@ -1059,7 +878,7 @@ def _process_scf(block):
 
 
 def _process_forces(block):
-    ftype = (ft_guess if (ft_guess := _FORCES_BLOCK_RE.search(next(block)).group(1))
+    ftype = (ft_guess if (ft_guess := REs.FORCES_BLOCK_RE.search(next(block)).group(1))
              else "non-descript")
 
     ftype = normalise_string(ftype).lower()
@@ -1071,7 +890,7 @@ def _process_forces(block):
 
 def _process_stresses(block):
 
-    ftype = (ft_guess if (ft_guess := _STRESSES_BLOCK_RE.search(next(block)).group(1))
+    ftype = (ft_guess if (ft_guess := REs.STRESSES_BLOCK_RE.search(next(block)).group(1))
              else "non-descript")
 
     ftype = normalise_string(ftype).lower()
@@ -1095,7 +914,7 @@ def _process_initial_spins(block):
 
     accum = {}
     for line in block:
-        if match := re.match(rf"\s*\|\s*{ATREG}\s*"
+        if match := re.match(rf"\s*\|\s*{REs.ATREG}\s*"
                              rf"{labelled_floats(('spin', 'magmom'))}\s*"
                              r"(?P<fix>[TF])\s*\|", line):
             match = match.groupdict()
@@ -1109,7 +928,7 @@ def _process_born(block):
 
     born_accum = {}
     for line in block:
-        if match := _BORN_RE.match(line):
+        if match := REs.BORN_RE.match(line):
             born_accum[atreg_to_index(match)] = (to_type(match["charges"].split(), float),
                                                  to_type(next(block).split(), float),
                                                  to_type(next(block).split(), float))
@@ -1154,7 +973,7 @@ def _process_mulliken(block):
     accum = {}
 
     for line in block:
-        if match := _CASTEP_POPN_RE.match(line):
+        if match := REs.POPN_RE.match(line):
             mull = match.groupdict()
             mull["spin_sep"] = bool(mull["spin_sep"])
             if mull["spin_sep"]:  # We have spin separation
@@ -1162,7 +981,7 @@ def _process_mulliken(block):
                             {orb: f"up_{orb}" for orb in (*SHELLS, "total")},
                             replace=True)
                 line = next(block)
-                match = _CASTEP_POPN_RE_DN.match(line)
+                match = REs.POPN_RE_DN.match(line)
                 match = match.groupdict()
 
                 add_aliases(match,
@@ -1198,7 +1017,7 @@ def _process_band_structure(block):
     qdata = {}
 
     for line in block:
-        if match := _BS_RE.search(line):
+        if match := REs.BS_RE.search(line):
             if qdata:
                 fdt(qdata)
                 bands.append(qdata)
@@ -1233,8 +1052,8 @@ def _parse_magres_block(task, inp):
     """ Parse MagRes data tables from inp according to task """
 
     data = defaultdict(list)
-    data["task"] = _MAGRES_TASK[task]
-    curr_re = _MAGRES_RE[task]
+    data["task"] = REs.MAGRES_TASK[task]
+    curr_re = REs.MAGRES_RE[task]
     for line in inp:
         if match := curr_re.match(line):
             match = match.groupdict()
@@ -1351,7 +1170,7 @@ def _process_symmetry(block):
         elif cons_block := get_block(line, block,
                                      r"constraints\.{5}", r"\s*x+\.{4}\s*", out_fmt=str):
             con["ionic_constraints"] = defaultdict(list)
-            for match in re.finditer(rf"{ATREG}\s*[xyz]\s*" +
+            for match in re.finditer(rf"{REs.ATREG}\s*[xyz]\s*" +
                                      labelled_floats(('pos',), counts=(3,)),
                                      cons_block):
                 match = match.groupdict()
@@ -1389,13 +1208,13 @@ def _process_dynamical_matrix(block):
 
 
 def _process_pspot_string(string):
-    if not (match := _PSPOT_RE.match(string)):
+    if not (match := REs.PSPOT_RE.match(string)):
         raise IOError(f"Attempt to parse {string} as PSPot failed")
 
     pspot = match.groupdict()
     projectors = []
     for proj in pspot["proj"].split(":"):
-        pdict = _PSPOT_PROJ_RE.match(proj).groupdict()
+        pdict = REs.PSPOT_PROJ_RE.match(proj).groupdict()
         pdict["shell"] = SHELLS[int(pdict["shell"])]
         fix_data_types(pdict, {"orbital": int})
         projectors.append(pdict)
@@ -1426,19 +1245,19 @@ def _process_pspot_report(block):
              "pseudopotential_definition": []}
 
     for line in block:
-        if match := _PSPOT_REFERENCE_STRUC_RE.match(line):
+        if match := REs.PSPOT_REFERENCE_STRUC_RE.match(line):
             match = match.groupdict()
             fix_data_types(match, {"occupation": float, "energy": float})
             accum["reference_electronic_structure"].append(match)
-        elif match := _PSPOT_DEF_RE.match(line):
+        elif match := REs.PSPOT_DEF_RE.match(line):
             match = match.groupdict()
             # Account for "loc"
             match["beta"] = int(match["beta"]) if match["beta"].isnumeric() else match["beta"]
             fix_data_types(match, {"l": int, "j": int,
                                    "e": float, "Rc": float, "norm": int})
             accum["pseudopotential_definition"].append(match)
-        elif match := re.search(rf"Element: (?P<element>{SPECIES_RE})\s+"
-                                rf"Ionic charge: (?P<ionic_charge>{FNUMBER_RE})\s+"
+        elif match := re.search(rf"Element: (?P<element>{REs.SPECIES_RE})\s+"
+                                rf"Ionic charge: (?P<ionic_charge>{REs.FNUMBER_RE})\s+"
                                 r"Level of theory: (?P<level_of_theory>[\w\d]+)", line):
             match = match.groupdict()
             match["ionic_charge"] = float(match["ionic_charge"])
@@ -1447,7 +1266,7 @@ def _process_pspot_report(block):
         elif match := re.search(r"Atomic Solver:\s*(?P<solver>[\w\s-]+)", line):
             accum["solver"] = normalise_string(match["solver"])
 
-        elif match := _PSPOT_RE.search(line):
+        elif match := REs.PSPOT_RE.search(line):
             accum["detail"] = _process_pspot_string(match.group(0))
 
         elif "Augmentation charge Rinner" in line:
@@ -1464,7 +1283,7 @@ def _process_bond_analysis(block):
               (match["spec2"], int(match["ind2"]))): {"population": float(match["population"]),
                                                       "length": float(match["length"])}
              for line in block
-             if (match := _BOND_RE.match(line))}
+             if (match := REs.BOND_RE.match(line))}
     return accum
 
 
@@ -1472,7 +1291,7 @@ def _process_orbital_populations(block):
 
     accum = defaultdict(dict)
     for line in block:
-        if match := _ORBITAL_POPN_RE.match(line):
+        if match := REs.ORBITAL_POPN_RE.match(line):
             ind = match.groupdict()
             ind = atreg_to_index(ind)
             accum[ind][match["orb"]] = to_type(match["charge"], float)
@@ -1495,7 +1314,7 @@ def _process_dftd(block):
                 val = to_type(get_numbers(val)[0], float)
             dftd[normalise_string(key).lower()] = val
 
-        elif match := re.match(rf"\s*x\s*(?P<spec>{ATOM_NAME_RE})\s*" +
+        elif match := re.match(rf"\s*x\s*(?P<spec>{REs.ATOM_NAME_RE})\s*" +
                                labelled_floats(('C6', 'R0')), line):
             dftd["species"][match["spec"]] = {"C6": float(match["C6"]),
                                               "R0": float(match["R0"])}
@@ -1570,11 +1389,11 @@ def _process_pair_params(block_in):
         # Two-body
         if block := get_block(line, block_in, "Two Body", r"^\w*\s*\*+\s*$"):
             for blk_line in block:
-                if _PAIR_POT_RES['two_body_spec'].search(blk_line):
-                    match = _PAIR_POT_RES['two_body_spec'].finditer(blk_line)
+                if REs.PAIR_POT_RES['two_body_spec'].search(blk_line):
+                    match = REs.PAIR_POT_RES['two_body_spec'].finditer(blk_line)
                     labels = tuple(mch.groups() for mch in match)
 
-                elif match := _PAIR_POT_RES['two_body_val'].match(blk_line):
+                elif match := REs.PAIR_POT_RES['two_body_val'].match(blk_line):
                     tag, typ, lab = match.group("tag", "type", "label")
                     if tag:
                         typ = f"{tag}_{typ}"
@@ -1587,16 +1406,16 @@ def _process_pair_params(block_in):
                                                to_type(match["params"].split(),
                                                        float)))
 
-                elif match := _PAIR_POT_RES['two_body_one_spec'].match(blk_line):
+                elif match := REs.PAIR_POT_RES['two_body_one_spec'].match(blk_line):
                     labels = (match["spec"],)
 
         # Three-body
         elif block := get_block(line, block_in, "Three Body", r"^\s*\*+\s*$"):
             for blk_line in block:
-                if match := _PAIR_POT_RES['three_body_spec'].match(blk_line):
+                if match := REs.PAIR_POT_RES['three_body_spec'].match(blk_line):
                     labels = (tuple(match["spec"].split()),)
 
-                elif match := _PAIR_POT_RES["three_body_val"].match(blk_line):
+                elif match := REs.PAIR_POT_RES["three_body_val"].match(blk_line):
                     tag, typ, lab = match.group("tag", "type", "label")
 
                     if tag:
@@ -1611,7 +1430,7 @@ def _process_pair_params(block_in):
                                                        float)))
 
         # Globals
-        elif match := _PAIR_POT_RES["three_body_val"].match(line):
+        elif match := REs.PAIR_POT_RES["three_body_val"].match(line):
             tag, typ, lab = match.group("tag", "type", "label")
 
             if tag:
@@ -1628,7 +1447,7 @@ def _process_geom_table(block):
 
     accum = {}
     for line in block:
-        if match := _GEOMOPT_MIN_TABLE_RE.match(line):
+        if match := REs.GEOMOPT_MIN_TABLE_RE.match(line):
             match = match.groupdict()
             fix_data_types(match, {key: float for key in ('lambda', 'Fdelta', 'enthalpy')})
 
@@ -1636,7 +1455,7 @@ def _process_geom_table(block):
             del match["step"]
             accum[key] = match
 
-        elif match := _GEOMOPT_TABLE_RE.match(line):
+        elif match := REs.GEOMOPT_TABLE_RE.match(line):
             match = match.groupdict()
             fix_data_types(match, {key: float for key in ('value', 'tolerance')})
 
