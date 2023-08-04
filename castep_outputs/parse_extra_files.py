@@ -8,9 +8,10 @@ import re
 from collections import defaultdict
 
 from . import castep_res as REs
-from .castep_res import get_block, get_numbers, labelled_floats
-from .constants import SND_D
-from .utility import (fix_data_types, stack_dict, to_type, log_factory)
+from .castep_res import get_block, get_numbers, labelled_floats, ATDATTAG, TAG_RE
+from .constants import FST_D, SND_D, TAG_ALIASES, TS_TYPES
+from .utility import (fix_data_types, stack_dict, to_type, log_factory, atreg_to_index,
+                      add_aliases)
 
 
 def parse_regular_header(block: TextIO,
@@ -231,27 +232,61 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> Dict[str, Union[int, float]]:
     return xrd
 
 
-def parse_elastic_file(block: TextIO) -> Dict[str, List[List[float]]]:
+def parse_elastic_file(elastic_file: TextIO) -> Dict[str, List[List[float]]]:
     """ Parse castep .elastic files """
     accum = defaultdict(list)
 
-    for line in block:
-        if match := get_block(line, block,
+    for line in elastic_file:
+        if block := get_block(line, elastic_file,
                               "^BEGIN Elastic Constants",
                               "^END Elastic Constants"):
 
             accum["elastic_constants"] = [to_type(numbers, float)
-                                          for blk_line in match
+                                          for blk_line in block
                                           if (numbers := get_numbers(blk_line))]
 
-        elif match := get_block(line, block,
+        elif block := get_block(line, elastic_file,
                                 "^BEGIN Compliance Matrix",
                                 "^END Compliance Matrix"):
-            next(match)  # Skip Begin line w/units
+            next(block)  # Skip Begin line w/units
 
             accum["compliance_matrix"] = [to_type(numbers, float)
-                                          for blk_line in match
+                                          for blk_line in block
                                           if (numbers := get_numbers(blk_line))]
+
+    return accum
+
+
+def parse_ts_file(ts_file: TextIO) -> Dict[str, Any]:
+    """ Parse castep .ts files """
+
+    accum = defaultdict(list)
+
+    for line in ts_file:
+        if "TSConfirmation" in line:
+            accum["confirmation"] = True
+
+        elif block := get_block(line, ts_file, "(REA|PRO|TST)", r"^\s*$", eof_possible=True):
+            curr = defaultdict(list)
+            match = re.match(r"\s*(?P<type>REA|PRO|TST)\s*\d+\s*" +
+                             labelled_floats(('reaction_coordinate',)), line)
+            key = TS_TYPES[match["type"]]
+            curr["reaction_coordinate"] = to_type(match["reaction_coordinate"], float)
+
+            for blk_line in block:
+                if match := ATDATTAG.search(blk_line):
+                    ion = atreg_to_index(match)
+                    if ion not in curr:
+                        curr[ion] = {}
+                    curr[ion][match.group('tag')] = to_type([*(match.group(d)
+                                                               for d in FST_D)], float)
+                    add_aliases(curr[ion], TAG_ALIASES)
+
+                elif match := TAG_RE.search(blk_line):
+                    curr[match.group('tag')].append([*to_type(get_numbers(blk_line), float)])
+
+            add_aliases(curr, TAG_ALIASES)
+            accum[key].append(curr)
 
     return accum
 

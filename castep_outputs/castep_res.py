@@ -15,7 +15,7 @@ def get_numbers(line: str) -> List[str]:
 
 def get_block(init_line: str, in_file: TextIO,
               start: re.Pattern, end: re.Pattern, *, cnt: int = 1,
-              out_fmt: type = io.StringIO):
+              out_fmt: type = io.StringIO, eof_possible: bool = False):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
 
@@ -33,9 +33,10 @@ def get_block(init_line: str, in_file: TextIO,
             if fnd == 0:
                 break
     else:
-        if hasattr(in_file, 'name'):
-            raise IOError(f"Unexpected end of file in {in_file.name}.")
-        raise IOError("Unexpected end of file.")
+        if not eof_possible:
+            if hasattr(in_file, 'name'):
+                raise IOError(f"Unexpected end of file in {in_file.name}.")
+            raise IOError("Unexpected end of file.")
 
     if not block:
         return ""
@@ -45,6 +46,7 @@ def get_block(init_line: str, in_file: TextIO,
         return block.splitlines()
     if out_fmt is io.StringIO:
         return io.StringIO(block)
+    return out_fmt(block)
 
 
 def labelled_floats(labels: Sequence[str], counts: Sequence[Optional[int]] = (None,),
