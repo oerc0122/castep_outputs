@@ -3,7 +3,7 @@ Parse castep .cell and .param files
 """
 
 import re
-from .utility import get_block
+from .utility import get_block, log_factory
 
 
 def _parse_devel_code_block(in_block):
@@ -38,9 +38,10 @@ def _parse_devel_code_block(in_block):
     return devel_code_parsed
 
 
-def parse_cell_param_file(cell_param_file, verbose=False):
+def parse_cell_param_file(cell_param_file):
     """ Parse .cell/.param files into dict ready to JSONise """
 
+    logger = log_factory(cell_param_file)
     curr = {}
 
     for line in cell_param_file:
@@ -54,8 +55,7 @@ def parse_cell_param_file(cell_param_file, verbose=False):
 
             block_title = block.splitlines()[0].split()[1].lower()
 
-            if verbose:
-                print(f"Found block {block_title}")
+            logger("Found block %s", block_title)
 
             if block_title == 'devel_code':
                 curr['devel_code'] = _parse_devel_code_block(block)
@@ -67,8 +67,7 @@ def parse_cell_param_file(cell_param_file, verbose=False):
             key, val = re.split(r'\s*[ :=]+\s*', line, maxsplit=1)
 
             key = key.lower()
-            if verbose:
-                print(f"Found param {key}")
+            logger("Found param %s", key)
 
             curr[key] = val
     return [curr]
