@@ -3,16 +3,14 @@ Parse castep .cell and .param files
 """
 
 import re
-from .utility import get_block, log_factory
+from .utility import log_factory
+from .castep_res import get_block, DEVEL_CODE_BLOCK_RE, DEVEL_CODE_VAL_RE
 
 
 def _parse_devel_code_block(in_block):
     """ Parse devel_code block to dict """
 
-    val_re = r'[A-Za-z0-9_]+[:=]\S+'
-    block_re = rf'([A-Za-z0-9_]+):(?:\s*{val_re}\s*)*:end\S+'
-
-    matches = re.finditer(block_re, in_block, re.IGNORECASE | re.MULTILINE)
+    matches = re.finditer(DEVEL_CODE_BLOCK_RE, in_block, re.IGNORECASE | re.MULTILINE)
 
     devel_code_parsed = {}
 
@@ -20,7 +18,8 @@ def _parse_devel_code_block(in_block):
     for blk in matches:
         block_title = blk.group(1)
         block = {}
-        for par in re.finditer(val_re, blk.group(0), re.IGNORECASE | re.MULTILINE):
+        for par in re.finditer(DEVEL_CODE_VAL_RE, blk.group(0),
+                               re.IGNORECASE | re.MULTILINE):
 
             key, val = re.split('[:=]', par.group(0))
             block[key] = val
@@ -31,7 +30,7 @@ def _parse_devel_code_block(in_block):
         in_block = in_block.replace(blk.group(0), '')
 
     # Catch remainder
-    for par in re.finditer(val_re, in_block):
+    for par in re.finditer(DEVEL_CODE_VAL_RE, in_block):
         key, val = re.split('[:=]', par.group(0))
         devel_code_parsed[key] = val
 

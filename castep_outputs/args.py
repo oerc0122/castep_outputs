@@ -6,7 +6,8 @@ import os.path
 import argparse
 # pylint: disable=line-too-long
 
-from .utility import (CASTEP_OUTPUT_NAMES, SUPPORTED_FORMATS)
+from .utility import SUPPORTED_FORMATS
+from .constants import CASTEP_OUTPUT_NAMES
 
 CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
 

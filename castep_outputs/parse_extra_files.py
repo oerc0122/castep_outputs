@@ -8,30 +8,10 @@ Parse the following castep outputs:
 import re
 from collections import defaultdict
 
-from .utility import (fix_data_types, stack_dict, get_block, to_type, get_numbers,
-                      labelled_floats, SPECIES_RE, INTNUMBER_RE, FNUMBER_RE,
-                      SND_D, log_factory)
-
-
-# Regexp to identify block in .phonon or .phonon_dos file
-FRACCOORDS_RE = re.compile(rf"\s*(?P<index>{INTNUMBER_RE}){labelled_floats(('u', 'v', 'w'))}"
-                           rf"\s*(?P<spec>{SPECIES_RE}){labelled_floats(('mass',))}")
-
-PHONON_PHONON_RE = re.compile(rf"""
-    \s+q-pt=\s*{INTNUMBER_RE}\s*
-    {labelled_floats(('qpt', 'pth'), counts=(3, 1))}
-    """, re.VERBOSE)
-
-PROCESS_PHONON_PHONON_RE = re.compile(labelled_floats(('n', 'f', 'Grad_qf')))
-
-
-# Regexp to identify Fermi energies in .bands file
-CASTEP_BANDS_FERMI_RE = re.compile(r"Fermi energ(ies|y) \(in atomic units\)\s*" +
-                                   labelled_floats(('a', 'b')))
-
-# Regexp to identify eigenvalue block in .bands file
-# CASTEP_BANDS_EIGENS_RE =
-# rf"K-point\s+(\d+)\s*(\s*{FNUMBER_RE})\s*({FNUMBER_RE})\s*({FNUMBER_RE})\s*({FNUMBER_RE})"
+from . import castep_res as REs
+from .castep_res import get_block, get_numbers, labelled_floats
+from .constants import SND_D
+from .utility import (fix_data_types, stack_dict, to_type, log_factory)
 
 
 def parse_regular_header(block, extra_opts=tuple()):
@@ -48,7 +28,7 @@ def parse_regular_header(block, extra_opts=tuple()):
             data['unit_cell'] = [to_type(next(line).split(), float)
                                  for _ in range(3)]
 
-        elif match := FRACCOORDS_RE.match(line):
+        elif match := REs.FRACCOORDS_RE.match(line):
             stack_dict(coords, match.groupdict())
 
         elif match := re.search(f"({'|'.join(extra_opts)})", line):
@@ -103,7 +83,7 @@ def parse_bands_file(bands_file):
             if qdata['spin_comp'] != "1":
                 qdata['band_up'] = qdata.pop('band')
 
-        elif re.match(rf"^\s*{FNUMBER_RE}$", line.strip()):
+        elif re.match(rf"^\s*{REs.FNUMBER_RE}$", line.strip()):
             if qdata['spin_comp'] != "1":
                 qdata['band_dn'].append(line)
             else:
@@ -146,7 +126,7 @@ def parse_phonon_dos_file(phonon_dos_file):
                                       'Grad_qf': float})
 
             for line in block:
-                if match := PHONON_PHONON_RE.match(line):
+                if match := REs.PHONON_PHONON_RE.match(line):
                     if qdata:
                         fix(qdata)
                         phonon_dos_info['gradients'].append(qdata)
@@ -155,7 +135,7 @@ def parse_phonon_dos_file(phonon_dos_file):
                     for key, val in match.groupdict().items():
                         qdata[key] = val.split()
 
-                elif match := PROCESS_PHONON_PHONON_RE.match(line):
+                elif match := REs.PROCESS_PHONON_PHONON_RE.match(line):
                     stack_dict(qdata, match.groupdict())
 
             if qdata:
@@ -200,7 +180,7 @@ def parse_efield_file(efield_file):
 
             osc = defaultdict(list)
             for line in block[1:-2]:
-                match = re.match(rf"\s*(?P<freq>{INTNUMBER_RE})" +
+                match = re.match(rf"\s*(?P<freq>{REs.INTNUMBER_RE})" +
                                  labelled_floats([*(f'S{d}' for d in SND_D)]), line)
                 stack_dict(osc, match.groupdict())
 
@@ -236,7 +216,7 @@ def parse_xrd_sf_file(xrd_sf_file):
     # Turn Re(x) into x_re
     headers = [(head[3:-1]+"_"+head[0:2]).lower() for head in headers]
 
-    xrd_re = re.compile(rf"(?P<qvec>(?:\s*{INTNUMBER_RE}){{3}})" +
+    xrd_re = re.compile(rf"(?P<qvec>(?:\s*{REs.INTNUMBER_RE}){{3}})" +
                         labelled_floats(headers))
 
     xrd = defaultdict(list)

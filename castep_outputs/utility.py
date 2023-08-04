@@ -3,11 +3,8 @@ Utility functions for parsing castep outputs
 """
 import fileinput
 import logging
-import io
 import collections.abc
 from collections import defaultdict
-import itertools
-import re
 import json
 import pprint
 try:
@@ -153,62 +150,6 @@ def get_dumpers(dump_fmt: str):
     return SUPPORTED_FORMATS[dump_fmt]
 
 
-def get_numbers(line: str):
-    """ Get all numbers in a string as a list """
-    return NUMBER_RE.findall(line)
-
-
-def get_block(init_line: str, in_file, start, end, *, cnt=1, out_fmt=io.StringIO):
-    """ Check if line is the start of a block and return
-    the block if it is, moving in_file forward as it does so """
-
-    block = ""
-
-    if not re.search(start, init_line):
-        return block
-
-    block = init_line
-    fnd = cnt
-    for line in in_file:
-        block += line
-        if re.search(end, line):
-            fnd -= 1
-            if fnd == 0:
-                break
-    else:
-        if hasattr(in_file, 'name'):
-            raise IOError(f"Unexpected end of file in {in_file.name}.")
-        raise IOError("Unexpected end of file.")
-
-    if not block:
-        return ""
-    if out_fmt is str:
-        return block
-    if out_fmt is list:
-        return block.splitlines()
-    if out_fmt is io.StringIO:
-        return io.StringIO(block)
-
-
-def labelled_floats(labels, counts=(None,), sep=r"\s+?", suff=""):
-    """ Constructs a regex for extracting floats with assigned labels
-    :param labels:iterable of labels to label each group
-    :param counts:iterable of counts to group into each label (count must not exceed that of labels)
-    :param sep:separator between floats
-    """
-    if suff and any(cnt for cnt in counts):
-        raise NotImplementedError("Suffix and counts not currently supported")
-
-    outstr = ""
-    for label, cnt in itertools.zip_longest(labels, counts):
-        if cnt:
-            outstr += f"(?:(?P<{label}>(?:{sep}{EXPNUMBER_RE}{suff}){{{cnt}}}))"
-        else:
-            outstr += f"(?:{sep}(?P<{label}>{EXPNUMBER_RE}){suff})"
-
-    return outstr
-
-
 def stack_dict(out_dict, in_dict):
     """ Append items in `in_dict` to the keys in `out_dict` """
     for key, val in in_dict.items():
@@ -254,53 +195,3 @@ def log_factory(file):
             getattr(logging, level)(message, *args)
 
     return log_file
-
-
-# --- Constants
-SHELLS = ('s', 'p', 'd', 'f')
-FST_D = ('x', 'y', 'z')
-SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
-MINIMISERS = ('bfgs', 'lbfgs', 'fire', 'tpsd', 'dmd')
-PAIR_POTS = ('LJ', 'BUCK', 'COUL', 'DZ', 'POL', 'BB', 'SHO',
-             'SW', 'MORS', 'POLM', 'LJ_S', 'PES', 'BU_S', 'TIP4', 'QUIP')
-
-CASTEP_OUTPUT_NAMES = (
-    "castep",
-    "param",
-    "cell",
-    "geom",
-    "md",
-    "bands",
-    "hug",
-    "phonon_dos",
-    "efield",
-    "xrd_sf",
-    "elf_fmt",
-    "chdiff_fmt",
-    "pot_fmt",
-    "den_fmt"
-)
-
-
-# --- RegExes
-# Regexps to recognise numbers
-FNUMBER_RE = r"(?:[+-]?(?:\d*\.?\d+|\d+\.?\d*))"
-EXPNUMBER_RE = rf"(?:{FNUMBER_RE}(?:[Ee][+-]?\d{{1,3}})?)"
-INTNUMBER_RE = r"(?:\d+)"
-NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
-
-# Regexp to identify extended chemical species
-SPECIES_RE = r"[A-Z][a-z]{0,2}"
-ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
-
-# Unless we have *VERY* exotic electron shells
-SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
-
-# Atom regexp
-ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
-
-# Atom reference with 3-vector
-
-ATDAT3VEC = re.compile(ATREG + labelled_floats(FST_D))
-
-TAG_RE = re.compile(r"<--\s*(?P<tag>\w+)")
