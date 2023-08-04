@@ -72,6 +72,41 @@ Will attempt to parse the file ``seedname.param`` as though it were a
 ``.castep`` file. While not ordinarily useful it can help with manually
 renamed files.
 
+::
+
+   python -m castep_outputs -o my_file.yaml -f yaml seedname.castep
+
+Will parse ``seedname.castep``, dump it to ``my_file.yaml`` in ``yaml``
+format using the ``PyYAML`` engine.
+
+As a module
+-----------
+
+Importing ``castep_outputs`` gives you access to all of the parsers.
+These are:
+
+-  ``parse_castep_file``
+-  ``parse_cell_param_file``
+-  ``parse_param_file``
+-  ``parse_cell_file``
+-  ``parse_md_geom_file``
+-  ``parse_md_file``
+-  ``parse_geom_file``
+-  ``parse_bands_file``
+-  ``parse_hug_file``
+-  ``parse_phonon_dos_file``
+-  ``parse_efield_file``
+-  ``parse_xrd_sf_file``
+-  ``parse_elf_fmt_file``
+-  ``parse_chdiff_fmt_file``
+-  ``parse_pot_fmt_file``
+-  ``parse_den_fmt_file``
+-  ``parse_elastic_file``
+-  ``parse_ts_file``
+
+Which return processed ``list``\ s of ``dict``\ s of data ready for use
+in other applications.
+
 Full usage
 ----------
 

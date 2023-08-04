@@ -20,16 +20,16 @@ from .constants import SHELLS
 from .utility import (fix_data_types, add_aliases, to_type,
                       stack_dict, normalise_string,
                       atreg_to_index, log_factory)
-from .parse_extra_files import (parse_bands_file,
-                                parse_hug_file,
-                                parse_phonon_dos_file,
-                                parse_efield_file,
-                                parse_xrd_sf_file,
-                                parse_elf_fmt_file,
-                                parse_chdiff_fmt_file,
-                                parse_pot_fmt_file,
-                                parse_den_fmt_file,
-                                parse_elastic_file)
+from .extra_files_parser import (parse_bands_file,
+                                 parse_hug_file,
+                                 parse_phonon_dos_file,
+                                 parse_efield_file,
+                                 parse_xrd_sf_file,
+                                 parse_elf_fmt_file,
+                                 parse_chdiff_fmt_file,
+                                 parse_pot_fmt_file,
+                                 parse_den_fmt_file,
+                                 parse_elastic_file)
 
 AtomIndex = Tuple[str, float]
 ThreeVector = Tuple[float, float, float]

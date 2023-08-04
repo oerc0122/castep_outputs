@@ -9,13 +9,13 @@ import os.path
 
 from .args import (parse_args, args_to_dict)
 from .utility import (json_safe, flatten_dict, get_dumpers)
-from .parse_castep_file import parse_castep_file
-from .parse_cell_param_file import parse_cell_param_file
-from .parse_md_geom_file import parse_md_geom_file
-from .parse_extra_files import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
-                                parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
-                                parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file,
-                                parse_elastic_file, parse_ts_file)
+from .castep_file_parser import parse_castep_file
+from .cell_param_file_parser import parse_cell_param_file
+from .md_geom_file_parser import parse_md_geom_file
+from .extra_files_parser import (parse_bands_file, parse_hug_file, parse_phonon_dos_file,
+                                 parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
+                                 parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file,
+                                 parse_elastic_file, parse_ts_file)
 
 
 PARSERS = {

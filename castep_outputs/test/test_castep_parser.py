@@ -17,7 +17,7 @@ class test_castep_parser(TestCase):
         FFT Lib : fftw3 version fftw-3.3.10-sse2-avx
         Fundamental constants values: CODATA 2018
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'build_info':
                                      {'summary': ('Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 '
@@ -39,7 +39,7 @@ Peak Memory Use     = 149108 kB
 
 Overall parallel efficiency rating: Satisfactory (64%)
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'calculation time': 135.01,
                                      'finalisation time': 0.03,
@@ -53,7 +53,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
  CASTEP calculation for SSEC2016
 
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'title': 'CASTEP calculation for SSEC2016'})
 
@@ -85,7 +85,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         """)
         self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
     def test_get_mem_est(self):
         test_text = io.StringIO("""
@@ -102,7 +102,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         | Requirements will fluctuate during execution and may exceed these estimates |
         +-----------------------------------------------------------------------------+
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'memory_estimate':
                                      [{'BLAS internal memory storage': {'disk': 0.0,
@@ -135,7 +135,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                    density =             4.364016   AMU/A**3
                                            =             7.246619     g/cm^3
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_cell':
                                      {'cell_angles': [90.0, 90.0, 90.0],
@@ -162,7 +162,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         test_text = io.StringIO("""
     Supercell generated using matrix  [1,1,-1; 1,-1,1; -1,1,1]
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'supercell': ((1.0, 1.0, -1.0),
                                                    (1.0, -1.0, 1.0),
@@ -183,7 +183,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         x  Mn:aTag      3         0.939000   0.561000   0.439000   x
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_positions':
                                      {('Mn', 1): (0.061, 0.061, 0.061),
@@ -201,7 +201,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
             x  Si:aTag      3         5.867920   2.404810   1.768580   x
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_velocities':
                                      {('Si', 1): (3.60123, 0.98642, 2.77447),
@@ -219,7 +219,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_spins': {('Cr', 1): {'fix': 'F',
                                                                    'magmom': '3.000',
@@ -267,7 +267,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
  Converged in 38 iterations to a total energy of -2901.7207 eV
 
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         del test_dict["time_started"]
 
         self.assertEqual(test_dict, {'pspot_detail': [{'augmentation_charge_rinner': (0.6,),
@@ -350,7 +350,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         ---------------------------------------
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'pspot_debug':
                                      [{'eigenvalue': -18.40702924, 'nl': 10, 'type': 'AE'},
@@ -379,7 +379,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                     Mn    0.3300000 Isotope 55
                                     O     1.0000000 No Isotope Defined
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         del test_dict['time_started']
 
         self.assertEqual(test_dict, {'species_properties': {'Mn': {'mass': 54.93805,
@@ -428,7 +428,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
  *******************************************************************************
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'options':
                                      {'general': {'output verbosity': 'normal (1)',
@@ -460,7 +460,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'dftd': {'dispersion-correction scheme': 'G06',
                                               'parameter d': 20.0,
@@ -481,7 +481,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'k-points': {'kpoint_mp_grid': (4, 4, 4),
                                                   'kpoint_mp_offset': (0.0, 0.0, 0.0),
@@ -495,7 +495,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'k-points': {'num_kpoints': (2,)}})
 
@@ -507,7 +507,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
              +     2   4.000000   6.000000   8.000000   5.0000000  +
              +++++++++++++++++++++++++++++++++++++++++++++++++++++++
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'k-points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
                                                   {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}]})
@@ -535,7 +535,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
                          Cell constraints are:  1 2 3 4 5 6
 
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 0,
                                                      'Number of ionic constraints': 3,
                                                      'cell_constraints': (1, 2, 3, 4, 5, 6),
@@ -599,7 +599,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 6,
                                                      'Number of ionic constraints': 3,
@@ -641,7 +641,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                               6.00000
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'target_stress': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]})
 
@@ -656,7 +656,7 @@ Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
       2  -8.55990255E+002  6.11946292E+000   3.51127330E-003       4.50  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -843.823694,
                                                'energy_gain': None,
@@ -686,7 +686,7 @@ Initial  -2.37153226E+001  0.00000000E+000                         0.17  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 Total energy has converged after 11 SCF iterations.
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -23.7153226,
                                                'energy_gain': None,
@@ -758,7 +758,7 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
       1  -8.47768701E+002 -1.09214177E+000   3.05621978E-001       3.84  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'apolar corr to eigenvalue sum': 0.0,
                                                'eigenvalue': [[{'change': '0.6761',
@@ -811,7 +811,7 @@ Spin 1, kpoint ( 0.000000  0.000000  0.000000 ) weight = 1.000000
 Have a nice day.
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'occupancies': [[{'band': 1,
                                                        'eigenvalue': -10.3844,
@@ -833,7 +833,7 @@ Have a nice day.
  * indicates the final, accepted state (should have the lowest energy)
             """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'wvfn_line_min': [{'gain': (0.1469, 0.1518),
                                                         'init_de_dstep': -0.2376,
@@ -856,7 +856,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
  For future reference: finite basis dEtot/dlog(Ecut) =      -3.335211eV
  Total energy corrected for finite basis set =    -855.471052 eV
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'energies': (-1267.604578357, -855.4591023999, -855.471052),
                                      'free_energies': [-855.462566483],
@@ -889,7 +889,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
  ************************************************************************************
 
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'forces':
                                      {'non-descript': [{
@@ -936,7 +936,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
  *************************************************
 
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'stresses':
                                      {
@@ -967,7 +967,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
             x      T/=0 Pressure:     -5.803316                  GPa     x
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'md':
                                      [{'time': 0.012,
@@ -993,7 +993,7 @@ Species          Ion     s       p       d       f      Total   Charge (e)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'mulliken_popn': {
             ('Si', 1): {'spin_sep': False,
@@ -1027,7 +1027,7 @@ Species          Ion Spin      s       p       d       f      Total   Charge(e) 
                   2   dn:     0.398   0.037   3.391   0.000   3.826
 ==============================================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'mulliken_popn':
                                      {('Cr', 1): {'charge': -0.0,
@@ -1077,7 +1077,7 @@ The total projected population is   19.999   0.000
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'orbital_popn':
                                      {'total': 19.999,
@@ -1097,7 +1097,7 @@ The total projected population is   19.999   0.000
               C  1 -- Si 1                  99.10        3.14159
 ======================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'bonds': {(('C', 1), ('Si', 1)): {'length': 3.14159,
                                                                        'population': 99.1},
@@ -1164,7 +1164,7 @@ WL ********************************************************************
  SPINS      = F
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'pair_params': [{'DZ': {'A': 0.4,
                                                              'B': 0.1,
@@ -1274,7 +1274,7 @@ WL ********************************************************************
  + c A1    4 |    1   1   1   1                                               +
  ==============================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'phonons': [{'N': (1, 2, 5, 6),
                                                   'active': ['N', 'N', 'N', 'N'],
@@ -1333,7 +1333,7 @@ WL ********************************************************************
    0.0   0.0   0.0
    0.0   0.0   0.0
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict,
                          {'phonon_symmetry_analysis': [{'mat': [(1, 0, 2, 3, 0, 4, 5, 0, 6, 7, 0, 8),
@@ -1378,7 +1378,7 @@ WL ********************************************************************
    2   3          0.000000          0.000000          7.000000          2.000000          2.000000          2.000000
   ------------------------------------------------------------------------------------------------------------------
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         self.assertEqual(test_dict, {'dynamical_matrix':
                                      ((2+10j, 0j, 0j, 6, 3j, 0j),
                                       (0j, 2+10j, 0j, -1j, 6, -1j),
@@ -1398,7 +1398,7 @@ WL ********************************************************************
  ===============================================================================
             """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'dc_permittivity': [(4.6507, -0.0, -0.0),
                                                          (-0.0, 4.6507, -0.0),
@@ -1416,7 +1416,7 @@ WL ********************************************************************
          0.00000     0.00000     8.50261
  =======================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'optical_permittivity': [(8.50261, 0.0, 0.0),
                                                               (0.0, 8.50261, 0.0),
@@ -1434,7 +1434,7 @@ WL ********************************************************************
  ===============================================================================
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'optical_polarisability': [(9.42606, 0.0, 0.0),
                                                                 (0.0, 9.42606, 0.0),
@@ -1452,7 +1452,7 @@ WL ********************************************************************
          0.00000     0.00000    24.17525
  =======================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'optical_polarisability': [(24.17525, 0.0, 0.0),
                                                                 (0.0, 24.17525, 0.0),
@@ -1468,7 +1468,7 @@ WL ********************************************************************
          0.01828     0.01831    -1.28185     0.01830     0.01838    23.46304
  ===========================================================================
             """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'nlo': [(-1.28186, 0.01823, 0.01838, 23.46304, 0.01828, 0.01832),
                                              (0.01832, -1.2812, 0.0183, 0.01831, 23.46304, 0.01823),
@@ -1490,7 +1490,7 @@ WL ********************************************************************
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'born': [{('Si', 1): ((-2.01676, 0.0, -0.0),
                                                            (0.0, -3.01676, -0.0),
@@ -1517,7 +1517,7 @@ WL ********************************************************************
  +                                                                            +
  +----------------------------------------------------------------------------+
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'raman': [[{'II': 0.0,
                                                  'depolarisation': 0.749632,
@@ -1556,7 +1556,7 @@ WL ********************************************************************
   =====================================================================
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'molecular_dipole': {'centre_electronic': (3.0848, 3.0848, 3.0848),
                                                           'centre_positive': (3.0448, 3.0448, 3.0448),
@@ -1572,7 +1572,7 @@ WL ********************************************************************
 Integrated Spin Density     =    0.177099E-07 hbar/2
 Integrated |Spin Density|   =     3.07611     hbar/2
             """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'spin': [1.77099e-08],
                                      'modspin': [3.07611]})
@@ -1586,7 +1586,7 @@ Integrated |Spin Density|   =     3.07611     hbar/2
  ELF        3 0.506194
 -----------------------
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'elf': [0.506189, 0.506191, 0.506194]})
 
@@ -1600,7 +1600,7 @@ Species   Ion     Hirshfeld Charge (e)
   F        1                17.00
 ======================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'hirshfeld': {('H', 1): -1.0,
                                                    ('F', 1): 17.0}}
@@ -1640,7 +1640,7 @@ Species   Ion     Hirshfeld Charge (e)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'energies': (-1317.70077, -216.058016),
                                      'geom_opt_min': [{'previous': {'Fdelta': 0.203755,
@@ -1671,7 +1671,7 @@ Species   Ion     Hirshfeld Charge (e)
  LBFGS: Final <frequency>  =    1073.37660 cm-1
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'geom_opt': {'final <frequency>': 1073.3766,
                                                   'final enthalpy': -1317.70414}})
@@ -1701,7 +1701,7 @@ Species   Ion     Hirshfeld Charge (e)
 
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'product': {('H', 1): (0.0, 0.0, 0.0),
                                                  ('H', 2): (-0.0, -0.0, 0.805)},
@@ -1759,7 +1759,7 @@ Species   Ion     Hirshfeld Charge (e)
             ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
         """)
         self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         pprint.pprint(test_dict)
         self.assertEqual(test_dict, {})
 
@@ -1798,7 +1798,7 @@ Species   Ion     Hirshfeld Charge (e)
   +           3        5.232953                                       +
   =====================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'bs':
                                      [{'band': (1, 2, 3),
@@ -1828,7 +1828,7 @@ Species   Ion     Hirshfeld Charge (e)
   |    C:tag            2              162.00     175.31      1.00   |
   ====================================================================
             """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Chemical Shielding',
@@ -1858,7 +1858,7 @@ Species   Ion     Hirshfeld Charge (e)
   |** Signifies Perturbing Nucleus A of coupling J_AB                              |
   ==================================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': '(An)Isotropic J-coupling',
@@ -1883,7 +1883,7 @@ Species   Ion     Hirshfeld Charge (e)
   |    H:T                3       28.71       7.26      N/A    1.996E-01   0.01 |
   ===============================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Chemical Shielding and Electric '
                                        'Field Gradient',
@@ -1917,7 +1917,7 @@ Species   Ion     Hirshfeld Charge (e)
   |    H:T                3             1.996E-01        N/A    |
   ===============================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Electric Field Gradient',
@@ -1938,7 +1938,7 @@ Species   Ion     Hirshfeld Charge (e)
   |    H                  1                  -1.227E+03        |
   ==============================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Hyperfine',
@@ -1966,7 +1966,7 @@ Species   Ion     Hirshfeld Charge (e)
  *******************************************************************************
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'autosolvation': {'Apolar cavitation energy': 0.23174076832973722,
                                                        'Apolar dis-rep energy': -0.16660423187145634,
@@ -1992,7 +1992,7 @@ Species   Ion     Hirshfeld Charge (e)
   +  TDDFT calculation time:      39.35                               +TDDFT
   + ================================================================= +TDDFT
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'tddft':
                                      [
@@ -2032,7 +2032,7 @@ Species   Ion     Hirshfeld Charge (e)
    -0.0154669691   -0.0025155337   -0.0017278086    0.0006712021   -0.0003521132    0.0007355814
         """)
         self.skipTest("Not implemented yet")
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         pprint.pprint(test_dict)
         self.assertEqual(test_dict, {})
 
@@ -2055,7 +2055,7 @@ Ewald Contribution ::
        0.00000000       0.00000000       0.00000000       0.00000000       0.00000000      -0.01407441
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'elastic': {
             '<psi^1|H^(1)|psi^0> Contribution': [(-0.01546697, -0.00212167, -0.00212167, 0.0, 0.0, 0.0),
@@ -2084,7 +2084,7 @@ Ewald Contribution ::
      -0.000000    -0.000000    -0.000000     0.000000     0.000000   102.034195
  ===============================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'elastic':
                                      {'elastic_constants': [(167.397133, 58.771201, 58.771201, 0.0, 0.0, -0.0),
@@ -2108,7 +2108,7 @@ Ewald Contribution ::
    0.000000000  0.000000000 -0.000000000 -0.000000000 -0.000000000  0.009800636
  ===============================================================================
         """)
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         self.assertEqual(test_dict, {'elastic':
                                      {'compliance_matrix': [(0.007307109, -0.001898796, -0.001898796, 0.0, -0.0, 0.0),
                                                             (-0.001898796, 0.007307109, -0.001898796, -0.0, 0.0, 0.0),
@@ -2153,7 +2153,7 @@ Ewald Contribution ::
  ===============================================================================
         """)
 
-        test_dict = parse_castep_file.parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text)[0]
         self.assertEqual(test_dict, {'elastic':
                                      {'Bulk Modulus': (94.979845, 94.979845, 94.979845),
                                       'Longitudinal waves': 91.95017,
