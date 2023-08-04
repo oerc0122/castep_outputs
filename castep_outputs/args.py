@@ -10,10 +10,10 @@ from .utility import SUPPORTED_FORMATS
 from .constants import CASTEP_OUTPUT_NAMES, CASTEP_FILE_FORMATS
 
 AP = argparse.ArgumentParser(
-    prog="CASTEP outputs",
+    prog="castep_outputs",
     description=f"""Attempts to find all files for seedname, filtered by `inc` args (default: all).
     Explicit files can be passed using longname arguments.
-    Parse most human-readable castep outputs including: {', '.join(CASTEP_FILE_FORMATS)}"""
+    castep_outputs can parse most human-readable castep outputs including: {', '.join(CASTEP_FILE_FORMATS)}"""
 )
 
 AP.add_argument("seedname", nargs=argparse.REMAINDER, help="Seed name for data")
