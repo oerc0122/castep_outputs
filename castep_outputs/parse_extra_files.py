@@ -10,7 +10,7 @@ from collections import defaultdict
 
 from .utility import (fix_data_types, stack_dict, get_block, to_type, get_numbers,
                       labelled_floats, SPECIES_RE, INTNUMBER_RE, FNUMBER_RE,
-                      SND_D)
+                      SND_D, log_factory)
 
 
 # Regexp to identify block in .phonon or .phonon_dos file
@@ -63,7 +63,7 @@ def parse_regular_header(block, extra_opts=tuple()):
     return data
 
 
-def parse_hug_file(hug_file, verbose=False):
+def parse_hug_file(hug_file):
     """ Parse castep .hug file """
 
     cols = ('compression', 'temperature', 'pressure', 'energy')
@@ -76,7 +76,7 @@ def parse_hug_file(hug_file, verbose=False):
     return data
 
 
-def parse_bands_file(bands_file, verbose=False):
+def parse_bands_file(bands_file):
     """ Parse castep .bonds file """
 
     bands_info = defaultdict(list)
@@ -122,18 +122,20 @@ def parse_bands_file(bands_file, verbose=False):
     return bands_info
 
 
-def parse_phonon_dos_file(phonon_dos_file, verbose=False):
+def parse_phonon_dos_file(phonon_dos_file):
     """ Parse castep .phonon_dos file """
     # pylint: disable=too-many-branches,redefined-outer-name
+    logger = log_factory(phonon_dos_file)
     phonon_dos_info = defaultdict(list)
+
     for line in phonon_dos_file:
         if block := get_block(line, phonon_dos_file, "BEGIN header", "END header"):
             data = parse_regular_header(block)
             phonon_dos_info.update(data)
 
         elif block := get_block(line, phonon_dos_file, "BEGIN GRADIENTS", "END GRADIENTS"):
-            if verbose:
-                print("Found gradient block")
+
+            logger("Found gradient block")
             qdata = defaultdict(list)
 
             def fix(qdat):
@@ -161,8 +163,8 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
                 phonon_dos_info['gradients'].append(qdata)
 
         elif block := get_block(line, phonon_dos_file, "BEGIN DOS", "END DOS", out_fmt=list):
-            if verbose:
-                print("Found DOS block")
+
+            logger("Found DOS block")
 
             dos = defaultdict(list)
             for line in block[1:-2]:
@@ -178,11 +180,12 @@ def parse_phonon_dos_file(phonon_dos_file, verbose=False):
     return phonon_dos_info
 
 
-def parse_efield_file(efield_file, verbose=False):
+def parse_efield_file(efield_file):
     """ Parse castep .efield file """
     # pylint: disable=too-many-branches,redefined-outer-name
 
     efield_info = defaultdict(list)
+    logger = log_factory(efield_file)
 
     for line in efield_file:
         if block := get_block(line, efield_file, "BEGIN header", "END header"):
@@ -192,8 +195,8 @@ def parse_efield_file(efield_file, verbose=False):
         elif block := get_block(line, efield_file, "BEGIN Oscillator Strengths",
                                 "END Oscillator Strengths",
                                 out_fmt=list):
-            if verbose:
-                print("Found Oscillator Strengths")
+
+            logger("Found Oscillator Strengths")
 
             osc = defaultdict(list)
             for line in block[1:-2]:
@@ -208,8 +211,8 @@ def parse_efield_file(efield_file, verbose=False):
 
         elif block := get_block(line, efield_file, "BEGIN permittivity", "END permittivity",
                                 out_fmt=list):
-            if verbose:
-                print("Found permittivity")
+
+            logger("Found permittivity")
 
             perm = defaultdict(list)
             for line in block[1:-2]:
@@ -225,7 +228,7 @@ def parse_efield_file(efield_file, verbose=False):
     return efield_info
 
 
-def parse_xrd_sf_file(xrd_sf_file, verbose=False):
+def parse_xrd_sf_file(xrd_sf_file):
     """ Parse castep .xrd_sf file """
 
     # Get headers from first line
@@ -267,21 +270,21 @@ def parse_kpt_info(inp, prop):
     return qdata
 
 
-def parse_elf_fmt_file(elf_file, verbose=True):
+def parse_elf_fmt_file(elf_file):
     """ Parse castep .elf_fmt files """
     return parse_kpt_info(elf_file, 'chi')
 
 
-def parse_chdiff_fmt_file(chdiff_file, verbose=True):
+def parse_chdiff_fmt_file(chdiff_file):
     """ Parse castep .chdiff_fmt files """
     return parse_kpt_info(chdiff_file, 'chdiff')
 
 
-def parse_pot_fmt_file(pot_file, verbose=True):
+def parse_pot_fmt_file(pot_file):
     """ Parse castep .pot_fmt files """
     return parse_kpt_info(pot_file, 'pot')
 
 
-def parse_den_fmt_file(den_file, verbose=True):
+def parse_den_fmt_file(den_file):
     """ Parse castep .den_fmt files """
     return parse_kpt_info(den_file, 'density')

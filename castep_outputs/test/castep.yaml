@@ -6,14 +6,6 @@
         2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
         on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr
         14 15:13:22 2023 +0100'}
-- !!python/object/apply:collections.defaultdict
-  args: [*id001]
-  dictitems:
-    build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
-        FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
-        2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
-        on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr
-        14 15:13:22 2023 +0100'}
     constraints:
       Number of cell constraints: 0
       Number of ionic constraints: 3
@@ -190,10 +182,15 @@
       Point group of crystal: '1: C1, 1, 1', Space group of crystal: '213: P4_132,
         P 4bd 2ab 3'}
     target_stress: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    time_started: ' Tue, 30 May 2023 11'
+    time_started: Tue, 30 May 2023 11:57:18 +0100
 - !!python/object/apply:collections.defaultdict
   args: [*id001]
   dictitems:
+    build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
+        FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
+        2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
+        on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr
+        14 15:13:22 2023 +0100'}
     constraints:
       Number of cell constraints: 0
       Number of ionic constraints: 3
@@ -374,4 +371,4 @@
       Point group of crystal: '1: C1, 1, 1', Space group of crystal: '213: P4_132,
         P 4bd 2ab 3'}
     target_stress: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
-    time_started: ' Fri, 14 Jul 2023 19'
+    time_started: Fri, 14 Jul 2023 19:45:17 +0100

@@ -20,7 +20,7 @@ ALIASES = {'E': 'energy',
            'F': 'force'}
 
 
-def parse_md_geom_file(md_geom_file, verbose=False):
+def parse_md_geom_file(md_geom_file):
     """ Parse standard MD and GEOM file formats """
 
     while "END header" not in md_geom_file.readline():
