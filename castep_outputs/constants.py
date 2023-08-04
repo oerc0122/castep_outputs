@@ -23,6 +23,7 @@ CASTEP_OUTPUT_NAMES = (
     "elf_fmt",
     "chdiff_fmt",
     "pot_fmt",
-    "den_fmt"
+    "den_fmt",
+    "elastic"
 )
 CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

@@ -78,6 +78,17 @@ class test_dumper(unittest.TestCase):
     def test_yaml_dumper_bands(self):
         self._test_dump(_TEST_FOLDER / 'test.bands', 'bands', 'yaml')
 
+    def test_json_dumper_md(self):
+        self._test_dump(_TEST_FOLDER / 'test.md', 'md', 'json')
+
+    def test_yaml_dumper_md(self):
+        self._test_dump(_TEST_FOLDER / 'test.md', 'md', 'yaml')
+
+    def test_json_dumper_elastic(self):
+        self._test_dump(_TEST_FOLDER / 'test.elastic', 'elastic', 'json')
+
+    def test_yaml_dumper_elastic(self):
+        self._test_dump(_TEST_FOLDER / 'test.elastic', 'elastic', 'yaml')
 
 if __name__ == '__main__':
     unittest.main()
