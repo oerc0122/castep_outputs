@@ -9,6 +9,20 @@ MINIMISERS = ('bfgs', 'lbfgs', 'fire', 'tpsd', 'dmd')
 PAIR_POTS = ('LJ', 'BUCK', 'COUL', 'DZ', 'POL', 'BB', 'SHO',
              'SW', 'MORS', 'POLM', 'LJ_S', 'PES', 'BU_S', 'TIP4', 'QUIP')
 
+TAG_ALIASES = {'E': 'energy',
+               'T': 'temperature',
+               'P': 'pressure',
+               'h': 'lattice_vectors',
+               'hv': 'lattice_velocity',
+               'R': 'position',
+               'V': 'velocity',
+               'F': 'force'}
+
+TS_TYPES = {"REA": "reagent",
+            "PRO": "product",
+            "TST": "test"}
+
+
 CASTEP_OUTPUT_NAMES = (
     "castep",
     "param",
@@ -24,6 +38,7 @@ CASTEP_OUTPUT_NAMES = (
     "chdiff_fmt",
     "pot_fmt",
     "den_fmt",
-    "elastic"
+    "elastic",
+    "ts"
 )
 CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

@@ -39,6 +39,7 @@ AP.add_argument("-C", "--inc-chdiff_fmt", action="store_true", help="Extract .ch
 AP.add_argument("-P", "--inc-pot_fmt", action="store_true", help="Extract .pot_fmt information")
 AP.add_argument("-D", "--inc-den_fmt", action="store_true", help="Extract .den_fmt information")
 AP.add_argument("-X", "--inc-elastic", action="store_true", help="Extract .elastic information")
+AP.add_argument("-T", "--inc-ts", action="store_true", help="Extract .ts information")
 
 AP.add_argument('--inc-param', action="store_true", help="Extract .param information")
 AP.add_argument('--inc-cell', action="store_true", help="Extract .cell information")
@@ -58,6 +59,8 @@ AP.add_argument("--chdiff_fmt", nargs="*", help="Extract from CHDIFF_FMT as .chd
 AP.add_argument("--pot_fmt", nargs="*", help="Extract from POT_FMT as .pot_fmt type", default=[])
 AP.add_argument("--den_fmt", nargs="*", help="Extract from DEN_FMT as .den_fmt type", default=[])
 AP.add_argument("--elastic", nargs="*", help="Extract from ELASTIC as .elastic type", default=[])
+AP.add_argument("--ts", nargs="*", help="Extract from TS as .ts type", default=[])
+
 
 def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
     """ Parse all arguments and add those caught by flags """

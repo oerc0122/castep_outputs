@@ -90,5 +90,12 @@ class test_dumper(unittest.TestCase):
     def test_yaml_dumper_elastic(self):
         self._test_dump(_TEST_FOLDER / 'test.elastic', 'elastic', 'yaml')
 
+    def test_json_dumper_ts(self):
+        self._test_dump(_TEST_FOLDER / 'test.ts', 'ts', 'json')
+
+    def test_yaml_dumper_ts(self):
+        self._test_dump(_TEST_FOLDER / 'test.ts', 'ts', 'yaml')
+
+
 if __name__ == '__main__':
     unittest.main()
