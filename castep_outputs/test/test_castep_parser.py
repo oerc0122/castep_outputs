@@ -114,7 +114,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                        'Model and support data': {'disk': 0.0,
                                                                   'memory': 3780.5}}]})
 
-
     def test_get_cell_structure(self):
 
         test_text = io.StringIO("""
@@ -230,7 +229,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
     def test_get_pspot(self):
         test_text = io.StringIO("""
-        Run started:
  Atomic calculation performed for Mn: 1s2 2s2 2p6 3s2 3p6 3d5 4s2
 
  Converged in 96 iterations to an ae energy of -31436.261 eV
@@ -268,7 +266,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         """)
         test_dict = parse_castep_file(test_text)[0]
-        del test_dict["time_started"]
 
         self.assertEqual(test_dict, {'pspot_detail': [{'augmentation_charge_rinner': (0.6,),
                                                        'detail': {'beta_radius': 1.8,
@@ -362,7 +359,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
     def test_get_species_prop(self):
         test_text = io.StringIO("""
-        Run started: 1984
                            -------------------------------
                                    Details of Species
                            -------------------------------
@@ -380,7 +376,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                     O     1.0000000 No Isotope Defined
         """)
         test_dict = parse_castep_file(test_text)[0]
-        del test_dict['time_started']
 
         self.assertEqual(test_dict, {'species_properties': {'Mn': {'mass': 54.93805,
                                                                    'electric_quadrupole_moment': 0.33,
@@ -511,7 +506,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         self.assertEqual(test_dict, {'k-points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
                                                   {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}]})
-
 
     def test_get_symmetry(self):
         test_text = io.StringIO("""
@@ -672,7 +666,6 @@ Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
                                                'time': 4.5}]]})
 
         test_text = io.StringIO("""
-
 ------------------------------------------------------------------------ <-- SCF
 SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
                                energy          per atom          (sec)   <-- SCF
@@ -708,7 +701,6 @@ Total energy has converged after 11 SCF iterations.
                                                'time': 0.18}]]})
 
         test_text = io.StringIO("""
-
 ------------------------------------------------------------------------ <-- SCF
 SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
                                energy          per atom          (sec)   <-- SCF
@@ -850,7 +842,6 @@ Final free energy (E-TS)    =  -855.4625664830     eV
 (SEDC) Total Energy Correction : -0.702746E+00 eV
 
 Dispersion corrected final energy* =  -1268.307324500     eV
-
 NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
  For future reference: finite basis dEtot/dlog(Ecut) =      -3.335211eV
@@ -858,9 +849,14 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'energies': (-1267.604578357, -855.4591023999, -855.471052),
-                                     'free_energies': [-855.462566483],
-                                     'dedlne': [-3.335211]})
+        self.assertEqual(test_dict, {'dedlne': [-3.335211],
+                                     'energies': {'disperson_corrected': [-1268.3073245],
+                                                  'est_0K': [-855.4608344414],
+                                                  'final_basis_set_corrected': [-855.471052],
+                                                  'final_energy': [-1267.604578357,
+                                                                   -855.4591023999],
+                                                  'free_energy': [-855.462566483],
+                                                  'sedc_correction': [-0.702746]}})
 
     def test_get_forces(self):
         test_text = io.StringIO("""
@@ -1606,7 +1602,7 @@ Species   Ion     Hirshfeld Charge (e)
                                                    ('F', 1): 17.0}}
                          )
 
-    def test_lbfgs_output(self):
+    def test_geom_output(self):
         test_text = io.StringIO("""
  LBFGS: finished iteration     0 with enthalpy= -1.31770077E+003 eV
 
@@ -1638,32 +1634,54 @@ Species   Ion     Hirshfeld Charge (e)
  |   Smax    |   1.736649E+001 |   1.000000E-001 |        GPa | No  | <-- TPSD
  +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
 
+ +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
+ | Parameter |      value      |    tolerance    |    units   | OK? | <-- TPSD
+ +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
+ |  dE/ion   |   0.000000E+000 |   2.000000E-005 |         eV | Yes | <-- TPSD
+ |  |F|max   |   0.000000E+000 |   5.000000E-002 |       eV/A | Yes | <-- TPSD
+ |  |dR|max  |   0.000000E+000 |   1.000000E-003 |          A | Yes | <-- TPSD
+ |   Smax    |   0.000000E+000 |   1.000000E-001 |        GPa | Yes | <-- TPSD
+ +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
+
         """)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'energies': (-1317.70077, -216.058016),
-                                     'geom_opt_min': [{'previous': {'Fdelta': 0.203755,
-                                                                    'enthalpy': -216.058941,
-                                                                    'lambda': 0.0}},
-                                                      {'previous': {'Fdelta': 0.204256,
-                                                                    'enthalpy': -216.058016,
-                                                                    'lambda': 0.0},
-                                                       'trial step': {'Fdelta': 0.204121,
-                                                                      'enthalpy': -216.058941,
-                                                                      'lambda': 0.001727}},
-                                                      {'Smax': {'converged': False,
-                                                                'tolerance': 0.1,
-                                                                'value': 17.36649},
-                                                       'dE/ion': {'converged': False,
-                                                                  'tolerance': 2e-05,
-                                                                  'value': 0.0},
-                                                       '|F|max': {'converged': False,
-                                                                  'tolerance': 0.05,
-                                                                  'value': 0.529977},
-                                                       '|dR|max': {'converged': True,
-                                                                   'tolerance': 0.001,
-                                                                   'value': 0.0}}]})
+        self.assertEqual(test_dict, {'geom_opt': {'enthalpy': [-1317.70077, -216.058016],
+                                                  'minimisation': [{'previous': {'Fdelta': 0.203755,
+                                                                                 'enthalpy': -216.058941,
+                                                                                 'lambda': 0.0}},
+                                                                   {'previous': {'Fdelta': 0.204256,
+                                                                                 'enthalpy': -216.058016,
+                                                                                 'lambda': 0.0},
+                                                                    'trial step': {'Fdelta': 0.204121,
+                                                                                   'enthalpy': -216.058941,
+                                                                                   'lambda': 0.001727}},
+                                                                   {'Smax': {'converged': False,
+                                                                             'tolerance': 0.1,
+                                                                             'value': 17.36649},
+                                                                    'dE/ion': {'converged': False,
+                                                                               'tolerance': 2e-05,
+                                                                               'value': 0.0},
+                                                                    '|F|max': {'converged': False,
+                                                                               'tolerance': 0.05,
+                                                                               'value': 0.529977},
+                                                                    '|dR|max': {'converged': True,
+                                                                                'tolerance': 0.001,
+                                                                                'value': 0.0}},
+                                                                   {'Smax': {'converged': True,
+                                                                             'tolerance': 0.1,
+                                                                             'value': 0.0},
+                                                                    'dE/ion': {'converged': True,
+                                                                               'tolerance': 2e-05,
+                                                                               'value': 0.0},
+                                                                    '|F|max': {'converged': True,
+                                                                               'tolerance': 0.05,
+                                                                               'value': 0.0},
+                                                                    '|dR|max': {'converged': True,
+                                                                                'tolerance': 0.001,
+                                                                                'value': 0.0}}]
+                                                  }})
 
     def test_get_lbfgs_info(self):
         test_text = io.StringIO("""
