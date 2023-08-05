@@ -52,12 +52,10 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
             logger("Found build info")
             curr_run = defaultdict(list)
-
             curr_run["build_info"] = _process_buildinfo(block)
 
         elif re.search(r"Run started", line):
             curr_run["time_started"] = normalise_string(line.split(":", 1)[1])
-            curr_run["species_properties"] = defaultdict(dict)
 
             logger("Found run %s", len(runs) + 1)
 
@@ -95,12 +93,19 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             logger("Found pseudo-atomic energy")
 
             key, val = _process_ps_energy(block)
+
+            if "species_properties" not in curr_run:
+                curr_run["species_properties"] = defaultdict(dict)
+
             curr_run["species_properties"][key]["pseudo_atomic_energy"] = val
 
         # Mass
         elif block := get_block(line, castep_file, r"Mass of species in AMU", r"^ *$"):
 
             logger("Found mass")
+
+            if "species_properties" not in curr_run:
+                curr_run["species_properties"] = defaultdict(dict)
 
             for key, val in _process_spec_prop(block):
                 curr_run["species_properties"][key]["mass"] = float(val)
@@ -110,6 +115,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
             logger("Found electric quadrupole moment")
 
+            if "species_properties" not in curr_run:
+                curr_run["species_properties"] = defaultdict(dict)
+
             for key, val, *_ in _process_spec_prop(block):
                 curr_run["species_properties"][key]["electric_quadrupole_moment"] = float(val)
 
@@ -117,6 +125,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
         elif block := get_block(line, castep_file, r"Files used for pseudopotentials", r"^ *$"):
 
             logger("Found pseudopotentials")
+
+            if "species_properties" not in curr_run:
+                curr_run["species_properties"] = defaultdict(dict)
 
             for key, val in _process_spec_prop(block):
                 if "|" in val:
@@ -178,26 +189,72 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["occupancies"].append(_process_occupancies(block))
 
         # Energies
-        elif any((line.startswith("Final energy, E"),
-                  line.startswith("Final energy"),
-                  "Total energy corrected for finite basis set" in line,
-                  re.search(f"({REs.MINIMISERS_RE}): finished iteration.*with enthalpy", line))):
+        elif line.startswith("Final energy, E") or line.startswith("Final energy"):
 
             logger("Found energy")
 
-            curr_run["energies"].append(to_type(get_numbers(line)[-1], float))
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["final_energy"].append(to_type(get_numbers(line)[-1], float))
+
+        elif "Total energy corrected for finite basis set" in line:
+
+            logger("Found energy")
+
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["final_basis_set_corrected"].append(
+                to_type(get_numbers(line)[-1], float))
+
+        elif "0K energy (E-0.5TS)" in line:
+
+            logger("Found estimated 0K energy")
+
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["est_0K"].append(to_type(get_numbers(line)[-1], float))
+
+        elif line.startswith("(SEDC) Total Energy"):
+
+            logger("Found SEDC energy correction")
+
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["sedc_correction"].append(to_type(get_numbers(line)[-1], float))
+
+        elif line.startswith("Dispersion corrected final energy"):
+
+            logger("Found SEDC final energy")
+
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["disperson_corrected"].append(
+                to_type(get_numbers(line)[-1], float))
 
         # Free energies
         elif re.match(rf"Final free energy \(E-TS\) += +({REs.EXPNUMBER_RE})", line):
 
             logger("Found free energy (E-TS)")
-            curr_run["free_energies"].append(to_type(get_numbers(line)[-1], float))
+
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["free_energy"].append(to_type(get_numbers(line)[-1], float))
 
         # Solvation energy
         elif line.startswith(" Free energy of solvation"):
 
             logger("Found solvation energy")
-            curr_run["solvation_energies"].append(*to_type(get_numbers(line), float))
+
+            if "energies" not in curr_run:
+                curr_run["energies"] = defaultdict(list)
+
+            curr_run["energies"]["solvation"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
         elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({REs.EXPNUMBER_RE})", line):
@@ -487,11 +544,23 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
         elif block := get_block(line, castep_file, "Final Configuration", r"^\s+x+$", cnt=2):
 
             if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = {}
+                curr_run["geom_opt"] = defaultdict(list)
 
             logger("Found final geom configuration")
 
             curr_run["geom_opt"]["final_configuration"] = _process_atreg_block(block)
+
+        elif match := re.search(f"(?P<minim>{REs.MINIMISERS_RE}):"
+                                r" finished iteration\s*\d+\s*with enthalpy", line):
+
+            if "geom_opt" not in curr_run:
+                curr_run["geom_opt"] = defaultdict(list)
+
+            minim = match["minim"]
+
+            logger("Found %s energy", minim)
+
+            curr_run["geom_opt"]["enthalpy"].append(to_type(get_numbers(line)[-1], float))
 
         elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
                                r"(?P<key>[^=]+)=\s*"
@@ -499,7 +568,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                                line, re.IGNORECASE):
 
             if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = {}
+                curr_run["geom_opt"] = defaultdict(list)
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
 
@@ -512,9 +581,12 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
             typ = re.search(REs.MINIMISERS_RE, line).group(0)
 
+            if "geom_opt" not in curr_run:
+                curr_run["geom_opt"] = defaultdict(list)
+
             logger("Found %s geom_block", typ)
 
-            curr_run["geom_opt_min"].append(_process_geom_table(block))
+            curr_run["geom_opt"]["minimisation"].append(_process_geom_table(block))
 
         # TDDFT
         elif block := get_block(line, castep_file,

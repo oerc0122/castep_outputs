@@ -9,48 +9,6 @@
       "Fundamental constants values": "CODATA 2018"
     },
     "time_started": "Tue, 30 May 2023 11:57:18 +0100",
-    "species_properties": {
-      "Mn": {
-        "pseudo_atomic_energy": -2901.7207,
-        "mass": 54.93805,
-        "electric_quadrupole_moment": 0.33,
-        "pseudopot": {
-          "local_channel": 3,
-          "core_radius": 1.8,
-          "beta_radius": 1.8,
-          "r_inner": 0.6,
-          "coarse": 12,
-          "medium": 14,
-          "fine": 16,
-          "proj": "30U:40:31:32",
-          "opt": "qc=7",
-          "debug": null,
-          "projectors": [
-            {
-              "orbital": 3,
-              "shell": "s",
-              "type": "U"
-            },
-            {
-              "orbital": 4,
-              "shell": "s",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "p",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "d",
-              "type": null
-            }
-          ],
-          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
-        }
-      }
-    },
     "pspot_detail": [
       {
         "reference_electronic_structure": [
@@ -242,6 +200,48 @@
         }
       }
     ],
+    "species_properties": {
+      "Mn": {
+        "pseudo_atomic_energy": -2901.7207,
+        "mass": 54.93805,
+        "electric_quadrupole_moment": 0.33,
+        "pseudopot": {
+          "local_channel": 3,
+          "core_radius": 1.8,
+          "beta_radius": 1.8,
+          "r_inner": 0.6,
+          "coarse": 12,
+          "medium": 14,
+          "fine": 16,
+          "proj": "30U:40:31:32",
+          "opt": "qc=7",
+          "debug": null,
+          "projectors": [
+            {
+              "orbital": 3,
+              "shell": "s",
+              "type": "U"
+            },
+            {
+              "orbital": 4,
+              "shell": "s",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "p",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "d",
+              "type": null
+            }
+          ],
+          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        }
+      }
+    },
     "options": {
       "general": {
         "output verbosity": "normal (1)",
@@ -547,48 +547,6 @@
       "Fundamental constants values": "CODATA 2018"
     },
     "time_started": "Fri, 14 Jul 2023 19:45:17 +0100",
-    "species_properties": {
-      "Mn": {
-        "pseudo_atomic_energy": -2901.7207,
-        "mass": 54.93805,
-        "electric_quadrupole_moment": 0.33,
-        "pseudopot": {
-          "local_channel": 3,
-          "core_radius": 1.8,
-          "beta_radius": 1.8,
-          "r_inner": 0.6,
-          "coarse": 12,
-          "medium": 14,
-          "fine": 16,
-          "proj": "30U:40:31:32",
-          "opt": "qc=7",
-          "debug": null,
-          "projectors": [
-            {
-              "orbital": 3,
-              "shell": "s",
-              "type": "U"
-            },
-            {
-              "orbital": 4,
-              "shell": "s",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "p",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "d",
-              "type": null
-            }
-          ],
-          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
-        }
-      }
-    },
     "pspot_detail": [
       {
         "reference_electronic_structure": [
@@ -780,6 +738,48 @@
         }
       }
     ],
+    "species_properties": {
+      "Mn": {
+        "pseudo_atomic_energy": -2901.7207,
+        "mass": 54.93805,
+        "electric_quadrupole_moment": 0.33,
+        "pseudopot": {
+          "local_channel": 3,
+          "core_radius": 1.8,
+          "beta_radius": 1.8,
+          "r_inner": 0.6,
+          "coarse": 12,
+          "medium": 14,
+          "fine": 16,
+          "proj": "30U:40:31:32",
+          "opt": "qc=7",
+          "debug": null,
+          "projectors": [
+            {
+              "orbital": 3,
+              "shell": "s",
+              "type": "U"
+            },
+            {
+              "orbital": 4,
+              "shell": "s",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "p",
+              "type": null
+            },
+            {
+              "orbital": 3,
+              "shell": "d",
+              "type": null
+            }
+          ],
+          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
+        }
+      }
+    },
     "options": {
       "general": {
         "output verbosity": "normal (1)",
