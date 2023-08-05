@@ -8,7 +8,6 @@ To install locally:
 """
 
 import sys
-
 from setuptools import setup, find_packages
 
 # Check for valid Python version
@@ -22,7 +21,7 @@ with open("README.rst", "r", encoding="utf-8") as readme:
 
 setup(
     name="castep_outputs",
-    version="0.1.1",
+    version="0.1.3",
     license='BSD3',
     license_files=('LICENSE'),
     description='A package for extracting information from castep outputs',

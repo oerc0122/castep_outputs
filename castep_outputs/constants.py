@@ -2,6 +2,8 @@
 Module for constants used in castep_outputs
 """
 
+from typing import Literal, Tuple
+
 SHELLS = ('s', 'p', 'd', 'f')
 FST_D = ('x', 'y', 'z')
 SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
@@ -42,3 +44,8 @@ CASTEP_OUTPUT_NAMES = (
     "ts"
 )
 CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
+
+OutFormats = Literal["json", "pprint", "print", "ruamel", "yaml"]
+AtomIndex = Tuple[str, float]
+ThreeVector = Tuple[float, float, float]
+ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]

@@ -3,10 +3,11 @@ Module to parse miscellaneous castep files
 """
 
 __AUTHOR__ = "Jacob Wilkins"
-__VERSION__ = "v0.01"
+__VERSION__ = "0.1.3"
 
 # pylint: disable=unused-import
 
+from .castep_outputs_main import parse_single
 from .castep_file_parser import parse_castep_file
 from .cell_param_file_parser import parse_cell_param_file, parse_cell_file, parse_param_file
 from .md_geom_file_parser import parse_md_geom_file, parse_md_file, parse_geom_file
