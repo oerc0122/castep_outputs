@@ -15,7 +15,7 @@ import itertools
 from . import castep_res as REs
 from .castep_res import labelled_floats, get_numbers, get_block
 
-from .constants import SHELLS
+from .constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
 
 from .utility import (fix_data_types, add_aliases, to_type,
                       stack_dict, normalise_string,
@@ -30,10 +30,6 @@ from .extra_files_parser import (parse_bands_file,
                                  parse_pot_fmt_file,
                                  parse_den_fmt_file,
                                  parse_elastic_file)
-
-AtomIndex = Tuple[str, float]
-ThreeVector = Tuple[float, float, float]
-ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]
 
 
 def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:

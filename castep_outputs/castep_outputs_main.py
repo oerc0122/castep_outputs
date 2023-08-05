@@ -1,11 +1,12 @@
 """
 Run main castep parser
 """
+from typing import Callable, Optional, TextIO, Union
+from pathlib import Path
 import logging
 import fileinput
 import io
 import sys
-import os.path
 
 from .args import (parse_args, args_to_dict)
 from .utility import (json_safe, flatten_dict, get_dumpers)
@@ -16,7 +17,7 @@ from .extra_files_parser import (parse_bands_file, parse_hug_file, parse_phonon_
                                  parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
                                  parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file,
                                  parse_elastic_file, parse_ts_file)
-
+from .constants import OutFormats
 
 PARSERS = {
     ".castep": parse_castep_file,
@@ -38,19 +39,25 @@ PARSERS = {
     }
 
 
-def parse_single(in_file, parser: callable = None, out_format="json",
-                 *, loglevel=logging.WARNING, testing=False):
+def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
+                 out_format: OutFormats = "print",
+                 *, loglevel: int = logging.WARNING, testing: bool = False):
     """
     Parse a file using the given parser and post-process according to options
     """
 
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
 
+    if not isinstance(in_file, (io.TextIOBase, Path)):
+        in_file = Path(in_file)
+
     if parser is None:
-        _, ext = os.path.splitext(in_file)
-        parser = PARSERS.get(ext, None)
-        if not parser:
+        ext = in_file.suffix
+
+        if ext not in PARSERS:
             raise KeyError(f"Parser for file {in_file} (assumed type: {ext}) not found")
+
+        parser = PARSERS[ext]
 
     if isinstance(in_file, io.TextIOBase):
         data = parser(in_file)
@@ -70,7 +77,8 @@ def parse_single(in_file, parser: callable = None, out_format="json",
     return data
 
 
-def parse_all(output=None, out_format="json", loglevel=logging.WARNING, *, testing=False, **files):
+def parse_all(output: Optional[Path] = None, out_format: OutFormats = "json",
+              *, loglevel: int = logging.WARNING, testing: bool = False, **files):
     """ Parse all files in files dict """
     file_dumper = get_dumpers(out_format)
 

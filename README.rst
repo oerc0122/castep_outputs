@@ -3,9 +3,9 @@ castep_outputs
 
 Parser for CASTEP output files
 
-``castep_outputs`` parses the output files of
-`castep <https://www.castep.org/>`__ into a standard form and is able to
-subsequently dump the processed data into a standard format.
+``castep_outputs`` parses the output files of `castep
+<https://www.castep.org/>`__ into a standard form and is able to subsequently
+dump the processed data into a standard format.
 
 Install
 -------
@@ -25,22 +25,20 @@ To check it is installed run:
 Dependencies
 ------------
 
-``castep_outputs`` is designed to have no external dependencies beyond
-the standard library, however, it is possible to use either
-`PyYAML <https://pypi.org/project/PyYAML/>`__ or
-`ruamel.yaml <https://pypi.org/project/ruamel.yaml/>`__ to dump in the
-YAML format.
+``castep_outputs`` is designed to have no external dependencies beyond the
+standard library, however, it is possible to use either `PyYAML
+<https://pypi.org/project/PyYAML/>`__ or `ruamel.yaml
+<https://pypi.org/project/ruamel.yaml/>`__ to dump in the YAML format.
 
 Command-line
 ------------
 
-When run as a commandline tool, it attempts to find all files for the
-given seedname, filtered by ``inc`` args (default: all). Explicit files
-can be passed using longname arguments. castep_outputs can parse most
-human-readable castep outputs including: ``.castep``, ``.param``,
-``.cell``, ``.geom``, ``.md``, ``.bands``, ``.hug``, ``.phonon_dos``,
-``.efield``, ``.xrd_sf``, ``.elf_fmt``, ``.chdiff_fmt``,
-``.pot_fmt, .den_fmt``, ``.elastic``, ``.ts``.
+When run as a commandline tool, it attempts to find all files for the given
+seedname, filtered by ``inc`` args (default: all). Explicit files can be passed
+using longname arguments. castep_outputs can parse most human-readable castep
+outputs including: ``.castep``, ``.param``, ``.cell``, ``.geom``, ``.md``,
+``.bands``, ``.hug``, ``.phonon_dos``, ``.efield``, ``.xrd_sf``, ``.elf_fmt``,
+``.chdiff_fmt``, ``.pot_fmt, .den_fmt``, ``.elastic``, ``.ts``.
 
 to run in basic mode:
 
@@ -69,21 +67,57 @@ Will parse the single named file and again dump a ``.json`` to stdout.
    python -m castep_outputs --castep seedname.param
 
 Will attempt to parse the file ``seedname.param`` as though it were a
-``.castep`` file. While not ordinarily useful it can help with manually
-renamed files.
+``.castep`` file. While not ordinarily useful it can help with manually renamed
+files.
 
 ::
 
    python -m castep_outputs -o my_file.yaml -f yaml seedname.castep
 
-Will parse ``seedname.castep``, dump it to ``my_file.yaml`` in ``yaml``
-format using the ``PyYAML`` engine.
+Will parse ``seedname.castep``, dump it to ``my_file.yaml`` in ``yaml`` format
+using the ``PyYAML`` engine.
 
 As a module
 -----------
 
-Importing ``castep_outputs`` gives you access to all of the parsers.
-These are:
+``import``\ ing ``castep_outputs`` directly puts all of the parsers directly
+into your local namespace.
+
+The simplest method to use ``castep_outputs`` in a tool is to use the
+``parse_single`` method which attempts to determine the parser from the file
+extension.
+
+::
+
+   import castep_outputs
+
+   my_dict = parse_single('my_file.castep')
+
+If you need a specific parser rather than by extension it is possible to pass
+them as the second argument, or call them directly.
+
+::
+
+   import castep_outputs
+
+   my_dict = parse_single('my_file', parse_castep_file)
+
+   with open('my_file', 'r', encoding='utf-8') as inp:
+       my_dict = parse_castep_file(inp)
+
+It is recommended that you use ``parse_single`` as it uses special file-handling
+to give better diagnostics if it fails. It is possible to enable more detailed
+logging via the `logging
+<https://docs.python.org/3/library/logging.html#logging.basicConfig>`_ module:
+
+::
+
+   import castep_outputs
+   import logging
+
+   my_dict = parse_single('my_file', loglevel=logging.INFO)
+
+The available parsing functions are:
 
 -  ``parse_castep_file``
 -  ``parse_cell_param_file``
