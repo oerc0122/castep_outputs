@@ -96,6 +96,48 @@ class test_dumper(unittest.TestCase):
     def test_yaml_dumper_ts(self):
         self._test_dump(_TEST_FOLDER / 'test.ts', 'ts', 'yaml')
 
+    def test_json_dumper_chdiff_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.chdiff_fmt', 'chdiff_fmt', 'json')
+
+    def test_yaml_dumper_chdiff_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.chdiff_fmt', 'chdiff_fmt', 'yaml')
+
+    def test_json_dumper_den_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.den_fmt', 'den_fmt', 'json')
+
+    def test_yaml_dumper_den_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.den_fmt', 'den_fmt', 'yaml')
+
+    def test_json_dumper_pot_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.pot_fmt', 'pot_fmt', 'json')
+
+    def test_yaml_dumper_pot_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.pot_fmt', 'pot_fmt', 'yaml')
+
+    def test_json_dumper_elf_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.elf_fmt', 'elf_fmt', 'json')
+
+    def test_yaml_dumper_elf_fmt(self):
+        self._test_dump(_TEST_FOLDER / 'test.elf_fmt', 'elf_fmt', 'yaml')
+
+    def test_json_dumper_xrd_sf(self):
+        self._test_dump(_TEST_FOLDER / 'test.xrd_sf', 'xrd_sf', 'json')
+
+    def test_yaml_dumper_xrd_sf(self):
+        self._test_dump(_TEST_FOLDER / 'test.xrd_sf', 'xrd_sf', 'yaml')
+
+    def test_json_dumper_phonon_dos(self):
+        self._test_dump(_TEST_FOLDER / 'test.phonon_dos', 'phonon_dos', 'json')
+
+    def test_yaml_dumper_phonon_dos(self):
+        self._test_dump(_TEST_FOLDER / 'test.phonon_dos', 'phonon_dos', 'yaml')
+
+    def test_json_dumper_efield(self):
+        self._test_dump(_TEST_FOLDER / 'test.efield', 'efield', 'json')
+
+    def test_yaml_dumper_efield(self):
+        self._test_dump(_TEST_FOLDER / 'test.efield', 'efield', 'yaml')
+
 
 if __name__ == '__main__':
     unittest.main()

@@ -1,0 +1,21 @@
+!!python/object/apply:collections.defaultdict
+args: [!!python/name:builtins.list '']
+dictitems:
+  f_aug_im: !!python/tuple [0.0, 0.082062, 0.0, 0.097538, 9.6e-05]
+  f_aug_re: !!python/tuple [-0.345904, -0.082065, 0.083348, 0.097536, -0.0]
+  f_core_im: !!python/tuple [0.0, -37.403844, -0.0, 31.529195, 0.0]
+  f_core_re: !!python/tuple [80.0, 37.403844, 67.142129, 31.529195, 0.0]
+  f_iam_im: !!python/tuple [0.0, -41.764535, -0.0, 31.251385, 0.0]
+  f_iam_re: !!python/tuple [112.0, 41.764535, 67.563382, 31.251385, -0.0]
+  f_paw_im: !!python/tuple [0.0, -42.458196, 0.0, 30.740549, -1.373422]
+  f_paw_re: !!python/tuple [112.0, 42.458193, 67.113321, 30.740547, 0.0]
+  f_pp_im: !!python/tuple [0.0, -42.447678, 0.0, 30.667434, -1.397311]
+  f_pp_re: !!python/tuple [112.0, 42.447674, 67.016383, 30.667432, -2e-06]
+  f_soft_im: !!python/tuple [0.0, -5.136414, -0.0, -0.886185, -1.373518]
+  f_soft_re: !!python/tuple [32.345904, 5.136414, -0.112156, -0.886185, 0.0]
+  qvec:
+  - [0, 0, 0]
+  - [1, 1, 1]
+  - [2, 2, 0]
+  - [3, 1, 1]
+  - [2, 2, 2]
