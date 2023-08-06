@@ -1,0 +1,15 @@
+!!python/object/apply:collections.defaultdict
+args: [!!python/name:builtins.list '']
+dictitems:
+  chi_alpha: [0.000758, 4.2e-05, 0.007839, 0.090725, 0.206813, 0.197059, 0.182533,
+    0.260962]
+  chi_beta: [0.003, 8e-06, 0.000593, 0.008309, 0.036108, 0.10475, 0.299497, 0.494036]
+  q:
+  - !!python/tuple [1, 1, 1]
+  - !!python/tuple [2, 1, 1]
+  - !!python/tuple [3, 1, 1]
+  - !!python/tuple [4, 1, 1]
+  - !!python/tuple [5, 1, 1]
+  - !!python/tuple [6, 1, 1]
+  - !!python/tuple [7, 1, 1]
+  - !!python/tuple [8, 1, 1]

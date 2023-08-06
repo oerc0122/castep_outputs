@@ -1,0 +1,12 @@
+!!python/object/apply:collections.defaultdict
+args: [!!python/name:builtins.list '']
+dictitems:
+  pot: [-3.223973, -3.087238, -2.695585, -2.156556, -1.536511, -0.988187, -0.610499]
+  q:
+  - !!python/tuple [1, 1, 1]
+  - !!python/tuple [2, 1, 1]
+  - !!python/tuple [3, 1, 1]
+  - !!python/tuple [4, 1, 1]
+  - !!python/tuple [5, 1, 1]
+  - !!python/tuple [6, 1, 1]
+  - !!python/tuple [7, 1, 1]

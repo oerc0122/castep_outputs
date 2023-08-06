@@ -1,0 +1,13 @@
+!!python/object/apply:collections.defaultdict
+args: [!!python/name:builtins.list '']
+dictitems:
+  chdiff: [3.868879, 2.5691, 0.055188, -1.367001, -1.037269, 0.123948, 1.133029, 1.590701]
+  q:
+  - !!python/tuple [1, 1, 1]
+  - !!python/tuple [2, 1, 1]
+  - !!python/tuple [3, 1, 1]
+  - !!python/tuple [4, 1, 1]
+  - !!python/tuple [5, 1, 1]
+  - !!python/tuple [6, 1, 1]
+  - !!python/tuple [7, 1, 1]
+  - !!python/tuple [8, 1, 1]

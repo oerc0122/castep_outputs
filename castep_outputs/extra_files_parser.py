@@ -3,7 +3,7 @@ Parse the following castep outputs:
 .bands
 
 """
-from typing import TextIO, Sequence, Dict, Union, List, Any
+from typing import TextIO, Sequence, Dict, Union, List, Any, Tuple
 import re
 from collections import defaultdict
 
@@ -26,7 +26,7 @@ def parse_regular_header(block: TextIO,
             _, _, *key, val = line.split()
             data[" ".join(key)] = int(float(val))
         elif "Unit cell vectors" in line:
-            data['unit_cell'] = [to_type(next(line).split(), float)
+            data['unit_cell'] = [to_type(next(block).split(), float)
                                  for _ in range(3)]
 
         elif match := REs.FRACCOORDS_RE.match(line):
@@ -291,7 +291,7 @@ def parse_ts_file(ts_file: TextIO) -> Dict[str, Any]:
     return accum
 
 
-def parse_kpt_info(inp: TextIO, prop: str) -> Dict[str, List[Union[int, float]]]:
+def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[Union[int, float]]]:
     """ Parse standard form of kpt related .*_fmt files """
 
     # Skip header
@@ -302,17 +302,23 @@ def parse_kpt_info(inp: TextIO, prop: str) -> Dict[str, List[Union[int, float]]]
     for line in inp:
         if not line.strip():
             continue
-        *qpt, val = line.split()
-        qpt = to_type(qpt, int)
-        val = to_type(val, float)
-        stack_dict(qdata, {'q': qpt, prop: val})
+        if isinstance(prop, str):
+            *qpt, val = line.split()
+            qpt = to_type(qpt, int)
+            val = to_type(val, float)
+            stack_dict(qdata, {'q': qpt, prop: val})
+        elif isinstance(prop, tuple):
+            words = line.split()
+            qpt = to_type(words[0:3], int)
+            val = to_type(words[3:], float)
+            stack_dict(qdata, {'q': qpt, **dict(zip(prop, val))})
 
     return qdata
 
 
 def parse_elf_fmt_file(elf_file: TextIO) -> Dict[str, List[Union[int, float]]]:
     """ Parse castep .elf_fmt files """
-    return parse_kpt_info(elf_file, 'chi')
+    return parse_kpt_info(elf_file, ('chi_alpha', 'chi_beta'))
 
 
 def parse_chdiff_fmt_file(chdiff_file: TextIO) -> Dict[str, List[Union[int, float]]]:
