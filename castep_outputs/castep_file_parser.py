@@ -13,7 +13,7 @@ import re
 import itertools
 
 from . import castep_res as REs
-from .castep_res import labelled_floats, get_numbers, get_block
+from .castep_res import labelled_floats, get_numbers, get_block, gen_table_re
 
 from .constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
 
@@ -45,7 +45,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
         # Build Info
         if block := get_block(line, castep_file,
                               r"^\s*Compiled for",
-                              r"^\s*$", out_fmt=list):
+                              REs.EMPTY, out_fmt=list):
 
             if curr_run:
                 runs.append(curr_run)
@@ -60,35 +60,45 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             logger("Found run %s", len(runs) + 1)
 
         # Finalisation
-        elif block := get_block(line, castep_file, "Initialisation time", r"^\s*$"):
+        elif block := get_block(line, castep_file, "Initialisation time", REs.EMPTY):
 
             logger("Found finalisation")
 
             curr_run.update(_process_finalisation(block))
 
+        elif line.startswith("Overall parallel efficiency rating"):
+
+            logger("Found parallel efficiency")
+
+            curr_run["parallel_efficiency"] = float(get_numbers(line)[0])
+
         # Title
-        elif re.match(r"^\*+\s*Title\s*\*+$", line):
+        elif re.match(gen_table_re("Title", r"\*+"), line):
 
             logger("Found title")
 
             curr_run["title"] = next(castep_file).strip()
 
         # Memory estimate
-        elif block := get_block(line, castep_file, r"\s*\+-+\sMEMORY AND SCRATCH", r"\s*\+-+\+"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re(r"MEMORY AND SCRATCH[\w\s]+", "[+-]+"),
+                                gen_table_re("", "[+-]+")):
 
             logger("Found memory estimate")
 
             curr_run["memory_estimate"].append(_process_memory_est(block))
 
         # Parameters
-        elif block := get_block(line, castep_file, r"^\s*\*+ .* Parameters \*+$", r"^\s*\*+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("[^*]+ Parameters", r"\*+"),
+                                gen_table_re("", r"\*+")):
 
             logger("Found options")
 
             curr_run["options"] = _process_params(block)
 
         # Pseudo-atomic energy
-        elif block := get_block(line, castep_file, REs.PS_SHELL_RE, r"^\s*$", cnt=2):
+        elif block := get_block(line, castep_file, REs.PS_SHELL_RE, REs.EMPTY, cnt=2):
 
             logger("Found pseudo-atomic energy")
 
@@ -100,7 +110,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["species_properties"][key]["pseudo_atomic_energy"] = val
 
         # Mass
-        elif block := get_block(line, castep_file, r"Mass of species in AMU", r"^ *$"):
+        elif block := get_block(line, castep_file, r"Mass of species in AMU", REs.EMPTY):
 
             logger("Found mass")
 
@@ -111,8 +121,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                 curr_run["species_properties"][key]["mass"] = float(val)
 
         # Electric Quadrupole Moment
-        elif block := get_block(line, castep_file, r"Electric Quadrupole Moment", r"^ *$"):
-
+        elif block := get_block(line, castep_file, r"Electric Quadrupole Moment", r"^\s+[^ A-Z]"):
             logger("Found electric quadrupole moment")
 
             if "species_properties" not in curr_run:
@@ -122,7 +131,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                 curr_run["species_properties"][key]["electric_quadrupole_moment"] = float(val)
 
         # Pseudopots
-        elif block := get_block(line, castep_file, r"Files used for pseudopotentials", r"^ *$"):
+        elif block := get_block(line, castep_file, r"Files used for pseudopotentials", REs.EMPTY):
 
             logger("Found pseudopotentials")
 
@@ -135,7 +144,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
                 curr_run["species_properties"][key]["pseudopot"] = val
 
-        elif block := get_block(line, castep_file, "Pseudopotential Report", r"^\s*=+\s*$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Pseudopotential Report[^|]+", r"\|"),
+                                gen_table_re("", "=+")):
 
             logger("Found pseudopotential report")
 
@@ -152,14 +163,18 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["pspot_debug"].append(match)
 
         # Pair Params
-        elif block := get_block(line, castep_file, "PairParams", r"^\s*$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("PairParams", r"\*+", pre=r"\w*"),
+                                REs.EMPTY):
 
             logger("Found pair params")
 
             curr_run["pair_params"].append(_process_pair_params(block))
 
         # DFTD
-        elif block := get_block(line, castep_file, "DFT-D parameters", r"^\s*x+\s*$", cnt=2):
+        elif block := get_block(line, castep_file,
+                                "DFT-D parameters",
+                                gen_table_re("", "x+"), cnt=2):
 
             logger("Found DFTD block")
 
@@ -174,7 +189,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Line min
         elif block := get_block(line, castep_file,
-                                "WAVEFUNCTION LINE MINIMISATION", r"\s*\+(-+\+){2}", cnt=2):
+                                gen_table_re("WAVEFUNCTION LINE MINIMISATION", "[+-]+",
+                                             post="<- line"),
+                                gen_table_re("", "[+-]+", post="<- line"), cnt=2):
 
             logger("Found wvfn line min")
 
@@ -182,7 +199,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Occupancy
         elif block := get_block(line, castep_file,
-                                "Occupancy", "Have a nice day"):
+                                gen_table_re("Occupancy", r"\|",
+                                             post="<- occ", whole_line=False),
+                                r"Have a nice day\."):
 
             logger("Found occupancies")
 
@@ -267,7 +286,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                 curr_run["spin"].append(to_type(match.group(1), float))
 
         # Initial cell
-        elif block := get_block(line, castep_file, "Unit Cell", r"^\s+$", cnt=3):
+        elif block := get_block(line, castep_file, gen_table_re("Unit Cell"), REs.EMPTY, cnt=3):
 
             logger("Found cell")
 
@@ -275,14 +294,17 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Cell Symmetry and contstraints
         elif block := get_block(line, castep_file,
-                                "Symmetry and Constraints", "Cell constraints are"):
+                                gen_table_re("Symmetry and Constraints"),
+                                "Cell constraints are"):
 
             logger("Found symmetries")
 
             curr_run["symmetries"], curr_run["constraints"] = _process_symmetry(block)
 
         # TSS (must be ahead of initial pos)
-        elif block := get_block(line, castep_file, "(Reactant|Product)", r"^\s*x+\s*$", cnt=2):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("(Reactant|Product)", "x"),
+                                gen_table_re("", "x+"), cnt=2):
 
             mode = "reactant" if "Reactant" in line else "product"
 
@@ -292,7 +314,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Initial pos
         elif block := get_block(line, castep_file,
-                                "Fractional coordinates of atoms", r"^\s*x+\s*$"):
+                                "Fractional coordinates of atoms",
+                                gen_table_re("", "x+")):
 
             logger("Found initial positions")
 
@@ -305,7 +328,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Initial vel
         elif block := get_block(line, castep_file,
-                                "User Supplied Ionic Velocities", r"^\s*x+\s*$"):
+                                "User Supplied Ionic Velocities",
+                                gen_table_re("", "x+")):
 
             logger("Found initial velocities")
 
@@ -313,14 +337,15 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Initial spins
         elif block := get_block(line, castep_file,
-                                "Initial magnetic", r"^\s*x+\s*$"):
+                                "Initial magnetic",
+                                gen_table_re("", "x+")):
 
             logger("Found initial spins")
 
             curr_run["initial_spins"] = _process_initial_spins(block)
 
         # Target Stress
-        elif block := get_block(line, castep_file, "External pressure/stress", r"^\s*$"):
+        elif block := get_block(line, castep_file, "External pressure/stress", REs.EMPTY):
 
             logger("Found target stress")
 
@@ -335,22 +360,22 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["dedlne"].append(to_type(match.group(1), float))
 
         # K-Points
-        elif block := get_block(line, castep_file, "k-Points For BZ Sampling", r"^\s*$"):
+        elif block := get_block(line, castep_file, "k-Points For BZ Sampling", REs.EMPTY):
 
             logger("Found k-points")
 
             curr_run["k-points"] = _process_kpoint_blocks(block, True)
 
         elif block := get_block(line, castep_file,
-                                r"\s*\+\s*Number\s*Fractional coordinates\s*Weight\s*\+",
-                                r"^\s*\++\s*$"):
+                                gen_table_re("Number +Fractional coordinates +Weight", r"\+"),
+                                gen_table_re("", r"\++")):
 
             logger("Found k-points list")
 
             curr_run["k-points"] = _process_kpoint_blocks(block, False)
 
         # Forces blocks
-        elif block := get_block(line, castep_file, REs.FORCES_BLOCK_RE, r"^ \*+$"):
+        elif block := get_block(line, castep_file, REs.FORCES_BLOCK_RE, r"^\s*\*+$"):
             if "forces" not in curr_run:
                 curr_run["forces"] = defaultdict(list)
 
@@ -361,7 +386,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["forces"][key].append(val)
 
         # Stress tensor block
-        elif block := get_block(line, castep_file, REs.STRESSES_BLOCK_RE, r"^ \*+$"):
+        elif block := get_block(line, castep_file, REs.STRESSES_BLOCK_RE, r"^\s*\*+$"):
             if "stresses" not in curr_run:
                 curr_run["stresses"] = defaultdict(list)
 
@@ -419,7 +444,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Phonon Symmetry
         elif block := get_block(line, castep_file,
-                                "Phonon Symmetry Analysis", r"^\s*$"):
+                                "Phonon Symmetry Analysis", REs.EMPTY):
 
             logger("Found phonon symmetry analysis")
 
@@ -428,7 +453,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
             # Solvation
         elif block := get_block(line, castep_file,
-                                "AUTOSOLVATION", r"^\s*\*+\s*$"):
+                                gen_table_re("AUTOSOLVATION CALCULATION RESULTS", r"\*+"),
+                                r"^\s*\*+\s*$"):
 
             logger("Found autosolvation")
 
@@ -436,7 +462,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Dynamical Matrix
         elif block := get_block(line, castep_file,
-                                "Dynamical matrix", r"^\s*-+\s*$"):
+                                gen_table_re("Dynamical matrix"),
+                                gen_table_re("", "-+")):
 
             logger("Found dynamical matrix")
 
@@ -445,21 +472,25 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Raman tensors
         elif block := get_block(line, castep_file,
-                                r"^ \+\s+Raman Susceptibility Tensors", r"^\s*$"):
+                                gen_table_re("Raman Susceptibility Tensors[^+]*", r"\+"),
+                                REs.EMPTY):
 
             logger("Found Raman")
 
             curr_run["raman"].append(_process_raman(block))
 
         # Born charges
-        elif block := get_block(line, castep_file, r"^\s*Born Effective Charges\s*$", r"^ =+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Born Effective Charges"),
+                                gen_table_re("", "=+")):
 
             logger("Found Born")
 
             curr_run["born"].append(_process_born(block))
 
         # Permittivity and NLO Susceptibility
-        elif block := get_block(line, castep_file, r"^ +Optical Permittivity", r"^ =+$"):
+        elif block := get_block(line, castep_file,
+                                r"^\s+Optical Permittivity", r"^ =+$"):
 
             logger("Found optical permittivity")
 
@@ -469,7 +500,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                 curr_run["dc_permittivity"] = val[1]
 
         # Polarisability
-        elif block := get_block(line, castep_file, r"^ +Polarisabilit(y|ies)", r"^ =+$"):
+        elif block := get_block(line, castep_file, r"^\s+Polarisabilit(y|ies)", r"^ =+$"):
 
             logger("Found polarisability")
 
@@ -480,23 +511,26 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Non-linear
         elif block := get_block(line, castep_file,
-                                r"^ +Nonlinear Optical Susceptibility", r"^ =+$"):
+                                r"^\s+Nonlinear Optical Susceptibility", r"^ =+$"):
 
             logger("Found NLO")
 
             curr_run["nlo"], _ = _process_3_6_matrix(block, False)
 
         # Thermodynamics
-        elif block := get_block(line, castep_file, r"\s*Thermodynamics\s*$", r"\s+-+\s*$", cnt=3):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Thermodynamics"),
+                                gen_table_re("", "-+"), cnt=3):
 
             logger("Found thermodynamics")
 
             accum = _process_thermodynamics(block)
-            curr_run["thermodynamics"].append(accum)
+            curr_run["thermodynamics"] = accum
 
         # Mulliken Population Analysis
         elif block := get_block(line, castep_file,
-                                r"Species\s+Ion\s+(Spin)?\s+s\s+p\s+d\s+f", "=+$", cnt=2):
+                                gen_table_re(r"Atomic Populations \(Mulliken\)"),
+                                gen_table_re("", "=+"), cnt=2):
 
             logger("Found Mulliken")
 
@@ -504,15 +538,17 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Orbital populations
         elif block := get_block(line, castep_file,
-                                r"Orbital Populations",
-                                r"The total projected population"):
+                                gen_table_re("Orbital Populations"),
+                                "The total projected population"):
 
             logger("Found Orbital populations")
 
             curr_run["orbital_popn"] = _process_orbital_populations(block)
 
         # Bond analysis
-        elif block := get_block(line, castep_file, r"Bond\s*Population\s*Length", "=+", cnt=2):
+        elif block := get_block(line, castep_file,
+                                r"Bond\s+Population\s+Length",
+                                gen_table_re("", "=+"), cnt=2):
 
             logger("Found bond info")
 
@@ -520,28 +556,34 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Hirshfeld Population Analysis
         elif block := get_block(line, castep_file,
-                                r"Species\s+Ion\s+Hirshfeld Charge \(e\)", "=+$", cnt=2):
+                                gen_table_re("Hirshfeld Analysis"),
+                                gen_table_re("", "=+"), cnt=2):
 
             logger("Found Hirshfeld")
 
             curr_run["hirshfeld"] = _process_hirshfeld(block)
 
         # ELF
-        elif block := get_block(line, castep_file, r"ELF grid sample", r"^-+$", cnt=2):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("ELF grid sample"),
+                                gen_table_re("", "-+"), cnt=2):
 
             logger("Found ELF")
 
             curr_run["elf"] = _process_elf(block)
 
         # MD Block
-        elif block := get_block(line, castep_file, r"MD Data:", r"^\s*x+\s*$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("MD Data:", "x"),
+                                gen_table_re("", "x+")):
 
             logger("Found MD Block (step %d)", len(curr_run['md'])+1)
 
             curr_run["md"].append(_process_md(block))
 
         # GeomOpt
-        elif block := get_block(line, castep_file, "Final Configuration", r"^\s+x+$", cnt=2):
+        elif block := get_block(line, castep_file, "Final Configuration",
+                                gen_table_re("", "x+"), cnt=2):
 
             if "geom_opt" not in curr_run:
                 curr_run["geom_opt"] = defaultdict(list)
@@ -590,9 +632,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # TDDFT
         elif block := get_block(line, castep_file,
-                                "TDDFT excitation energies",
-                                r"^\s*\+\s*=+\s*\+\s*TDDFT",
-                                cnt=2):
+                                gen_table_re("TDDFT excitation energies", r"\+", post="TDDFT"),
+                                gen_table_re("=+", r"\+", post="TDDFT"), cnt=2):
 
             logger("Found TDDFT excitations")
 
@@ -600,21 +641,28 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Band structure
         elif block := get_block(line, castep_file,
-                                r"^\s+\+\s+(B A N D|Band Structure Calculation)", r"^\s+=+$"):
+                                gen_table_re("(B A N D|Band Structure Calculation)[^+]+", r"\+"),
+                                gen_table_re("", "=+")):
 
             logger("Found band-structure")
 
             curr_run["bs"] = _process_band_structure(block)
 
             # Molecular Dipole
-        elif block := get_block(line, castep_file, "D I P O L E", r"^\s*=+\s*$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("D I P O L E   O F   M O L E C U L E"
+                                             "   I N   S U P E R C E L L",
+                                             r"\+"),
+                                gen_table_re("", "=+")):
 
             logger("Found molecular dipole")
 
             curr_run["molecular_dipole"] = _process_dipole(block)
 
         # Chemical shielding
-        elif block := get_block(line, castep_file, r"Chemical Shielding Tensor", r"=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Chemical Shielding Tensor", r"\|"),
+                                gen_table_re("", "=+")):
 
             logger("Found Chemical Shielding Tensor")
 
@@ -622,29 +670,36 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["magres"].append(val)
 
         elif block := get_block(line, castep_file,
-                                "Chemical Shielding and Electric Field Gradient Tensor",
-                                "=+$"):
+                                gen_table_re("Chemical Shielding and "
+                                             "Electric Field Gradient Tensors", r"\|"),
+                                gen_table_re("", "=+")):
 
             logger("Found Chemical Shielding + EField Tensor")
 
             val = _parse_magres_block(1, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file, "Electric Field Gradient Tensor", "=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Electric Field Gradient Tensor", r"\|"),
+                                gen_table_re("", "=+")):
 
             logger("Found EField Tensor")
 
             val = _parse_magres_block(2, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file, "(?:I|Ani)sotropic J-coupling", "=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("(?:I|Ani)sotropic J-coupling", r"\|"),
+                                gen_table_re("", "=+")):
 
             logger("Found J-coupling")
 
             val = _parse_magres_block(3, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file, r"\|\s*Hyperfine Tensor\s*\|", "=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Hyperfine Tensor", r"\|"),
+                                gen_table_re("", "=+")):
 
             logger("Found Hyperfine tensor")
 
@@ -652,7 +707,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["magres"].append(val)
 
         # Elastic
-        elif block := get_block(line, castep_file, "Elastic Constants Tensor", "=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re(r"Elastic Constants Tensor \(GPa\)"),
+                                gen_table_re("", "=+")):
 
             logger("Found elastic constants tensor")
 
@@ -661,7 +718,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             val, _ = _process_3_6_matrix(block, False)
             curr_run["elastic"]["elastic_constants"] = val
 
-        elif block := get_block(line, castep_file, "Compliance Matrix", "=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re(r"Compliance Matrix \(GPa\^-1\)"),
+                                gen_table_re("", "=+")):
 
             logger("Found compliance matrix")
 
@@ -670,7 +729,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             val, _ = _process_3_6_matrix(block, False)
             curr_run["elastic"]["compliance_matrix"] = val
 
-        elif block := get_block(line, castep_file, "Contribution ::", r"^\s*$"):
+        elif block := get_block(line, castep_file, "Contribution ::", REs.EMPTY):
             typ = re.match("(?P<type>.* Contribution)", line).group("type")
             next(block)
 
@@ -682,7 +741,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             val, _ = _process_3_6_matrix(block, False)
             curr_run["elastic"][typ] = val
 
-        elif block := get_block(line, castep_file, "Elastic Properties", "=+$"):
+        elif block := get_block(line, castep_file,
+                                gen_table_re("Elastic Properties"),
+                                gen_table_re("", "=+")):
 
             logger("Found elastic properties")
 
@@ -874,6 +935,9 @@ def _process_thermodynamics(block: TextIO) -> Dict[str, List[float]]:
     """ Process a thermodynamics block into a dict of lists """
     accum = defaultdict(list)
     for line in block:
+        if "Zero-point energy" in line:
+            accum["zero-point_energy"] = float(get_numbers(line)[0])
+
         if match := REs.THERMODYNAMICS_DATA_RE.match(line):
             stack_dict(accum, match.groupdict())
         # elif re.match(r"\s+T\(", line):  # Can make dict/re based on labels
@@ -984,7 +1048,7 @@ def _process_scf(block: TextIO) -> Dict[str, Any]:
         elif re.match(r"eigenvalue\s*\d+\s*init=", line):
             labels = ("initial", "final", "change")
             numbers = get_numbers(line)
-            eig.append({key: val for val, key in zip(numbers[1:], labels)})
+            eig.append({key: float(val) for val, key in zip(numbers[1:], labels)})
 
         elif "Checking convergence criteria" in line:
             curr["eigenvalue"].append(eig)
@@ -1043,6 +1107,8 @@ def _process_initial_spins(block: TextIO) -> Dict[AtomIndex, Union[float, bool]]
                              r"(?P<fix>[TF])\s*\|", line):
             match = match.groupdict()
             ind = atreg_to_index(match)
+            fix_data_types(match, {"spin": float, "magmom": float})
+            match["fix"] = match["fix"] == "T"
             accum[ind] = match
     return accum
 
@@ -1210,7 +1276,7 @@ def _process_memory_est(block: TextIO) -> Dict[str, float]:
 
     for line in block:
         if match := re.match(r"\s*\|([A-Za-z ]+)" +
-                             labelled_floats(('memory', 'disk'), suff=' MB'), line):
+                             labelled_floats(("memory", "disk"), suff=" MB"), line):
             key, memory, disk = match.groups()
             accum[normalise_string(key)] = {"memory": float(memory),
                                             "disk": float(disk)}
@@ -1240,13 +1306,18 @@ def _process_kpoint_blocks(block: TextIO,
             elif "offset" in line:
                 accum["kpoint_mp_offset"] = to_type(get_numbers(line), float)
             elif "Number of kpoints" in line:
-                accum["num_kpoints"] = to_type(get_numbers(line), int)
+                accum["num_kpoints"] = to_type(get_numbers(line)[0], int)
     else:
-        accum = [{"qpt": to_type(match.group("qx", "qy", "qx"), float),
-                  "weight": to_type(match["wt"], float)}
-                 for line in block
-                 if (match := re.match(rf"\s*\+\s*\d\s*{labelled_floats(('qx', 'qy', 'qz', 'wt'))}",
-                                       line))]
+
+        accum = {'points': [{"qpt": to_type(match.group("qx", "qy", "qx"), float),
+                             "weight": to_type(match["wt"], float)}
+                            for line in block
+                            if (match :=
+                                re.match(
+                                    gen_table_re(r"\d\s*" +
+                                                 labelled_floats(('qx', 'qy', 'qz', 'wt')), r"\+"),
+                                    line))]}
+        accum["num_kpoints"] = len(accum["points"])
 
     return accum
 
@@ -1607,7 +1678,7 @@ def _process_elastic_properties(block: TextIO) -> Dict[str, Tuple[float]]:
                 val = val[0]
 
             accum[normalise_string(key)] = val
-        elif blk := get_block(line, block, "Speed of Sound", r"^\s*$"):
+        elif blk := get_block(line, block, "Speed of Sound", REs.EMPTY):
 
             accum["Speed of Sound"] = [to_type(numbers, float)
                                        for blk_line in blk
