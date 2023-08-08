@@ -45,7 +45,8 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                      'finalisation time': 0.03,
                                      'initialisation time': 1.07,
                                      'peak memory use': 149108.0,
-                                     'total time': 136.11})
+                                     'total time': 136.11,
+                                     'parallel_efficiency': 64.0})
 
     def test_get_title(self):
         test_text = io.StringIO("""
@@ -214,18 +215,18 @@ Overall parallel efficiency rating: Satisfactory (64%)
          |            Number    spin polarization        moment (uB)     Fix? |
          |--------------------------------------------------------------------|
          | Cr             1         0.500000              3.000       F       |
-         | Cr             2        -0.500000             -3.000       F       |
+         | Cr             2        -0.500000             -3.000       T       |
          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_spins': {('Cr', 1): {'fix': 'F',
-                                                                   'magmom': '3.000',
-                                                                   'spin': '0.500000'},
-                                                       ('Cr', 2): {'fix': 'F',
-                                                                   'magmom': '-3.000',
-                                                                   'spin': '-0.500000'}}})
+        self.assertEqual(test_dict, {'initial_spins': {('Cr', 1): {'fix': False,
+                                                                   'magmom': 3.0,
+                                                                   'spin': 0.5},
+                                                       ('Cr', 2): {'fix': True,
+                                                                   'magmom': -3.0,
+                                                                   'spin': -0.5}}})
 
     def test_get_pspot(self):
         test_text = io.StringIO("""
@@ -363,10 +364,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                    Details of Species
                            -------------------------------
 
-                                  Files used for pseudopotentials:
-                                    Mn 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
-                                    O  my_pot.usp
-
                                Mass of species in AMU
                                     Mn   54.9380500
                                     O    15.9993815
@@ -374,10 +371,27 @@ Overall parallel efficiency rating: Satisfactory (64%)
                           Electric Quadrupole Moment (Barn)
                                     Mn    0.3300000 Isotope 55
                                     O     1.0000000 No Isotope Defined
+         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+         |  Element    Atom         Initial            Initial magnetic       |
+         |            Number    spin polarization        moment (uB)     Fix? |
+         |--------------------------------------------------------------------|
+         | Mn             1         0.166667              2.500       F       |
+         | Mn             2         0.166667              2.500       F       |
+         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+                                  Files used for pseudopotentials:
+                                    Mn 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
+                                    O  my_pot.usp
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'species_properties': {'Mn': {'mass': 54.93805,
+        self.assertEqual(test_dict, {'initial_spins': {('Mn', 1): {'fix': False,
+                                                                   'magmom': 2.500,
+                                                                   'spin': 0.166667},
+                                                       ('Mn', 2): {'fix': False,
+                                                                   'magmom': 2.500,
+                                                                   'spin': 0.166667}},
+                                     'species_properties': {'Mn': {'mass': 54.93805,
                                                                    'electric_quadrupole_moment': 0.33,
                                                                    'pseudopot': {'beta_radius': 1.8,
                                                                                  'coarse': 12,
@@ -437,7 +451,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
     def test_get_dftd_params(self):
         test_text = io.StringIO("""
-                                 --------------------
+                                --------------------
                                   DFT-D parameters
                                 --------------------
 
@@ -480,7 +494,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         self.assertEqual(test_dict, {'k-points': {'kpoint_mp_grid': (4, 4, 4),
                                                   'kpoint_mp_offset': (0.0, 0.0, 0.0),
-                                                  'num_kpoints': (32,)}})
+                                                  'num_kpoints': 32}})
 
         test_text = io.StringIO("""
                            -------------------------------
@@ -492,7 +506,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'k-points': {'num_kpoints': (2,)}})
+        self.assertEqual(test_dict, {'k-points': {'num_kpoints': 2}})
 
         test_text = io.StringIO("""
              +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -504,8 +518,9 @@ Overall parallel efficiency rating: Satisfactory (64%)
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'k-points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
-                                                  {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}]})
+        self.assertEqual(test_dict, {'k-points': {'points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
+                                                             {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}],
+                                                  'num_kpoints': 2}})
 
     def test_get_symmetry(self):
         test_text = io.StringIO("""
@@ -753,18 +768,18 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'apolar corr to eigenvalue sum': 0.0,
-                                               'eigenvalue': [[{'change': '0.6761',
-                                                                'final': '-28.57',
-                                                                'initial': '-27.89'},
-                                                               {'change': '0.2477',
-                                                                'final': '-20.19',
-                                                                'initial': '-19.95'}],
-                                                              [{'change': '0.7169',
-                                                                'final': '-28.61',
-                                                                'initial': '-27.89'},
-                                                               {'change': '0.2696',
-                                                                'final': '-20.22',
-                                                                'initial': '-19.95'}]],
+                                               'eigenvalue': [[{'change': 0.6761,
+                                                                'final': -28.57,
+                                                                'initial': -27.89},
+                                                               {'change': 0.2477,
+                                                                'final': -20.19,
+                                                                'initial': -19.95}],
+                                                              [{'change': 0.7169,
+                                                                'final': -28.61,
+                                                                'initial': -27.89},
+                                                               {'change': 0.2696,
+                                                                'final': -20.22,
+                                                                'initial': -19.95}]],
                                                'electronic entropy term (-ts)': -2.12e-15,
                                                'energy': -845.018104,
                                                'energy_gain': None,
@@ -1354,6 +1369,35 @@ WL ********************************************************************
                                                                 (0.0, 0.0, 0.0)],
                                                         'title': 'Phase of Born Effective Charge elements'}]})
 
+    def test_get_thermodynamics(self):
+        test_text = io.StringIO("""
+ =====================================================================
+                             Thermodynamics
+                             ==============
+
+            Zero-point energy =         0.125987  eV
+ ------------------------------------------------------------------------------
+       T(K)        E(eV)           F(eV)         S(J/mol/K)      Cv(J/mol/K)
+ ------------------------------------------------------------------------------
+       0.0        0.125987        0.125987           0.000           0.000
+     100.0        0.131824        0.123323           8.203          14.858
+     200.0        0.156189        0.106755          23.849          30.902
+ ------------------------------------------------------------------------------
+
+ ==============================================================================
+
+        """)
+        test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'thermodynamics':
+                                     {'zero-point_energy': 0.125987,
+                                      'Cv': (0.0, 14.858, 30.902),
+                                      'E': (0.125987, 0.131824, 0.156189),
+                                      'F': (0.125987, 0.123323, 0.106755),
+                                      'S': (0.0, 8.203, 23.849),
+                                      'T': (0.0, 100.0, 200.0)}})
+
+
     def test_get_dynamical_matrix(self):
         test_text = io.StringIO("""
   ------------------------------------------------------------------------------------------------------------------
@@ -1643,11 +1687,39 @@ Species   Ion     Hirshfeld Charge (e)
  |   Smax    |   0.000000E+000 |   1.000000E-001 |        GPa | Yes | <-- TPSD
  +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
 
+ BFGS: Geometry optimization completed successfully.
+
+================================================================================
+ BFGS: Final Configuration:
+================================================================================
+
+                           -------------------------------
+                                     Cell Contents
+                           -------------------------------
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x  Element         Atom        Fractional coordinates of atoms  x
+            x                 Number           u          v          w      x
+            x---------------------------------------------------------------x
+            x  Si                1        -0.006190  -0.000628  -0.000628   x
+            x  Si                2         0.246190   0.250628   0.250628   x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+ BFGS: Final Enthalpy     = -2.17004345E+002 eV
+ BFGS: Final <frequency>  unchanged from initial value
         """)
 
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'geom_opt': {'enthalpy': [-1317.70077, -216.058016],
+                                                  'final enthalpy': -217.004345,
+                                                  'final_configuration': {('Si', 1): (-0.00619,
+                                                                                      -0.000628,
+                                                                                      -0.000628),
+                                                                          ('Si', 2): (0.24619,
+                                                                                      0.250628,
+                                                                                      0.250628)},
                                                   'minimisation': [{'previous': {'Fdelta': 0.203755,
                                                                                  'enthalpy': -216.058941,
                                                                                  'lambda': 0.0}},
@@ -1680,8 +1752,8 @@ Species   Ion     Hirshfeld Charge (e)
                                                                                'value': 0.0},
                                                                     '|dR|max': {'converged': True,
                                                                                 'tolerance': 0.001,
-                                                                                'value': 0.0}}]
-                                                  }})
+                                                                                'value': 0.0}}]}
+                                     })
 
     def test_get_lbfgs_info(self):
         test_text = io.StringIO("""

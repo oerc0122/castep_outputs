@@ -242,6 +242,7 @@
         }
       }
     },
+    "title": "",
     "options": {
       "general": {
         "output verbosity": "normal (1)",
@@ -474,6 +475,108 @@
         0.875
       ]
     },
+    "initial_spins": {
+      "Mn_1": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_2": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_3": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_4": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_5": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_6": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_7": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_8": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_9": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_10": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_11": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_12": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_13": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_14": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_15": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_16": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_17": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_18": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_19": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_20": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      }
+    },
     "k-points": {
       "kpoint_mp_grid": [
         4,
@@ -485,9 +588,7 @@
         0.0,
         0.0
       ],
-      "num_kpoints": [
-        32
-      ]
+      "num_kpoints": 32
     },
     "symmetries": {
       "Maximum deviation from symmetry": "0.00000 ANG",
@@ -780,6 +881,7 @@
         }
       }
     },
+    "title": "",
     "options": {
       "general": {
         "output verbosity": "normal (1)",
@@ -1021,6 +1123,108 @@
         0.875
       ]
     },
+    "initial_spins": {
+      "Mn_1": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_2": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_3": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_4": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_5": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_6": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_7": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_8": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_9": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_10": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_11": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_12": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_13": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_14": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_15": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_16": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_17": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_18": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_19": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      },
+      "Mn_20": {
+        "spin": 0.166667,
+        "magmom": 2.5,
+        "fix": false
+      }
+    },
     "k-points": {
       "kpoint_mp_grid": [
         4,
@@ -1032,9 +1236,7 @@
         0.0,
         0.0
       ],
-      "num_kpoints": [
-        32
-      ]
+      "num_kpoints": 32
     },
     "symmetries": {
       "Maximum deviation from symmetry": "0.00000 ANG",

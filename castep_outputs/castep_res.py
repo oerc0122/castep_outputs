@@ -69,6 +69,22 @@ def labelled_floats(labels: Sequence[str], counts: Sequence[Optional[int]] = (No
     return outstr
 
 
+def gen_table_re(content: str, border: str = r"\s*",
+                 *, pre: str = "", post: str = "", whole_line: bool = True):
+    """ Constructs a regex for matching table headers with given borders """
+
+    tab_re = (rf"\s*{border}\s*{content}\s*{border}\s*"
+              if content else
+              rf"\s*{border}\s*")
+
+    tab_re = rf"\s*{pre}{tab_re}{post}\s*"
+
+    if whole_line:
+        tab_re = f"^{tab_re}$"
+
+    return tab_re
+
+
 # --- RegExes
 # Regexps to recognise numbers
 FNUMBER_RE = r"(?:[+-]?(?:\d*\.?\d+|\d+\.?\d*))"
@@ -84,6 +100,8 @@ ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
 SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
 
 TAG_RE = re.compile(r"<--\s*(?P<tag>\w+)")
+
+EMPTY = r"^\s*$"
 
 # Atom regexp
 ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
@@ -143,9 +161,9 @@ PSPOT_RE = re.compile(labelled_floats(("local_channel",
                       )
 
 # Forces block
-FORCES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Forces \*+\s*$", re.IGNORECASE)
+FORCES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Forces", r"\*+"), re.IGNORECASE)
 # Stresses block
-STRESSES_BLOCK_RE = re.compile(r" ([a-zA-Z ]*)Stress Tensor \*+\s*$", re.IGNORECASE)
+STRESSES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Stress Tensor", r"\*+"), re.IGNORECASE)
 
 # Bonds
 BOND_RE = re.compile(rf"""\s*
