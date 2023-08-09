@@ -3,7 +3,7 @@ Module to parse miscellaneous castep files
 """
 
 __AUTHOR__ = "Jacob Wilkins"
-__VERSION__ = "0.1.3"
+__VERSION__ = "0.1.4"
 
 # pylint: disable=unused-import
 

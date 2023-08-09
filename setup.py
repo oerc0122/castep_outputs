@@ -21,7 +21,7 @@ with open("README.rst", "r", encoding="utf-8") as readme:
 
 setup(
     name="castep_outputs",
-    version="0.1.3",
+    version="0.1.4",
     license='BSD3',
     license_files=('LICENSE'),
     description='A package for extracting information from castep outputs',
