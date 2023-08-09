@@ -121,7 +121,9 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                 curr_run["species_properties"][key]["mass"] = float(val)
 
         # Electric Quadrupole Moment
-        elif block := get_block(line, castep_file, r"Electric Quadrupole Moment", r"^\s+[^ A-Z]"):
+        elif block := get_block(line, castep_file,
+                                r"Electric Quadrupole Moment",
+                                rf"({REs.EMPTY}|^\s*x+$)"):
             logger("Found electric quadrupole moment")
 
             if "species_properties" not in curr_run:
