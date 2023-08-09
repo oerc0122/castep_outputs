@@ -34,7 +34,8 @@ setup(
     python_requires='>=3.8',
     install_requires=[],
     extras_require={'ruamel': 'ruamel.yaml>=0.17.22',
-                    'yaml': 'PyYAML>=3.13'},
+                    'yaml': 'PyYAML>=3.13',
+                    'docs': ['jupyter-book>=0.13.1', 'sphinx-book-theme>=0.3.3', 'sphinx-argparse>=0.4.0']},
     entry_points={"console_scripts": ['castep_outputs = castep_outputs.castep_outputs_main:main']},
     include_package_data=True
 )
