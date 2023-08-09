@@ -62,7 +62,7 @@ def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
     if isinstance(in_file, io.TextIOBase):
         data = parser(in_file)
     else:
-        with fileinput.FileInput(in_file, mode='r', encoding='utf-8') as file:
+        with fileinput.FileInput(in_file, mode='r') as file:
             data = parser(file)
 
     if out_format == "json" or testing:
