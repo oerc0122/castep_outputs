@@ -976,6 +976,17 @@ def _process_params(block: TextIO) -> Dict[str, str]:
                 opt[curr_group] = curr_opt
             curr_group = normalise_string(match.group(1)).lower()
             curr_opt = {}
+
+        elif match := re.match(r"\s*output (?P<key>.*) unit\s*:\s*(?P<val>.*)", line):
+
+            if "output_units" not in opt:
+                opt["output_units"] = {}
+
+            key, val = match.group("key", "val")
+            key = normalise_string(key)
+            val = normalise_string(val)
+            opt["output_units"][key] = val
+
         elif len(match := line.split(":")) > 1:
             *key, val = map(normalise_string, match)
             curr_opt[" ".join(key).strip()] = val.strip()
