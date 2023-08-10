@@ -7,7 +7,7 @@ import argparse
 # pylint: disable=line-too-long
 
 from .utility import SUPPORTED_FORMATS
-from .constants import CASTEP_OUTPUT_NAMES, CASTEP_FILE_FORMATS
+from .parsers import CASTEP_OUTPUT_NAMES, CASTEP_FILE_FORMATS
 
 AP = argparse.ArgumentParser(
     prog="castep_outputs",
@@ -26,40 +26,13 @@ AP.add_argument("-f", "--out-format", help="Output format", choices=SUPPORTED_FO
 AP.add_argument("-t", "--testing", action="store_true", help="Set testing mode to produce flat outputs")
 
 AP.add_argument("-A", "--inc-all", action="store_true", help="Extract all available information")
-AP.add_argument("-c", "--inc-castep", action="store_true", help="Extract .castep information")
-AP.add_argument("-g", "--inc-geom", action="store_true", help="Extract .geom information")
-AP.add_argument("-m", "--inc-md", action="store_true", help="Extract .md information")
-AP.add_argument("-b", "--inc-bands", action="store_true", help="Extract .bands information")
-AP.add_argument("-p", "--inc-phonon_dos", action="store_true", help="Extract .phonon_dos information")
-AP.add_argument("-e", "--inc-efield", action="store_true", help="Extract .efield information")
-AP.add_argument("-x", "--inc-xrd_sf", action="store_true", help="Extract .xrd_sf information")
-AP.add_argument("-H", "--inc-hug", action="store_true", help="Extract .hug information")
-AP.add_argument("-E", "--inc-elf_fmt", action="store_true", help="Extract .elf_fmt information")
-AP.add_argument("-C", "--inc-chdiff_fmt", action="store_true", help="Extract .chdiff_fmt information")
-AP.add_argument("-P", "--inc-pot_fmt", action="store_true", help="Extract .pot_fmt information")
-AP.add_argument("-D", "--inc-den_fmt", action="store_true", help="Extract .den_fmt information")
-AP.add_argument("-X", "--inc-elastic", action="store_true", help="Extract .elastic information")
-AP.add_argument("-T", "--inc-ts", action="store_true", help="Extract .ts information")
 
-AP.add_argument('--inc-param', action="store_true", help="Extract .param information")
-AP.add_argument('--inc-cell', action="store_true", help="Extract .cell information")
+for output_name in CASTEP_OUTPUT_NAMES:
+    AP.add_argument(f"--inc-{output_name}", action="store_true", help=f"Extract .{output_name} information")
 
-AP.add_argument("--castep", nargs="*", help="Extract from CASTEP as .castep type", default=[])
-AP.add_argument("--geom", nargs="*", help="Extract from GEOM as .geom type", default=[])
-AP.add_argument("--cell", nargs="*", help="Extract from CELL as .cell type", default=[])
-AP.add_argument("--param", nargs="*", help="Extract from PARAM as .param type", default=[])
-AP.add_argument("--md", nargs="*", help="Extract from MD as .md type", default=[])
-AP.add_argument("--bands", nargs="*", help="Extract from BANDS as .bands type", default=[])
-AP.add_argument("--hug", nargs="*", help="Extract from HUG as .hug type", default=[])
-AP.add_argument("--phonon_dos", nargs="*", help="Extract from PHONON_DOS as .phonon_dos type", default=[])
-AP.add_argument("--efield", nargs="*", help="Extract from EFIELD as .efield type", default=[])
-AP.add_argument("--xrd_sf", nargs="*", help="Extract from XRD_SF as .xrd_sf type", default=[])
-AP.add_argument("--elf_fmt", nargs="*", help="Extract from ELF_FMT as .elf_fmt type", default=[])
-AP.add_argument("--chdiff_fmt", nargs="*", help="Extract from CHDIFF_FMT as .chdiff_fmt type", default=[])
-AP.add_argument("--pot_fmt", nargs="*", help="Extract from POT_FMT as .pot_fmt type", default=[])
-AP.add_argument("--den_fmt", nargs="*", help="Extract from DEN_FMT as .den_fmt type", default=[])
-AP.add_argument("--elastic", nargs="*", help="Extract from ELASTIC as .elastic type", default=[])
-AP.add_argument("--ts", nargs="*", help="Extract from TS as .ts type", default=[])
+for output_name in CASTEP_OUTPUT_NAMES:
+    AP.add_argument(f"--{output_name}", nargs="*",
+                    help=f"Extract from {output_name.upper()} as .{output_name} type", default=[])
 
 
 def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:

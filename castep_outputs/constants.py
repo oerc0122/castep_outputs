@@ -24,27 +24,6 @@ TS_TYPES = {"REA": "reagent",
             "PRO": "product",
             "TST": "test"}
 
-
-CASTEP_OUTPUT_NAMES = (
-    "castep",
-    "param",
-    "cell",
-    "geom",
-    "md",
-    "bands",
-    "hug",
-    "phonon_dos",
-    "efield",
-    "xrd_sf",
-    "elf_fmt",
-    "chdiff_fmt",
-    "pot_fmt",
-    "den_fmt",
-    "elastic",
-    "ts"
-)
-CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
-
 OutFormats = Literal["json", "pprint", "print", "ruamel", "yaml"]
 AtomIndex = Tuple[str, float]
 ThreeVector = Tuple[float, float, float]
