@@ -13,5 +13,8 @@ elec_energy_tol : 1e-3 eV
 write_bib            : false
 
 %block devel_code
-improve_wvfn=off
+improve_wvfn=F
+number=31
+float_number=15.12
+PP: test_par=1 :ENDPP
 %endblock devel_code

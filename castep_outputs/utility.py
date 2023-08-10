@@ -8,6 +8,10 @@ import collections.abc
 from collections import defaultdict
 import json
 import pprint
+import re
+
+import castep_outputs.castep_res as REs
+
 try:
     from ruamel import yaml
     _YAML_TYPE = "ruamel"
@@ -159,13 +163,6 @@ def stack_dict(out_dict: Dict[Any, List], in_dict: Dict[Any, List]) -> Dict[Any,
         out_dict[key].append(val)
 
 
-def fix_data_types(in_dict: Dict, type_dict: Dict[str, type]) -> Dict:
-    """ Applies correct types to elements of in_dict by mapping given in type_dict"""
-    for key, typ in type_dict.items():
-        if key in in_dict:
-            in_dict[key] = to_type(in_dict[key], typ)
-
-
 def add_aliases(in_dict: Dict[str, Any],
                 alias_dict: [str, str],
                 replace: bool = False) -> Dict[str, Any]:
@@ -175,15 +172,6 @@ def add_aliases(in_dict: Dict[str, Any],
             in_dict[new] = in_dict[frm]
             if replace:
                 in_dict.pop(frm)
-
-
-def to_type(data_in: Union[str, List, Tuple], typ: type) -> Union[Tuple[type], type]:
-    """ Convert types to `typ` regardless of if data_in is iterable or otherwise """
-    if isinstance(data_in, (list, tuple)):
-        data_in = tuple(map(typ, data_in))
-    elif isinstance(data_in, str):
-        data_in = typ(data_in)
-    return data_in
 
 
 def log_factory(file: TextIO) -> Callable:
@@ -200,3 +188,56 @@ def log_factory(file: TextIO) -> Callable:
             getattr(logging, level)(message, *args)
 
     return log_file
+
+
+def determine_type(data: str) -> type:
+    """ Deterimine the datatype rand return the appropriate types """
+    if data.title() in ("T", "True", "F", "False"):
+        return bool
+
+    if re.match(rf"(?:\s*{REs.INTNUMBER_RE})+", data):
+        return int
+
+    if re.match(rf"(?:\s*{REs.FLOAT_RAT_RE.pattern})+", data):
+        return float
+
+    return str
+
+
+def _parse_float_or_rational(val: str) -> float:
+    """ Parse a float or a rational to float """
+    if "/" in val:
+        val = val.split("/")
+        return float(val[0]) / float(val[1])
+
+    return float(val)
+
+
+def _parse_logical(val: str) -> bool:
+    """ Parse a logical to a bool """
+    if val.title() in ("T", "True", "1"):
+        return True
+
+    return False
+
+
+_TYPE_PARSERS = {float: _parse_float_or_rational,
+                 bool: _parse_logical}
+
+
+def to_type(data_in: Union[str, List, Tuple], typ: type) -> Union[Tuple[type], type]:
+    """ Convert types to `typ` regardless of if data_in is iterable or otherwise """
+    parser = _TYPE_PARSERS.get(typ, typ)
+
+    if isinstance(data_in, (list, tuple)):
+        data_in = tuple(map(parser, data_in))
+    elif isinstance(data_in, str):
+        data_in = parser(data_in)
+    return data_in
+
+
+def fix_data_types(in_dict: Dict, type_dict: Dict[str, type]) -> Dict:
+    """ Applies correct types to elements of in_dict by mapping given in type_dict"""
+    for key, typ in type_dict.items():
+        if key in in_dict:
+            in_dict[key] = to_type(in_dict[key], typ)

@@ -89,8 +89,11 @@ def gen_table_re(content: str, border: str = r"\s*",
 # Regexps to recognise numbers
 FNUMBER_RE = r"(?:[+-]?(?:\d*\.?\d+|\d+\.?\d*))"
 EXPNUMBER_RE = rf"(?:{FNUMBER_RE}(?:[Ee][+-]?\d{{1,3}})?)"
-INTNUMBER_RE = r"(?:\d+)"
+INTNUMBER_RE = r"(?<!\.)\b(?:\d+)\b(?!\.)"
+RATIONAL_RE = r"\b\d+/\d+\b"
 NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
+FLOAT_RAT_RE = re.compile(rf"(?:{RATIONAL_RE}|{EXPNUMBER_RE}|{INTNUMBER_RE})")
+THREEVEC_RE = labelled_floats(("val",), counts=(3,))
 
 # Regexp to identify extended chemical species
 SPECIES_RE = r"[A-Z][a-z]{0,2}"
@@ -323,3 +326,20 @@ BANDS_FERMI_RE = re.compile(r"Fermi energ(ies|y) \(in atomic units\)\s*" +
 
 DEVEL_CODE_VAL_RE = r'[A-Za-z0-9_]+[:=]\S+'
 DEVEL_CODE_BLOCK_RE = rf'([A-Za-z0-9_]+):(?:\s*{DEVEL_CODE_VAL_RE}\s*)*:end\S+'
+
+PARAM_VALUE_RE = re.compile(rf"""
+^\s*(?P<key>[a-z_]+)
+\s*[ \t:=]\s*
+(?P<val>(?:\s*{NUMBER_RE.pattern})+|\w+)
+(?P<unit>\s\S*\w\S*)?
+\s*$
+""", re.IGNORECASE | re.VERBOSE)
+
+IONIC_CONSTRAINTS_RE = re.compile(rf"^\s*\d\s+{ATREG}{THREEVEC_RE}")
+POSITIONS_LINE_RE = re.compile(rf"^\s*(?P<spec>{SPECIES_RE})"
+                               rf"(?P<pos>(?:\s+{FLOAT_RAT_RE.pattern}){{3}})")
+POSITIONS_SPIN_RE = re.compile(rf"(?:spin|magmom)\s*[= :\t]\s*(?P<spin>{FLOAT_RAT_RE.pattern})",
+                               re.IGNORECASE)
+POSITIONS_MIXTURE_RE = re.compile(rf"mixture[= :\t]\(\s*{labelled_floats(('mix', 'ratio'))}\)",
+                                  re.IGNORECASE)
+SPEC_PROP_RE = re.compile(rf"\s*{ATOM_NAME_RE}\s+(?P<val>.*)")
