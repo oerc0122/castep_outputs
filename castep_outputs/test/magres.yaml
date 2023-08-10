@@ -1,0 +1,24 @@
+!!python/object/apply:collections.defaultdict
+args: [!!python/name:builtins.dict '']
+dictitems:
+  atoms:
+    ? !!python/tuple [H, 1]
+    : !!python/tuple [0.0, 0.0, 0.0]
+  calc_code: CASTEP
+  calc_code_hgversion: 81dc23eb6+  LDA-fix  Tue May 24 15:32:31 2022 +0100
+  calc_code_platform: linux_x86_64_gfortran
+  calc_code_version: '23.1'
+  calc_cutoffenergy: 200.00000000 eV
+  calc_kpoint_mp_grid: 1 1 1
+  calc_kpoint_mp_offset: 0.25000000      0.25000000      0.25000000
+  calc_name: h
+  calc_pspot: H 1|0.8|0.8|0.6|2|6|8|10(qc=6)
+  calc_xcfunctional: PBE
+  lattice: !!python/tuple [3.7042404783592575, 0.0, 0.0, 2.2681931225473627e-16, 3.7042404783592575,
+    0.0, 2.2681931225473627e-16, 2.2681931225473627e-16, 3.7042404783592575]
+  ms:
+    ? !!python/tuple [H, 1]
+    : !!python/tuple [15.935205760550641, -0.029465207825065915, -0.029465208436315116,
+      -0.029465209603394566, 15.935205760174004, -0.029465210306093507, -0.029465207935827645,
+      -0.02946520829774064, 15.935205759657912]
+  units: {atom: Angstrom, lattice: Angstrom, ms: ppm}

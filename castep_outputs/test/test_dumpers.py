@@ -54,89 +54,15 @@ class test_dumper(unittest.TestCase):
 
         self.assertEqual(comp_dict, ref_dict)
 
-    def test_json_dumper_cell(self):
-        self._test_dump(_TEST_FOLDER / 'test.cell', 'cell', 'json')
-
-    def test_yaml_dumper_cell(self):
-        self._test_dump(_TEST_FOLDER / 'test.cell', 'cell', 'yaml')
-
-    def test_json_dumper_param(self):
-        self._test_dump(_TEST_FOLDER / 'test.param', 'param', 'json')
-
-    def test_yaml_dumper_param(self):
-        self._test_dump(_TEST_FOLDER / 'test.param', 'param', 'yaml')
-
-    def test_json_dumper_castep(self):
-        self._test_dump(_TEST_FOLDER / 'test.castep', 'castep', 'json')
-
-    def test_yaml_dumper_castep(self):
-        self._test_dump(_TEST_FOLDER / 'test.castep', 'castep', 'yaml')
-
-    def test_json_dumper_bands(self):
-        self._test_dump(_TEST_FOLDER / 'test.bands', 'bands', 'json')
-
-    def test_yaml_dumper_bands(self):
-        self._test_dump(_TEST_FOLDER / 'test.bands', 'bands', 'yaml')
-
-    def test_json_dumper_md(self):
-        self._test_dump(_TEST_FOLDER / 'test.md', 'md', 'json')
-
-    def test_yaml_dumper_md(self):
-        self._test_dump(_TEST_FOLDER / 'test.md', 'md', 'yaml')
-
-    def test_json_dumper_elastic(self):
-        self._test_dump(_TEST_FOLDER / 'test.elastic', 'elastic', 'json')
-
-    def test_yaml_dumper_elastic(self):
-        self._test_dump(_TEST_FOLDER / 'test.elastic', 'elastic', 'yaml')
-
-    def test_json_dumper_ts(self):
-        self._test_dump(_TEST_FOLDER / 'test.ts', 'ts', 'json')
-
-    def test_yaml_dumper_ts(self):
-        self._test_dump(_TEST_FOLDER / 'test.ts', 'ts', 'yaml')
-
-    def test_json_dumper_chdiff_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.chdiff_fmt', 'chdiff_fmt', 'json')
-
-    def test_yaml_dumper_chdiff_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.chdiff_fmt', 'chdiff_fmt', 'yaml')
-
-    def test_json_dumper_den_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.den_fmt', 'den_fmt', 'json')
-
-    def test_yaml_dumper_den_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.den_fmt', 'den_fmt', 'yaml')
-
-    def test_json_dumper_pot_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.pot_fmt', 'pot_fmt', 'json')
-
-    def test_yaml_dumper_pot_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.pot_fmt', 'pot_fmt', 'yaml')
-
-    def test_json_dumper_elf_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.elf_fmt', 'elf_fmt', 'json')
-
-    def test_yaml_dumper_elf_fmt(self):
-        self._test_dump(_TEST_FOLDER / 'test.elf_fmt', 'elf_fmt', 'yaml')
-
-    def test_json_dumper_xrd_sf(self):
-        self._test_dump(_TEST_FOLDER / 'test.xrd_sf', 'xrd_sf', 'json')
-
-    def test_yaml_dumper_xrd_sf(self):
-        self._test_dump(_TEST_FOLDER / 'test.xrd_sf', 'xrd_sf', 'yaml')
-
-    def test_json_dumper_phonon_dos(self):
-        self._test_dump(_TEST_FOLDER / 'test.phonon_dos', 'phonon_dos', 'json')
-
-    def test_yaml_dumper_phonon_dos(self):
-        self._test_dump(_TEST_FOLDER / 'test.phonon_dos', 'phonon_dos', 'yaml')
-
-    def test_json_dumper_efield(self):
-        self._test_dump(_TEST_FOLDER / 'test.efield', 'efield', 'json')
-
-    def test_yaml_dumper_efield(self):
-        self._test_dump(_TEST_FOLDER / 'test.efield', 'efield', 'yaml')
+    def test_dumpers(self):
+        for file_type in ("cell", "param", "castep", "bands", "md",
+                          "elastic", "ts", "chdiff_fmt", "den_fmt",
+                          "pot_fmt", "elf_fmt", "xrd_sf", "phonon_dos",
+                          "efield", "magres"):
+            for dumper_type in ("json", "yaml"):
+                with self.subTest(file=file_type, dumper=dumper_type):
+                    self._test_dump(_TEST_FOLDER / f"test.{file_type}",
+                                    file_type, dumper_type)
 
 
 if __name__ == '__main__':
