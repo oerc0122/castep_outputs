@@ -440,9 +440,9 @@ Overall parallel efficiency rating: Satisfactory (64%)
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'options':
-                                     {'general': {'output verbosity': 'normal (1)',
+                                     {'output_units': {'length': 'A'},
+                                      'general': {'output verbosity': 'normal (1)',
                                                   'write checkpoint data to': 'beta-mn.check',
-                                                  'output length unit': 'A'
                                                   },
                                       'density mixing': {'density-mixing scheme': 'Broyden',
                                                          'max. length of mixing history': '20'}
