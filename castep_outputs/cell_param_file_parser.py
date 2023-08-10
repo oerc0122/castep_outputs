@@ -1,7 +1,7 @@
 """
 Parse castep .cell and .param files
 """
-from typing import Dict, TextIO, List, Union
+from typing import Dict, TextIO, List, Union, Tuple
 from collections import defaultdict
 import re
 
@@ -87,7 +87,7 @@ def _parse_devel_code_block(in_block: TextIO) -> Dict[str, Union[str, float, int
     return devel_code_parsed
 
 
-def _parse_ionic_constraints(block: TextIO) -> Dict[AtomIndex, tuple[float, float, float]]:
+def _parse_ionic_constraints(block: TextIO) -> Dict[AtomIndex, Tuple[float, float, float]]:
     accum = defaultdict(list)
 
     for line in block:
@@ -115,7 +115,7 @@ def _parse_nonlinear_constraints(block: TextIO):
     return accum
 
 
-def _parse_positions(block: TextIO) -> Dict[AtomIndex, tuple[float, float, float]]:
+def _parse_positions(block: TextIO) -> Dict[AtomIndex, Tuple[float, float, float]]:
     accum = {}
     cnt = defaultdict(lambda: 0)
 
