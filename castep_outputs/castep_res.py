@@ -330,7 +330,7 @@ DEVEL_CODE_BLOCK_RE = rf'([A-Za-z0-9_]+):(?:\s*{DEVEL_CODE_VAL_RE}\s*)*:end\S+'
 PARAM_VALUE_RE = re.compile(rf"""
 ^\s*(?P<key>[a-z_]+)
 \s*[ \t:=]\s*
-(?P<val>(?:\s*{NUMBER_RE.pattern})+|\w+)
+(?P<val>(?:\s*{NUMBER_RE.pattern})+|\S+)
 (?P<unit>\s\S*\w\S*)?
 \s*$
 """, re.IGNORECASE | re.VERBOSE)

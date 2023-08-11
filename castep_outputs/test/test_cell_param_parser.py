@@ -7,7 +7,7 @@ import pprint
 from castep_outputs.cell_param_file_parser import parse_cell_param_file
 
 
-class test_cell_param_parser(unittest.TestCase):
+class test_cell_parser(unittest.TestCase):
 
     def test_parse_lattice_abc(self):
         test_text = io.StringIO("""
@@ -383,6 +383,77 @@ Ti:Tag C6:1.0 R0:3.6404 alpha:-0.6668
                                                    'Ni': {'d': 2.4},
                                                    ('Sm', 1): {'f': 6.1},
                                                    ('U', 2): {'d': 1.2, 'f': 2.1}}})
+
+
+class test_param_parser(unittest.TestCase):
+    def test_int_params(self):
+        test_text = io.StringIO("""
+BACKUP_INTERVAL : 3600
+RUN_TIME=360
+NLXC_PPD_SIZE_X  4
+NLXC_PPD_SIZE_Y = 2
+NLXC_PPD_SIZE_Z  -2
+        """)
+        test_dict = parse_cell_param_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'backup_interval': 3600,
+                                     'nlxc_ppd_size_x': 4,
+                                     'nlxc_ppd_size_y': 2,
+                                     'nlxc_ppd_size_z': -2.0,
+                                     'run_time': 360})
+
+    def test_bool_params(self):
+        test_text = io.StringIO("""
+CALCULATE_STRESS : TRUE
+CALCULATE_DENSDIFF = TRUE
+CALCULATE_ELF  F
+CALCULATE_HIRSHFELD : False
+        """)
+        test_dict = parse_cell_param_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'calculate_densdiff': True,
+                                     'calculate_elf': False,
+                                     'calculate_hirshfeld': False,
+                                     'calculate_stress': True})
+
+    def test_string_params(self):
+        test_text = io.StringIO("""
+charge_unit: e
+CHECKPOINT : test.check
+CONTINUATION : DEFAULT
+PSPOT_BETA_PHI_TYPE = REAL
+SMEARING_SCHEME  ColdSmearing
+File_param aa.bbb
+""")
+        test_dict = parse_cell_param_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'charge_unit': 'e',
+                                     'checkpoint': 'test.check',
+                                     'continuation': 'DEFAULT',
+                                     'file_param': 'aa.bbb',
+                                     'pspot_beta_phi_type': 'REAL',
+                                     'smearing_scheme': 'ColdSmearing'})
+
+    def test_vector_params(self):
+        test_text = io.StringIO("""
+kpoints_mp_grid : 10 10 10
+        """)
+        test_dict = parse_cell_param_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'kpoints_mp_grid': (10, 10, 10)})
+
+    def test_physical_params(self):
+        test_text = io.StringIO("""
+geom_energy_tol : 0.00005 eV
+GEOM_MODULUS_EST = 125.4 GPa
+MIX_METRIC_Q : 20.0
+        """)
+
+        test_dict = parse_cell_param_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'geom_energy_tol': (5e-05, 'eV'),
+                                     'geom_modulus_est': (125.4, 'GPa'),
+                                     'mix_metric_q': 20.0})
 
     def test_devel_code(self):
         test_text = io.StringIO("""
