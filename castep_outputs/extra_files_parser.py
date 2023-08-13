@@ -32,13 +32,16 @@ def parse_regular_header(block: TextIO,
     data = {}
     coords = defaultdict(list)
     for line in block:
-
         if line.strip().startswith("Number of"):
             _, _, *key, val = line.split()
             data[" ".join(key)] = int(float(val))
         elif "Unit cell vectors" in line:
             data['unit_cell'] = [to_type(next(block).split(), float)
                                  for _ in range(3)]
+
+        elif match := REs.ATDAT3VEC.search(line):
+            ind = atreg_to_index(match)
+            coords[ind] = to_type(match.group("x", "y", "z"), float)
 
         elif match := REs.FRACCOORDS_RE.match(line):
             stack_dict(coords, match.groupdict())
@@ -301,6 +304,7 @@ def parse_ts_file(ts_file: TextIO) -> Dict[str, Any]:
 
     return accum
 
+
 def parse_magres_file(magres_file: TextIO) -> Dict[str, float]:
     """ Parse .magres file to dict """
 
@@ -349,6 +353,58 @@ def parse_magres_file(magres_file: TextIO) -> Dict[str, float]:
                         accum["units"][key] = val
 
     return accum
+
+
+def parse_tddft_file(tddft_file: TextIO) -> Dict[str, Dict[str, Union[bool,
+                                                                      str,
+                                                                      complex,
+                                                                      float]]]:
+    """ Parse .magres file to dict """
+    tddft_info = {}
+
+    for line in tddft_file:
+        if block := get_block(line, tddft_file, "BEGIN header", "END header"):
+            data = parse_regular_header(block, ("Higest occupied band",))
+            tddft_info.update(data)
+
+        elif block := get_block(line, tddft_file,
+                                "BEGIN Characterisation of states as Kohn-Sham bands",
+                                "END Characterisation of states as Kohn-Sham bands"):
+
+            tddft_info["overlap"] = []
+            curr = {}
+
+            for blk_line in block:
+                if match := REs.TDDFT_STATE_RE.match(blk_line):
+                    curr[(int(match["occ"]), int(match["unocc"]))] = float(match["overlap"])
+
+                elif match := re.match(r"\s*Total overlap for state", blk_line):
+                    curr["total"] = float(get_numbers(blk_line)[-1])
+                    tddft_info["overlap"].append(curr)
+                    curr = {}
+
+        elif block := get_block(line, tddft_file,
+                                "BEGIN TDDFT Spectroscopic Data",
+                                "END TDDFT Spectroscopic Data"):
+
+            tddft_info["spectroscopic_data"] = []
+
+            for blk_line in block:
+                if match := re.match(rf"\s*\d+\s*{labelled_floats(('energy',))}"
+                                     r"\s*(?P<characterisation>\w+)\s*"
+                                     r"(?P<converged>Yes|No)\s*(?P<dipoles>.*)", blk_line):
+
+                    match = match.groupdict()
+                    match["converged"] = match["converged"] == "Yes"
+                    match["energy"] = float(match["energy"])
+
+                    dip = to_type(get_numbers(match["dipoles"]), float)
+                    dip = [complex(real, imag) for real, imag in zip(dip[0::2], dip[1::2])]
+                    match["dipoles"] = dip
+                    tddft_info["spectroscopic_data"].append(match)
+
+    return tddft_info
+
 
 def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[Union[int, float]]]:
     """ Parse standard form of kpt related .*_fmt files """

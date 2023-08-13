@@ -242,6 +242,14 @@ TDDFT_RE = re.compile(
     \s*(?P<type>\w+)
     \s*\+TDDFT""", re.VERBOSE)
 
+TDDFT_STATE_RE = re.compile(
+    rf"""
+    \s*(?P<state>\d+)
+    \s*(?P<occ>\d+)\s*-->
+    \s*(?P<unocc>\d+)
+    \s*{labelled_floats(('overlap',))}
+    """, re.VERBOSE)
+
 BS_RE = re.compile(
     rf"""
     Spin=\s*(?P<spin>{INTNUMBER_RE})\s*

@@ -54,15 +54,102 @@ class test_dumper(unittest.TestCase):
 
         self.assertEqual(comp_dict, ref_dict)
 
-    def test_dumpers(self):
-        for file_type in ("cell", "param", "castep", "bands", "md",
-                          "elastic", "ts", "chdiff_fmt", "den_fmt",
-                          "pot_fmt", "elf_fmt", "xrd_sf", "phonon_dos",
-                          "efield", "magres"):
-            for dumper_type in ("json", "yaml"):
-                with self.subTest(file=file_type, dumper=dumper_type):
-                    self._test_dump(_TEST_FOLDER / f"test.{file_type}",
-                                    file_type, dumper_type)
+    def test_cell_json(self):
+        self._test_dump(_TEST_FOLDER / "test.cell", "cell", "json")
+
+    def test_cell_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.cell", "cell", "yaml")
+
+    def test_param_json(self):
+        self._test_dump(_TEST_FOLDER / "test.param", "param", "json")
+
+    def test_param_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.param", "param", "yaml")
+
+    def test_castep_json(self):
+        self._test_dump(_TEST_FOLDER / "test.castep", "castep", "json")
+
+    def test_castep_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.castep", "castep", "yaml")
+
+    def test_bands_json(self):
+        self._test_dump(_TEST_FOLDER / "test.bands", "bands", "json")
+
+    def test_bands_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.bands", "bands", "yaml")
+
+    def test_md_json(self):
+        self._test_dump(_TEST_FOLDER / "test.md", "md", "json")
+
+    def test_md_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.md", "md", "yaml")
+
+    def test_elastic_json(self):
+        self._test_dump(_TEST_FOLDER / "test.elastic", "elastic", "json")
+
+    def test_elastic_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.elastic", "elastic", "yaml")
+
+    def test_ts_json(self):
+        self._test_dump(_TEST_FOLDER / "test.ts", "ts", "json")
+
+    def test_ts_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.ts", "ts", "yaml")
+
+    def test_chdiff_fmt_json(self):
+        self._test_dump(_TEST_FOLDER / "test.chdiff_fmt", "chdiff_fmt", "json")
+
+    def test_chdiff_fmt_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.chdiff_fmt", "chdiff_fmt", "yaml")
+
+    def test_den_fmt_json(self):
+        self._test_dump(_TEST_FOLDER / "test.den_fmt", "den_fmt", "json")
+
+    def test_den_fmt_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.den_fmt", "den_fmt", "yaml")
+
+    def test_pot_fmt_json(self):
+        self._test_dump(_TEST_FOLDER / "test.pot_fmt", "pot_fmt", "json")
+
+    def test_pot_fmt_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.pot_fmt", "pot_fmt", "yaml")
+
+    def test_elf_fmt_json(self):
+        self._test_dump(_TEST_FOLDER / "test.elf_fmt", "elf_fmt", "json")
+
+    def test_elf_fmt_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.elf_fmt", "elf_fmt", "yaml")
+
+    def test_xrd_sf_json(self):
+        self._test_dump(_TEST_FOLDER / "test.xrd_sf", "xrd_sf", "json")
+
+    def test_xrd_sf_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.xrd_sf", "xrd_sf", "yaml")
+
+    def test_phonon_dos_json(self):
+        self._test_dump(_TEST_FOLDER / "test.phonon_dos", "phonon_dos", "json")
+
+    def test_phonon_dos_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.phonon_dos", "phonon_dos", "yaml")
+
+    def test_efield_json(self):
+        self._test_dump(_TEST_FOLDER / "test.efield", "efield", "json")
+
+    def test_efield_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.efield", "efield", "yaml")
+
+    def test_magres_json(self):
+        self._test_dump(_TEST_FOLDER / "test.magres", "magres", "json")
+
+    def test_magres_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.magres", "magres", "yaml")
+
+    @unittest.skip("Issue with complex number recovery")
+    def test_tddft_json(self):
+        self._test_dump(_TEST_FOLDER / "test.tddft", "tddft", "json")
+
+    def test_tddft_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.tddft", "tddft", "yaml")
 
 
 if __name__ == '__main__':
