@@ -162,6 +162,11 @@ class test_dumper(unittest.TestCase):
     def test_tddft_yaml(self):
         self._test_dump(_TEST_FOLDER / "test.tddft", "tddft", "yaml")
 
+    def test_err_json(self):
+        self._test_dump(_TEST_FOLDER / "test.err", "err", "json")
+
+    def test_err_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.err", "err", "yaml")
 
 if __name__ == '__main__':
     unittest.main()

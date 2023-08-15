@@ -61,19 +61,23 @@ def parse_all(output: Optional[Path] = None, out_format: OutFormats = "json",
     """ Parse all files in files dict """
     file_dumper = get_dumpers(out_format)
 
+    data = {}
     for typ, paths in files.items():
         parser = PARSERS[typ]
         for path in paths:
-            data = parse_single(path, parser, out_format, loglevel=loglevel, testing=testing)
+            data[path] = parse_single(path, parser, out_format, loglevel=loglevel, testing=testing)
 
-            if output is None:
-                file_dumper(data, sys.stdout)
-                print()
-            elif isinstance(output, io.TextIOBase):
-                file_dumper(data, output)
-            else:
-                with open(output, 'a+', encoding='utf-8') as out_file:
-                    file_dumper(data, out_file)
+    if len(data) == 1:
+        data = data.popitem()[1]
+
+    if output is None:
+        file_dumper(data, sys.stdout)
+        print()
+    elif isinstance(output, io.TextIOBase):
+        file_dumper(data, output)
+    else:
+        with open(output, 'a+', encoding='utf-8') as out_file:
+            file_dumper(data, out_file)
 
 
 def main():

@@ -2,7 +2,7 @@
 Argument parser
 """
 from typing import Sequence, Dict, List
-import os.path
+from pathlib import Path
 import argparse
 # pylint: disable=line-too-long
 
@@ -52,12 +52,17 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
 
     # Add seeded files into parse list if to be included
     for seed in args.seedname:
-        if os.path.isfile(seed) and (ext := os.path.splitext(seed)[1][1:]) in CASTEP_OUTPUT_NAMES:
-            getattr(args, ext).append(seed)
+        seed = Path(seed)
+        if seed.is_file() and (ext := seed.suffix[1:]) in CASTEP_OUTPUT_NAMES:
+            getattr(args, ext).append(str(seed))
         else:
             for typ in CASTEP_OUTPUT_NAMES:
-                if getattr(args, f"inc_{typ}") and os.path.isfile(seed+typ):
-                    getattr(args, typ).append(seed+typ)
+                trial = seed.with_suffix(f".{typ}")
+                if getattr(args, f"inc_{typ}") and trial.is_file():
+                    getattr(args, typ).append(str(trial))
+
+            if args.inc_err and (err_files := seed.parent.glob(f"{seed}.*.err")):
+                args.err.extend(map(str, err_files))
 
     return args
 
