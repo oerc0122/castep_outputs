@@ -1,14 +1,11 @@
-!!python/object/apply:collections.defaultdict
-args: [!!python/name:builtins.list '']
-dictitems:
-  density: [53.442144, 36.462866, 10.839457, 6.620416, 13.383995, 16.31079, 15.338323,
-    13.083432]
-  q:
-  - !!python/tuple [1, 1, 1]
-  - !!python/tuple [2, 1, 1]
-  - !!python/tuple [3, 1, 1]
-  - !!python/tuple [4, 1, 1]
-  - !!python/tuple [5, 1, 1]
-  - !!python/tuple [6, 1, 1]
-  - !!python/tuple [7, 1, 1]
-  - !!python/tuple [8, 1, 1]
+density: [53.442144, 36.462866, 10.839457, 6.620416, 13.383995, 16.31079, 15.338323,
+  13.083432]
+q:
+- [1, 1, 1]
+- [2, 1, 1]
+- [3, 1, 1]
+- [4, 1, 1]
+- [5, 1, 1]
+- [6, 1, 1]
+- [7, 1, 1]
+- [8, 1, 1]

@@ -45,39 +45,35 @@ def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
     return (spec, int(ind))
 
 
-def normalise(obj: Any) -> Any:
+def normalise(obj: Any, mapping: Dict[type, Union[type, Callable]] = ()) -> Any:
     """
     Standardises data after processing
     """
     if isinstance(obj, (tuple, list)):
-        obj = tuple(normalise(v) for v in obj)
+        obj = tuple(normalise(v, mapping) for v in obj)
     elif isinstance(obj, (dict, defaultdict)):
-        obj = {key: normalise(val) for key, val in obj.items()}
+        obj = {key: normalise(val, mapping) for key, val in obj.items()}
+
+    if type(obj) in mapping:
+        obj = mapping[type(obj)](obj)
 
     return obj
 
 
 def json_safe(obj: Any) -> Any:
     """ Transform datatypes into JSON safe variants"""
-    if isinstance(obj, (tuple, list)):
-        obj = [json_safe(v) for v in obj]
-    elif isinstance(obj, dict):
-        obj = json_safe_dict(obj)
+    if isinstance(obj, dict):
+        obj_out = {}
+
+        for key, val in obj.items():
+            if isinstance(key, (tuple, list)):
+                key = "_".join(map(str, key))
+            obj_out[key] = json_safe(val)
+
+        obj = obj_out
     elif isinstance(obj, complex):
-        obj = (obj.real, obj.imag)
+        obj = {"real": obj.real, "imag": obj.imag}
     return obj
-
-
-def json_safe_dict(obj: Dict) -> Dict:
-    """ Transform a castep_output dict into a JSON safe variant
-    i.e. convert tuple keys to conjoined strings """
-    obj_out = {}
-
-    for key, val in obj.items():
-        if isinstance(key, (tuple, list)):
-            key = "_".join(map(str, key))
-        obj_out[key] = json_safe(val)
-    return obj_out
 
 
 def flatten_dict(dictionary: Dict,
