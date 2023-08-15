@@ -449,3 +449,17 @@ def parse_pot_fmt_file(pot_file: TextIO) -> Dict[str, List[Union[int, float]]]:
 def parse_den_fmt_file(den_file: TextIO) -> Dict[str, List[Union[int, float]]]:
     """ Parse castep .den_fmt files """
     return parse_kpt_info(den_file, 'density')
+
+
+def parse_err_file(err_file: TextIO) -> Dict[str, Union[str, List[str]]]:
+    """ Parse .err file to dict """
+    accum = {"message": "", "stack": []}
+
+    while "Current trace stack" not in (line := err_file.readline()):
+        accum["message"] += line
+    accum["message"] = accum["message"].strip()
+
+    for line in err_file:
+        accum["stack"].append(line.strip())
+
+    return accum

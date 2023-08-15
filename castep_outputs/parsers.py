@@ -9,7 +9,7 @@ from .extra_files_parser import (parse_bands_file, parse_hug_file, parse_phonon_
                                  parse_efield_file, parse_xrd_sf_file, parse_elf_fmt_file,
                                  parse_chdiff_fmt_file, parse_pot_fmt_file, parse_den_fmt_file,
                                  parse_elastic_file, parse_ts_file, parse_magres_file,
-                                 parse_tddft_file)
+                                 parse_tddft_file, parse_err_file)
 
 PARSERS = {
     "castep": parse_castep_file,
@@ -29,7 +29,8 @@ PARSERS = {
     "elastic": parse_elastic_file,
     "ts": parse_ts_file,
     "magres": parse_magres_file,
-    "tddft": parse_tddft_file
+    "tddft": parse_tddft_file,
+    "err": parse_err_file
     }
 CASTEP_OUTPUT_NAMES = tuple(PARSERS.keys())
 CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
