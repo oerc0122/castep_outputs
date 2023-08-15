@@ -1,10 +1,8 @@
-coords: !!python/object/apply:collections.defaultdict
-  args: [!!python/name:builtins.list '']
-  dictitems:
-    ? !!python/tuple [B, 1]
-    : !!python/tuple [0.375, 0.375, 0.375]
-    ? !!python/tuple [N, 2]
-    : !!python/tuple [0.625, 0.625, 0.625]
+coords:
+  ? !!python/tuple [B, 1]
+  : [0.375, 0.375, 0.375]
+  ? !!python/tuple [N, 2]
+  : [0.625, 0.625, 0.625]
 overlap:
 - ? !!python/tuple [3, 6]
   : 0.497606
@@ -162,6 +160,6 @@ spectroscopic_data:
     !!python/complex 0.0001568479451349511-0.001977824615405299j]
   energy: 7.239637016536607
 unit_cell:
-- !!python/tuple [2.087121, 0.737909, 1.278096]
-- !!python/tuple [0.0, 2.213726, 1.278096]
-- !!python/tuple [0.0, 0.0, 2.556191]
+- [2.087121, 0.737909, 1.278096]
+- [0.0, 2.213726, 1.278096]
+- [0.0, 0.0, 2.556191]

@@ -9,9 +9,10 @@ import io
 import sys
 
 from .args import (parse_args, args_to_dict)
-from .utility import (json_safe, flatten_dict, get_dumpers)
+from .utility import (normalise, json_safe, flatten_dict, get_dumpers)
 from .constants import OutFormats
 from .parsers import PARSERS
+
 
 def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
                  out_format: OutFormats = "print",
@@ -40,7 +41,11 @@ def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
             data = parser(file)
 
     if out_format == "json" or testing:
-        data = json_safe(data)
+        data = normalise(data, {dict: json_safe, complex: json_safe})
+    elif out_format in ("yaml", "ruamel"):
+        data = normalise(data, {tuple: list})
+    else:
+        data = normalise(data)
 
     if testing:
         if isinstance(data, list):

@@ -7,6 +7,7 @@ import pprint
 from pathlib import Path
 
 from castep_outputs.castep_outputs_main import (parse_all, parse_single)
+from castep_outputs.utility import normalise
 
 try:
     from ruamel import yaml
@@ -22,7 +23,15 @@ except ImportError:
 _TEST_FOLDER = Path(__file__).parent
 
 
+def _dict_to_complex(complx_dict):
+    if len(complx_dict) == 2 and tuple(complx_dict.keys()) == ("real", "imag"):
+        return complex(**complx_dict)
+    return complx_dict
+
+
 class test_dumper(unittest.TestCase):
+
+    maxDiff = 9999
 
     def _test_dump(self, file, typ, out_format, ref_file=None):
         if out_format == 'yaml' and _YAML_TYPE is None:
@@ -51,6 +60,9 @@ class test_dumper(unittest.TestCase):
 
         with open(ref_file, 'r', encoding='utf-8') as test_file:
             ref_dict = loader(test_file)
+
+        comp_dict = normalise(comp_dict, {dict: _dict_to_complex})
+        ref_dict = normalise(ref_dict, {dict: _dict_to_complex})
 
         self.assertEqual(comp_dict, ref_dict)
 
@@ -144,7 +156,6 @@ class test_dumper(unittest.TestCase):
     def test_magres_yaml(self):
         self._test_dump(_TEST_FOLDER / "test.magres", "magres", "yaml")
 
-    @unittest.skip("Issue with complex number recovery")
     def test_tddft_json(self):
         self._test_dump(_TEST_FOLDER / "test.tddft", "tddft", "json")
 

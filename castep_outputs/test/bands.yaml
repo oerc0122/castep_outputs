@@ -1,12 +1,9 @@
-!!python/object/apply:collections.defaultdict
-args: [!!python/name:builtins.list '']
-dictitems:
-  bands:
-  - band: !!python/tuple [-2.56339233, -2.56319008, -2.5626493]
-    qpt: !!python/tuple [-0.375, -0.375, -0.375]
-    spin_comp: 1
-    weight: 0.03125
-  - band: !!python/tuple [-2.56369745, -2.56331049, -2.56254]
-    qpt: !!python/tuple [-0.375, -0.375, -0.125]
-    spin_comp: 1
-    weight: 0.03125
+bands:
+- band: [-2.56339233, -2.56319008, -2.5626493]
+  qpt: [-0.375, -0.375, -0.375]
+  spin_comp: 1
+  weight: 0.03125
+- band: [-2.56369745, -2.56331049, -2.56254]
+  qpt: [-0.375, -0.375, -0.125]
+  spin_comp: 1
+  weight: 0.03125
