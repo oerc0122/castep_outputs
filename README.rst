@@ -38,7 +38,7 @@ seedname, filtered by ``inc`` args (default: all). Explicit files can be passed
 using longname arguments. castep_outputs can parse most human-readable castep
 outputs including: ``.castep``, ``.param``, ``.cell``, ``.geom``, ``.md``,
 ``.bands``, ``.hug``, ``.phonon_dos``, ``.efield``, ``.xrd_sf``, ``.elf_fmt``,
-``.chdiff_fmt``, ``.pot_fmt, .den_fmt``, ``.elastic``, ``.ts``.
+``.chdiff_fmt``, ``.pot_fmt``, ``.den_fmt``, ``.elastic``, ``.ts``, ``.magres``.
 
 to run in basic mode:
 
@@ -137,6 +137,8 @@ The available parsing functions are:
 -  ``parse_den_fmt_file``
 -  ``parse_elastic_file``
 -  ``parse_ts_file``
+-  ``parse_tddft_file``
+-  ``parse_magres_file``
 
 Which return processed ``list``\ s of ``dict``\ s of data ready for use
 in other applications.
@@ -147,18 +149,21 @@ Full usage
 ::
 
    usage: castep_outputs [-h] [-V] [-L {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-o OUTPUT]
-                         [-f {json,ruamel,yaml,pprint,print}] [-t] [-A] [-c] [-g] [-m] [-b] [-p] [-e] [-x] [-H] [-E]
-                         [-C] [-P] [-D] [-X] [-T] [--inc-param] [--inc-cell] [--castep [CASTEP ...]]
-                         [--geom [GEOM ...]] [--cell [CELL ...]] [--param [PARAM ...]] [--md [MD ...]]
+                         [-f {json,ruamel,yaml,pprint,print}] [-t] [-A] [--inc-castep] [--inc-cell] [--inc-param]
+                         [--inc-geom] [--inc-md] [--inc-bands] [--inc-hug] [--inc-phonon_dos] [--inc-efield]
+                         [--inc-xrd_sf] [--inc-elf_fmt] [--inc-chdiff_fmt] [--inc-pot_fmt] [--inc-den_fmt]
+                         [--inc-elastic] [--inc-ts] [--inc-magres] [--inc-tddft] [--castep [CASTEP ...]]
+                         [--cell [CELL ...]] [--param [PARAM ...]] [--geom [GEOM ...]] [--md [MD ...]]
                          [--bands [BANDS ...]] [--hug [HUG ...]] [--phonon_dos [PHONON_DOS ...]]
                          [--efield [EFIELD ...]] [--xrd_sf [XRD_SF ...]] [--elf_fmt [ELF_FMT ...]]
                          [--chdiff_fmt [CHDIFF_FMT ...]] [--pot_fmt [POT_FMT ...]] [--den_fmt [DEN_FMT ...]]
-                         [--elastic [ELASTIC ...]] [--ts [TS ...]]
+                         [--elastic [ELASTIC ...]] [--ts [TS ...]] [--magres [MAGRES ...]] [--tddft [TDDFT ...]]
                          ...
 
    Attempts to find all files for seedname, filtered by `inc` args (default: all). Explicit files can be passed
-   using longname arguments. Parse most human-readable castep outputs including: .castep, .param, .cell, .geom, .md,
-   .bands, .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt, .pot_fmt, .den_fmt, .elastic, .ts
+   using longname arguments. castep_outputs can parse most human-readable castep outputs including: .castep, .cell,
+   .param, .geom, .md, .bands, .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt, .pot_fmt, .den_fmt,
+   .elastic, .ts, .magres, .tddft
 
    positional arguments:
      seedname              Seed name for data
@@ -174,27 +179,29 @@ Full usage
                            Output format
      -t, --testing         Set testing mode to produce flat outputs
      -A, --inc-all         Extract all available information
-     -c, --inc-castep      Extract .castep information
-     -g, --inc-geom        Extract .geom information
-     -m, --inc-md          Extract .md information
-     -b, --inc-bands       Extract .bands information
-     -p, --inc-phonon_dos  Extract .phonon_dos information
-     -e, --inc-efield      Extract .efield information
-     -x, --inc-xrd_sf      Extract .xrd_sf information
-     -H, --inc-hug         Extract .hug information
-     -E, --inc-elf_fmt     Extract .elf_fmt information
-     -C, --inc-chdiff_fmt  Extract .chdiff_fmt information
-     -P, --inc-pot_fmt     Extract .pot_fmt information
-     -D, --inc-den_fmt     Extract .den_fmt information
-     -X, --inc-elastic     Extract .elastic information
-     -T, --inc-ts          Extract .ts information
-     --inc-param           Extract .param information
+     --inc-castep          Extract .castep information
      --inc-cell            Extract .cell information
+     --inc-param           Extract .param information
+     --inc-geom            Extract .geom information
+     --inc-md              Extract .md information
+     --inc-bands           Extract .bands information
+     --inc-hug             Extract .hug information
+     --inc-phonon_dos      Extract .phonon_dos information
+     --inc-efield          Extract .efield information
+     --inc-xrd_sf          Extract .xrd_sf information
+     --inc-elf_fmt         Extract .elf_fmt information
+     --inc-chdiff_fmt      Extract .chdiff_fmt information
+     --inc-pot_fmt         Extract .pot_fmt information
+     --inc-den_fmt         Extract .den_fmt information
+     --inc-elastic         Extract .elastic information
+     --inc-ts              Extract .ts information
+     --inc-magres          Extract .magres information
+     --inc-tddft           Extract .tddft information
      --castep [CASTEP ...]
                            Extract from CASTEP as .castep type
-     --geom [GEOM ...]     Extract from GEOM as .geom type
      --cell [CELL ...]     Extract from CELL as .cell type
      --param [PARAM ...]   Extract from PARAM as .param type
+     --geom [GEOM ...]     Extract from GEOM as .geom type
      --md [MD ...]         Extract from MD as .md type
      --bands [BANDS ...]   Extract from BANDS as .bands type
      --hug [HUG ...]       Extract from HUG as .hug type
@@ -215,12 +222,15 @@ Full usage
      --elastic [ELASTIC ...]
                            Extract from ELASTIC as .elastic type
      --ts [TS ...]         Extract from TS as .ts type
+     --magres [MAGRES ...]
+                           Extract from MAGRES as .magres type
+     --tddft [TDDFT ...]   Extract from TDDFT as .tddft type
 
 Current Parsers:
 
 -  ``.castep``
--  ``.param``
 -  ``.cell``
+-  ``.param``
 -  ``.geom``
 -  ``.md``
 -  ``.bands``
@@ -234,6 +244,8 @@ Current Parsers:
 -  ``.den_fmt``
 -  ``.elastic``
 -  ``.ts``
+-  ``.magres``
+-  ``.tddft``
 
 Current dumpers:
 
