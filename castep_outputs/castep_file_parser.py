@@ -1,7 +1,6 @@
 # pylint: disable=too-many-lines, too-many-branches, too-many-statements
 """
-Extract results from .castep file for comparison and use
-by testcode.pl.
+Extract results from .castep file for comparison and further processing
 
 Port of extract_results.pl
 """
@@ -60,7 +59,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             logger("Found run %s", len(runs) + 1)
 
         # Finalisation
-        elif block := get_block(line, castep_file, "Initialisation time", REs.EMPTY):
+        elif block := get_block(line, castep_file, "Initialisation time", REs.EMPTY,
+                                eof_possible=True):
 
             logger("Found finalisation")
 
@@ -585,14 +585,14 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # GeomOpt
         elif block := get_block(line, castep_file, "Final Configuration",
-                                gen_table_re("", "x+"), cnt=2):
+                                rf"\s*{REs.MINIMISERS_RE}: Final", cnt=2):
 
             if "geom_opt" not in curr_run:
                 curr_run["geom_opt"] = defaultdict(list)
 
             logger("Found final geom configuration")
 
-            curr_run["geom_opt"]["final_configuration"] = _process_atreg_block(block)
+            curr_run["geom_opt"]["final_configuration"] = _process_final_config_block(block)
 
         elif match := re.search(f"(?P<minim>{REs.MINIMISERS_RE}):"
                                 r" finished iteration\s*\d+\s*with enthalpy", line):
@@ -1675,6 +1675,30 @@ def _process_geom_table(block: TextIO) -> Dict[str, Union[bool, float]]:
             key = normalise_string(match["parameter"])
             del match["parameter"]
             accum[key] = match
+
+    return accum
+
+
+def _process_final_config_block(block_in: TextIO) -> Dict[str, float]:
+
+    accum = {}
+    for line in block_in:
+        if block := get_block(line, block_in, r"\s*Unit Cell\s*", REs.EMPTY, cnt=3):
+            accum["cell"] = _process_unit_cell(block)
+
+        elif block := get_block(line, block_in,
+                                gen_table_re("Cell Contents"),
+                                gen_table_re("", "x+"), cnt=2):
+            accum["atoms"] = _process_atreg_block(block)
+
+        elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
+                               r"(?P<key>[^=]+)=\s*"
+                               f"(?P<value>{REs.EXPNUMBER_RE}).*",
+                               line, re.IGNORECASE):
+
+            key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
+
+            accum[key] = val
 
     return accum
 

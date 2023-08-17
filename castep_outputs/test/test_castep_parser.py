@@ -4,7 +4,7 @@ import pprint
 import io
 from unittest import (TestCase, main)
 from castep_outputs import parse_castep_file
-
+from castep_outputs.utility import normalise
 
 class test_castep_parser(TestCase):
     def test_get_build_version(self):
@@ -1694,6 +1694,23 @@ Species   Ion     Hirshfeld Charge (e)
 ================================================================================
 
                            -------------------------------
+                                      Unit Cell
+                           -------------------------------
+        Real Lattice(A)              Reciprocal Lattice(1/A)
+     2.3372228     0.0000000     0.0000000        2.688312529   0.000000000   0.000000000
+     0.0000000     2.3372228     0.0000000        0.000000000   2.688312529   0.000000000
+     0.0000000     0.0000000     2.3372228        0.000000000   0.000000000   2.688312529
+
+                       Lattice parameters(A)       Cell Angles
+                    a =      2.337223          alpha =   90.000000
+                    b =      2.337223          beta  =   90.000000
+                    c =      2.337223          gamma =   90.000000
+
+                Current cell volume =            12.767337 A**3
+                            density =             8.748104 amu/A**3
+                                    =            14.526569 g/cm^3
+
+                           -------------------------------
                                      Cell Contents
                            -------------------------------
 
@@ -1712,49 +1729,58 @@ Species   Ion     Hirshfeld Charge (e)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'geom_opt': {'enthalpy': [-1317.70077, -216.058016],
-                                                  'final enthalpy': -217.004345,
-                                                  'final_configuration': {('Si', 1): (-0.00619,
-                                                                                      -0.000628,
-                                                                                      -0.000628),
-                                                                          ('Si', 2): (0.24619,
-                                                                                      0.250628,
-                                                                                      0.250628)},
-                                                  'minimisation': [{'previous': {'Fdelta': 0.203755,
-                                                                                 'enthalpy': -216.058941,
-                                                                                 'lambda': 0.0}},
-                                                                   {'previous': {'Fdelta': 0.204256,
-                                                                                 'enthalpy': -216.058016,
-                                                                                 'lambda': 0.0},
-                                                                    'trial step': {'Fdelta': 0.204121,
-                                                                                   'enthalpy': -216.058941,
-                                                                                   'lambda': 0.001727}},
-                                                                   {'Smax': {'converged': False,
-                                                                             'tolerance': 0.1,
-                                                                             'value': 17.36649},
-                                                                    'dE/ion': {'converged': False,
-                                                                               'tolerance': 2e-05,
-                                                                               'value': 0.0},
-                                                                    '|F|max': {'converged': False,
-                                                                               'tolerance': 0.05,
-                                                                               'value': 0.529977},
-                                                                    '|dR|max': {'converged': True,
-                                                                                'tolerance': 0.001,
-                                                                                'value': 0.0}},
-                                                                   {'Smax': {'converged': True,
-                                                                             'tolerance': 0.1,
-                                                                             'value': 0.0},
-                                                                    'dE/ion': {'converged': True,
-                                                                               'tolerance': 2e-05,
-                                                                               'value': 0.0},
-                                                                    '|F|max': {'converged': True,
-                                                                               'tolerance': 0.05,
-                                                                               'value': 0.0},
-                                                                    '|dR|max': {'converged': True,
-                                                                                'tolerance': 0.001,
-                                                                                'value': 0.0}}]}
-                                     })
-
+        self.assertEqual(test_dict, {'geom_opt':
+                                     {'enthalpy': [-1317.70077, -216.058016],
+                                      'final_configuration':
+                                      {'atoms':
+                                       {('Si', 1): (-0.00619, -0.000628, -0.000628),
+                                        ('Si', 2): (0.24619, 0.250628, 0.250628)},
+                                       'cell':
+                                       {'cell_angles': [90.0, 90.0, 90.0],
+                                        'density_amu': 8.748104,
+                                        'density_g': 14.526569,
+                                        'lattice_parameters': [2.337223, 2.337223, 2.337223],
+                                        'real_lattice': [(2.3372228, 0.0, 0.0),
+                                                         (0.0, 2.3372228, 0.0),
+                                                         (0.0, 0.0, 2.3372228)],
+                                        'recip_lattice': [(2.688312529, 0.0, 0.0),
+                                                          (0.0, 2.688312529, 0.0),
+                                                          (0.0, 0.0, 2.688312529)],
+                                        'volume': 12.767337},
+                                       'final enthalpy': -217.004345},
+                                      'minimisation': [{'previous': {'Fdelta': 0.203755,
+                                                                     'enthalpy': -216.058941,
+                                                                     'lambda': 0.0}},
+                                                       {'previous': {'Fdelta': 0.204256,
+                                                                     'enthalpy': -216.058016,
+                                                                     'lambda': 0.0},
+                                                        'trial step': {'Fdelta': 0.204121,
+                                                                       'enthalpy': -216.058941,
+                                                                       'lambda': 0.001727}},
+                                                       {'Smax': {'converged': False,
+                                                                 'tolerance': 0.1,
+                                                                 'value': 17.36649},
+                                                        'dE/ion': {'converged': False,
+                                                                   'tolerance': 2e-05,
+                                                                   'value': 0.0},
+                                                        '|F|max': {'converged': False,
+                                                                   'tolerance': 0.05,
+                                                                   'value': 0.529977},
+                                                        '|dR|max': {'converged': True,
+                                                                    'tolerance': 0.001,
+                                                                    'value': 0.0}},
+                                                       {'Smax': {'converged': True,
+                                                                 'tolerance': 0.1,
+                                                                 'value': 0.0},
+                                                        'dE/ion': {'converged': True,
+                                                                   'tolerance': 2e-05,
+                                                                   'value': 0.0},
+                                                        '|F|max': {'converged': True,
+                                                                   'tolerance': 0.05,
+                                                                   'value': 0.0},
+                                                        '|dR|max': {'converged': True,
+                                                                    'tolerance': 0.001,
+                                                                    'value': 0.0}}]}})
     def test_get_lbfgs_info(self):
         test_text = io.StringIO("""
  LBFGS: Final Enthalpy     = -1.31770414E+003 eV
