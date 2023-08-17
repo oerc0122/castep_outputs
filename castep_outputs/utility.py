@@ -67,7 +67,11 @@ def json_safe(obj: Any) -> Any:
 
         for key, val in obj.items():
             if isinstance(key, (tuple, list)):
-                key = "_".join(map(str, key))
+                # Key in bonds is tuple[tuple[AtomIndex]]
+                if isinstance(key[0], tuple):
+                    key = "_".join(str(y) for x in key for y in x)
+                else:
+                    key = "_".join(map(str, key))
             obj_out[key] = json_safe(val)
 
         obj = obj_out

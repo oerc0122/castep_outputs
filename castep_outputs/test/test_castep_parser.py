@@ -4,7 +4,7 @@ import pprint
 import io
 from unittest import (TestCase, main)
 from castep_outputs import parse_castep_file
-from castep_outputs.utility import normalise
+
 
 class test_castep_parser(TestCase):
     def test_get_build_version(self):
@@ -963,32 +963,203 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
     def test_get_md_data(self):
         test_text = io.StringIO("""
+================================================================================
+ Starting MD iteration          1 ...
+================================================================================
+
++---------------- MEMORY AND SCRATCH DISK ESTIMATES PER PROCESS --------------+
+|                                                     Memory          Disk    |
+| Model and support data                               27.2 MB         0.0 MB |
+| Molecular Dynamics requirements                      13.4 MB         0.0 MB |
+|                                               ----------------------------- |
+| Approx. total storage required per process           40.6 MB         0.0 MB |
+|                                                                             |
+| Requirements will fluctuate during execution and may exceed these estimates |
++-----------------------------------------------------------------------------+
+
+
+                           -------------------------------
+                                      Unit Cell
+                           -------------------------------
+        Real Lattice(A)              Reciprocal Lattice(1/A)
+     5.4300000     0.0000000     0.0000000        1.157124366   0.000000000   0.000000000
+     0.0000000     5.4300000     0.0000000        0.000000000   1.157124366   0.000000000
+     0.0000000     0.0000000     5.4300000        0.000000000   0.000000000   1.157124366
+
+                       Lattice parameters(A)       Cell Angles
+                    a =      5.430000          alpha =   90.000000
+                    b =      5.430000          beta  =   90.000000
+                    c =      5.430000          gamma =   90.000000
+
+                Current cell volume =           160.103007 A**3
+                            density =             1.403372 amu/A**3
+                                    =             2.330353 g/cm^3
+
+                           -------------------------------
+                                     Cell Contents
+                           -------------------------------
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x  Element    Atom        Fractional coordinates of atoms    x
+            x            Number           u          v          w        x
+            x------------------------------------------------------------x
+            x   Si         1          0.001291   0.000320   0.001059     x
+            x   Si         2          0.000729   0.504323   0.520521     x
+            x   Si         3          0.505285   0.000926   0.513655     x
+            x   Si         4          0.504063   0.505793   0.000548     x
+            x   Si         5          0.766660   0.252687   0.755706     x
+            x   Si         6          0.243421   0.253381   0.252973     x
+            x   Si         7          0.253718   0.767200   0.755971     x
+            x   Si         8          0.755457   0.745684   0.254476     x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -8.54989696E+002  0.00000000E+000                        17.06  <-- SCF
+      1  -8.55716038E+002  6.32845976E+000   9.07927915E-002      17.93  <-- SCF
+      2  -8.55717590E+002  6.32839049E+000   1.94010456E-004      18.95  <-- SCF
+      3  -8.55427082E+002  6.36384974E+000  -3.63134936E-002      19.82  <-- SCF
+      4  -8.55423738E+002  6.36963527E+000  -4.17969615E-004      20.82  <-- SCF
+      5  -8.55423601E+002  6.37092603E+000  -1.71325083E-005      21.69  <-- SCF
+      6  -8.55423605E+002  6.37104909E+000   4.73760243E-007      22.32  <-- SCF
+      7  -8.55423606E+002  6.37105526E+000   6.14141026E-008      22.91  <-- SCF
+------------------------------------------------------------------------ <-- SCF
+
+Final energy, E             =  -855.4197401755     eV
+Final free energy (E-TS)    =  -855.4236056162     eV
+(energies not corrected for finite basis set)
+
+NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
+
+
+ ************************************** Forces **************************************
+ *                                                                                  *
+ *                           Cartesian components (eV/A)                            *
+ * -------------------------------------------------------------------------------- *
+ *                         x                    y                    z              *
+ *                                                                                  *
+ * Si              1     -0.05358             -0.04038              0.69168         *
+ * Si              2      0.72539              0.35380             -1.12992         *
+ * Si              3      0.28302              0.67672             -1.18462         *
+ * Si              4     -0.22518             -0.33054              0.04176         *
+ * Si              5     -1.21595             -0.03332              0.41211         *
+ * Si              6      0.53454              0.07434              0.47702         *
+ * Si              7      0.18953             -0.94244              0.27110         *
+ * Si              8     -0.23778              0.24183              0.42087         *
+ *                                                                                  *
+ ************************************************************************************
+
+ ***************** Stress Tensor *****************
+ *                                               *
+ *          Cartesian components (GPa)           *
+ * --------------------------------------------- *
+ *             x             y             z     *
+ *                                               *
+ *  x      2.029699      1.862602      3.129082  *
+ *  y      1.862602     -6.100259      5.232356  *
+ *  z      3.129082      5.232356     -7.576534  *
+ *                                               *
+ *  Pressure:    3.8824                          *
+ *                                               *
+ *************************************************
+
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
             x                                               MD Data:     x
             x                                                            x
-            x              time :      0.012000                   ps     x
+            x              time :      0.002000                   ps     x
             x                                                            x
-            x   Potential Energy:   -856.781164                   eV     x
-            x   Kinetic   Energy:      1.153823                   eV     x
-            x   Total     Energy:   -855.627341                   eV     x
-            x           Enthalpy:   -855.627341                   eV     x
-            x   Hamilt    Energy:   -853.038128                   eV     x
+            x   Potential Energy:   -855.432091                   eV     x
+            x   Kinetic   Energy:      0.673458                   eV     x
+            x   Total     Energy:   -854.758633                   eV     x
+            x           Enthalpy:   -854.758633                   eV     x
+            x   Hamilt    Energy:   -854.677308                   eV     x
             x                                                            x
-            x        Temperature:   1115.796413                    K     x
-            x      T/=0 Pressure:     -5.803316                  GPa     x
+            x        Temperature:    651.262915                    K     x
+            x      T/=0 Pressure:      4.323390                  GPa     x
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+--------------------------------------------------------------------------------
+ ... finished MD iteration          1
+
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'md':
-                                     [{'time': 0.012,
-                                       'Potential Energy': -856.781164,
-                                       'Kinetic Energy': 1.153823,
-                                       'Total Energy': -855.627341,
-                                       'Enthalpy': -855.627341,
-                                       'Hamilt Energy': -853.038128,
-                                       'Temperature': 1115.796413}
-                                      ]}
+        self.assertEqual(test_dict, {'md': [
+            {'Enthalpy': -854.758633,
+             'Hamilt Energy': -854.677308,
+             'Kinetic Energy': 0.673458,
+             'Potential Energy': -855.432091,
+             'Temperature': 651.262915,
+             'Total Energy': -854.758633,
+             'energies': {'est_0K': [-855.4216728959],
+                          'final_energy': [-855.4197401755],
+                          'free_energy': [-855.4236056162]},
+             'forces': {'non-descript': [{('Si', 1): (-0.05358, -0.04038, 0.69168),
+                                          ('Si', 2): (0.72539, 0.3538, -1.12992),
+                                          ('Si', 3): (0.28302, 0.67672, -1.18462),
+                                          ('Si', 4): (-0.22518, -0.33054, 0.04176),
+                                          ('Si', 5): (-1.21595, -0.03332, 0.41211),
+                                          ('Si', 6): (0.53454, 0.07434, 0.47702),
+                                          ('Si', 7): (0.18953, -0.94244, 0.2711),
+                                          ('Si', 8): (-0.23778, 0.24183, 0.42087)}]},
+             'cell': {'cell_angles': [90.0, 90.0, 90.0],
+                      'density_amu': 1.403372,
+                      'density_g': 2.330353,
+                      'lattice_parameters': [5.43, 5.43, 5.43],
+                      'real_lattice': [(5.43, 0.0, 0.0),
+                                       (0.0, 5.43, 0.0),
+                                       (0.0, 0.0, 5.43)],
+                      'recip_lattice': [(1.157124366, 0.0, 0.0),
+                                        (0.0, 1.157124366, 0.0),
+                                        (0.0, 0.0, 1.157124366)],
+                      'volume': 160.103007},
+             'positions': {('Si', 1): (0.001291, 0.00032, 0.001059),
+                           ('Si', 2): (0.000729, 0.504323, 0.520521),
+                           ('Si', 3): (0.505285, 0.000926, 0.513655),
+                           ('Si', 4): (0.504063, 0.505793, 0.000548),
+                           ('Si', 5): (0.76666, 0.252687, 0.755706),
+                           ('Si', 6): (0.243421, 0.253381, 0.252973),
+                           ('Si', 7): (0.253718, 0.7672, 0.755971),
+                           ('Si', 8): (0.755457, 0.745684, 0.254476)},
+             'memory_estimate': [{'Model and support data': {'disk': 0.0, 'memory': 27.2},
+                                  'Molecular Dynamics requirements': {'disk': 0.0, 'memory': 13.4}}],
+             'scf': [[{'energy': -854.989696,
+                       'energy_gain': None,
+                       'fermi_energy': 0.0,
+                       'time': 17.06},
+                      {'energy': -855.716038,
+                       'energy_gain': 0.0907927915,
+                       'fermi_energy': 6.32845976,
+                       'time': 17.93},
+                      {'energy': -855.71759,
+                       'energy_gain': 0.000194010456,
+                       'fermi_energy': 6.32839049,
+                       'time': 18.95},
+                      {'energy': -855.427082,
+                       'energy_gain': -0.0363134936,
+                       'fermi_energy': 6.36384974,
+                       'time': 19.82},
+                      {'energy': -855.423738,
+                       'energy_gain': -0.000417969615,
+                       'fermi_energy': 6.36963527,
+                       'time': 20.82},
+                      {'energy': -855.423601,
+                       'energy_gain': -1.71325083e-05,
+                       'fermi_energy': 6.37092603,
+                       'time': 21.69},
+                      {'energy': -855.423605,
+                       'energy_gain': 4.73760243e-07,
+                       'fermi_energy': 6.37104909,
+                       'time': 22.32},
+                      {'energy': -855.423606,
+                       'energy_gain': 6.14141026e-08,
+                       'fermi_energy': 6.37105526,
+                       'time': 22.91}]],
+             'stresses': {'non-descript': [(2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)]},
+             'time': 0.002}]}
                          )
 
     def test_get_mulliken(self):

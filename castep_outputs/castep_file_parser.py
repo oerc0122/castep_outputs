@@ -576,12 +576,23 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # MD Block
         elif block := get_block(line, castep_file,
+                                "Starting MD iteration",
+                                "finished MD iteration"):
+            logger("Found MD Block (step %d)", len(curr_run['md'])+1)
+
+            # Avoid infinite recursion
+            next(block)
+            data = parse_castep_file(block)[0]
+            add_aliases(data, {"initial_positions": "positions",
+                               "initial_cell": "cell"},
+                        replace=True)
+            curr_run["md"].append(data)
+
+        elif block := get_block(line, castep_file,
                                 gen_table_re("MD Data:", "x"),
                                 gen_table_re("", "x+")):
 
-            logger("Found MD Block (step %d)", len(curr_run['md'])+1)
-
-            curr_run["md"].append(_process_md(block))
+            curr_run.update(_process_md_block(block))
 
         # GeomOpt
         elif block := get_block(line, castep_file, "Final Configuration",
@@ -910,7 +921,7 @@ def _process_spec_prop(block: TextIO) -> List[List[str]]:
     return accum
 
 
-def _process_md(block: TextIO) -> Dict[str, float]:
+def _process_md_block(block: TextIO) -> Dict[str, float]:
     curr_data = {match.group("key").strip(): float(match.group("val"))
                  for line in block
                  if (match := re.search(r"x\s+"
