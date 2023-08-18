@@ -59,8 +59,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             logger("Found run %s", len(runs) + 1)
 
         # Finalisation
-        elif block := get_block(line, castep_file, "Initialisation time", REs.EMPTY,
-                                eof_possible=True):
+        elif block := get_block(line, castep_file, "Initialisation time", "Peak Memory Use"):
 
             logger("Found finalisation")
 
@@ -258,7 +257,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
                 to_type(get_numbers(line)[-1], float))
 
         # Free energies
-        elif re.match(rf"Final free energy \(E-TS\) += +({REs.EXPNUMBER_RE})", line):
+        elif re.match(rf"Final free energy \(E-TS\) += +({REs.EXPFNUMBER_RE})", line):
 
             logger("Found free energy (E-TS)")
 
@@ -278,7 +277,8 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             curr_run["energies"]["solvation"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
-        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({REs.EXPNUMBER_RE})", line):
+        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({REs.EXPFNUMBER_RE})",
+                                line):
 
             logger("Found spin")
 
@@ -541,7 +541,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
         # Orbital populations
         elif block := get_block(line, castep_file,
                                 gen_table_re("Orbital Populations"),
-                                "The total projected population"):
+                                gen_table_re("", "-+"), cnt=3):
 
             logger("Found Orbital populations")
 
@@ -619,7 +619,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
                                r"(?P<key>[^=]+)=\s*"
-                               f"(?P<value>{REs.EXPNUMBER_RE}).*",
+                               f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
             if "geom_opt" not in curr_run:
@@ -1427,34 +1427,53 @@ def _process_dynamical_matrix(block: TextIO) -> Tuple[complex]:
     return tuple(accum)
 
 
-def _process_pspot_string(string: str) -> Dict[str, Union[float, int, str]]:
-    if not (match := REs.PSPOT_RE.match(string)):
+def _process_pspot_string(string: str, debug=False) -> Dict[str, Union[float, int, str]]:
+    if not (match := REs.PSPOT_RE.search(string)):
         raise IOError(f"Attempt to parse {string} as PSPot failed")
 
     pspot = match.groupdict()
     projectors = []
+
     for proj in pspot["proj"].split(":"):
-        pdict = REs.PSPOT_PROJ_RE.match(proj).groupdict()
+        match = REs.PSPOT_PROJ_RE.match(proj)
+        pdict = dict(zip(REs.PSPOT_PROJ_GROUPS, match.groups()))
+
         pdict["shell"] = SHELLS[int(pdict["shell"])]
-        fix_data_types(pdict, {"orbital": int})
+
+        if not pdict["type"]:
+            pdict["type"] = None
+
+        for prop in ("beta_delta", "de"):
+            if not pdict[prop]:
+                del pdict[prop]
+
+        fix_data_types(pdict, {"orbital": int,
+                               "beta_delta": float,
+                               "de": float})
         projectors.append(pdict)
 
-    if not pspot["shell_swp"]:
-        del pspot["shell_swp"]
-
-    if not pspot["shell_swp2"]:
-        del pspot["shell_swp2"]
+    for prop in ("shell_swp", "shell_swp_end", "opt"):
+        if pspot[prop]:
+            pspot[prop] = pspot[prop].split(",")
 
     pspot["projectors"] = tuple(projectors)
     pspot["string"] = string
+    pspot["print"] = bool(pspot["print"])
+
+    if not debug:
+        for prop in ("shell_swp", "shell_swp_end", "local_energy",
+                     "poly_fit", "beta_radius", "r_inner", "debug"):
+            if pspot[prop] is None:
+                del pspot[prop]
 
     fix_data_types(pspot, {"beta_radius": float,
                            "r_inner": float,
                            "core_radius": float,
-                           "coarse": int,
-                           "medium": int,
-                           "fine": int,
-                           "local_channel": int})
+                           "coarse": float,
+                           "medium": float,
+                           "fine": float,
+                           "local_channel": int,
+                           })
 
     return pspot
 
@@ -1704,7 +1723,7 @@ def _process_final_config_block(block_in: TextIO) -> Dict[str, float]:
 
         elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
                                r"(?P<key>[^=]+)=\s*"
-                               f"(?P<value>{REs.EXPNUMBER_RE}).*",
+                               f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)

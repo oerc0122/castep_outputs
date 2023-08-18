@@ -143,23 +143,6 @@
         space, spin-orbit coupling: on}
   pspot_detail:
   - augmentation_charge_rinner: [0.6]
-    detail:
-      beta_radius: 1.8
-      coarse: 12
-      core_radius: 1.8
-      debug: null
-      fine: 16
-      local_channel: 3
-      medium: 14
-      opt: qc=7
-      proj: 30U:40:31:32
-      projectors:
-      - {orbital: 3, shell: s, type: U}
-      - {orbital: 4, shell: s, type: null}
-      - {orbital: 3, shell: p, type: null}
-      - {orbital: 3, shell: d, type: null}
-      r_inner: 0.6
-      string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
     element: Mn
     ionic_charge: 15.0
     level_of_theory: LDA
@@ -192,13 +175,13 @@
       pseudo_atomic_energy: -2901.7207
       pseudopot:
         beta_radius: 1.8
-        coarse: 12
+        coarse: 12.0
         core_radius: 1.8
-        debug: null
-        fine: 16
+        fine: 16.0
         local_channel: 3
-        medium: 14
-        opt: qc=7
+        medium: 14.0
+        opt: [qc=7]
+        print: false
         proj: 30U:40:31:32
         projectors:
         - {orbital: 3, shell: s, type: U}
@@ -362,23 +345,6 @@
         space, spin-orbit coupling: on}
   pspot_detail:
   - augmentation_charge_rinner: [0.6]
-    detail:
-      beta_radius: 1.8
-      coarse: 12
-      core_radius: 1.8
-      debug: null
-      fine: 16
-      local_channel: 3
-      medium: 14
-      opt: qc=7
-      proj: 30U:40:31:32
-      projectors:
-      - {orbital: 3, shell: s, type: U}
-      - {orbital: 4, shell: s, type: null}
-      - {orbital: 3, shell: p, type: null}
-      - {orbital: 3, shell: d, type: null}
-      r_inner: 0.6
-      string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
     element: Mn
     ionic_charge: 15.0
     level_of_theory: LDA
@@ -411,13 +377,13 @@
       pseudo_atomic_energy: -2901.7207
       pseudopot:
         beta_radius: 1.8
-        coarse: 12
+        coarse: 12.0
         core_radius: 1.8
-        debug: null
-        fine: 16
+        fine: 16.0
         local_channel: 3
-        medium: 14
-        opt: qc=7
+        medium: 14.0
+        opt: [qc=7]
+        print: false
         proj: 30U:40:31:32
         projectors:
         - {orbital: 3, shell: s, type: U}

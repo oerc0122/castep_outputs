@@ -195,6 +195,9 @@ def determine_type(data: str) -> type:
     if data.title() in ("T", "True", "F", "False"):
         return bool
 
+    if re.match(rf"(?:\s*{REs.EXPFNUMBER_RE})+", data):
+        return float
+
     if re.match(rf"(?:\s*{REs.INTNUMBER_RE})+", data):
         return int
 
