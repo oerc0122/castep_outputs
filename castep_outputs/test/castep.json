@@ -162,42 +162,7 @@
         ],
         "partial_core_correction": [
           0.6
-        ],
-        "detail": {
-          "local_channel": 3,
-          "core_radius": 1.8,
-          "beta_radius": 1.8,
-          "r_inner": 0.6,
-          "coarse": 12,
-          "medium": 14,
-          "fine": 16,
-          "proj": "30U:40:31:32",
-          "opt": "qc=7",
-          "debug": null,
-          "projectors": [
-            {
-              "orbital": 3,
-              "shell": "s",
-              "type": "U"
-            },
-            {
-              "orbital": 4,
-              "shell": "s",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "p",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "d",
-              "type": null
-            }
-          ],
-          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
-        }
+        ]
       }
     ],
     "species_properties": {
@@ -210,12 +175,14 @@
           "core_radius": 1.8,
           "beta_radius": 1.8,
           "r_inner": 0.6,
-          "coarse": 12,
-          "medium": 14,
-          "fine": 16,
+          "coarse": 12.0,
+          "medium": 14.0,
+          "fine": 16.0,
           "proj": "30U:40:31:32",
-          "opt": "qc=7",
-          "debug": null,
+          "opt": [
+            "qc=7"
+          ],
+          "print": false,
           "projectors": [
             {
               "orbital": 3,
@@ -803,42 +770,7 @@
         ],
         "partial_core_correction": [
           0.6
-        ],
-        "detail": {
-          "local_channel": 3,
-          "core_radius": 1.8,
-          "beta_radius": 1.8,
-          "r_inner": 0.6,
-          "coarse": 12,
-          "medium": 14,
-          "fine": 16,
-          "proj": "30U:40:31:32",
-          "opt": "qc=7",
-          "debug": null,
-          "projectors": [
-            {
-              "orbital": 3,
-              "shell": "s",
-              "type": "U"
-            },
-            {
-              "orbital": 4,
-              "shell": "s",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "p",
-              "type": null
-            },
-            {
-              "orbital": 3,
-              "shell": "d",
-              "type": null
-            }
-          ],
-          "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)"
-        }
+        ]
       }
     ],
     "species_properties": {
@@ -851,12 +783,14 @@
           "core_radius": 1.8,
           "beta_radius": 1.8,
           "r_inner": 0.6,
-          "coarse": 12,
-          "medium": 14,
-          "fine": 16,
+          "coarse": 12.0,
+          "medium": 14.0,
+          "fine": 16.0,
           "proj": "30U:40:31:32",
-          "opt": "qc=7",
-          "debug": null,
+          "opt": [
+            "qc=7"
+          ],
+          "print": false,
           "projectors": [
             {
               "orbital": 3,

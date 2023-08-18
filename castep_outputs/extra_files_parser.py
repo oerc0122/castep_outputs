@@ -87,7 +87,9 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
                 fix_data_types(qdata, {'qpt': float,
                                        'weight': float,
                                        'spin_comp': int,
-                                       'band': float
+                                       'band': float,
+                                       'band_up': float,
+                                       'band_dn': float
                                        })
                 bands_info['bands'].append(qdata)
             _, _, *qpt, weight = line.split()
@@ -97,6 +99,8 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
             qdata['spin_comp'] = line.split()[2]
             if qdata['spin_comp'] != "1":
                 qdata['band_up'] = qdata.pop('band')
+                if "band_dn" not in qdata:
+                    qdata["band_dn"] = []
 
         elif re.match(rf"^\s*{REs.FNUMBER_RE}$", line.strip()):
             if qdata['spin_comp'] != "1":

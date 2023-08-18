@@ -62,9 +62,9 @@ def labelled_floats(labels: Sequence[str], counts: Sequence[Optional[int]] = (No
     outstr = ""
     for label, cnt in itertools.zip_longest(labels, counts):
         if cnt:
-            outstr += f"(?:(?P<{label}>(?:{sep}{EXPNUMBER_RE}{suff}){{{cnt}}}))"
+            outstr += f"(?:(?P<{label}>(?:{sep}{NUMBER_RE.pattern}{suff}){{{cnt}}}))"
         else:
-            outstr += f"(?:{sep}(?P<{label}>{EXPNUMBER_RE}){suff})"
+            outstr += f"(?:{sep}(?P<{label}>{NUMBER_RE.pattern}){suff})"
 
     return outstr
 
@@ -87,12 +87,13 @@ def gen_table_re(content: str, border: str = r"\s*",
 
 # --- RegExes
 # Regexps to recognise numbers
-FNUMBER_RE = r"(?:[+-]?(?:\d*\.?\d+|\d+\.?\d*))"
-EXPNUMBER_RE = rf"(?:{FNUMBER_RE}(?:[Ee][+-]?\d{{1,3}})?)"
-INTNUMBER_RE = r"(?<!\.)\b(?:\d+)\b(?!\.)"
-RATIONAL_RE = r"\b\d+/\d+\b"
+FNUMBER_RE = r"(?:[+-]?(?:\d*\.\d+|\d+\.\d*))"
+INTNUMBER_RE = r"(?:[+-]?(?<!\.)\d+(?!\.))"
+EXPNUMBER_RE = rf"(?:(?:{FNUMBER_RE}|{INTNUMBER_RE})[Ee][+-]?\d{{1,3}})"
+EXPFNUMBER_RE = f"(?:{EXPNUMBER_RE}|{FNUMBER_RE})"
+RATIONAL_RE = rf"\b{INTNUMBER_RE}/{INTNUMBER_RE}\b"
 NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
-FLOAT_RAT_RE = re.compile(rf"(?:{RATIONAL_RE}|{EXPNUMBER_RE}|{INTNUMBER_RE})")
+FLOAT_RAT_RE = re.compile(rf"(?:{RATIONAL_RE}|{EXPFNUMBER_RE}|{INTNUMBER_RE})")
 THREEVEC_RE = labelled_floats(("val",), counts=(3,))
 
 # Regexp to identify extended chemical species
@@ -124,8 +125,16 @@ PS_SHELL_RE = re.compile(
     rf"\s*Pseudo atomic calculation performed for (?P<spec>{SPECIES_RE})(\s+{SHELL_RE})+")
 
 # PS Projector
-PSPOT_PROJ_RE = re.compile(r"(?P<orbital>\d)(?P<shell>\d)(?P<type>U|UU|N)?")
-UNLABELLED_PROJ_RE = r"\d\d(?:UU|U|N)?"
+PROJ_TYPES = "[UNGHLP]"
+PSPOT_SHELL_RE = rf"(?:{SHELL_RE}{FNUMBER_RE}?)"
+PSPOT_PROJ_GROUPS = ("orbital", "shell", "type", "de", "beta_delta")
+PSPOT_PROJ_RE = re.compile(rf"""
+    (\d)                            # Orbital
+    (\d)                            # Shell type
+    ({PROJ_TYPES}*)                 # Proj type
+    ((?:[\+-=]{FNUMBER_RE})?) # DE_use
+    ((?:@{FNUMBER_RE})?)     # beta_delta
+""", re.VERBOSE)
 
 PSPOT_REFERENCE_STRUC_RE = re.compile(
     rf"""
@@ -134,6 +143,7 @@ PSPOT_REFERENCE_STRUC_RE = re.compile(
     {labelled_floats(('occupation', 'energy'))}
     \s*\|\s*$
     """, re.VERBOSE)
+
 PSPOT_DEF_RE = re.compile(
     rf"""
     ^\s*\|\s*
@@ -147,21 +157,26 @@ PSPOT_DEF_RE = re.compile(
     """, re.VERBOSE)
 
 # PSPot String
-PSPOT_RE = re.compile(labelled_floats(("local_channel",
-                                       "core_radius",
-                                       "beta_radius",
-                                       "r_inner",
-                                       "coarse",
-                                       "medium",
-                                       "fine"), sep=r"\|?")
-                      +
-                      r"\|"
-                      rf"(?P<proj>{UNLABELLED_PROJ_RE}(?::{UNLABELLED_PROJ_RE})*)"
-                      rf"(?:\{{(?P<shell_swp>{SHELL_RE}(?:,{SHELL_RE})*)\}})?"
-                      rf"\((?P<opt>[^)]+)\)"
-                      rf"(?P<debug>#)?"
-                      rf"(?:\[(?P<shell_swp2>{SHELL_RE}(?:,{SHELL_RE})*)\])?"
-                      )
+PSPOT_RE = re.compile(
+    rf"""^
+    (?:{labelled_floats(("local_energy",), sep="")}=)?
+    (?P<local_channel>\d+)
+    (?P<poly_fit>-)?\|
+    {labelled_floats(("core_radius",), sep="")}\|
+    (?:{labelled_floats(("beta_radius",), sep="")}\|)?
+    (?(beta_radius){labelled_floats(("r_inner",), sep="")}\| |)
+    (?:{labelled_floats(("coarse",), sep="")}\|)
+    (?:{labelled_floats(("medium",), sep="")}\|)
+    (?:{labelled_floats(("fine",), sep="")}\|)
+    (?P<proj>{PSPOT_PROJ_RE.pattern}(?::{PSPOT_PROJ_RE.pattern})*)
+    (?:\{{(?P<shell_swp>{SHELL_RE}(?:,{SHELL_RE})*)\}})?
+    (?:\((?P<opt>[^)]+)\))?
+    (?P<debug>\#)?
+    (?P<print>\[(?P<shell_swp_end> {PSPOT_SHELL_RE}(?:,{PSPOT_SHELL_RE})* )?\])?
+    $
+""", re.VERBOSE)
+
+#
 
 # Forces block
 FORCES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Forces", r"\*+"), re.IGNORECASE)

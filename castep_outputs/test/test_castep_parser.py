@@ -4,6 +4,7 @@ import pprint
 import io
 from unittest import (TestCase, main)
 from castep_outputs import parse_castep_file
+from castep_outputs.castep_file_parser import _process_pspot_string
 
 
 class test_castep_parser(TestCase):
@@ -190,6 +191,23 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                       ('Mn', 2): (0.811, 0.311, 0.189),
                                       ('Mn:aTag', 3): (0.939, 0.561, 0.439)}})
 
+    def test_get_atom_struct_mixed(self):
+        test_text = io.StringIO("""
+        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        x  Mixture   Fractional coordinates of atoms  Components  Weights  x
+        x   atoms       u          v          w                            x
+        x------------------------------------------------------------------x
+        x    1        0.000000   0.000000   0.000000   Si        0.750000  x
+        x                                              Ge        0.250000  x
+        x    2        0.250000   1.250000   0.250000   Si        0.750000  x
+        x                                              Ge        0.250000  x
+        xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
     def test_get_atom_velocities(self):
         test_text = io.StringIO("""
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -265,87 +283,110 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
  Converged in 38 iterations to a total energy of -2901.7207 eV
 
+   ============================================================
+   | Pseudopotential Report - Date of generation 14-07-2023   |
+   ------------------------------------------------------------
+   | Element: Mn Ionic charge: 15.00 Level of theory: LDA     |
+   | Atomic Solver: Koelling-Harmon                           |
+   |                                                          |
+   |               Reference Electronic Structure             |
+   |         Orbital         Occupation         Energy        |
+   |          2s               2.000           -0.501         |
+   |                                                          |
+   |                 Pseudopotential Definition               |
+   |      Beta    l   2j     e      Rc     scheme   norm      |
+   |        1     0    1   -3.132   1.803     qc     0        |
+   |                                                          |
+   | No charge augmentation                                   |
+   | No partial core correction                               |
+   ------------------------------------------------------------
+   | "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]"          |
+   ------------------------------------------------------------
+   |      Author: Chris J. Pickard, Cambridge University      |
+   ============================================================
+
+
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'pspot_detail': [{'augmentation_charge_rinner': (0.6,),
-                                                       'detail': {'beta_radius': 1.8,
-                                                                  'coarse': 12,
-                                                                  'core_radius': 1.8,
-                                                                  'debug': None,
-                                                                  'fine': 16,
-                                                                  'local_channel': 3,
-                                                                  'medium': 14,
-                                                                  'opt': 'qc=7',
-                                                                  'proj': '30U:40:31:32',
-                                                                  'projectors': ({'orbital': 3,
-                                                                                  'shell': 's',
-                                                                                  'type': 'U'},
-                                                                                 {'orbital': 4,
-                                                                                  'shell': 's',
-                                                                                  'type': None},
-                                                                                 {'orbital': 3,
-                                                                                  'shell': 'p',
-                                                                                  'type': None},
-                                                                                 {'orbital': 3,
-                                                                                  'shell': 'd',
-                                                                                  'type': None}),
-                                                                  'r_inner': 0.6,
-                                                                  'string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'},
-                                                       'element': 'Mn',
-                                                       'ionic_charge': 15.0,
-                                                       'level_of_theory': 'LDA',
-                                                       'partial_core_correction': (0.6,),
-                                                       'pseudopotential_definition': [{'Rc': 1.803,
-                                                                                       'beta': 1,
-                                                                                       'e': -3.132,
-                                                                                       'j': 1,
-                                                                                       'l': 0,
-                                                                                       'norm': 0,
-                                                                                       'scheme': 'qc'},
-                                                                                      {'Rc': 1.803,
-                                                                                       'beta': 'loc',
-                                                                                       'e': 0.0,
-                                                                                       'j': 0,
-                                                                                       'l': 3,
-                                                                                       'norm': 0,
-                                                                                       'scheme': 'pn'},
-                                                                                      {'Rc': 1.395,
-                                                                                       'beta': 3,
-                                                                                       'e': -0.501,
-                                                                                       'j': None,
-                                                                                       'l': 0,
-                                                                                       'norm': 0,
-                                                                                       'scheme': 'qc'},
-                                                                                      {'Rc': 1.803,
-                                                                                       'beta': 'loc',
-                                                                                       'e': 0.0,
-                                                                                       'j': None,
-                                                                                       'l': 3,
-                                                                                       'norm': 0,
-                                                                                       'scheme': 'pn'}],
-                                                       'reference_electronic_structure': [{'energy': -0.501,
-                                                                                           'occupation': 2.0,
-                                                                                           'orb': '2s'},
-                                                                                          {'energy': -3.132,
-                                                                                           'occupation': 2.0,
-                                                                                           'orb': '3s1/2'},
-                                                                                          {'energy': -2.001,
-                                                                                           'occupation': 2.0,
-                                                                                           'orb': '3p1/2'}],
-                                                       'solver': 'Koelling-Harmon'}],
+        self.assertEqual(test_dict, {'pspot_detail':
+                                     [{'augmentation_charge_rinner': (0.6,),
+                                       'element': 'Mn',
+                                       'ionic_charge': 15.0,
+                                       'level_of_theory': 'LDA',
+                                       'partial_core_correction': (0.6,),
+                                       'pseudopotential_definition': [{'Rc': 1.803,
+                                                                       'beta': 1,
+                                                                       'e': -3.132,
+                                                                       'j': 1,
+                                                                       'l': 0,
+                                                                       'norm': 0,
+                                                                       'scheme': 'qc'},
+                                                                      {'Rc': 1.803,
+                                                                       'beta': 'loc',
+                                                                       'e': 0.0,
+                                                                       'j': 0,
+                                                                       'l': 3,
+                                                                       'norm': 0,
+                                                                       'scheme': 'pn'},
+                                                                      {'Rc': 1.395,
+                                                                       'beta': 3,
+                                                                       'e': -0.501,
+                                                                       'j': None,
+                                                                       'l': 0,
+                                                                       'norm': 0,
+                                                                       'scheme': 'qc'},
+                                                                      {'Rc': 1.803,
+                                                                       'beta': 'loc',
+                                                                       'e': 0.0,
+                                                                       'j': None,
+                                                                       'l': 3,
+                                                                       'norm': 0,
+                                                                       'scheme': 'pn'}],
+                                       'reference_electronic_structure': [{'energy': -0.501,
+                                                                           'occupation': 2.0,
+                                                                           'orb': '2s'},
+                                                                          {'energy': -3.132,
+                                                                           'occupation': 2.0,
+                                                                           'orb': '3s1/2'},
+                                                                          {'energy': -2.001,
+                                                                           'occupation': 2.0,
+                                                                           'orb': '3p1/2'}],
+                                       'solver': 'Koelling-Harmon'},
+                                      {'element': 'Mn',
+                                       'ionic_charge': 15.0,
+                                       'level_of_theory': 'LDA',
+                                       'pseudopotential_definition': [{'Rc': 1.803,
+                                                                       'beta': 1,
+                                                                       'e': -3.132,
+                                                                       'j': 1,
+                                                                       'l': 0,
+                                                                       'norm': 0,
+                                                                       'scheme': 'qc'}],
+                                       'reference_electronic_structure': [{'energy': -0.501,
+                                                                           'occupation': 2.0,
+                                                                           'orb': '2s'}],
+                                       'solver': 'Koelling-Harmon'}],
                                      'species_properties': {'Mn': {'pseudo_atomic_energy': -2901.7207}}})
 
     def test_get_pspot_debug(self):
         test_text = io.StringIO("""
-        ---------------------------------------
-        AE eigenvalue nl 10 = -18.40702924
-        AE eigenvalue nl 20 = -0.54031716
-        AE eigenvalue nl 21 = -0.01836880
-        ---------------------------------------
-        PS eigenvalue nl 20 = -0.54026290
-        PS eigenvalue nl 21 = -0.01829559
-        ---------------------------------------
+ ---------------------------------------
+ AE eigenvalue nl 10 = -18.40702924
+ AE eigenvalue nl 20 = -0.54031716
+ AE eigenvalue nl 21 = -0.01836880
+ ---------------------------------------
+ PS eigenvalue nl 20 = -0.54026290
+ PS eigenvalue nl 21 = -0.01829559
+ ---------------------------------------
+ Maximum eigenvalue error:   3.26E-05
+
+ Derived cutoff energies: C=  22 M=  27 F=  31 E=  36
+
+ Checking for ghost states up to   1.49010 Ha
+
+ No Ghost States Identified
+
         """)
 
         test_dict = parse_castep_file(test_text)[0]
@@ -379,6 +420,8 @@ Overall parallel efficiency rating: Satisfactory (64%)
          | Mn             2         0.166667              2.500       F       |
          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
+         Quantisation axis:    1.00000   1.00000   1.00000
+
                                   Files used for pseudopotentials:
                                     Mn 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
                                     O  my_pot.usp
@@ -391,16 +434,16 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                                        ('Mn', 2): {'fix': False,
                                                                    'magmom': 2.500,
                                                                    'spin': 0.166667}},
-                                     'species_properties': {'Mn': {'mass': 54.93805,
-                                                                   'electric_quadrupole_moment': 0.33,
+                                     'species_properties': {'Mn': {'electric_quadrupole_moment': 0.33,
+                                                                   'mass': 54.93805,
                                                                    'pseudopot': {'beta_radius': 1.8,
-                                                                                 'coarse': 12,
+                                                                                 'coarse': 12.0,
                                                                                  'core_radius': 1.8,
-                                                                                 'debug': None,
-                                                                                 'fine': 16,
+                                                                                 'fine': 16.0,
                                                                                  'local_channel': 3,
-                                                                                 'medium': 14,
-                                                                                 'opt': 'qc=7',
+                                                                                 'medium': 14.0,
+                                                                                 'opt': ['qc=7'],
+                                                                                 'print': False,
                                                                                  'proj': '30U:40:31:32',
                                                                                  'projectors': ({'orbital': 3,
                                                                                                  'shell': 's',
@@ -437,6 +480,30 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
  *******************************************************************************
         """)
+
+        """ Commented until implemented
+ ************************* Constrained DFT - deltaSCF **************************
+
+ groundstate checkpoint data in                 : N2-base.check
+ deltaSCF method                                : simple
+ deltaSCF smearing width                        :     0.0100   eV
+ deltaSCSF spin moment in channel 1             :     0.0000
+ deltaSCSF spin moment in channel 2             :     0.0000
+
+ ******************************* Developer Code ********************************
+
+ DW_FACTOR:
+ Si 0.4668
+ :ENDDW_FACTOR
+ CALCULATE_XRD_SF:
+ 0 0 0
+ 1 1 1
+ 2 2 0
+ 3 1 1
+ 2 2 2
+ :ENDCALCULATE_XRD_SF
+        """
+
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'options':
@@ -522,12 +589,32 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                                              {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}],
                                                   'num_kpoints': 2}})
 
+    def test_get_applied_efield(self):
+        test_text = io.StringIO("""
+                          Applied Electric Field (eV/A/e)
+                          0.10000   0.10000   0.10000
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
+    def test_charge_spilling(self):
+        test_text = io.StringIO("""
+Charge spilling parameter for spin component 1 = 1.31%
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
     def test_get_symmetry(self):
         test_text = io.StringIO("""
                            -------------------------------
                                Symmetry and Constraints
                            -------------------------------
 
+                      Cell is a supercell containing 2 primitive cells
                       Maximum deviation from symmetry =  0.00000         ANG
 
                       Number of symmetry operations   =           1
@@ -653,6 +740,25 @@ Overall parallel efficiency rating: Satisfactory (64%)
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'target_stress': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]})
+
+    def test_delta_scf(self):
+        test_text = io.StringIO("""
++-------------------INPUT PARAMETERS-------------------+
+Taking band from model   N2-base.check
+  MODOS state               1
+  MODOS band  nr.           5
+  MODOS band has spin       1
+  MODOS state               2
+  MODOS band  nr.           6
+  MODOS band has spin       1
+|DeltaSCF| Population of state:     5     1   1.000000
+|DeltaSCF| Population of state:     6     1   0.000000
+
+    """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
 
     def test_get_scf(self):
         test_text = io.StringIO("""
@@ -803,6 +909,42 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
                                                'fermi_energy': -1.09214177,
                                                'time': 3.84}]]})
 
+    def test_get_dipole_scf(self):
+        test_text = io.StringIO("""
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -3.02130061E+002  0.00000000E+000                         3.32  <-- SCF
+      1  -3.43042177E+002 -7.89452039E+000   2.04560579E+001       3.39  <-- SCF
+      2  -3.43046622E+002 -7.89536400E+000   2.22269514E-003       3.44  <-- SCF
+ Correcting PBC dipole-dipole with self-consistent method: dE =       0.11814 eV
+------------------------------------------------------------------------ <-- SCF
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
+    def test_get_constrained_scf(self):
+        test_text = io.StringIO("""
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -8.74382993E+002 -9.34072274E+000                         3.41  <-- SCF
+      1  -8.74894712E+002 -9.12958602E+000   5.11719101E-001      12.16  <-- SCF
+ Total constraint energy:   1.0839687043738317E-005 eV
+      2  -8.74898726E+002 -9.14432144E+000   4.01413122E-003      23.10  <-- SCF
+ Total constraint energy:   2.4886530082978212E-008 eV
+------------------------------------------------------------------------ <-- SCF
+
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
     def test_get_occupancy(self):
         test_text = io.StringIO("""
 Bands above band 2 are completely empty                           <- occ
@@ -916,6 +1058,26 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
                                       }
                                      })
 
+    def test_get_forces_mixed(self):
+        test_text = io.StringIO("""
+ ******************************** Symmetrised Forces ********************************
+ *                                                                                  *
+ *                           Cartesian components (eV/A)                            *
+ * -------------------------------------------------------------------------------- *
+ *                         x                    y                    z              *
+ *                                                                                  *
+ * Si              1      0.00000 (mixed)      0.00000 (mixed)      0.00000 (mixed) *
+ * Si              2      0.00000 (mixed)      0.00000 (mixed)      0.00000 (mixed) *
+ * Ge              1      0.00000 (mixed)      0.00000 (mixed)      0.00000 (mixed) *
+ * Ge              2      0.00000 (mixed)      0.00000 (mixed)      0.00000 (mixed) *
+ *                                                                                  *
+ ************************************************************************************
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
     def test_get_stress(self):
         test_text = io.StringIO("""
  ***************** Stress Tensor *****************
@@ -1005,12 +1167,6 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
             x------------------------------------------------------------x
             x   Si         1          0.001291   0.000320   0.001059     x
             x   Si         2          0.000729   0.504323   0.520521     x
-            x   Si         3          0.505285   0.000926   0.513655     x
-            x   Si         4          0.504063   0.505793   0.000548     x
-            x   Si         5          0.766660   0.252687   0.755706     x
-            x   Si         6          0.243421   0.253381   0.252973     x
-            x   Si         7          0.253718   0.767200   0.755971     x
-            x   Si         8          0.755457   0.745684   0.254476     x
             xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
 ------------------------------------------------------------------------ <-- SCF
@@ -1020,11 +1176,6 @@ SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
 Initial  -8.54989696E+002  0.00000000E+000                        17.06  <-- SCF
       1  -8.55716038E+002  6.32845976E+000   9.07927915E-002      17.93  <-- SCF
       2  -8.55717590E+002  6.32839049E+000   1.94010456E-004      18.95  <-- SCF
-      3  -8.55427082E+002  6.36384974E+000  -3.63134936E-002      19.82  <-- SCF
-      4  -8.55423738E+002  6.36963527E+000  -4.17969615E-004      20.82  <-- SCF
-      5  -8.55423601E+002  6.37092603E+000  -1.71325083E-005      21.69  <-- SCF
-      6  -8.55423605E+002  6.37104909E+000   4.73760243E-007      22.32  <-- SCF
-      7  -8.55423606E+002  6.37105526E+000   6.14141026E-008      22.91  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 
 Final energy, E             =  -855.4197401755     eV
@@ -1042,12 +1193,6 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
  *                                                                                  *
  * Si              1     -0.05358             -0.04038              0.69168         *
  * Si              2      0.72539              0.35380             -1.12992         *
- * Si              3      0.28302              0.67672             -1.18462         *
- * Si              4     -0.22518             -0.33054              0.04176         *
- * Si              5     -1.21595             -0.03332              0.41211         *
- * Si              6      0.53454              0.07434              0.47702         *
- * Si              7      0.18953             -0.94244              0.27110         *
- * Si              8     -0.23778              0.24183              0.42087         *
  *                                                                                  *
  ************************************************************************************
 
@@ -1098,13 +1243,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                           'final_energy': [-855.4197401755],
                           'free_energy': [-855.4236056162]},
              'forces': {'non-descript': [{('Si', 1): (-0.05358, -0.04038, 0.69168),
-                                          ('Si', 2): (0.72539, 0.3538, -1.12992),
-                                          ('Si', 3): (0.28302, 0.67672, -1.18462),
-                                          ('Si', 4): (-0.22518, -0.33054, 0.04176),
-                                          ('Si', 5): (-1.21595, -0.03332, 0.41211),
-                                          ('Si', 6): (0.53454, 0.07434, 0.47702),
-                                          ('Si', 7): (0.18953, -0.94244, 0.2711),
-                                          ('Si', 8): (-0.23778, 0.24183, 0.42087)}]},
+                                          ('Si', 2): (0.72539, 0.3538, -1.12992)}]},
              'cell': {'cell_angles': [90.0, 90.0, 90.0],
                       'density_amu': 1.403372,
                       'density_g': 2.330353,
@@ -1117,13 +1256,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                                         (0.0, 0.0, 1.157124366)],
                       'volume': 160.103007},
              'positions': {('Si', 1): (0.001291, 0.00032, 0.001059),
-                           ('Si', 2): (0.000729, 0.504323, 0.520521),
-                           ('Si', 3): (0.505285, 0.000926, 0.513655),
-                           ('Si', 4): (0.504063, 0.505793, 0.000548),
-                           ('Si', 5): (0.76666, 0.252687, 0.755706),
-                           ('Si', 6): (0.243421, 0.253381, 0.252973),
-                           ('Si', 7): (0.253718, 0.7672, 0.755971),
-                           ('Si', 8): (0.755457, 0.745684, 0.254476)},
+                           ('Si', 2): (0.000729, 0.504323, 0.520521)},
              'memory_estimate': [{'Model and support data': {'disk': 0.0, 'memory': 27.2},
                                   'Molecular Dynamics requirements': {'disk': 0.0, 'memory': 13.4}}],
              'scf': [[{'energy': -854.989696,
@@ -1137,27 +1270,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                       {'energy': -855.71759,
                        'energy_gain': 0.000194010456,
                        'fermi_energy': 6.32839049,
-                       'time': 18.95},
-                      {'energy': -855.427082,
-                       'energy_gain': -0.0363134936,
-                       'fermi_energy': 6.36384974,
-                       'time': 19.82},
-                      {'energy': -855.423738,
-                       'energy_gain': -0.000417969615,
-                       'fermi_energy': 6.36963527,
-                       'time': 20.82},
-                      {'energy': -855.423601,
-                       'energy_gain': -1.71325083e-05,
-                       'fermi_energy': 6.37092603,
-                       'time': 21.69},
-                      {'energy': -855.423605,
-                       'energy_gain': 4.73760243e-07,
-                       'fermi_energy': 6.37104909,
-                       'time': 22.32},
-                      {'energy': -855.423606,
-                       'energy_gain': 6.14141026e-08,
-                       'fermi_energy': 6.37105526,
-                       'time': 22.91}]],
+                       'time': 18.95}
+                      ]],
              'stresses': {'non-descript': [(2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)]},
              'time': 0.002}]}
                          )
@@ -1263,7 +1377,6 @@ The total projected population is   19.999   0.000
 
         self.assertEqual(test_dict, {'orbital_popn':
                                      {'total': 19.999,
-                                      'total_projected': (19.999, 0.0),
                                       ('N', 1): {'Px': 1.329,
                                                  'Py': 0.979,
                                                  'Pz': 1.284,
@@ -1285,6 +1398,19 @@ The total projected population is   19.999   0.000
                                                                        'population': 99.1},
                                                (('Si', 1), ('Si', 2)): {'length': 2.33434,
                                                                         'population': 3.06}}})
+
+    def test_get_spin_bond(self):
+        test_text = io.StringIO("""
+                 Bond                   Population        Spin       Length (A)
+================================================================================
+              Cr 1 -- Cr 2                   1.66        -0.00          2.48636
+================================================================================
+
+        """)
+        self.skipTest("Not implemented yet")
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
 
     def test_get_pair_params(self):
         test_text = io.StringIO("""
@@ -1568,7 +1694,6 @@ WL ********************************************************************
                                       'S': (0.0, 8.203, 23.849),
                                       'T': (0.0, 100.0, 200.0)}})
 
-
     def test_get_dynamical_matrix(self):
         test_text = io.StringIO("""
   ------------------------------------------------------------------------------------------------------------------
@@ -1782,6 +1907,8 @@ WL ********************************************************************
         test_text = io.StringIO("""
 Integrated Spin Density     =    0.177099E-07 hbar/2
 Integrated |Spin Density|   =     3.07611     hbar/2
+2*Integrated Spin Density (Sx,Sy,Sz) =            -2.30995        2.30855        2.30970     hbar/2
+2*Integrated |Spin Density| (|Sx|,|Sy|,|Sz|) =     2.31007        2.30867        2.30982     hbar/2
             """)
         test_dict = parse_castep_file(test_text)[0]
 
@@ -2451,6 +2578,31 @@ Ewald Contribution ::
                                                          (49.768951, 49.768951, 83.994377)],
                                       'Transverse waves': 57.783105,
                                       "Young's Modulus": (136.853034, 136.853034, 136.853034)}})
+
+
+class test_pspot_parser:
+    def test_pspot_parser(self):
+        test_text = io.StringIO("""
+1|0.8|11|15|18|10N(qc=8)[]
+1|1.2|23|29|33|20N:21L(qc=9)[]
+2|1.4|1.4|1.3|6|10|12|20:21(qc=6)
+1|0.8|0.8|0.6|2|6|8|10(qc=6)
+2|1.0|1.3|0.7|13|16|18|20:21(qc=7)
+2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]
+2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG
+2|1.9|2.1|1.3|3.675|5.512|7.35|30N1.9:31N2.1:32N2.1(tm,nonlcc)[]
+2|1.75|1.75|1.3|6.4|8.1|11|30N:31N:32L(qc=6.5)[3s2,3p1.5,3d0.25]
+2|1.8|1.8|1.3|2|3|4|30:31:32LGG(qc=4)
+2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]
+2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]
+        """)
+        self.skipTest()
+        for line in test_text:
+            pprint.pprint(_process_pspot_string(line))
+        test_dict = parse_castep_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {})
+
 
 
 if __name__ == '__main__':
