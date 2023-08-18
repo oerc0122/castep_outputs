@@ -601,12 +601,18 @@ Overall parallel efficiency rating: Satisfactory (64%)
 
     def test_charge_spilling(self):
         test_text = io.StringIO("""
-Charge spilling parameter for spin component 1 = 1.31%
+ Pseudo atomic calculation performed for Fe 3d6 4s2
+
+ Converged in 29 iterations to a total energy of -490.5382 eV
+Charge spilling parameter for spin component 1 = 0.09%
+Charge spilling parameter for spin component 2 = 0.44%
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'species_properties':
+                                     {'Fe': {'charge_spilling': [0.09, 0.44],
+                                             'pseudo_atomic_energy': -490.5382}}})
 
     def test_get_symmetry(self):
         test_text = io.StringIO("""

@@ -1,4 +1,4 @@
-# pylint: disable=too-many-lines, too-many-branches, too-many-statements
+# pylint: disable=too-many-lines, too-many-branches, too-many-statements, too-many-locals
 """
 Extract results from .castep file for comparison and further processing
 
@@ -106,7 +106,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
             if "species_properties" not in curr_run:
                 curr_run["species_properties"] = defaultdict(dict)
 
-            curr_run["species_properties"][key]["pseudo_atomic_energy"] = val
+            curr_run["species_properties"][key].update(val)
 
         # Mass
         elif block := get_block(line, castep_file, r"Mass of species in AMU", REs.EMPTY):
@@ -884,12 +884,17 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
     return runs
 
 
-def _process_ps_energy(block: TextIO) -> Tuple[str, float]:
+def _process_ps_energy(block: TextIO) -> Dict[str, float]:
     match = REs.PS_SHELL_RE.search(next(block))
-    spec = match["spec"]
+    key= match["spec"]
+    accum = defaultdict(list)
+
     next(block)
-    energy = get_numbers(next(block))[1]
-    return spec, float(energy)
+    accum["pseudo_atomic_energy"] = float(get_numbers(next(block))[1])
+    for line in block:
+        if "Charge spilling" in line:
+            accum["charge_spilling"].append(float(get_numbers(line)[-1]))
+    return key, accum
 
 
 def _process_tddft(block: TextIO) -> List[Dict[str, Union[str, float]]]:
