@@ -17,7 +17,7 @@
     ],
     "write_bib": false,
     "devel_code": {
-      "PP": {
+      "pp": {
         "test_par": 1
       },
       "improve_wvfn": false,

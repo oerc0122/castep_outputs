@@ -467,7 +467,7 @@ PP: test_par=1 :ENDPP
 %endblock devel_code
         """)
         test_dict = parse_cell_param_file(test_text)[0]
-        self.assertEqual(test_dict, {'devel_code': {'PP': {'test_par': 1},
+        self.assertEqual(test_dict, {'devel_code': {'pp': {'test_par': 1},
                                                     'bool_value': False,
                                                     'true_val': True,
                                                     'float_number': 15.12,

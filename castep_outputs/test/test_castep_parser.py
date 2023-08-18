@@ -478,10 +478,6 @@ Overall parallel efficiency rating: Satisfactory (64%)
  density-mixing scheme                          : Broyden
  max. length of mixing history                  :         20
 
- *******************************************************************************
-        """)
-
-        """ Commented until implemented
  ************************* Constrained DFT - deltaSCF **************************
 
  groundstate checkpoint data in                 : N2-base.check
@@ -502,19 +498,30 @@ Overall parallel efficiency rating: Satisfactory (64%)
  3 1 1
  2 2 2
  :ENDCALCULATE_XRD_SF
-        """
+
+ *******************************************************************************
+        """)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'options':
-                                     {'output_units': {'length': 'A'},
-                                      'general': {'output verbosity': 'normal (1)',
-                                                  'write checkpoint data to': 'beta-mn.check',
-                                                  },
-                                      'density mixing': {'density-mixing scheme': 'Broyden',
-                                                         'max. length of mixing history': '20'}
-                                      }
-                                     })
+        self.assertEqual(test_dict, {'options': {'constrained dft - deltascf':
+                                                 {'deltaSCF method': 'simple',
+                                                  'deltaSCF smearing width': (0.01,
+                                                                              'eV'),
+                                                  'deltaSCSF spin moment in channel 1': 0.0,
+                                                  'deltaSCSF spin moment in channel 2': 0.0,
+                                                  'groundstate checkpoint data in': 'N2-base.check'},
+                                                 'density mixing': {'density-mixing scheme': 'Broyden',
+                                                                    'max. length of mixing history': 20},
+                                                 'devel_code': {'calculate_xrd_sf': {'data': [0, 0, 0,
+                                                                                              1, 1, 1,
+                                                                                              2, 2, 0,
+                                                                                              3, 1, 1,
+                                                                                              2, 2, 2]},
+                                                                'dw_factor': {'data': ['Si', 0.4668]}},
+                                                 'general': {'output verbosity': 'normal (1)',
+                                                             'write checkpoint data to': 'beta-mn.check'},
+                                                 'output_units': {'length': 'A'}}})
 
     def test_get_dftd_params(self):
         test_text = io.StringIO("""

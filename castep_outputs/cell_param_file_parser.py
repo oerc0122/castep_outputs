@@ -57,23 +57,30 @@ def _parse_devel_code_block(in_block: TextIO) -> Dict[str, Union[str, float, int
     """ Parse devel_code block to dict """
 
     in_block = in_block.read()
-
-    matches = re.finditer(REs.DEVEL_CODE_BLOCK_RE, in_block, re.IGNORECASE | re.MULTILINE)
-
+    in_block = " ".join(in_block.splitlines())
+    matches = re.finditer(REs.DEVEL_CODE_BLOCK_GENERIC_RE, in_block, re.IGNORECASE | re.MULTILINE)
     devel_code_parsed = {}
 
     # Get groups
     for blk in matches:
         block_title = blk.group(1)
+        block_str = blk.group(0).split(":")[1]
         block = {}
-        for par in re.finditer(REs.DEVEL_CODE_VAL_RE, blk.group(0),
+        for par in re.finditer(REs.DEVEL_CODE_VAL_RE, block_str,
                                re.IGNORECASE | re.MULTILINE):
 
             key, val = re.split("[:=]", par.group(0))
             typ = determine_type(val)
             block[key] = to_type(val, typ)
+            block_str = block_str.replace(par.group(0), "")
 
-        devel_code_parsed[block_title] = block
+        if block_str.strip():
+            block["data"] = []
+
+        for par in block_str.split():
+            block["data"].append(to_type(par, determine_type(par)))
+
+        devel_code_parsed[block_title.lower()] = block
 
         # Remove matched to get remainder
         in_block = in_block.replace(blk.group(0), "")
