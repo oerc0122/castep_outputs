@@ -17,8 +17,9 @@ from .castep_res import labelled_floats, get_numbers, get_block, gen_table_re
 from .constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
 
 from .utility import (fix_data_types, add_aliases, to_type,
-                      stack_dict, normalise_string,
-                      atreg_to_index, log_factory)
+                      stack_dict, normalise_string, atreg_to_index,
+                      log_factory, determine_type)
+from .cell_param_file_parser import _parse_devel_code_block
 from .extra_files_parser import (parse_bands_file,
                                  parse_hug_file,
                                  parse_phonon_dos_file,
@@ -987,10 +988,15 @@ def _process_params(block: TextIO) -> Dict[str, str]:
     curr_group = ""
 
     for line in block:
-        if match := re.match(r"\s*\*+ ([A-Za-z ]+) Parameters \*+", line):
+        if dev_block := get_block(line, block, "Developer Code", gen_table_re("", r"\*+")):
+
+            opt["devel_code"] = _parse_devel_code_block(dev_block)
+
+        elif match := re.match(r"\s*\*+ ([A-Za-z -]+) \*+", line):
             if curr_opt:
                 opt[curr_group] = curr_opt
-            curr_group = normalise_string(match.group(1)).lower()
+
+            curr_group = normalise_string(match.group(1).replace("Parameters", "")).lower()
             curr_opt = {}
 
         elif match := re.match(r"\s*output (?P<key>.*) unit\s*:\s*(?P<val>.*)", line):
@@ -1005,7 +1011,13 @@ def _process_params(block: TextIO) -> Dict[str, str]:
 
         elif len(match := line.split(":")) > 1:
             *key, val = map(normalise_string, match)
-            curr_opt[" ".join(key).strip()] = val.strip()
+            if val.split() and REs.NUMBER_RE.match(val.split()[0]):
+                val, *unit = val.split()
+                val = to_type(val, determine_type(val))
+                if unit:
+                    val = (val, *unit)
+            curr_opt[" ".join(key).strip()] = val
+
 
     if curr_opt:
         opt[curr_group] = curr_opt

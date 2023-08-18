@@ -114,27 +114,42 @@
     Force calculation requirements: {disk: 0.0, memory: 9.8}
     Model and support data: {disk: 0.0, memory: 3776.4}
   options:
-    basis set: {finite basis set correction: none, plane wave basis set cut-off: 500.0000
-        eV, size of fine gmax: 20.0476 1/A, size of standard grid: '1.7500'}
-    electronic: {electron temperature: 0.0000 K, net charge of system: '0.000', number of bands: '420',
-      number of electrons: '300.0'}
-    electronic minimization: {Fermi energy convergence tolerance: 0.2721E-13 eV, Method: 'Treating
-        system as metallic with ensemble DFT treatment of electrons,', and number of CG steps: '4',
-      and number of SD steps: '1', convergence tolerance window: 3 cycles, max force / atom convergence tol.: ignored,
-      max. number of SCF cycles: '50', number of fixed-spin iterations: '10', number of occupancy cycles: '6',
-      periodic dipole correction: NONE, smearing scheme: Gaussian, smearing width: 0.2000
-        eV, total energy / atom convergence tol.: 0.1000E-02 eV}
-    general: {DFT+D Semi-empirical dispersion correction: off, Hirshfeld analysis: off,
-      checkpoint writing: both castep_bin and check files, data distribution: optimal
-        for this architecture, deltaSCF calculation: off, density difference calculation: off,
-      electron localisation func (ELF) calculation: off, memory usage estimate: on,
-      molecular orbital projected DOS: off, optimization strategy: maximize speed(+++),
-      output verbosity: normal (1), polarisation (Berry phase) analysis: off, random number generator seed: '115718445',
-      relativistic treatment: Koelling-Harmon, stress calculation: off, timing information: on,
-      type of calculation: single point energy, using functional: Local Density Approximation,
-      wavefunctions paging: none, write BibTeX reference list: off, write OTFG pseudopotential files: on,
-      write bands file: on, write checkpoint data to: beta-mn.check, write electrostatic potential file: on,
-      write extra output files: on, write final density to formatted file: off, write final potential to formatted file: off}
+    basis set:
+      finite basis set correction: none
+      plane wave basis set cut-off: [500.0, eV]
+      size of fine gmax: [20.0476, 1/A]
+      size of standard grid: 1.75
+    electronic:
+      electron temperature: [0.0, K]
+      net charge of system: 0.0
+      number of bands: 420
+      number of electrons: 300.0
+    electronic minimization:
+      Fermi energy convergence tolerance: [2.721e-14, eV]
+      Method: Treating system as metallic with ensemble DFT treatment of electrons,
+      and number of CG steps: 4
+      and number of SD steps: 1
+      convergence tolerance window: [3, cycles]
+      max force / atom convergence tol.: ignored
+      max. number of SCF cycles: 50
+      number of fixed-spin iterations: 10
+      number of occupancy cycles: 6
+      periodic dipole correction: NONE
+      smearing scheme: Gaussian
+      smearing width: [0.2, eV]
+      total energy / atom convergence tol.: [0.001, eV]
+    exchange-correlation: {DFT+D Semi-empirical dispersion correction: off, relativistic treatment: Koelling-Harmon,
+      using functional: Local Density Approximation}
+    general: {Hirshfeld analysis: off, checkpoint writing: both castep_bin and check
+        files, data distribution: optimal for this architecture, deltaSCF calculation: off,
+      density difference calculation: off, electron localisation func (ELF) calculation: off,
+      memory usage estimate: on, molecular orbital projected DOS: off, optimization strategy: maximize
+        speed(+++), output verbosity: normal (1), polarisation (Berry phase) analysis: off,
+      random number generator seed: 115718445, stress calculation: off, timing information: on,
+      type of calculation: single point energy, wavefunctions paging: none, write BibTeX reference list: off,
+      write OTFG pseudopotential files: on, write bands file: on, write checkpoint data to: beta-mn.check,
+      write electrostatic potential file: on, write extra output files: on, write final density to formatted file: off,
+      write final potential to formatted file: off}
     output_units: {IR intensity: (D/A)**2/amu, charge: e, dipole: D, efield: eV/A/e,
       efield chi2: pm/V, energy: eV, entropy: J/mol/K, force: eV/A, force constant: eV/A**2,
       frequency: cm-1, inv_length: 1/A, length: A, mass: amu, pressure: GPa, spin: hbar/2,
@@ -312,31 +327,48 @@
     Force calculation requirements: {disk: 0.0, memory: 9.8}
     Model and support data: {disk: 0.0, memory: 3780.5}
   options:
-    basis set: {finite basis set correction: none, largest prime factor in FFT: '5',
-      plane wave basis set cut-off: 500.0000 eV, size of fine gmax: 20.0476 1/A, size of standard grid: '1.7500'}
-    density mixing: {charge density mixing amplitude: '0.8000', charge density mixing g-vector: 1.500
-        1/A, cut-off energy for mixing: 500.0 eV, density-mixing scheme: Broyden,
-      max. length of mixing history: '20', spin density mixing amplitude: '0.5000',
-      spin density mixing g-vector: 1.500 1/A}
-    electronic: {net charge of system: '0.000', number of bands: '420', number of electrons: '300.0'}
-    electronic minimization: {Fermi energy convergence tolerance: 0.2721E-13 eV, Method: 'Treating
-        system as metallic with density mixing treatment of electrons,', and number of CG steps: '4',
-      and number of SD steps: '1', convergence tolerance window: 3 cycles, eigen-energy convergence tolerance: 0.1000E-05
-        eV, max force / atom convergence tol.: ignored, max. number of SCF cycles: '50',
-      number of fixed-spin iterations: '10', periodic dipole correction: NONE, smearing scheme: Gaussian,
-      smearing width: 0.2000 eV, total energy / atom convergence tol.: 0.1000E-02
-        eV}
-    general: {DFT+D Semi-empirical dispersion correction: off, Hirshfeld analysis: off,
-      checkpoint writing: both castep_bin and check files, data distribution: optimal
-        for this architecture, deltaSCF calculation: off, density difference calculation: off,
-      electron localisation func (ELF) calculation: off, memory usage estimate: on,
-      molecular orbital projected DOS: off, optimization strategy: maximize speed(+++),
-      output verbosity: normal (1), polarisation (Berry phase) analysis: off, random number generator seed: '194517207',
-      relativistic treatment: Koelling-Harmon, stress calculation: off, timing information: on,
-      type of calculation: single point energy, using functional: Local Density Approximation,
-      wavefunctions paging: none, write BibTeX reference list: off, write OTFG pseudopotential files: on,
-      write bands file: on, write checkpoint data to: beta-mn.check, write electrostatic potential file: on,
-      write extra output files: on, write final density to formatted file: off, write final potential to formatted file: off}
+    basis set:
+      finite basis set correction: none
+      largest prime factor in FFT: 5
+      plane wave basis set cut-off: [500.0, eV]
+      size of fine gmax: [20.0476, 1/A]
+      size of standard grid: 1.75
+    density mixing:
+      charge density mixing amplitude: 0.8
+      charge density mixing g-vector: [1.5, 1/A]
+      cut-off energy for mixing: [500.0, eV]
+      density-mixing scheme: Broyden
+      max. length of mixing history: 20
+      spin density mixing amplitude: 0.5
+      spin density mixing g-vector: [1.5, 1/A]
+    devel_code: {improve_wvfn: off}
+    electronic: {net charge of system: 0.0, number of bands: 420, number of electrons: 300.0}
+    electronic minimization:
+      Fermi energy convergence tolerance: [2.721e-14, eV]
+      Method: Treating system as metallic with density mixing treatment of electrons,
+      and number of CG steps: 4
+      and number of SD steps: 1
+      convergence tolerance window: [3, cycles]
+      eigen-energy convergence tolerance: [1e-06, eV]
+      max force / atom convergence tol.: ignored
+      max. number of SCF cycles: 50
+      number of fixed-spin iterations: 10
+      periodic dipole correction: NONE
+      smearing scheme: Gaussian
+      smearing width: [0.2, eV]
+      total energy / atom convergence tol.: [0.001, eV]
+    exchange-correlation: {DFT+D Semi-empirical dispersion correction: off, relativistic treatment: Koelling-Harmon,
+      using functional: Local Density Approximation}
+    general: {Hirshfeld analysis: off, checkpoint writing: both castep_bin and check
+        files, data distribution: optimal for this architecture, deltaSCF calculation: off,
+      density difference calculation: off, electron localisation func (ELF) calculation: off,
+      memory usage estimate: on, molecular orbital projected DOS: off, optimization strategy: maximize
+        speed(+++), output verbosity: normal (1), polarisation (Berry phase) analysis: off,
+      random number generator seed: 194517207, stress calculation: off, timing information: on,
+      type of calculation: single point energy, wavefunctions paging: none, write BibTeX reference list: off,
+      write OTFG pseudopotential files: on, write bands file: on, write checkpoint data to: beta-mn.check,
+      write electrostatic potential file: on, write extra output files: on, write final density to formatted file: off,
+      write final potential to formatted file: off}
     output_units: {IR intensity: (D/A)**2/amu, charge: e, dipole: D, efield: eV/A/e,
       efield chi2: pm/V, energy: eV, entropy: J/mol/K, force: eV/A, force constant: eV/A**2,
       frequency: cm-1, inv_length: 1/A, length: A, mass: amu, pressure: GPa, spin: hbar/2,

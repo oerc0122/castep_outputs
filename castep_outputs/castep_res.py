@@ -348,7 +348,8 @@ BANDS_FERMI_RE = re.compile(r"Fermi energ(ies|y) \(in atomic units\)\s*" +
 # rf"K-point\s+(\d+)\s*(\s*{FNUMBER_RE})\s*({FNUMBER_RE})\s*({FNUMBER_RE})\s*({FNUMBER_RE})"
 
 DEVEL_CODE_VAL_RE = r'[A-Za-z0-9_]+[:=]\S+'
-DEVEL_CODE_BLOCK_RE = rf'([A-Za-z0-9_]+):(?:\s*{DEVEL_CODE_VAL_RE}\s*)*:end\S+'
+DEVEL_CODE_BLOCK_RE = rf'([A-Za-z0-9_]+):(?:\s*{DEVEL_CODE_VAL_RE}\s*)*:end\1'
+DEVEL_CODE_BLOCK_GENERIC_RE = r'([A-Za-z0-9_]+):(?:.*):end\1'
 
 PARAM_VALUE_RE = re.compile(rf"""
 ^\s*(?P<key>[a-z_]+)

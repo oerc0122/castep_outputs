@@ -253,9 +253,11 @@
         "write bands file": "on",
         "checkpoint writing": "both castep_bin and check files",
         "wavefunctions paging": "none",
-        "random number generator seed": "115718445",
+        "random number generator seed": 115718445,
         "data distribution": "optimal for this architecture",
-        "optimization strategy": "maximize speed(+++)",
+        "optimization strategy": "maximize speed(+++)"
+      },
+      "exchange-correlation": {
         "using functional": "Local Density Approximation",
         "relativistic treatment": "Koelling-Harmon",
         "DFT+D Semi-empirical dispersion correction": "off"
@@ -266,30 +268,51 @@
         "spin-orbit coupling": "on"
       },
       "basis set": {
-        "plane wave basis set cut-off": "500.0000 eV",
-        "size of standard grid": "1.7500",
-        "size of fine gmax": "20.0476 1/A",
+        "plane wave basis set cut-off": [
+          500.0,
+          "eV"
+        ],
+        "size of standard grid": 1.75,
+        "size of fine gmax": [
+          20.0476,
+          "1/A"
+        ],
         "finite basis set correction": "none"
       },
       "electronic": {
-        "number of electrons": "300.0",
-        "net charge of system": "0.000",
-        "number of bands": "420",
-        "electron temperature": "0.0000 K"
+        "number of electrons": 300.0,
+        "net charge of system": 0.0,
+        "number of bands": 420,
+        "electron temperature": [
+          0.0,
+          "K"
+        ]
       },
       "electronic minimization": {
         "Method": "Treating system as metallic with ensemble DFT treatment of electrons,",
-        "and number of SD steps": "1",
-        "and number of CG steps": "4",
-        "total energy / atom convergence tol.": "0.1000E-02 eV",
+        "and number of SD steps": 1,
+        "and number of CG steps": 4,
+        "total energy / atom convergence tol.": [
+          0.001,
+          "eV"
+        ],
         "max force / atom convergence tol.": "ignored",
-        "convergence tolerance window": "3 cycles",
-        "max. number of SCF cycles": "50",
-        "number of fixed-spin iterations": "10",
+        "convergence tolerance window": [
+          3,
+          "cycles"
+        ],
+        "max. number of SCF cycles": 50,
+        "number of fixed-spin iterations": 10,
         "smearing scheme": "Gaussian",
-        "smearing width": "0.2000 eV",
-        "Fermi energy convergence tolerance": "0.2721E-13 eV",
-        "number of occupancy cycles": "6",
+        "smearing width": [
+          0.2,
+          "eV"
+        ],
+        "Fermi energy convergence tolerance": [
+          2.721e-14,
+          "eV"
+        ],
+        "number of occupancy cycles": 6,
         "periodic dipole correction": "NONE"
       }
     },
@@ -861,9 +884,11 @@
         "write bands file": "on",
         "checkpoint writing": "both castep_bin and check files",
         "wavefunctions paging": "none",
-        "random number generator seed": "194517207",
+        "random number generator seed": 194517207,
         "data distribution": "optimal for this architecture",
-        "optimization strategy": "maximize speed(+++)",
+        "optimization strategy": "maximize speed(+++)"
+      },
+      "exchange-correlation": {
         "using functional": "Local Density Approximation",
         "relativistic treatment": "Koelling-Harmon",
         "DFT+D Semi-empirical dispersion correction": "off"
@@ -874,40 +899,73 @@
         "spin-orbit coupling": "on"
       },
       "basis set": {
-        "plane wave basis set cut-off": "500.0000 eV",
-        "size of standard grid": "1.7500",
-        "size of fine gmax": "20.0476 1/A",
-        "largest prime factor in FFT": "5",
+        "plane wave basis set cut-off": [
+          500.0,
+          "eV"
+        ],
+        "size of standard grid": 1.75,
+        "size of fine gmax": [
+          20.0476,
+          "1/A"
+        ],
+        "largest prime factor in FFT": 5,
         "finite basis set correction": "none"
       },
       "electronic": {
-        "number of electrons": "300.0",
-        "net charge of system": "0.000",
-        "number of bands": "420"
+        "number of electrons": 300.0,
+        "net charge of system": 0.0,
+        "number of bands": 420
       },
       "electronic minimization": {
         "Method": "Treating system as metallic with density mixing treatment of electrons,",
-        "and number of SD steps": "1",
-        "and number of CG steps": "4",
-        "total energy / atom convergence tol.": "0.1000E-02 eV",
-        "eigen-energy convergence tolerance": "0.1000E-05 eV",
+        "and number of SD steps": 1,
+        "and number of CG steps": 4,
+        "total energy / atom convergence tol.": [
+          0.001,
+          "eV"
+        ],
+        "eigen-energy convergence tolerance": [
+          1e-06,
+          "eV"
+        ],
         "max force / atom convergence tol.": "ignored",
-        "convergence tolerance window": "3 cycles",
-        "max. number of SCF cycles": "50",
-        "number of fixed-spin iterations": "10",
+        "convergence tolerance window": [
+          3,
+          "cycles"
+        ],
+        "max. number of SCF cycles": 50,
+        "number of fixed-spin iterations": 10,
         "smearing scheme": "Gaussian",
-        "smearing width": "0.2000 eV",
-        "Fermi energy convergence tolerance": "0.2721E-13 eV",
+        "smearing width": [
+          0.2,
+          "eV"
+        ],
+        "Fermi energy convergence tolerance": [
+          2.721e-14,
+          "eV"
+        ],
         "periodic dipole correction": "NONE"
+      },
+      "devel_code": {
+        "improve_wvfn": "off"
       },
       "density mixing": {
         "density-mixing scheme": "Broyden",
-        "max. length of mixing history": "20",
-        "charge density mixing amplitude": "0.8000",
-        "spin density mixing amplitude": "0.5000",
-        "cut-off energy for mixing": "500.0 eV",
-        "charge density mixing g-vector": "1.500 1/A",
-        "spin density mixing g-vector": "1.500 1/A"
+        "max. length of mixing history": 20,
+        "charge density mixing amplitude": 0.8,
+        "spin density mixing amplitude": 0.5,
+        "cut-off energy for mixing": [
+          500.0,
+          "eV"
+        ],
+        "charge density mixing g-vector": [
+          1.5,
+          "1/A"
+        ],
+        "spin density mixing g-vector": [
+          1.5,
+          "1/A"
+        ]
       }
     },
     "initial_cell": {
