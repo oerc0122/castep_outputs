@@ -234,18 +234,19 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> Dict[str, Union[int, float]]:
     headers = xrd_sf_file.readline().split()[3:]
     # Turn Re(x) into x_re
     headers = [(head[3:-1]+"_"+head[0:2]).lower() for head in headers]
+    headers_wo = {head[:-3] for head in headers}
 
     xrd_re = re.compile(rf"(?P<qvec>(?:\s*{REs.INTNUMBER_RE}){{3}})" +
                         labelled_floats(headers))
 
     xrd = defaultdict(list)
     for line in xrd_sf_file:
-        match = xrd_re.match(line)
-        stack_dict(xrd, match.groupdict())
-
-    if xrd:
-        xrd["qvec"] = [[*map(int, qvec)] for x in xrd["qvec"] if (qvec := x.split())]
-        fix_data_types(xrd, {head: float for head in headers})
+        match = xrd_re.match(line).groupdict()
+        accum = {head: complex(float(match[f"{head}_re"]),
+                               float(match[f"{head}_im"]))
+                 for head in headers_wo}
+        accum["qvec"] = to_type(match["qvec"].split(), int)
+        stack_dict(xrd, accum)
 
     return xrd
 
