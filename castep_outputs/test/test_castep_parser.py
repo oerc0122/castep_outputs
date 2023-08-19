@@ -601,10 +601,10 @@ Overall parallel efficiency rating: Satisfactory (64%)
                           Applied Electric Field (eV/A/e)
                           0.10000   0.10000   0.10000
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'applied_field': (0.1, 0.1, 0.1)})
 
     def test_charge_spilling(self):
         test_text = io.StringIO("""

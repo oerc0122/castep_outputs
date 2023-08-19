@@ -377,6 +377,12 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
             curr_run["k-points"] = _process_kpoint_blocks(block, False)
 
+        elif "Applied Electric Field" in line:
+
+            logger("Found electric field")
+            line = next(castep_file)
+            curr_run["applied_field"] = to_type(get_numbers(line), float)
+
         # Forces blocks
         elif block := get_block(line, castep_file, REs.FORCES_BLOCK_RE, r"^\s*\*+$"):
             if "forces" not in curr_run:
