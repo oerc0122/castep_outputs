@@ -646,6 +646,7 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         """)
         test_dict = parse_castep_file(test_text)[0]
+
         self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 0,
                                                      'Number of ionic constraints': 3,
                                                      'cell_constraints': (1, 2, 3, 4, 5, 6),
@@ -653,7 +654,8 @@ Charge spilling parameter for spin component 2 = 0.44%
                                      'symmetries': {'Maximum deviation from symmetry': '0.00000 ANG',
                                                     'Number of symmetry operations': 1,
                                                     'Point group of crystal': '1: C1, 1, 1',
-                                                    'Space group of crystal': '1: P1, P 1'}})
+                                                    'Space group of crystal': '1: P1, P 1',
+                                                    'n_primitives': 2}})
 
         test_text = io.StringIO("""
                            -------------------------------
