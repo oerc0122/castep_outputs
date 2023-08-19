@@ -152,6 +152,15 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["options"] = _process_params(block)
 
+        # Quantisation axis
+        elif "Quantisation axis" in line:
+            if "species_props" not in to_parse:
+                continue
+
+            logger("Found Quantisation axis")
+
+            curr_run["quantisation_axis"] = to_type(get_numbers(line), float)
+
         # Pseudo-atomic energy
         elif block := get_block(line, castep_file, REs.PS_SHELL_RE, REs.EMPTY, cnt=2):
 
