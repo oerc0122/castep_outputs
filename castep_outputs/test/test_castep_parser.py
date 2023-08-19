@@ -935,10 +935,21 @@ Initial  -3.02130061E+002  0.00000000E+000                         3.32  <-- SCF
  Correcting PBC dipole-dipole with self-consistent method: dE =       0.11814 eV
 ------------------------------------------------------------------------ <-- SCF
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'scf': [[{'energy': -302.130061,
+                                               'energy_gain': None,
+                                               'fermi_energy': 0.0,
+                                               'time': 3.32},
+                                              {'energy': -343.042177,
+                                               'energy_gain': 20.4560579,
+                                               'fermi_energy': -7.89452039,
+                                               'time': 3.39},
+                                              {'dipole_corr_energy': 0.11814,
+                                               'energy': -343.046622,
+                                               'energy_gain': 0.00222269514,
+                                               'fermi_energy': -7.895364,
+                                               'time': 3.44}]]})
 
     def test_get_constrained_scf(self):
         test_text = io.StringIO("""
@@ -954,10 +965,22 @@ Initial  -8.74382993E+002 -9.34072274E+000                         3.41  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'scf': [[{'energy': -874.382993,
+                                               'energy_gain': None,
+                                               'fermi_energy': -9.34072274,
+                                               'time': 3.41},
+                                              {'constraint_energy': 1.0839687043738317e-05,
+                                               'energy': -874.894712,
+                                               'energy_gain': 0.511719101,
+                                               'fermi_energy': -9.12958602,
+                                               'time': 12.16},
+                                              {'constraint_energy': 2.4886530082978212e-08,
+                                               'energy': -874.898726,
+                                               'energy_gain': 0.00401413122,
+                                               'fermi_energy': -9.14432144,
+                                               'time': 23.1}]]})
 
     def test_get_occupancy(self):
         test_text = io.StringIO("""
