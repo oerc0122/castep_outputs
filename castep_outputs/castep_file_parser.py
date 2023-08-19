@@ -550,7 +550,7 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
         # Bond analysis
         elif block := get_block(line, castep_file,
-                                r"Bond\s+Population\s+Length",
+                                r"Bond\s+Population(?:\s+Spin)?\s+Length",
                                 gen_table_re("", "=+"), cnt=2):
 
             logger("Found bond info")
@@ -887,14 +887,14 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
 
 def _process_ps_energy(block: TextIO) -> Dict[str, float]:
     match = REs.PS_SHELL_RE.search(next(block))
-    key= match["spec"]
+    key = match["spec"]
     accum = defaultdict(list)
 
     next(block)
     accum["pseudo_atomic_energy"] = float(get_numbers(next(block))[1])
     for line in block:
         if "Charge spilling" in line:
-            accum["charge_spilling"].append(float(get_numbers(line)[-1]))
+            accum["charge_spilling"].append(0.01*float(get_numbers(line)[-1]))
     return key, accum
 
 
@@ -1017,7 +1017,6 @@ def _process_params(block: TextIO) -> Dict[str, str]:
                 if unit:
                     val = (val, *unit)
             curr_opt[" ".join(key).strip()] = val
-
 
     if curr_opt:
         opt[curr_group] = curr_opt
@@ -1536,10 +1535,17 @@ def _process_pspot_report(block: TextIO) -> Dict[str, Union[float, str]]:
 
 def _process_bond_analysis(block: TextIO) -> Dict[Tuple[AtomIndex, AtomIndex], Dict[str, float]]:
     accum = {((match["spec1"], int(match["ind1"])),
-              (match["spec2"], int(match["ind2"]))): {"population": float(match["population"]),
-                                                      "length": float(match["length"])}
+              (match["spec2"], int(match["ind2"]))):
+             {"population": float(match["population"]),
+              "spin": float(match["spin"]) if match["spin"] else None,
+              "length": float(match["length"])}
              for line in block
              if (match := REs.BOND_RE.match(line))}
+
+    for val in accum.values():
+        if not val["spin"]:
+            del val["spin"]
+
     return accum
 
 

@@ -618,7 +618,7 @@ Charge spilling parameter for spin component 2 = 0.44%
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'species_properties':
-                                     {'Fe': {'charge_spilling': [0.09, 0.44],
+                                     {'Fe': {'charge_spilling': [0.0009, 0.0044],
                                              'pseudo_atomic_energy': -490.5382}}})
 
     def test_get_symmetry(self):
@@ -1416,14 +1416,16 @@ The total projected population is   19.999   0.000
         test_text = io.StringIO("""
                  Bond                   Population        Spin       Length (A)
 ================================================================================
-              Cr 1 -- Cr 2                   1.66        -0.00          2.48636
+              Cr 1 -- Cr 2                   1.66        -0.15          2.48636
 ================================================================================
 
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'bonds': {(('Cr', 1), ('Cr', 2)): {'length': 2.48636,
+                                                                        'population': 1.66,
+                                                                        'spin': -0.15}}})
 
     def test_get_pair_params(self):
         test_text = io.StringIO("""
