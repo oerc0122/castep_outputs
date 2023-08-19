@@ -420,7 +420,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
          | Mn             2         0.166667              2.500       F       |
          xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
 
-         Quantisation axis:    1.00000   1.00000   1.00000
+         Quantisation axis:    1.00000   2.00000   3.00000
 
                                   Files used for pseudopotentials:
                                     Mn 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
@@ -462,7 +462,8 @@ Overall parallel efficiency rating: Satisfactory (64%)
                                                             'O': {'mass': 15.9993815,
                                                                   'electric_quadrupole_moment': 1.0,
                                                                   'pseudopot': 'my_pot.usp'}
-                                                            }
+                                                            },
+                                     'quantisation_axis': (1.0, 2.0, 3.0)
                                      })
 
     def test_get_params(self):
