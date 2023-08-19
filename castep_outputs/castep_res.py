@@ -188,7 +188,7 @@ BOND_RE = re.compile(rf"""\s*
                        (?P<spec1>{ATOM_NAME_RE})\s*(?P<ind1>\d+)\s*
                        --\s*
                        (?P<spec2>{ATOM_NAME_RE})\s*(?P<ind2>\d+)\s*
-                       {labelled_floats(("population", "length"))}
+                       {labelled_floats(("population", "spin", "length"), counts=(None,"0,1",None))}
                        """, re.VERBOSE)
 
 # Pair pot
