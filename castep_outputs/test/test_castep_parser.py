@@ -1959,35 +1959,121 @@ Species   Ion     Hirshfeld Charge (e)
 
     def test_geom_output(self):
         test_text = io.StringIO("""
- LBFGS: finished iteration     0 with enthalpy= -1.31770077E+003 eV
+ LBFGS: finished iteration     0 with enthalpy= -2.29374356E+003 eV
+
+ +-----------+-----------------+-----------------+------------+-----+ <-- LBFGS
+ | Parameter |      value      |    tolerance    |    units   | OK? | <-- LBFGS
+ +-----------+-----------------+-----------------+------------+-----+ <-- LBFGS
+ |  dE/ion   |   0.000000E+000 |   2.500000E-005 |         eV | No  | <-- LBFGS
+ |  |F|max   |   4.266993E-001 |   5.000000E-002 |       eV/A | No  | <-- LBFGS
+ |  |dR|max  |   0.000000E+000 |   1.000000E-003 |          A | No  | <-- LBFGS
+ |   Smax    |   1.278436E+001 |   2.500000E-001 |        GPa | No  | <-- LBFGS
+ +-----------+-----------------+-----------------+------------+-----+ <-- LBFGS
+
 
 ================================================================================
  Starting LBFGS iteration          1 ...
 ================================================================================
 
- TPSD: finished iteration     0 with enthalpy= -2.16058016E+002 eV
+ +------------+-------------+-------------+-----------------+ <-- min LBFGS
+ |    Step    |   lambda    |   F.delta'  |    enthalpy     | <-- min LBFGS
+ +------------+-------------+-------------+-----------------+ <-- min LBFGS
+ |  previous  |    0.000000 |    0.306114 |    -2293.743561 | <-- min LBFGS
+ +------------+-------------+-------------+-----------------+ <-- min LBFGS
 
- +------------+-------------+-------------+-----------------+ <-- min TPSD
- |    Step    |   lambda    |   F.delta'  |    enthalpy     | <-- min TPSD
- +------------+-------------+-------------+-----------------+ <-- min TPSD
- |  previous  |    0.000000 |    0.203755 |     -216.058941 | <-- min TPSD
- +------------+-------------+-------------+-----------------+ <-- min TPSD
 
- +------------+-------------+-------------+-----------------+ <-- min TPSD
- |    Step    |   lambda    |   F.delta'  |    enthalpy     | <-- min TPSD
- +------------+-------------+-------------+-----------------+ <-- min TPSD
- |  previous  |    0.000000 |    0.204256 |     -216.058016 | <-- min TPSD
- | trial step |    0.001727 |    0.204121 |     -216.058941 | <-- min TPSD
- +------------+-------------+-------------+-----------------+ <-- min TPSD
+--------------------------------------------------------------------------------
+ LBFGS: starting iteration         1 with trial guess (lambda=  1.000000)
+--------------------------------------------------------------------------------
 
- +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
- | Parameter |      value      |    tolerance    |    units   | OK? | <-- TPSD
- +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
- |  dE/ion   |   0.000000E+000 |   2.000000E-005 |         eV | No  | <-- TPSD
- |  |F|max   |   5.299770E-001 |   5.000000E-002 |       eV/A | No  | <-- TPSD
- |  |dR|max  |   0.000000E+000 |   1.000000E-003 |          A | Yes | <-- TPSD
- |   Smax    |   1.736649E+001 |   1.000000E-001 |        GPa | No  | <-- TPSD
- +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
++---------------- MEMORY AND SCRATCH DISK ESTIMATES PER PROCESS --------------+
+|                                                     Memory          Disk    |
+| Model and support data                               64.3 MB         0.0 MB |
+| Electronic energy minimisation requirements           4.0 MB         0.0 MB |
+| Geometry minimisation requirements                    4.6 MB         0.0 MB |
+|                                               ----------------------------- |
+| Approx. total storage required per process           72.9 MB         0.0 MB |
+|                                                                             |
+| Requirements will fluctuate during execution and may exceed these estimates |
++-----------------------------------------------------------------------------+
+
+
+                           -------------------------------
+                                      Unit Cell
+                           -------------------------------
+        Real Lattice(A)              Reciprocal Lattice(1/A)
+     4.6386363     0.0000000     0.0000000        1.354532869   0.000000000   0.000000000
+     0.0000000     4.6386363     0.0000000        0.000000000   1.354532869   0.000000000
+     0.0000000     0.0000000     2.9814282        0.000000000   0.000000000   2.107441421
+
+                       Lattice parameters(A)       Cell Angles
+                    a =      4.638636          alpha =   90.000000
+                    b =      4.638636          beta  =   90.000000
+                    c =      2.981428          gamma =   90.000000
+
+                Current cell volume =            64.151231 A**3
+                            density =             2.489923 amu/A**3
+                                    =             4.134614 g/cm^3
+
+                           -------------------------------
+                                     Cell Contents
+                           -------------------------------
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x  Element         Atom        Fractional coordinates of atoms  x
+            x                 Number           u          v          w      x
+            x---------------------------------------------------------------x
+            x  O                 1         0.299872   0.299872  -0.000000   x
+            x  Ti                1         0.000000   0.000000   0.000000   x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy                           Energy gain       Timer   <-- SCF
+                                               per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -2.29119717E+003                                         26.80  <-- SCF
+      1  -2.29452355E+003                    5.54395796E-001      27.00  <-- SCF
+      2  -2.29463448E+003                    1.84884599E-002      27.57  <-- SCF
+------------------------------------------------------------------------ <-- SCF
+
+Final energy =  -2293.681052478     eV
+(energy not corrected for finite basis set)
+
+
+ ******************************** Symmetrised Forces ********************************
+ *                                                                                  *
+ *                           Cartesian components (eV/A)                            *
+ * -------------------------------------------------------------------------------- *
+ *                         x                    y                    z              *
+ *                                                                                  *
+ * O               1      0.29759              0.29759             -0.00000         *
+ * Ti              1      0.00000              0.00000              0.00000         *
+ *                                                                                  *
+ ************************************************************************************
+
+ *********** Symmetrised Stress Tensor ***********
+ *                                               *
+ *          Cartesian components (GPa)           *
+ * --------------------------------------------- *
+ *             x             y             z     *
+ *                                               *
+ *  x     -1.624594      0.000000      0.000000  *
+ *  y      0.000000     -1.624594      0.000000  *
+ *  z      0.000000      0.000000     -0.176493  *
+ *                                               *
+ *  Pressure:    1.1419                          *
+ *                                               *
+ *************************************************
+
+ +------------+-------------+-------------+-----------------+ <-- min LBFGS
+ |    Step    |   lambda    |   F.delta'  |    enthalpy     | <-- min LBFGS
+ +------------+-------------+-------------+-----------------+ <-- min LBFGS
+ |  previous  |    0.000000 |    0.306114 |    -2293.743561 | <-- min LBFGS
+ | trial step |    1.000000 |   -0.064103 |    -2293.757852 | <-- min LBFGS
+ +------------+-------------+-------------+-----------------+ <-- min LBFGS
+
+ LBFGS: finished iteration     1 with enthalpy= -2.29375785E+003 eV
 
  +-----------+-----------------+-----------------+------------+-----+ <-- TPSD
  | Parameter |      value      |    tolerance    |    units   | OK? | <-- TPSD
@@ -2036,72 +2122,97 @@ Species   Ion     Hirshfeld Charge (e)
 
  BFGS: Final Enthalpy     = -2.17004345E+002 eV
  BFGS: Final <frequency>  unchanged from initial value
+ BFGS: Final bulk modulus =     392.40598 GPa
         """)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'geom_opt':
-                                     {'enthalpy': [-1317.70077, -216.058016],
-                                      'final_configuration':
-                                      {'atoms':
-                                       {('Si', 1): (-0.00619, -0.000628, -0.000628),
-                                        ('Si', 2): (0.24619, 0.250628, 0.250628)},
-                                       'cell':
-                                       {'cell_angles': [90.0, 90.0, 90.0],
-                                        'density_amu': 8.748104,
-                                        'density_g': 14.526569,
-                                        'lattice_parameters': [2.337223, 2.337223, 2.337223],
-                                        'real_lattice': [(2.3372228, 0.0, 0.0),
-                                                         (0.0, 2.3372228, 0.0),
-                                                         (0.0, 0.0, 2.3372228)],
-                                        'recip_lattice': [(2.688312529, 0.0, 0.0),
-                                                          (0.0, 2.688312529, 0.0),
-                                                          (0.0, 0.0, 2.688312529)],
-                                        'volume': 12.767337},
-                                       'final enthalpy': -217.004345},
-                                      'minimisation': [{'previous': {'Fdelta': 0.203755,
-                                                                     'enthalpy': -216.058941,
-                                                                     'lambda': 0.0}},
-                                                       {'previous': {'Fdelta': 0.204256,
-                                                                     'enthalpy': -216.058016,
-                                                                     'lambda': 0.0},
-                                                        'trial step': {'Fdelta': 0.204121,
-                                                                       'enthalpy': -216.058941,
-                                                                       'lambda': 0.001727}},
-                                                       {'Smax': {'converged': False,
-                                                                 'tolerance': 0.1,
-                                                                 'value': 17.36649},
-                                                        'dE/ion': {'converged': False,
-                                                                   'tolerance': 2e-05,
-                                                                   'value': 0.0},
-                                                        '|F|max': {'converged': False,
-                                                                   'tolerance': 0.05,
-                                                                   'value': 0.529977},
-                                                        '|dR|max': {'converged': True,
-                                                                    'tolerance': 0.001,
-                                                                    'value': 0.0}},
-                                                       {'Smax': {'converged': True,
-                                                                 'tolerance': 0.1,
-                                                                 'value': 0.0},
-                                                        'dE/ion': {'converged': True,
-                                                                   'tolerance': 2e-05,
-                                                                   'value': 0.0},
-                                                        '|F|max': {'converged': True,
-                                                                   'tolerance': 0.05,
-                                                                   'value': 0.0},
-                                                        '|dR|max': {'converged': True,
-                                                                    'tolerance': 0.001,
-                                                                    'value': 0.0}}]}})
-    def test_get_lbfgs_info(self):
-        test_text = io.StringIO("""
- LBFGS: Final Enthalpy     = -1.31770414E+003 eV
- LBFGS: Final <frequency>  =    1073.37660 cm-1
-        """)
-
-        test_dict = parse_castep_file(test_text)[0]
-
-        self.assertEqual(test_dict, {'geom_opt': {'final <frequency>': 1073.3766,
-                                                  'final enthalpy': -1317.70414}})
+        self.assertEqual(test_dict, {'final bulk modulus': 392.40598,
+                                     'geom_opt':
+                                     {'final_configuration': {'atoms': {('Si', 1): (-0.00619, -0.000628, -0.000628),
+                                                                        ('Si', 2): (0.24619, 0.250628, 0.250628)},
+                                                              'cell':
+                                                              {'cell_angles': [90.0, 90.0, 90.0],
+                                                               'density_amu': 8.748104,
+                                                               'density_g': 14.526569,
+                                                               'lattice_parameters': [2.337223, 2.337223, 2.337223],
+                                                               'real_lattice': [(2.3372228, 0.0, 0.0),
+                                                                                (0.0, 2.3372228, 0.0),
+                                                                                (0.0, 0.0, 2.3372228)],
+                                                               'recip_lattice': [(2.688312529, 0.0, 0.0),
+                                                                                 (0.0, 2.688312529, 0.0),
+                                                                                 (0.0, 0.0, 2.688312529)],
+                                                               'volume': 12.767337},
+                                                              'final enthalpy': -217.004345},
+                                      'iterations': [{'enthalpy': [-2293.74356],
+                                                      'minimisation': [{'Smax': {'converged': False,
+                                                                                 'tolerance': 0.25,
+                                                                                 'value': 12.78436},
+                                                                        'dE/ion': {'converged': False,
+                                                                                   'tolerance': 2.5e-05,
+                                                                                   'value': 0.0},
+                                                                        '|F|max': {'converged': False,
+                                                                                   'tolerance': 0.05,
+                                                                                   'value': 0.4266993},
+                                                                        '|dR|max': {'converged': False,
+                                                                                    'tolerance': 0.001,
+                                                                                    'value': 0.0}}]},
+                                                     {'cell':
+                                                      {'cell_angles': [90.0, 90.0, 90.0],
+                                                       'density_amu': 2.489923,
+                                                       'density_g': 4.134614,
+                                                       'lattice_parameters': [4.638636, 4.638636, 2.981428],
+                                                       'real_lattice': [(4.6386363, 0.0, 0.0),
+                                                                        (0.0, 4.6386363, 0.0),
+                                                                        (0.0, 0.0, 2.9814282)],
+                                                       'recip_lattice': [(1.354532869, 0.0, 0.0),
+                                                                         (0.0, 1.354532869, 0.0),
+                                                                         (0.0, 0.0, 2.107441421)],
+                                                       'volume': 64.151231},
+                                                      'energies': {'final_energy': [-2293.681052478]},
+                                                      'enthalpy': [-2293.75785],
+                                                      'forces': {'symmetrised': [{('O', 1): (0.29759, 0.29759, -0.0),
+                                                                                  ('Ti', 1): (0.0, 0.0, 0.0)}]},
+                                                      'memory_estimate':
+                                                      [{'Electronic energy minimisation requirements': {'disk': 0.0, 'memory': 4.0},
+                                                        'Geometry minimisation requirements': {'disk': 0.0, 'memory': 4.6},
+                                                        'Model and support data': {'disk': 0.0, 'memory': 64.3}}],
+                                                      'minimisation': [{'previous': {'Fdelta': 0.306114,
+                                                                                     'enthalpy': -2293.743561,
+                                                                                     'lambda': 0.0}},
+                                                                       {'previous': {'Fdelta': 0.306114,
+                                                                                     'enthalpy': -2293.743561,
+                                                                                     'lambda': 0.0},
+                                                                        'trial step': {'Fdelta': -0.064103,
+                                                                                       'enthalpy': -2293.757852,
+                                                                                       'lambda': 1.0}},
+                                                                       {'Smax': {'converged': True,
+                                                                                 'tolerance': 0.1,
+                                                                                 'value': 0.0},
+                                                                        'dE/ion': {'converged': True,
+                                                                                   'tolerance': 2e-05,
+                                                                                   'value': 0.0},
+                                                                        '|F|max': {'converged': True,
+                                                                                   'tolerance': 0.05,
+                                                                                   'value': 0.0},
+                                                                        '|dR|max': {'converged': True,
+                                                                                    'tolerance': 0.001,
+                                                                                    'value': 0.0}}],
+                                                      'positions': {('O', 1): (0.299872, 0.299872, -0.0),
+                                                                    ('Ti', 1): (0.0, 0.0, 0.0)},
+                                                      'scf': [[{'energy': -2294.52355,
+                                                                'energy_gain': None,
+                                                                'fermi_energy': 0.554395796,
+                                                                'time': 27.0},
+                                                               {'energy': -2294.63448,
+                                                                'energy_gain': None,
+                                                                'fermi_energy': 0.0184884599,
+                                                                'time': 27.57}]],
+                                                      'starting iteration 1 with trial guess (lambda': 1.0,
+                                                      'stresses':
+                                                      {'symmetrised': [(-1.624594, 0.0, 0.0,
+                                                                        -1.624594, 0.0,
+                                                                        -0.176493)]}}]}})
 
     def test_get_tss_structure(self):
         test_text = io.StringIO("""
@@ -2615,7 +2726,6 @@ class test_pspot_parser:
         test_dict = parse_castep_file(test_text)[0]
         pprint.pprint(test_dict)
         self.assertEqual(test_dict, {})
-
 
 
 if __name__ == '__main__':
