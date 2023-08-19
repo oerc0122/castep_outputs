@@ -234,15 +234,15 @@ def parse_castep_file(castep_file: TextIO,
             curr_run["pspot_detail"].append(_process_pspot_report(block))
 
         elif match := re.match(r"\s*(?P<type>AE|PS) eigenvalue nl (?P<nl>\d+) =" +
-                               labelled_floats(('eigenvalue',)), line):
+                               labelled_floats(("eigenvalue",)), line):
 
             if "pspot" not in to_parse:
                 continue
 
-            logger("Found PSPot debug for %s at %s", match['type'], match['nl'])
+            logger("Found PSPot debug for %s at %s", match["type"], match["nl"])
 
             match = match.groupdict()
-            fix_data_types(match, {'nl': int, 'eigenvalue': float})
+            fix_data_types(match, {"nl": int, "eigenvalue": float})
 
             curr_run["pspot_debug"].append(match)
 
@@ -556,7 +556,7 @@ def parse_castep_file(castep_file: TextIO,
 
             qdata["qpt"] = match.group("qpt").split()
 
-            logger("Reading qpt %s", qdata['qpt'], level="debug")
+            logger("Reading qpt %s", qdata["qpt"], level="debug")
 
             for line in castep_file:
                 if match := REs.PHONON_RE.match(line):
@@ -566,7 +566,7 @@ def parse_castep_file(castep_file: TextIO,
                     qdata = defaultdict(list)
                     qdata["qpt"] = match.group("qpt").split()
 
-                    logger("Reading qpt %s", qdata['qpt'], level="debug")
+                    logger("Reading qpt %s", qdata["qpt"], level="debug")
 
                 elif (re.match(r"\s+\+\s+Effective cut-off =", line) or
                       re.match(rf"\s+\+\s+q->0 along \((\s*{REs.FNUMBER_RE}){{3}}\)\s+\+", line) or
@@ -591,7 +591,7 @@ def parse_castep_file(castep_file: TextIO,
                                                      for phonon in curr_run["phonons"]):
                 curr_run["phonons"].append(_process_qdata(qdata))
 
-            logger("Found %d phonon samples", len(curr_run['phonons']))
+            logger("Found %d phonon samples", len(curr_run["phonons"]))
 
         # Phonon Symmetry
         elif block := get_block(line, castep_file,
@@ -773,7 +773,7 @@ def parse_castep_file(castep_file: TextIO,
             if "md" not in to_parse:
                 continue
 
-            logger("Found MD Block (step %d)", len(curr_run['md'])+1)
+            logger("Found MD Block (step %d)", len(curr_run["md"])+1)
 
             # Avoid infinite recursion
             next(block)
@@ -828,7 +828,7 @@ def parse_castep_file(castep_file: TextIO,
 
                 curr_run["geom_opt"]["iterations"] = [data]
 
-            logger("Found geom block (iteration %d)", len(curr_run['geom_opt'])+1)
+            logger("Found geom block (iteration %d)", len(curr_run["geom_opt"])+1)
             # Avoid infinite recursion
             next(block)
             data = parse_castep_file(block)[0]
@@ -1653,13 +1653,13 @@ def _process_kpoint_blocks(block: TextIO,
                 accum["num_kpoints"] = to_type(get_numbers(line)[0], int)
     else:
 
-        accum = {'points': [{"qpt": to_type(match.group("qx", "qy", "qx"), float),
+        accum = {"points": [{"qpt": to_type(match.group("qx", "qy", "qx"), float),
                              "weight": to_type(match["wt"], float)}
                             for line in block
                             if (match :=
                                 re.match(
                                     gen_table_re(r"\d\s*" +
-                                                 labelled_floats(('qx', 'qy', 'qz', 'wt')), r"\+"),
+                                                 labelled_floats(("qx", "qy", "qz", "wt")), r"\+"),
                                     line))]}
         accum["num_kpoints"] = len(accum["points"])
 
@@ -1702,7 +1702,11 @@ def _process_symmetry(block: TextIO) -> Dict[str, Any]:
                 curr_sym["symmetry_related"].extend((key, int(ind))
                                                     for ind in val.split())
 
-            sym['symop'].append(curr_sym)
+            sym["symop"].append(curr_sym)
+
+        elif "Cell is a supercell containing" in line:
+
+            sym["n_primitives"] = to_type(get_numbers(line)[0], int)
 
         elif "Centre of mass" in line:
             con["com_constrained"] = "NOT" not in line
@@ -1711,7 +1715,7 @@ def _process_symmetry(block: TextIO) -> Dict[str, Any]:
                                      r"constraints\.{5}", r"\s*x+\.{4}\s*", out_fmt=str):
             con["ionic_constraints"] = defaultdict(list)
             for match in re.finditer(rf"{REs.ATREG}\s*[xyz]\s*" +
-                                     labelled_floats(('pos',), counts=(3,)),
+                                     labelled_floats(("pos",), counts=(3,)),
                                      cons_block):
                 match = match.groupdict()
                 ind = atreg_to_index(match)
@@ -1883,7 +1887,7 @@ def _process_dftd(block: TextIO) -> Dict[str, Union[Dict[str, float], float]]:
             dftd[normalise_string(key).lower()] = val
 
         elif match := re.match(rf"\s*x\s*(?P<spec>{REs.ATOM_NAME_RE})\s*" +
-                               labelled_floats(('C6', 'R0')), line):
+                               labelled_floats(("C6", "R0")), line):
             dftd["species"][match["spec"]] = {"C6": float(match["C6"]),
                                               "R0": float(match["R0"])}
 
@@ -1957,11 +1961,11 @@ def _process_pair_params(block_in: TextIO) -> Dict[Union[str, Tuple[str]], float
         # Two-body
         if block := get_block(line, block_in, "Two Body", r"^\w*\s*\*+\s*$"):
             for blk_line in block:
-                if REs.PAIR_POT_RES['two_body_spec'].search(blk_line):
-                    match = REs.PAIR_POT_RES['two_body_spec'].finditer(blk_line)
+                if REs.PAIR_POT_RES["two_body_spec"].search(blk_line):
+                    match = REs.PAIR_POT_RES["two_body_spec"].finditer(blk_line)
                     labels = tuple(mch.groups() for mch in match)
 
-                elif match := REs.PAIR_POT_RES['two_body_val'].match(blk_line):
+                elif match := REs.PAIR_POT_RES["two_body_val"].match(blk_line):
                     tag, typ, lab = match.group("tag", "type", "label")
                     if tag:
                         typ = f"{tag}_{typ}"
@@ -1974,13 +1978,13 @@ def _process_pair_params(block_in: TextIO) -> Dict[Union[str, Tuple[str]], float
                                                to_type(match["params"].split(),
                                                        float)))
 
-                elif match := REs.PAIR_POT_RES['two_body_one_spec'].match(blk_line):
+                elif match := REs.PAIR_POT_RES["two_body_one_spec"].match(blk_line):
                     labels = (match["spec"],)
 
         # Three-body
         elif block := get_block(line, block_in, "Three Body", r"^\s*\*+\s*$"):
             for blk_line in block:
-                if match := REs.PAIR_POT_RES['three_body_spec'].match(blk_line):
+                if match := REs.PAIR_POT_RES["three_body_spec"].match(blk_line):
                     labels = (tuple(match["spec"].split()),)
 
                 elif match := REs.PAIR_POT_RES["three_body_val"].match(blk_line):
@@ -2017,7 +2021,7 @@ def _process_geom_table(block: TextIO) -> Dict[str, Union[bool, float]]:
     for line in block:
         if match := REs.GEOMOPT_MIN_TABLE_RE.match(line):
             match = match.groupdict()
-            fix_data_types(match, {key: float for key in ('lambda', 'Fdelta', 'enthalpy')})
+            fix_data_types(match, {key: float for key in ("lambda", "Fdelta", "enthalpy")})
 
             key = normalise_string(match["step"])
             del match["step"]
@@ -2025,7 +2029,7 @@ def _process_geom_table(block: TextIO) -> Dict[str, Union[bool, float]]:
 
         elif match := REs.GEOMOPT_TABLE_RE.match(line):
             match = match.groupdict()
-            fix_data_types(match, {key: float for key in ('value', 'tolerance')})
+            fix_data_types(match, {key: float for key in ("value", "tolerance")})
 
             match["converged"] = match["converged"] == "Yes"
 
