@@ -599,50 +599,70 @@ def parse_castep_file(castep_file: TextIO) -> List[Dict[str, Any]]:
         elif block := get_block(line, castep_file, "Final Configuration",
                                 rf"\s*{REs.MINIMISERS_RE}: Final", cnt=2):
 
-            if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = defaultdict(list)
-
             logger("Found final geom configuration")
 
             curr_run["geom_opt"]["final_configuration"] = _process_final_config_block(block)
 
-        elif match := re.search(f"(?P<minim>{REs.MINIMISERS_RE}):"
-                                r" finished iteration\s*\d+\s*with enthalpy", line):
+        elif block := get_block(line, castep_file,
+                                rf"Starting {REs.MINIMISERS_RE} iteration\s*\d+\s*\.{{3}}",
+                                gen_table_re("", "=+"), cnt=2):
 
             if "geom_opt" not in curr_run:
                 curr_run["geom_opt"] = defaultdict(list)
+
+            if not curr_run["geom_opt"]["iterations"]:
+                data = {key: val for key, val in curr_run.items()
+                        if key in ("enthalpy", "initial_cell", "initial_positions",
+                                   "scf", "forces", "stresses", "minimisation")}
+
+                for key in ("enthalpy", "scf", "forces", "stresses", "minimisation"):
+                    if key in curr_run:
+                        del curr_run[key]
+
+                add_aliases(data, {"initial_positions": "positions",
+                                   "initial_cell": "cell"},
+                            replace=True)
+
+                curr_run["geom_opt"]["iterations"] = [data]
+
+            logger("Found geom block (iteration %d)", len(curr_run['geom_opt'])+1)
+            # Avoid infinite recursion
+            next(block)
+            data = parse_castep_file(block)[0]
+
+            add_aliases(data, {"initial_positions": "positions",
+                               "initial_cell": "cell"},
+                        replace=True)
+            curr_run["geom_opt"]["iterations"].append(data)
+
+        elif match := re.search(f"(?P<minim>{REs.MINIMISERS_RE}):"
+                                r" finished iteration\s*\d+\s*with enthalpy", line):
 
             minim = match["minim"]
 
             logger("Found %s energy", minim)
 
-            curr_run["geom_opt"]["enthalpy"].append(to_type(get_numbers(line)[-1], float))
+            curr_run["enthalpy"].append(to_type(get_numbers(line)[-1], float))
 
         elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
                                r"(?P<key>[^=]+)=\s*"
                                f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
-            if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = defaultdict(list)
-
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
 
             logger("Found geomopt %s", key)
 
-            curr_run["geom_opt"][key] = val
+            curr_run[key] = val
 
         elif block := get_block(line, castep_file,
                                 f"<--( min)? {REs.MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
 
             typ = re.search(REs.MINIMISERS_RE, line).group(0)
 
-            if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = defaultdict(list)
-
             logger("Found %s geom_block", typ)
 
-            curr_run["geom_opt"]["minimisation"].append(_process_geom_table(block))
+            curr_run["minimisation"].append(_process_geom_table(block))
 
         # TDDFT
         elif block := get_block(line, castep_file,
