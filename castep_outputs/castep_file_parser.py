@@ -1372,6 +1372,12 @@ def _process_scf(block: TextIO) -> Dict[str, Any]:
         elif "Norm of density" in line:
             curr["density_residual"] = to_type(get_numbers(line)[0], float)
 
+        elif "constraint energy" in line:
+            curr["constraint_energy"] = to_type(get_numbers(line)[0], float)
+
+        elif "Correcting PBC dipole-dipole" in line:
+            curr["dipole_corr_energy"] = to_type(get_numbers(line)[0], float)
+
         elif "no. bands" in line:
             curr["no_bands"] = to_type(get_numbers(line)[0], int)
 
