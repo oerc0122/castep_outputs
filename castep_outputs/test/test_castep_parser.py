@@ -925,6 +925,100 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
                                                'fermi_energy': -1.09214177,
                                                'time': 3.84}]]})
 
+    def test_get_bsc_scf(self):
+        test_text = io.StringIO("""
+Calculating finite basis set correction with  3 cut-off energies.
+Calculating total energy with cut-off of  150.000 eV.
+Calculating approximate eigenstates for fixed initial Hamiltonian
+Cut-off for approx. calculation is   80.000 eV
+Resetting cut-off to  149.802 eV
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -2.16330992E+002  0.00000000E+000                         1.21  <-- SCF
+      1  -2.16495167E+002  4.14887478E+000   8.20874626E-002       1.33  <-- SCF
+------------------------------------------------------------------------ <-- SCF
+
+Final energy, E             =  -216.4191364770     eV
+Final free energy (E-TS)    =  -216.4201784468     eV
+(energies not corrected for finite basis set)
+
+NB est. 0K energy (E-0.5TS)      =  -216.4196574619     eV
+
+Calculating total energy with cut-off of  155.000 eV.
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -2.16419103E+002  0.00000000E+000                         2.75  <-- SCF
+      1  -2.16446853E+002  4.35498760E+000   1.38746578E-002       2.86  <-- SCF
+------------------------------------------------------------------------ <-- SCF
+
+Final energy, E             =  -216.4458405943     eV
+Final free energy (E-TS)    =  -216.4469466955     eV
+(energies not corrected for finite basis set)
+
+NB est. 0K energy (E-0.5TS)      =  -216.4463936449     eV
+
+Calculating total energy with cut-off of  160.000 eV.
+------------------------------------------------------------------------ <-- SCF
+SCF loop      Energy           Fermi           Energy gain       Timer   <-- SCF
+                               energy          per atom          (sec)   <-- SCF
+------------------------------------------------------------------------ <-- SCF
+Initial  -2.16445805E+002  0.00000000E+000                         3.63  <-- SCF
+      1  -2.16468756E+002  4.35489704E+000   1.14756678E-002       3.77  <-- SCF
+------------------------------------------------------------------------ <-- SCF
+
+Final energy, E             =  -216.4677199357     eV
+Final free energy (E-TS)    =  -216.4688283736     eV
+(energies not corrected for finite basis set)
+
+NB est. 0K energy (E-0.5TS)      =  -216.4682741546     eV
+
+ For future reference: finite basis dEtot/dlog(Ecut) =      -0.749584eV
+ Total energy corrected for finite basis set =    -216.469505 eV
+
+        """)
+
+        test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'bsc_scf': [[{'energy': -216.330992,
+                                                   'energy_gain': None,
+                                                   'fermi_energy': 0.0,
+                                                   'time': 1.21},
+                                                  {'energy': -216.495167,
+                                                   'energy_gain': 0.0820874626,
+                                                   'fermi_energy': 4.14887478,
+                                                   'time': 1.33}],
+                                                 [{'energy': -216.419103,
+                                                   'energy_gain': None,
+                                                   'fermi_energy': 0.0,
+                                                   'time': 2.75},
+                                                  {'energy': -216.446853,
+                                                   'energy_gain': 0.0138746578,
+                                                   'fermi_energy': 4.3549876,
+                                                   'time': 2.86}]],
+                                     'bsc_energies': {'est_0K': [-216.4196574619,
+                                                                 -216.4463936449],
+                                                      'final_energy': [-216.419136477,
+                                                                       -216.4458405943],
+                                                      'free_energy': [-216.4201784468,
+                                                                      -216.4469466955]},
+                                     'dedlne': [-0.749584],
+                                     'energies': {'est_0K': [-216.4682741546],
+                                                  'final_basis_set_corrected': [-216.469505],
+                                                  'final_energy': [-216.4677199357],
+                                                  'free_energy': [-216.4688283736]},
+                                     'scf': [{'energy': -216.445805,
+                                              'energy_gain': None,
+                                              'fermi_energy': 0.0,
+                                              'time': 3.63},
+                                             {'energy': -216.468756,
+                                              'energy_gain': 0.0114756678,
+                                              'fermi_energy': 4.35489704,
+                                              'time': 3.77}]})
+
     def test_get_dipole_scf(self):
         test_text = io.StringIO("""
 ------------------------------------------------------------------------ <-- SCF

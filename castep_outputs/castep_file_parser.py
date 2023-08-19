@@ -306,6 +306,23 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["occupancies"].append(_process_occupancies(block))
 
+        # SCF Basis set
+        elif match := re.search(r" with +(\d) +cut-off energies.", line):
+            ncut = int(match.group(1))
+            line = ""
+            next(castep_file)
+            block = get_block(line, castep_file,
+                              "",
+                              "^-+ <-- SCF", cnt=ncut*3)
+            data = parse_castep_file(block)[0]
+
+            scf = data.pop("scf")
+            curr_run["bsc_energies"] = data.pop("energies")
+
+            curr_run["scf"], curr_run["bsc_scf"] = scf[-1], scf[:-1]
+
+            curr_run.update(data)
+
         # Energies
         elif line.startswith("Final energy, E") or line.startswith("Final energy"):
 
