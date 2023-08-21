@@ -7,7 +7,7 @@ from typing import Literal, Tuple
 SHELLS = ('s', 'p', 'd', 'f')
 FST_D = ('x', 'y', 'z')
 SND_D = ('xx', 'yy', 'zz', 'yz', 'zx', 'xy')
-MINIMISERS = ('bfgs', 'lbfgs', 'fire', 'tpsd', 'dmd')
+MINIMISERS = ('bfgs', 'lbfgs', 'fire', 'tpsd', 'dmd', 'di')
 PAIR_POTS = ('LJ', 'BUCK', 'COUL', 'DZ', 'POL', 'BB', 'SHO',
              'SW', 'MORS', 'POLM', 'LJ_S', 'PES', 'BU_S', 'TIP4', 'QUIP')
 

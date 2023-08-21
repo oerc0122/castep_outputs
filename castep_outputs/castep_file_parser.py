@@ -261,7 +261,7 @@ def parse_castep_file(castep_file: TextIO,
         # DFTD
         elif block := get_block(line, castep_file,
                                 "DFT-D parameters",
-                                gen_table_re("", "x+"), cnt=2):
+                                r"^\s*$", cnt=3):
 
             if "parameters" not in to_parse:
                 continue
@@ -395,18 +395,21 @@ def parse_castep_file(castep_file: TextIO,
             curr_run["energies"]["solvation"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
-        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({REs.EXPFNUMBER_RE})",
-                                line):
+        elif match := re.search(r"(?P<vec>2\*)?Integrated \|?Spin Density\|?[^=]+=\s*"
+                                rf"(?P<val>{REs.EXPFNUMBER_RE}\s*"
+                                rf"(?(vec)(?:{REs.EXPFNUMBER_RE}\s*){{2}}))", line):
 
             if "scf" not in to_parse:
                 continue
 
             logger("Found spin")
 
+            val = match["val"] if len(match["val"].split()) == 1 else match["val"].split()
+
             if "|" in line:
-                curr_run["modspin"].append(to_type(match.group(1), float))
+                curr_run["modspin"].append(to_type(val, float))
             else:
-                curr_run["spin"].append(to_type(match.group(1), float))
+                curr_run["spin"].append(to_type(val, float))
 
         # Initial cell
         elif block := get_block(line, castep_file, gen_table_re("Unit Cell"), REs.EMPTY, cnt=3):
@@ -501,7 +504,7 @@ def parse_castep_file(castep_file: TextIO,
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({REs.FNUMBER_RE})", line):
 
             logger("Found dE/dlog(E)")
-            curr_run["dedlne"].append(to_type(match.group(1), float))
+            curr_run["dedlne"] = to_type(match.group(1), float)
 
         # K-Points
         elif block := get_block(line, castep_file, "k-Points For BZ Sampling", REs.EMPTY):
@@ -811,7 +814,7 @@ def parse_castep_file(castep_file: TextIO,
 
         # GeomOpt
         elif block := get_block(line, castep_file, "Final Configuration",
-                                rf"\s*{REs.MINIMISERS_RE}: Final", cnt=2):
+                                rf"\s*{REs.MINIMISERS_RE}: Final"):
 
             if "geom_opt" not in to_parse and "final_config" not in to_parse:
                 continue
@@ -867,8 +870,15 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["enthalpy"].append(to_type(get_numbers(line)[-1], float))
 
-        elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
-                               r"(?P<key>[^=]+)=\s*"
+        elif match := re.search(rf"trial guess \(lambda=\s*({REs.EXPFNUMBER_RE})\)", line):
+
+            if "geom_opt" not in curr_run:
+                curr_run["geom_opt"] = defaultdict(list)
+
+            curr_run["geom_opt"]["trial"].append(float(match.group(1)))
+
+        elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):\s*"
+                               r"(?P<key>Final [^=]+)=\s*"
                                f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
@@ -876,10 +886,9 @@ def parse_castep_file(castep_file: TextIO,
                 continue
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
-
+            key = "_".join(key.split())
             logger("Found geomopt %s", key)
-
-            curr_run[key] = val
+            curr_run["geom_opt"]["final_configuration"][key] = val
 
         elif block := get_block(line, castep_file,
                                 f"<--( min)? {REs.MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
@@ -2075,7 +2084,7 @@ def _process_final_config_block(block_in: TextIO) -> Dict[str, float]:
                                line, re.IGNORECASE):
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
-
+            key = "_".join(key.split())
             accum[key] = val
 
     return accum
