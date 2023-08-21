@@ -565,51 +565,17 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["stresses"][key].append(val)
 
-        # Phonon block
-        elif match := REs.PHONON_RE.match(line):
+            # Phonon block
+        elif block := get_block(line, castep_file,
+                                "Vibrational Frequencies",
+                                gen_table_re("", "=+")):
+
             if "phonon" not in to_parse:
                 continue
 
             logger("Found phonon")
 
-            qdata = defaultdict(list)
-
-            qdata["qpt"] = match.group("qpt").split()
-
-            logger("Reading qpt %s", qdata["qpt"], level="debug")
-
-            for line in castep_file:
-                if match := REs.PHONON_RE.match(line):
-                    if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
-                                                             for phonon in curr_run["phonons"]):
-                        curr_run["phonons"].append(_process_qdata(qdata))
-                    qdata = defaultdict(list)
-                    qdata["qpt"] = match.group("qpt").split()
-
-                    logger("Reading qpt %s", qdata["qpt"], level="debug")
-
-                elif (re.match(r"\s+\+\s+Effective cut-off =", line) or
-                      re.match(rf"\s+\+\s+q->0 along \((\s*{REs.FNUMBER_RE}){{3}}\)\s+\+", line) or
-                      re.match(r"\s+\+ -+ \+", line)):
-                    continue
-                elif match := REs.PROCESS_PHONON_RE.match(line):
-
-                    # ==By mode
-                    # qdata["modes"].append(match.groupdict())
-                    # ==By prop
-                    stack_dict(qdata, match.groupdict())
-
-                elif re.match(r"\s+\+\s+.*\+", line):
-                    continue
-                else:
-                    break
-
-            else:
-                raise IOError(f"Unexpected end of file in {castep_file.name}")
-
-            if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
-                                                     for phonon in curr_run["phonons"]):
-                curr_run["phonons"].append(_process_qdata(qdata))
+            curr_run["phonons"] = _process_phonon(block, logger)
 
             logger("Found %d phonon samples", len(curr_run["phonons"]))
 
@@ -1956,8 +1922,31 @@ def _process_autosolvation(block: TextIO) -> Dict[str, float]:
     return accum
 
 
-# def _process_phonon(block: TextIO):
-#     ...
+def _process_phonon(block: TextIO, logger):
+    qdata = defaultdict(list)
+    accum = []
+
+    for line in block:
+        if match := REs.PHONON_RE.match(line):
+            if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
+                                                     for phonon in accum):
+                accum.append(_process_qdata(qdata))
+            qdata = defaultdict(list)
+            qdata["qpt"] = match["qpt"].split()
+
+            logger("Reading qpt %s", qdata["qpt"], level="debug")
+
+        elif match := REs.PROCESS_PHONON_RE.match(line):
+            # ==By mode
+            # qdata["modes"].append(match.groupdict())
+            # ==By prop
+            stack_dict(qdata, match.groupdict())
+
+    if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
+                                             for phonon in accum):
+        accum.append(_process_qdata(qdata))
+
+    return accum
 
 def _process_dipole(block: TextIO) -> Dict[str, Union[ThreeVector, float]]:
 
