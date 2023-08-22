@@ -121,6 +121,37 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["parallel_efficiency"] = float(get_numbers(line)[0])
 
+        # Warnings
+        elif block := get_block(line, castep_file,
+                                gen_table_re("", r"\?+"),
+                                gen_table_re("", r"\?+"), out_fmt=list):
+
+            if "sys_info" not in to_parse:
+                continue
+
+            logger("Found warning")
+
+            curr_run["warning"].append(" ".join(map(lambda x: x.strip(), block[1:-1])))
+
+        elif match := re.match(r"(?:\s*[^:]+:)?(\s*)warning", line, re.IGNORECASE):
+
+            if "sys_info" not in to_parse:
+                continue
+
+            logger("Found warning")
+
+            warn = line.strip()
+
+            for tst, line in enumerate(castep_file):
+                if not line.strip() or not re.match(match.group(1)+r"\s+", line):
+                    if tst:
+                        castep_file.seek(pos)
+                    break
+                warn += " " + line.strip()
+                pos = castep_file.tell()
+
+            curr_run["warning"].append(warn)
+
         # Memory estimate
         elif block := get_block(line, castep_file,
                                 gen_table_re(r"MEMORY AND SCRATCH[\w\s]+", "[+-]+"),
@@ -399,9 +430,7 @@ def parse_castep_file(castep_file: TextIO,
             curr_run["energies"]["solvation"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
-        elif match := re.search(r"(?P<vec>2\*)?Integrated \|?Spin Density\|?[^=]+=\s*"
-                                rf"(?P<val>{REs.EXPFNUMBER_RE}\s*"
-                                rf"(?(vec)(?:{REs.EXPFNUMBER_RE}\s*){{2}}))", line):
+        elif match := REs.INTEGRATED_SPIN_DENSITY_RE.match(line):
 
             if "scf" not in to_parse:
                 continue
@@ -1985,18 +2014,17 @@ def _process_phonon(block: TextIO, logger):
                 head, tail = char_line.split("|")
                 _, rep, *name, mul = head.split()
                 *vals, _ = tail.split()
-                char.append(dict(chars=tuple(zip(headers, map(int, vals))),
-                                 mul=int(mul),
-                                 rep=rep,
-                                 name=name)
-                            )
+                char.append({"chars": tuple(zip(headers, map(int, vals))),
+                             "mul": int(mul),
+                             "rep": rep,
+                             "name": name})
+
             for row in char:
                 if not row["name"]:
                     del row["name"]
                 else:
                     row["name"] = row["name"][0]
             qdata["char_table"] = char
-
 
     if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                              for phonon in accum):

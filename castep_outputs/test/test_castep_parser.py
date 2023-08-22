@@ -93,9 +93,37 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
     Acoustic sum rule correction will only be applied to 2 mode(s)
 ????????????????????????????????????????????????????????????????????????
         """)
-        self.skipTest("Not implemented yet")
-        pprint.pprint(test_dict)
         test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'warning': ['WARNING - requested pressure too low to be '
+                                                 'accurately maintained - proceed with caution ...',
+
+                                                 'Warning - deprecated keyword PHONON_SUM_RULE found '
+                                                 'in input file - preferred usage is '
+                                                 'PHONON_SUM_RULE_METHOD',
+
+                                                 'Warning in parameters_validate: current value of '
+                                                 'ELEC_ENERGY_TOL = 0.100000E-07eV is too large to '
+                                                 'achieve desired level of convergence of response '
+                                                 'properties. This may cause convergence failures '
+                                                 'and/or inaccuracy of results of PHONON calculations '
+                                                 '- recommend you use a smaller value, e.g. '
+                                                 'ELEC_ENERGY_TOL ~ 0.221894E-09eV',
+
+                                                 'Warning in parameters_validate: current value of '
+                                                 'ELEC_EIGENVALUE_TOL = 0.500000E-08eV is too large to '
+                                                 'achieve desired level of convergence of response '
+                                                 'properties. This may cause convergence failures '
+                                                 'and/or inaccuracy of results of PHONON calculations '
+                                                 '- recommend you use a smaller value, e.g. '
+                                                 'ELEC_EIGENVALUE_TOL = 0.221894E-09eV',
+
+                                                 'TS: Warning - a minimum between Reactant-TS was '
+                                                 'found for image   3',
+
+                                                 'Warning in secondd_find_acoustics Failed to identify '
+                                                 '3 eigenvectors with acoustic character Acoustic sum '
+                                                 'rule correction will only be applied to 2 mode(s)']})
 
     def test_get_tss_table(self):
         test_text = io.StringIO("""

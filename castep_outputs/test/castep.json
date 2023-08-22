@@ -9,6 +9,9 @@
       "Fundamental constants values": "CODATA 2018"
     },
     "time_started": "Tue, 30 May 2023 11:57:18 +0100",
+    "warning": [
+      "Warning in parameters_read: presetting of magnetic moments on atoms cannot be guaranteed when metals_method /= density mixing"
+    ],
     "pspot_detail": [
       {
         "reference_electronic_structure": [
