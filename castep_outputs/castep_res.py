@@ -120,6 +120,11 @@ SCF_LOOP_RE = re.compile(r"\s*(?:Initial|\d+)\s*"
                          rf"{labelled_floats(('energy', 'fermi_energy', 'energy_gain'))}?\s*"
                          f"{labelled_floats(('time',))}")
 
+# Spin density
+INTEGRATED_SPIN_DENSITY_RE = re.compile(r"(?P<vec>2\*)?Integrated \|?Spin Density\|?[^=]+=\s*"
+                                        rf"(?P<val>{EXPFNUMBER_RE}\s*"
+                                        rf"(?(vec)(?:{EXPFNUMBER_RE}\s*){{2}}))")
+
 # PS Energy
 PS_SHELL_RE = re.compile(
     rf"\s*Pseudo atomic calculation performed for (?P<spec>{SPECIES_RE})(\s+{SHELL_RE})+")
@@ -274,6 +279,9 @@ BS_RE = re.compile(
     """, re.VERBOSE)
 
 THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
+ATOMIC_DISP_RE = re.compile(labelled_floats(("T",)) + r"\s*" +
+                            ATREG + r"\s*" +
+                            labelled_floats(('U',), counts=(6,)))
 
 MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
 GEOMOPT_MIN_TABLE_RE = re.compile(

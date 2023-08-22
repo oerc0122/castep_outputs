@@ -114,9 +114,43 @@ def parse_castep_file(castep_file: TextIO,
 
         elif line.startswith("Overall parallel efficiency rating"):
 
+            if "sys_info" not in to_parse:
+                continue
+
             logger("Found parallel efficiency")
 
             curr_run["parallel_efficiency"] = float(get_numbers(line)[0])
+
+        # Warnings
+        elif block := get_block(line, castep_file,
+                                gen_table_re("", r"\?+"),
+                                gen_table_re("", r"\?+"), out_fmt=list):
+
+            if "sys_info" not in to_parse:
+                continue
+
+            logger("Found warning")
+
+            curr_run["warning"].append(" ".join(map(lambda x: x.strip(), block[1:-1])))
+
+        elif match := re.match(r"(?:\s*[^:]+:)?(\s*)warning", line, re.IGNORECASE):
+
+            if "sys_info" not in to_parse:
+                continue
+
+            logger("Found warning")
+
+            warn = line.strip()
+
+            for tst, line in enumerate(castep_file):
+                if not line.strip() or not re.match(match.group(1)+r"\s+", line):
+                    if tst:
+                        castep_file.seek(pos)
+                    break
+                warn += " " + line.strip()
+                pos = castep_file.tell()
+
+            curr_run["warning"].append(warn)
 
         # Memory estimate
         elif block := get_block(line, castep_file,
@@ -154,6 +188,7 @@ def parse_castep_file(castep_file: TextIO,
 
         # Quantisation axis
         elif "Quantisation axis" in line:
+
             if "species_props" not in to_parse:
                 continue
 
@@ -261,7 +296,7 @@ def parse_castep_file(castep_file: TextIO,
         # DFTD
         elif block := get_block(line, castep_file,
                                 "DFT-D parameters",
-                                gen_table_re("", "x+"), cnt=2):
+                                r"^\s*$", cnt=3):
 
             if "parameters" not in to_parse:
                 continue
@@ -395,18 +430,19 @@ def parse_castep_file(castep_file: TextIO,
             curr_run["energies"]["solvation"].append(*to_type(get_numbers(line), float))
 
         # Spin densities
-        elif match := re.search(rf"Integrated \|?Spin Density\|?\s+=\s+({REs.EXPFNUMBER_RE})",
-                                line):
+        elif match := REs.INTEGRATED_SPIN_DENSITY_RE.match(line):
 
             if "scf" not in to_parse:
                 continue
 
             logger("Found spin")
 
+            val = match["val"] if len(match["val"].split()) == 1 else match["val"].split()
+
             if "|" in line:
-                curr_run["modspin"].append(to_type(match.group(1), float))
+                curr_run["modspin"].append(to_type(val, float))
             else:
-                curr_run["spin"].append(to_type(match.group(1), float))
+                curr_run["spin"].append(to_type(val, float))
 
         # Initial cell
         elif block := get_block(line, castep_file, gen_table_re("Unit Cell"), REs.EMPTY, cnt=3):
@@ -501,7 +537,7 @@ def parse_castep_file(castep_file: TextIO,
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({REs.FNUMBER_RE})", line):
 
             logger("Found dE/dlog(E)")
-            curr_run["dedlne"].append(to_type(match.group(1), float))
+            curr_run["dedlne"] = to_type(match.group(1), float)
 
         # K-Points
         elif block := get_block(line, castep_file, "k-Points For BZ Sampling", REs.EMPTY):
@@ -562,51 +598,17 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["stresses"][key].append(val)
 
-        # Phonon block
-        elif match := REs.PHONON_RE.match(line):
+            # Phonon block
+        elif block := get_block(line, castep_file,
+                                "Vibrational Frequencies",
+                                gen_table_re("", "=+")):
+
             if "phonon" not in to_parse:
                 continue
 
             logger("Found phonon")
 
-            qdata = defaultdict(list)
-
-            qdata["qpt"] = match.group("qpt").split()
-
-            logger("Reading qpt %s", qdata["qpt"], level="debug")
-
-            for line in castep_file:
-                if match := REs.PHONON_RE.match(line):
-                    if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
-                                                             for phonon in curr_run["phonons"]):
-                        curr_run["phonons"].append(_process_qdata(qdata))
-                    qdata = defaultdict(list)
-                    qdata["qpt"] = match.group("qpt").split()
-
-                    logger("Reading qpt %s", qdata["qpt"], level="debug")
-
-                elif (re.match(r"\s+\+\s+Effective cut-off =", line) or
-                      re.match(rf"\s+\+\s+q->0 along \((\s*{REs.FNUMBER_RE}){{3}}\)\s+\+", line) or
-                      re.match(r"\s+\+ -+ \+", line)):
-                    continue
-                elif match := REs.PROCESS_PHONON_RE.match(line):
-
-                    # ==By mode
-                    # qdata["modes"].append(match.groupdict())
-                    # ==By prop
-                    stack_dict(qdata, match.groupdict())
-
-                elif re.match(r"\s+\+\s+.*\+", line):
-                    continue
-                else:
-                    break
-
-            else:
-                raise IOError(f"Unexpected end of file in {castep_file.name}")
-
-            if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
-                                                     for phonon in curr_run["phonons"]):
-                curr_run["phonons"].append(_process_qdata(qdata))
+            curr_run["phonons"] = _process_phonon(block, logger)
 
             logger("Found %d phonon samples", len(curr_run["phonons"]))
 
@@ -696,6 +698,19 @@ def parse_castep_file(castep_file: TextIO,
             logger("Found NLO")
 
             curr_run["nlo"], _ = _process_3_6_matrix(block, False)
+
+        # Atomic displacements
+        elif block := get_block(line, castep_file,
+                                gen_table_re(r"Atomic Displacement Parameters \(A\*\*2\)"),
+                                gen_table_re("", "-+"), cnt=3):
+
+            if "thermodynamics" not in to_parse:
+                continue
+
+            logger("Found atomic displacements")
+
+            accum = _process_atom_disp(block)
+            curr_run["atomic_displacements"] = accum
 
         # Thermodynamics
         elif block := get_block(line, castep_file,
@@ -811,7 +826,7 @@ def parse_castep_file(castep_file: TextIO,
 
         # GeomOpt
         elif block := get_block(line, castep_file, "Final Configuration",
-                                rf"\s*{REs.MINIMISERS_RE}: Final", cnt=2):
+                                rf"\s*{REs.MINIMISERS_RE}: Final"):
 
             if "geom_opt" not in to_parse and "final_config" not in to_parse:
                 continue
@@ -867,8 +882,15 @@ def parse_castep_file(castep_file: TextIO,
 
             curr_run["enthalpy"].append(to_type(get_numbers(line)[-1], float))
 
-        elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
-                               r"(?P<key>[^=]+)=\s*"
+        elif match := re.search(rf"trial guess \(lambda=\s*({REs.EXPFNUMBER_RE})\)", line):
+
+            if "geom_opt" not in curr_run:
+                curr_run["geom_opt"] = defaultdict(list)
+
+            curr_run["geom_opt"]["trial"].append(float(match.group(1)))
+
+        elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):\s*"
+                               r"(?P<key>Final [^=]+)=\s*"
                                f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
@@ -876,10 +898,9 @@ def parse_castep_file(castep_file: TextIO,
                 continue
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
-
+            key = "_".join(key.split())
             logger("Found geomopt %s", key)
-
-            curr_run[key] = val
+            curr_run["geom_opt"]["final_configuration"][key] = val
 
         elif block := get_block(line, castep_file,
                                 f"<--( min)? {REs.MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
@@ -1279,6 +1300,19 @@ def _process_thermodynamics(block: TextIO) -> Dict[str, List[float]]:
 
     fix_data_types(accum, {key: float for
                            key in ("T", "E", "F", "S", "Cv")})
+    return accum
+
+
+def _process_atom_disp(block: TextIO) -> Dict[float, Union[AtomIndex, List[float]]]:
+    """ Process a atom disp block into a dict of lists """
+    accum = defaultdict(dict)
+    for line in block:
+        if match := REs.ATOMIC_DISP_RE.match(line):
+            match = match.groupdict()
+            ind = atreg_to_index(match)
+            match["U"] = to_type(match["U"].split(), float)
+            accum[match["T"]][ind] = match["U"]
+
     return accum
 
 
@@ -1947,8 +1981,57 @@ def _process_autosolvation(block: TextIO) -> Dict[str, float]:
     return accum
 
 
-# def _process_phonon(block: TextIO):
-#     ...
+def _process_phonon(block: TextIO, logger):
+    qdata = defaultdict(list)
+    accum = []
+
+    for line in block:
+        if match := REs.PHONON_RE.match(line):
+            if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
+                                                     for phonon in accum):
+                accum.append(_process_qdata(qdata))
+            qdata = defaultdict(list)
+            qdata["qpt"] = match["qpt"].split()
+
+            logger("Reading qpt %s", qdata["qpt"], level="debug")
+
+        elif match := REs.PROCESS_PHONON_RE.match(line):
+            # ==By mode
+            # qdata["modes"].append(match.groupdict())
+            # ==By prop
+            stack_dict(qdata, match.groupdict())
+
+        elif char_table := get_block(line, block,
+                                     r"Rep\s+Mul", gen_table_re("[-=]+", r"\+"),
+                                     eof_possible=True):
+            headers = next(char_table).split()[4:]
+            next(char_table)
+            char = []
+            for char_line in char_table:
+                if re.search("[-=]{4,}", char_line):
+                    break
+
+                head, tail = char_line.split("|")
+                _, rep, *name, mul = head.split()
+                *vals, _ = tail.split()
+                char.append({"chars": tuple(zip(headers, map(int, vals))),
+                             "mul": int(mul),
+                             "rep": rep,
+                             "name": name})
+
+            for row in char:
+                if not row["name"]:
+                    del row["name"]
+                else:
+                    row["name"] = row["name"][0]
+            qdata["char_table"] = char
+
+    if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
+                                             for phonon in accum):
+        accum.append(_process_qdata(qdata))
+
+    return accum
+
 
 def _process_dipole(block: TextIO) -> Dict[str, Union[ThreeVector, float]]:
 
@@ -2075,7 +2158,7 @@ def _process_final_config_block(block_in: TextIO) -> Dict[str, float]:
                                line, re.IGNORECASE):
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
-
+            key = "_".join(key.split())
             accum[key] = val
 
     return accum

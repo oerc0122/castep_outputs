@@ -211,6 +211,8 @@
   target_stress: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Tue, 30 May 2023 11:57:18 +0100
   title: ''
+  warning: ['Warning in parameters_read: presetting of magnetic moments on atoms cannot
+      be guaranteed when metals_method /= density mixing']
 - build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
       FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
       2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
