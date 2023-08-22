@@ -274,6 +274,9 @@ BS_RE = re.compile(
     """, re.VERBOSE)
 
 THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
+ATOMIC_DISP_RE = re.compile(labelled_floats(("T",)) + r"\s*" +
+                            ATREG + r"\s*" +
+                            labelled_floats(('U',), counts=(6,)))
 
 MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
 GEOMOPT_MIN_TABLE_RE = re.compile(

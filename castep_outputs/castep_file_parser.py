@@ -114,6 +114,9 @@ def parse_castep_file(castep_file: TextIO,
 
         elif line.startswith("Overall parallel efficiency rating"):
 
+            if "sys_info" not in to_parse:
+                continue
+
             logger("Found parallel efficiency")
 
             curr_run["parallel_efficiency"] = float(get_numbers(line)[0])
@@ -154,6 +157,7 @@ def parse_castep_file(castep_file: TextIO,
 
         # Quantisation axis
         elif "Quantisation axis" in line:
+
             if "species_props" not in to_parse:
                 continue
 
@@ -665,6 +669,19 @@ def parse_castep_file(castep_file: TextIO,
             logger("Found NLO")
 
             curr_run["nlo"], _ = _process_3_6_matrix(block, False)
+
+        # Atomic displacements
+        elif block := get_block(line, castep_file,
+                                gen_table_re(r"Atomic Displacement Parameters \(A\*\*2\)"),
+                                gen_table_re("", "-+"), cnt=3):
+
+            if "thermodynamics" not in to_parse:
+                continue
+
+            logger("Found atomic displacements")
+
+            accum = _process_atom_disp(block)
+            curr_run["atomic_displacements"] = accum
 
         # Thermodynamics
         elif block := get_block(line, castep_file,
@@ -1254,6 +1271,19 @@ def _process_thermodynamics(block: TextIO) -> Dict[str, List[float]]:
 
     fix_data_types(accum, {key: float for
                            key in ("T", "E", "F", "S", "Cv")})
+    return accum
+
+
+def _process_atom_disp(block: TextIO) -> Dict[float, Union[AtomIndex, List[float]]]:
+    """ Process a atom disp block into a dict of lists """
+    accum = defaultdict(dict)
+    for line in block:
+        if match := REs.ATOMIC_DISP_RE.match(line):
+            match = match.groupdict()
+            ind = atreg_to_index(match)
+            match["U"] = to_type(match["U"].split(), float)
+            accum[match["T"]][ind] = match["U"]
+
     return accum
 
 
@@ -1973,6 +2003,7 @@ def _process_phonon(block: TextIO, logger):
         accum.append(_process_qdata(qdata))
 
     return accum
+
 
 def _process_dipole(block: TextIO) -> Dict[str, Union[ThreeVector, float]]:
 
