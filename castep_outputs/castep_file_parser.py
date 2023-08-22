@@ -142,6 +142,7 @@ def parse_castep_file(castep_file: TextIO,
 
             warn = line.strip()
 
+            pos = 0
             for tst, line in enumerate(castep_file):
                 if not line.strip() or not re.match(match.group(1)+r"\s+", line):
                     if tst:
