@@ -1942,6 +1942,32 @@ def _process_phonon(block: TextIO, logger):
             # ==By prop
             stack_dict(qdata, match.groupdict())
 
+        elif char_table := get_block(line, block,
+                                     r"Rep\s+Mul", gen_table_re("[-=]+", r"\+"),
+                                     eof_possible=True):
+            headers = next(char_table).split()[4:]
+            next(char_table)
+            char = []
+            for char_line in char_table:
+                if re.search("[-=]{4,}", char_line):
+                    break
+
+                head, tail = char_line.split("|")
+                _, rep, *name, mul = head.split()
+                *vals, _ = tail.split()
+                char.append(dict(chars=tuple(zip(headers, map(int, vals))),
+                                 mul=int(mul),
+                                 rep=rep,
+                                 name=name)
+                            )
+            for row in char:
+                if not row["name"]:
+                    del row["name"]
+                else:
+                    row["name"] = row["name"][0]
+            qdata["char_table"] = char
+
+
     if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                              for phonon in accum):
         accum.append(_process_qdata(qdata))
