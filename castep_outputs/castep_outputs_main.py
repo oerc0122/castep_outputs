@@ -4,7 +4,6 @@ Run main castep parser
 from typing import Callable, Optional, TextIO, Union
 from pathlib import Path
 import logging
-import fileinput
 import io
 import sys
 
@@ -37,7 +36,7 @@ def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
     if isinstance(in_file, io.TextIOBase):
         data = parser(in_file)
     else:
-        with fileinput.FileInput(in_file, mode='r') as file:
+        with open(in_file, mode='r', encoding="utf-8") as file:
             data = parser(file)
 
     if out_format == "json" or testing:
