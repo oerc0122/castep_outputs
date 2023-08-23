@@ -16,7 +16,7 @@ from .castep_res import labelled_floats, get_numbers, get_block, gen_table_re
 
 from .constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
 
-from .utility import (fix_data_types, add_aliases, to_type,
+from .utility import (FileWrapper, fix_data_types, add_aliases, to_type,
                       stack_dict, normalise_string, atreg_to_index,
                       log_factory, determine_type)
 from .cell_param_file_parser import _parse_devel_code_block
@@ -63,7 +63,7 @@ DATA_LEVEL = {"LOW": ("cell", "stress", "force", "position", "final_config", "md
               }
 
 
-def parse_castep_file(castep_file: TextIO,
+def parse_castep_file(castep_file_in: TextIO,
                       filters: Optional[Tuple[Literal[DATA_CLASSES]]] = None,
                       level: Literal[DATA_LEVEL.keys()] = "FULL") -> List[Dict[str, Any]]:
     """ Parse castep file into lists of dicts ready to JSONise """
@@ -76,6 +76,8 @@ def parse_castep_file(castep_file: TextIO,
         to_parse = filters
     else:
         to_parse = DATA_LEVEL[level]
+
+    castep_file = FileWrapper(castep_file_in)
 
     logger = log_factory(castep_file)
 
@@ -142,14 +144,12 @@ def parse_castep_file(castep_file: TextIO,
 
             warn = line.strip()
 
-            pos = 0
             for tst, line in enumerate(castep_file):
                 if not line.strip() or not re.match(match.group(1)+r"\s+", line):
                     if tst:
-                        castep_file.seek(pos)
+                        castep_file.rewind()
                     break
                 warn += " " + line.strip()
-                pos = castep_file.tell()
 
             curr_run["warning"].append(warn)
 
@@ -523,16 +523,18 @@ def parse_castep_file(castep_file: TextIO,
             curr_run["initial_spins"] = _process_initial_spins(block)
 
         # Target Stress
-        elif block := get_block(line, castep_file, "External pressure/stress", REs.EMPTY):
+        elif block := get_block(line, castep_file, "External pressure/stress", "", cnt=3):
 
             if "parameters" not in to_parse:
                 continue
 
             logger("Found target stress")
 
-            curr_run["target_stress"].extend(number
-                                             for line in block
-                                             for number in to_type(get_numbers(line), float))
+            accum = [to_type(number, float)
+                     for line in block
+                     for number in get_numbers(line)]
+
+            curr_run["target_stress"].append(accum)
 
         # Finite basis correction parameter
         elif match := re.search(rf"finite basis dEtot\/dlog\(Ecut\) = +({REs.FNUMBER_RE})", line):

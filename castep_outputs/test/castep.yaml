@@ -208,7 +208,8 @@
   symmetries: {Maximum deviation from symmetry: 0.00000 ANG, Number of symmetry operations: 1,
     Point group of crystal: '1: C1, 1, 1', Space group of crystal: '213: P4_132, P
       4bd 2ab 3'}
-  target_stress: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  target_stress:
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Tue, 30 May 2023 11:57:18 +0100
   title: ''
   warning: ['Warning in parameters_read: presetting of magnetic moments on atoms cannot
@@ -429,6 +430,7 @@
   symmetries: {Maximum deviation from symmetry: 0.00000 ANG, Number of symmetry operations: 1,
     Point group of crystal: '1: C1, 1, 1', Space group of crystal: '213: P4_132, P
       4bd 2ab 3'}
-  target_stress: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  target_stress:
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Fri, 14 Jul 2023 19:45:17 +0100
   title: ''

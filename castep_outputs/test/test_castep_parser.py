@@ -868,7 +868,7 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'target_stress': [1.0, 2.0, 3.0, 4.0, 5.0, 6.0]})
+        self.assertEqual(test_dict, {'target_stress': [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]]})
 
     def test_delta_scf(self):
         test_text = io.StringIO("""
