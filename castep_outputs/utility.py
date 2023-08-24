@@ -23,6 +23,35 @@ except ImportError:
         _YAML_TYPE = None
 
 
+class FileWrapper:
+    """
+    Convenience file wrapper to add rewind and line number capabilities
+    """
+    def __init__(self, file):
+        self.file = file
+        self.pos = 0
+        self.lineno = 0
+        self.name = self.file.name if hasattr(self.file, 'name') else 'unknown'
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        self.lineno += 1
+        self.pos = self.file.tell()
+        nextline = self.file.readline()
+        if not nextline:
+            raise StopIteration()
+        return nextline
+
+    def rewind(self):
+        """Rewinds file to previous line"""
+        if self.file.tell == self.pos:
+            return
+        self.lineno -= 1
+        self.file.seek(self.pos)
+
+
 def normalise_string(string: str) -> str:
     """
     Normalise a string removing leading/trailing space
@@ -179,6 +208,10 @@ def log_factory(file: TextIO) -> Callable:
     if isinstance(file, fileinput.FileInput):
         def log_file(message, *args, level="info"):
             getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
+                                    f" {message}", *args)
+    elif isinstance(file, FileWrapper):
+        def log_file(message, *args, level="info"):
+            getattr(logging, level)(f"[{file.name}:{file.lineno}]"
                                     f" {message}", *args)
     elif hasattr(file, 'name'):
         def log_file(message, *args, level="info"):
