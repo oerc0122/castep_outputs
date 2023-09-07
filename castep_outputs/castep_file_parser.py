@@ -840,7 +840,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
         elif block := get_block(line, castep_file,
                                 rf"Starting {REs.MINIMISERS_RE} iteration\s*\d+\s*\.{{3}}",
-                                gen_table_re("", "=+"), cnt=2):
+                                rf"^=+$|^\s*Finished\s+{REs.MINIMISERS_RE}\s*$", cnt=2):
 
             if "geom_opt" not in to_parse:
                 continue
@@ -863,7 +863,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
                 curr_run["geom_opt"]["iterations"] = [data]
 
-            logger("Found geom block (iteration %d)", len(curr_run["geom_opt"])+1)
+            logger("Found geom block (iteration %d)", len(curr_run["geom_opt"]["iterations"])+1)
             # Avoid infinite recursion
             next(block)
             data = parse_castep_file(block)[0]
