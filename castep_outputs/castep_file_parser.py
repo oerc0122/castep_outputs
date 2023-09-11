@@ -482,6 +482,45 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run[mode] = _process_atreg_block(block)
 
         # Initial pos
+        elif block := get_block(line, castep_file,  # Labelled
+                                r"Fractional coordinates of atoms\s+User-defined",
+                                gen_table_re("", "x+")):
+
+            if "position" not in to_parse:
+                continue
+
+            logger("Found initial positions")
+
+            curr_run["initial_positions"] = {}
+            for line in block:
+                if match := REs.LABELLED_POS_RE.search(line):
+                    ind = f"{match['spec'].strip()} [{match['label'].strip()}]", int(match["index"])
+                    curr_run["initial_positions"][ind] = to_type(match.group("x", "y", "z"), float)
+
+        elif block := get_block(line, castep_file,  # Mixture
+                                r"Mixture\s+Fractional coordinates of atoms",
+                                gen_table_re("", "x+")):
+
+            if "position" not in to_parse:
+                continue
+
+            logger("Found initial positions")
+
+            curr_run["initial_positions"] = {}
+            for line in block:
+                if match := REs.MIXTURE_LINE_1_RE.search(line):
+                    spec, ind = match["spec"].strip(), int(match["index"])
+                    pos = to_type(match.group("x", "y", "z"), float)
+                    weight = float(match["weight"])
+
+                    curr_run["initial_positions"][(spec, ind)] = {'pos': pos, 'weight': weight}
+
+                elif match := REs.MIXTURE_LINE_2_RE.search(line):
+                    spec = match["spec"].strip()
+                    weight = float(match["weight"])
+
+                    curr_run["initial_positions"][(spec, ind)] = {'pos': pos, 'weight': weight}
+
         elif block := get_block(line, castep_file,
                                 "Fractional coordinates of atoms",
                                 gen_table_re("", "x+")):
@@ -1469,7 +1508,9 @@ def _process_forces(block: TextIO) -> Tuple[str, Dict[AtomIndex, ThreeVector]]:
 
     ftype = normalise_string(ftype).lower()
 
-    accum = _process_atreg_block(block)
+    accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
+             for line in block
+             if (match := REs.FORCES_ATDAT.search(line))}
 
     return ftype, accum
 
