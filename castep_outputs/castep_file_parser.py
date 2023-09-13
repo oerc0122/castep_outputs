@@ -16,9 +16,9 @@ from .castep_res import labelled_floats, get_numbers, get_block, gen_table_re
 
 from .constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
 
-from .utility import (FileWrapper, fix_data_types, add_aliases, to_type,
-                      stack_dict, normalise_string, atreg_to_index,
-                      log_factory, determine_type)
+from .utility import (Atom, FileWrapper, fix_data_types, add_aliases,
+                      to_atom, to_type, stack_dict, normalise_string,
+                      atreg_to_index, log_factory, determine_type)
 from .cell_param_file_parser import _parse_devel_code_block
 from .extra_files_parser import (parse_bands_file,
                                  parse_hug_file,
@@ -494,7 +494,8 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["initial_positions"] = {}
             for line in block:
                 if match := REs.LABELLED_POS_RE.search(line):
-                    ind = f"{match['spec'].strip()} [{match['label'].strip()}]", int(match["index"])
+                    ind = to_atom(f"{match['spec'].strip()} [{match['label'].strip()}]",
+                                  match["index"])
                     curr_run["initial_positions"][ind] = to_type(match.group("x", "y", "z"), float)
 
         elif block := get_block(line, castep_file,  # Mixture
@@ -509,17 +510,20 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["initial_positions"] = {}
             for line in block:
                 if match := REs.MIXTURE_LINE_1_RE.search(line):
-                    spec, ind = match["spec"].strip(), int(match["index"])
+                    spec, ind = match["spec"].strip(), match["index"]
+                    atom = to_atom(spec, ind)
+
                     pos = to_type(match.group("x", "y", "z"), float)
                     weight = float(match["weight"])
 
-                    curr_run["initial_positions"][(spec, ind)] = {'pos': pos, 'weight': weight}
+                    curr_run["initial_positions"][atom] = {'pos': pos, 'weight': weight}
 
                 elif match := REs.MIXTURE_LINE_2_RE.search(line):
                     spec = match["spec"].strip()
+                    atom = to_atom(spec, ind)
                     weight = float(match["weight"])
 
-                    curr_run["initial_positions"][(spec, ind)] = {'pos': pos, 'weight': weight}
+                    curr_run["initial_positions"][atom] = {'pos': pos, 'weight': weight}
 
         elif block := get_block(line, castep_file,
                                 "Fractional coordinates of atoms",
@@ -1937,8 +1941,8 @@ def _process_pspot_report(block: TextIO) -> Dict[str, Union[float, str]]:
 
 
 def _process_bond_analysis(block: TextIO) -> Dict[Tuple[AtomIndex, AtomIndex], Dict[str, float]]:
-    accum = {((match["spec1"], int(match["ind1"])),
-              (match["spec2"], int(match["ind2"]))):
+    accum = {(Atom(match["spec1"], int(match["ind1"])),
+              Atom(match["spec2"], int(match["ind2"]))):
              {"population": float(match["population"]),
               "spin": float(match["spin"]) if match["spin"] else None,
               "length": float(match["length"])}

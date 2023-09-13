@@ -1,7 +1,7 @@
 coords:
-  ? !!python/tuple [B, 1]
+  ? !!python/object/new:castep_outputs.utility.Atom [B, 1, '', '']
   : [0.375, 0.375, 0.375]
-  ? !!python/tuple [N, 2]
+  ? !!python/object/new:castep_outputs.utility.Atom [N, 2, '', '']
   : [0.625, 0.625, 0.625]
 overlap:
 - ? !!python/tuple [3, 6]

@@ -23,86 +23,86 @@
     - [0.0, 0.0, 0.995040828]
     volume: 251.777492
   initial_positions:
-    ? !!python/tuple [Mn, 1]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 1, '', '']
     : [0.061, 0.061, 0.061]
-    ? !!python/tuple [Mn, 2]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 2, '', '']
     : [0.811, 0.311, 0.189]
-    ? !!python/tuple [Mn, 3]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 3, '', '']
     : [0.939, 0.561, 0.439]
-    ? !!python/tuple [Mn, 4]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 4, '', '']
     : [0.439, 0.939, 0.561]
-    ? !!python/tuple [Mn, 5]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 5, '', '']
     : [0.561, 0.439, 0.939]
-    ? !!python/tuple [Mn, 6]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 6, '', '']
     : [0.311, 0.189, 0.811]
-    ? !!python/tuple [Mn, 7]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 7, '', '']
     : [0.689, 0.689, 0.689]
-    ? !!python/tuple [Mn, 8]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 8, '', '']
     : [0.189, 0.811, 0.311]
-    ? !!python/tuple [Mn, 9]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 9, '', '']
     : [0.125, 0.206, 0.456]
-    ? !!python/tuple [Mn, 10]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 10, '', '']
     : [0.875, 0.706, 0.044]
-    ? !!python/tuple [Mn, 11]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 11, '', '']
     : [0.544, 0.625, 0.294]
-    ? !!python/tuple [Mn, 12]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 12, '', '']
     : [0.294, 0.544, 0.625]
-    ? !!python/tuple [Mn, 13]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 13, '', '']
     : [0.456, 0.125, 0.206]
-    ? !!python/tuple [Mn, 14]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 14, '', '']
     : [0.206, 0.456, 0.125]
-    ? !!python/tuple [Mn, 15]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 15, '', '']
     : [0.625, 0.294, 0.544]
-    ? !!python/tuple [Mn, 16]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 16, '', '']
     : [0.794, 0.956, 0.375]
-    ? !!python/tuple [Mn, 17]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 17, '', '']
     : [0.375, 0.794, 0.956]
-    ? !!python/tuple [Mn, 18]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 18, '', '']
     : [0.044, 0.875, 0.706]
-    ? !!python/tuple [Mn, 19]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 19, '', '']
     : [0.956, 0.375, 0.794]
-    ? !!python/tuple [Mn, 20]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 20, '', '']
     : [0.706, 0.044, 0.875]
   initial_spins:
-    ? !!python/tuple [Mn, 1]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 1, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 2]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 2, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 3]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 3, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 4]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 4, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 5]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 5, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 6]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 6, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 7]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 7, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 8]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 8, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 9]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 9, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 10]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 10, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 11]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 11, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 12]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 12, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 13]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 13, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 14]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 14, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 15]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 15, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 16]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 16, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 17]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 17, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 18]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 18, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 19]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 19, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 20]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 20, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
   k-points:
     kpoint_mp_grid: [4, 4, 4]
@@ -239,86 +239,86 @@
     - [0.0, 0.0, 0.995040828]
     volume: 251.777492
   initial_positions:
-    ? !!python/tuple [Mn, 1]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 1, '', '']
     : [0.061, 0.061, 0.061]
-    ? !!python/tuple [Mn, 2]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 2, '', '']
     : [0.811, 0.311, 0.189]
-    ? !!python/tuple [Mn, 3]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 3, '', '']
     : [0.939, 0.561, 0.439]
-    ? !!python/tuple [Mn, 4]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 4, '', '']
     : [0.439, 0.939, 0.561]
-    ? !!python/tuple [Mn, 5]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 5, '', '']
     : [0.561, 0.439, 0.939]
-    ? !!python/tuple [Mn, 6]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 6, '', '']
     : [0.311, 0.189, 0.811]
-    ? !!python/tuple [Mn, 7]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 7, '', '']
     : [0.689, 0.689, 0.689]
-    ? !!python/tuple [Mn, 8]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 8, '', '']
     : [0.189, 0.811, 0.311]
-    ? !!python/tuple [Mn, 9]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 9, '', '']
     : [0.125, 0.206, 0.456]
-    ? !!python/tuple [Mn, 10]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 10, '', '']
     : [0.875, 0.706, 0.044]
-    ? !!python/tuple [Mn, 11]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 11, '', '']
     : [0.544, 0.625, 0.294]
-    ? !!python/tuple [Mn, 12]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 12, '', '']
     : [0.294, 0.544, 0.625]
-    ? !!python/tuple [Mn, 13]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 13, '', '']
     : [0.456, 0.125, 0.206]
-    ? !!python/tuple [Mn, 14]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 14, '', '']
     : [0.206, 0.456, 0.125]
-    ? !!python/tuple [Mn, 15]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 15, '', '']
     : [0.625, 0.294, 0.544]
-    ? !!python/tuple [Mn, 16]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 16, '', '']
     : [0.794, 0.956, 0.375]
-    ? !!python/tuple [Mn, 17]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 17, '', '']
     : [0.375, 0.794, 0.956]
-    ? !!python/tuple [Mn, 18]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 18, '', '']
     : [0.044, 0.875, 0.706]
-    ? !!python/tuple [Mn, 19]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 19, '', '']
     : [0.956, 0.375, 0.794]
-    ? !!python/tuple [Mn, 20]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 20, '', '']
     : [0.706, 0.044, 0.875]
   initial_spins:
-    ? !!python/tuple [Mn, 1]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 1, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 2]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 2, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 3]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 3, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 4]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 4, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 5]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 5, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 6]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 6, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 7]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 7, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 8]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 8, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 9]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 9, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 10]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 10, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 11]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 11, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 12]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 12, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 13]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 13, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 14]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 14, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 15]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 15, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 16]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 16, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 17]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 17, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 18]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 18, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 19]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 19, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
-    ? !!python/tuple [Mn, 20]
+    ? !!python/object/new:castep_outputs.utility.Atom [Mn, 20, '', '']
     : {fix: false, magmom: 2.5, spin: 0.166667}
   k-points:
     kpoint_mp_grid: [4, 4, 4]

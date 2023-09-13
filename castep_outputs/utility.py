@@ -1,7 +1,7 @@
 """
 Utility functions for parsing castep outputs
 """
-from typing import Tuple, Any, Dict, TextIO, List, Callable, Union
+from typing import Tuple, Any, Dict, TextIO, List, Callable, Union, NamedTuple
 import fileinput
 import logging
 import collections.abc
@@ -21,6 +21,22 @@ except ImportError:
         _YAML_TYPE = "yaml"
     except ImportError:
         _YAML_TYPE = None
+
+
+class Atom(NamedTuple):
+    """
+    Atom details as a named tuple
+    """
+    species: str
+    index: int
+    tag: str = ""
+    label: str = ""
+
+    def __str__(self):
+        return "".join((self.species,
+                        f':{self.tag}' if self.tag else '',
+                        f' [{self.label}]' if self.label else '',
+                        f'_{self.index}'))
 
 
 class FileWrapper:
@@ -60,6 +76,11 @@ def normalise_string(string: str) -> str:
     return " ".join(string.strip().split())
 
 
+def to_atom(spec: str, ind: str) -> Atom:
+    """ Parse spec, ind to atom """
+    return Atom(**REs.get_atom_dict(spec), index=int(ind))
+
+
 def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
     """
     Transform a matched atreg value to species index tuple
@@ -71,7 +92,7 @@ def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
         del dict_in["spec"]
         del dict_in["index"]
 
-    return (spec, int(ind))
+    return to_atom(spec, ind)
 
 
 def normalise(obj: Any, mapping: Dict[type, Union[type, Callable]] = ()) -> Any:
@@ -97,7 +118,9 @@ def json_safe(obj: Any) -> Any:
         for key, val in obj.items():
             if isinstance(key, (tuple, list)):
                 # Key in bonds is tuple[tuple[AtomIndex]]
-                if isinstance(key[0], tuple):
+                if isinstance(key[0], Atom):
+                    key = str(key)
+                elif isinstance(key[0], tuple):
                     key = "_".join(str(y) for x in key for y in x)
                 else:
                     key = "_".join(map(str, key))

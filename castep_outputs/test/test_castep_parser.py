@@ -5,6 +5,7 @@ import io
 from unittest import (TestCase, main)
 from castep_outputs import parse_castep_file
 from castep_outputs.castep_file_parser import _process_pspot_string
+from castep_outputs.utility import Atom
 
 
 class test_castep_parser(TestCase):
@@ -267,9 +268,9 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_positions':
-                                     {('Mn', 1): (0.061, 0.061, 0.061),
-                                      ('Mn', 2): (0.811, 0.311, 0.189),
-                                      ('Mn:aTag', 3): (0.939, 0.561, 0.439)}})
+                                     {Atom('Mn', 1): (0.061, 0.061, 0.061),
+                                      Atom('Mn', 2): (0.811, 0.311, 0.189),
+                                      Atom('Mn', 3, tag="aTag"): (0.939, 0.561, 0.439)}})
 
     def test_get_atom_struct_labelled(self):
         test_text = io.StringIO("""
@@ -285,8 +286,8 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_positions': {
-            ('H [H1]', 1): (0.0, 0.0, 0.0),
-            ('H [H2]', 2): (-0.0, -0.0, 0.166667)}
+            Atom('H', 1, label="H1"): (0.0, 0.0, 0.0),
+            Atom('H', 2, label="H2"): (-0.0, -0.0, 0.166667)}
                                      })
 
     def test_get_atom_struct_mixed(self):
@@ -305,10 +306,10 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_positions': {
-            ('Si', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.75},
-            ('Ge', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.25},
-            ('Si [A1]', 2): {'pos': (0.25, 1.25, 0.25), 'weight': 0.75},
-            ('Ge:MyTag', 2): {'pos': (0.25, 1.25, 0.25), 'weight': 0.25}
+            Atom('Si', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.75},
+            Atom('Ge', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.25},
+            Atom('Si', 2, label="A1"): {'pos': (0.25, 1.25, 0.25), 'weight': 0.75},
+            Atom('Ge', 2, tag="MyTag"): {'pos': (0.25, 1.25, 0.25), 'weight': 0.25}
                                      }})
 
     def test_get_atom_velocities(self):
@@ -325,9 +326,9 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'initial_velocities':
-                                     {('Si', 1): (3.60123, 0.98642, 2.77447),
-                                      ('Si', 2): (1.85523, 3.24536, 6.70727),
-                                      ('Si:aTag', 3): (5.86792, 2.40481, 1.76858)}})
+                                     {Atom('Si', 1): (3.60123, 0.98642, 2.77447),
+                                      Atom('Si', 2): (1.85523, 3.24536, 6.70727),
+                                      Atom('Si', 3, tag="aTag"): (5.86792, 2.40481, 1.76858)}})
 
     def test_get_atom_spin_params(self):
         test_text = io.StringIO("""
@@ -342,12 +343,12 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_spins': {('Cr', 1): {'fix': False,
-                                                                   'magmom': 3.0,
-                                                                   'spin': 0.5},
-                                                       ('Cr', 2): {'fix': True,
-                                                                   'magmom': -3.0,
-                                                                   'spin': -0.5}}})
+        self.assertEqual(test_dict, {'initial_spins': {Atom('Cr', 1): {'fix': False,
+                                                                       'magmom': 3.0,
+                                                                       'spin': 0.5},
+                                                       Atom('Cr', 2): {'fix': True,
+                                                                       'magmom': -3.0,
+                                                                       'spin': -0.5}}})
 
     def test_get_pspot(self):
         test_text = io.StringIO("""
@@ -531,12 +532,12 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_spins': {('Mn', 1): {'fix': False,
-                                                                   'magmom': 2.500,
-                                                                   'spin': 0.166667},
-                                                       ('Mn', 2): {'fix': False,
-                                                                   'magmom': 2.500,
-                                                                   'spin': 0.166667}},
+        self.assertEqual(test_dict, {'initial_spins': {Atom('Mn', 1): {'fix': False,
+                                                                       'magmom': 2.500,
+                                                                       'spin': 0.166667},
+                                                       Atom('Mn', 2): {'fix': False,
+                                                                       'magmom': 2.500,
+                                                                       'spin': 0.166667}},
                                      'species_properties': {'Mn': {'electric_quadrupole_moment': 0.33,
                                                                    'mass': 54.93805,
                                                                    'pseudopot': {'beta_radius': 1.8,
@@ -854,15 +855,15 @@ Charge spilling parameter for spin component 2 = 0.44%
                                                      'cell_constraints': (0, 0, 0, 0, 0, 0),
                                                      'com_constrained': True,
                                                      'ionic_constraints':
-                                                     {('Se', 1): [(143935.2749, 0.0, 0.0),
-                                                                  (0.0, 143935.2749, 0.0),
-                                                                  (0.0, 0.0, 143935.2749)],
-                                                      ('Se', 2): [(143935.2749, 0.0, 0.0),
-                                                                  (0.0, 143935.2749, 0.0),
-                                                                  (0.0, 0.0, 143935.2749)],
-                                                      ('Se', 3): [(143935.2749, 0.0, 0.0),
-                                                                  (0.0, 143935.2749, 0.0),
-                                                                  (0.0, 0.0, 143935.2749)]}},
+                                                     {Atom('Se', 1): [(143935.2749, 0.0, 0.0),
+                                                                      (0.0, 143935.2749, 0.0),
+                                                                      (0.0, 0.0, 143935.2749)],
+                                                      Atom('Se', 2): [(143935.2749, 0.0, 0.0),
+                                                                      (0.0, 143935.2749, 0.0),
+                                                                      (0.0, 0.0, 143935.2749)],
+                                                      Atom('Se', 3): [(143935.2749, 0.0, 0.0),
+                                                                      (0.0, 143935.2749, 0.0),
+                                                                      (0.0, 0.0, 143935.2749)]}},
                                      'symmetries': {'Maximum deviation from symmetry': '0.00000 ANG',
                                                     'Number of symmetry operations': 1,
                                                     'Point group of crystal': '1: C1, 1, 1',
@@ -1278,8 +1279,6 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 # Dispersion corrected final free energy* (Ecor-TS) =  -1134.338872426     eV
 # NB dispersion corrected est. 0K energy* (Ecor-0.5TS) =  -1234.338872426     eV
 
-
-
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'dedlne': -3.335211,
@@ -1333,14 +1332,14 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         self.assertEqual(test_dict, {'forces':
                                      {'non-descript': [{
-                                         ('Si', 1): (-2.27362, -0.18351, -0.11133),
-                                         ('Si', 2): (-2.003, -0.71954, -0.89066),
-                                         ('Si', 3): (-1.83082, -0.17303, -0.91369)
+                                         Atom('Si', 1): (-2.27362, -0.18351, -0.11133),
+                                         Atom('Si', 2): (-2.003, -0.71954, -0.89066),
+                                         Atom('Si', 3): (-1.83082, -0.17303, -0.91369)
                                      }],
                                       'fun': [{
-                                          ('Si', 1): (1.0, 1.0, 1.0),
-                                          ('Si', 2): (1.0, 1.0, 1.0),
-                                          ('Si', 3): (1.0, 1.0, 1.0)
+                                          Atom('Si', 1): (1.0, 1.0, 1.0),
+                                          Atom('Si', 2): (1.0, 1.0, 1.0),
+                                          Atom('Si', 3): (1.0, 1.0, 1.0)
                                       }]
                                       }
                                      })
@@ -1364,8 +1363,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         self.assertEqual(test_dict, {'forces':
                                      {'constrained': [{
-                                         ('Si', 1): (1.0, 2.0, 3.0),
-                                         ('Si', 2): (0.00818, 0.26933, 0.30025)}
+                                         Atom('Si', 1): (1.0, 2.0, 3.0),
+                                         Atom('Si', 2): (0.00818, 0.26933, 0.30025)}
                                                       ]}
                                      })
 
@@ -1385,8 +1384,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
-                                                                  ('H [H2]', 2): (-0.0, -0.0, 0.0647)}]
+        self.assertEqual(test_dict, {'forces': {'non-descript': [{Atom('H', 1, label="H1"): (0.0, 0.0, -0.0647),
+                                                                  Atom('H', 2, label="H2"): (-0.0, -0.0, 0.0647)}]
                                                 }})
 
     def test_get_forces_mixed(self):
@@ -1407,10 +1406,10 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'forces':
-                                     {'symmetrised': [{('Ge', 1): (0.0, 0.0, 0.0),
-                                                      ('Ge', 2): (0.0, 0.0, 0.0),
-                                                      ('Si', 1): (0.0, 0.0, 0.0),
-                                                      ('Si', 2): (0.0, 0.0, 0.0)}]
+                                     {'symmetrised': [{Atom('Ge', 1): (0.0, 0.0, 0.0),
+                                                      Atom('Ge', 2): (0.0, 0.0, 0.0),
+                                                      Atom('Si', 1): (0.0, 0.0, 0.0),
+                                                      Atom('Si', 2): (0.0, 0.0, 0.0)}]
                                       }})
 
     def test_get_stress(self):
@@ -1577,8 +1576,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
              'energies': {'est_0K': [-855.4216728959],
                           'final_energy': [-855.4197401755],
                           'free_energy': [-855.4236056162]},
-             'forces': {'non-descript': [{('Si', 1): (-0.05358, -0.04038, 0.69168),
-                                          ('Si', 2): (0.72539, 0.3538, -1.12992)}]},
+             'forces': {'non-descript': [{Atom('Si', 1): (-0.05358, -0.04038, 0.69168),
+                                          Atom('Si', 2): (0.72539, 0.3538, -1.12992)}]},
              'cell': {'cell_angles': [90.0, 90.0, 90.0],
                       'density_amu': 1.403372,
                       'density_g': 2.330353,
@@ -1590,8 +1589,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                                         (0.0, 1.157124366, 0.0),
                                         (0.0, 0.0, 1.157124366)],
                       'volume': 160.103007},
-             'positions': {('Si', 1): (0.001291, 0.00032, 0.001059),
-                           ('Si', 2): (0.000729, 0.504323, 0.520521)},
+             'positions': {Atom('Si', 1): (0.001291, 0.00032, 0.001059),
+                           Atom('Si', 2): (0.000729, 0.504323, 0.520521)},
              'memory_estimate': [{'Model and support data': {'disk': 0.0, 'memory': 27.2},
                                   'Molecular Dynamics requirements': {'disk': 0.0, 'memory': 13.4}}],
              'scf': [[{'energy': -854.989696,
@@ -1713,22 +1712,22 @@ Species          Ion     s       p       d       f      Total   Charge (e)
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'mulliken_popn': {
-            ('Si', 1): {'spin_sep': False,
-                        's': 1.319,
-                        'p': 2.681,
-                        'd': 0.0,
-                        'f': 7.0,
-                        'total': 4.0,
-                        'charge': 0.0,
-                        'spin': None},
-            ('Si', 2): {'spin_sep': False,
-                        's': 1.319,
-                        'p': 2.681,
-                        'd': 3.0,
-                        'f': 0.0,
-                        'total': 4.0,
-                        'charge': 2.0,
-                        'spin': None}}
+            Atom('Si', 1): {'spin_sep': False,
+                            's': 1.319,
+                            'p': 2.681,
+                            'd': 0.0,
+                            'f': 7.0,
+                            'total': 4.0,
+                            'charge': 0.0,
+                            'spin': None},
+            Atom('Si', 2): {'spin_sep': False,
+                            's': 1.319,
+                            'p': 2.681,
+                            'd': 3.0,
+                            'f': 0.0,
+                            'total': 4.0,
+                            'charge': 2.0,
+                            'spin': None}}
                                      }
                          )
 
@@ -1747,34 +1746,34 @@ Species          Ion Spin      s       p       d       f      Total   Charge(e) 
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'mulliken_popn':
-                                     {('Cr', 1): {'charge': -0.0,
-                                                  'dn_d': 1.735,
-                                                  'dn_f': 0.0,
-                                                  'dn_p': 0.097,
-                                                  'dn_s': 0.341,
-                                                  'dn_total': 2.174,
-                                                  'spin': 1.653,
-                                                  'spin_sep': True,
-                                                  'total': 6.0,
-                                                  'up_d': 3.391,
-                                                  'up_f': 0.0,
-                                                  'up_p': 0.037,
-                                                  'up_s': 0.398,
-                                                  'up_total': 3.826},
-                                      ('Cr', 2): {'charge': 0.0,
-                                                  'dn_d': 3.391,
-                                                  'dn_f': 0.0,
-                                                  'dn_p': 0.037,
-                                                  'dn_s': 0.398,
-                                                  'dn_total': 3.826,
-                                                  'spin': -1.653,
-                                                  'spin_sep': True,
-                                                  'total': 6.0,
-                                                  'up_d': 1.735,
-                                                  'up_f': 0.0,
-                                                  'up_p': 0.097,
-                                                  'up_s': 0.341,
-                                                  'up_total': 2.174}}})
+                                     {Atom('Cr', 1): {'charge': -0.0,
+                                                      'dn_d': 1.735,
+                                                      'dn_f': 0.0,
+                                                      'dn_p': 0.097,
+                                                      'dn_s': 0.341,
+                                                      'dn_total': 2.174,
+                                                      'spin': 1.653,
+                                                      'spin_sep': True,
+                                                      'total': 6.0,
+                                                      'up_d': 3.391,
+                                                      'up_f': 0.0,
+                                                      'up_p': 0.037,
+                                                      'up_s': 0.398,
+                                                      'up_total': 3.826},
+                                      Atom('Cr', 2): {'charge': 0.0,
+                                                      'dn_d': 3.391,
+                                                      'dn_f': 0.0,
+                                                      'dn_p': 0.037,
+                                                      'dn_s': 0.398,
+                                                      'dn_total': 3.826,
+                                                      'spin': -1.653,
+                                                      'spin_sep': True,
+                                                      'total': 6.0,
+                                                      'up_d': 1.735,
+                                                      'up_f': 0.0,
+                                                      'up_p': 0.097,
+                                                      'up_s': 0.341,
+                                                      'up_total': 2.174}}})
 
     def test_get_orbital_populations(self):
         test_text = io.StringIO("""
@@ -1798,12 +1797,12 @@ The total projected population is   19.999   0.000
 
         self.assertEqual(test_dict, {'orbital_popn':
                                      {'total': 19.999,
-                                      ('N', 1): {'Px': 1.329,
-                                                 'Py': 0.979,
-                                                 'Pz': 1.284,
-                                                 'S': 1.39},
-                                      ('C', 2): {'S': 3.0,
-                                                 'Px': 2.0}}})
+                                      Atom('N', 1): {'Px': 1.329,
+                                                     'Py': 0.979,
+                                                     'Pz': 1.284,
+                                                     'S': 1.39},
+                                      Atom('C', 2): {'S': 3.0,
+                                                     'Px': 2.0}}})
 
     def test_get_bond(self):
         test_text = io.StringIO("""
@@ -1815,10 +1814,10 @@ The total projected population is   19.999   0.000
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'bonds': {(('C', 1), ('Si', 1)): {'length': 3.14159,
-                                                                       'population': 99.1},
-                                               (('Si', 1), ('Si', 2)): {'length': 2.33434,
-                                                                        'population': 3.06}}})
+        self.assertEqual(test_dict, {'bonds': {(Atom('C', 1), Atom('Si', 1)): {'length': 3.14159,
+                                                                               'population': 99.1},
+                                               (Atom('Si', 1), Atom('Si', 2)): {'length': 2.33434,
+                                                                                'population': 3.06}}})
 
     def test_get_spin_bond(self):
         test_text = io.StringIO("""
@@ -1831,9 +1830,9 @@ The total projected population is   19.999   0.000
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'bonds': {(('Cr', 1), ('Cr', 2)): {'length': 2.48636,
-                                                                        'population': 1.66,
-                                                                        'spin': -0.15}}})
+        self.assertEqual(test_dict, {'bonds': {(Atom('Cr', 1), Atom('Cr', 2)): {'length': 2.48636,
+                                                                                'population': 1.66,
+                                                                                'spin': -0.15}}})
 
     def test_get_pair_params(self):
         test_text = io.StringIO("""
@@ -2338,12 +2337,12 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'born': [{('Si', 1): ((-2.01676, 0.0, -0.0),
-                                                           (0.0, -3.01676, -0.0),
-                                                           (0.0, -0.0, -4.01676)),
-                                               ('Si', 2): ((-5.01676, 0.0, -0.0),
-                                                           (0.0, -6.01676, -0.0),
-                                                           (0.0, -0.0, -7.01676))}]}
+        self.assertEqual(test_dict, {'born': [{Atom('Si', 1): ((-2.01676, 0.0, -0.0),
+                                                               (0.0, -3.01676, -0.0),
+                                                               (0.0, -0.0, -4.01676)),
+                                               Atom('Si', 2): ((-5.01676, 0.0, -0.0),
+                                                               (0.0, -6.01676, -0.0),
+                                                               (0.0, -0.0, -7.01676))}]}
                          )
 
     def test_get_raman(self):
@@ -2458,8 +2457,8 @@ Species   Ion     Hirshfeld Charge (e)
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'hirshfeld': {('H', 1): -1.0,
-                                                   ('F', 1): 17.0}}
+        self.assertEqual(test_dict, {'hirshfeld': {Atom('H', 1): -1.0,
+                                                   Atom('F', 1): 17.0}}
                          )
 
     def test_geom_output(self):
@@ -2634,8 +2633,8 @@ Final energy =  -2293.681052478     eV
 
         self.assertEqual(test_dict, {'geom_opt':
                                      {'final_configuration':
-                                      {'atoms': {('Si', 1): (-0.00619, -0.000628, -0.000628),
-                                                 ('Si', 2): (0.24619, 0.250628, 0.250628)},
+                                      {'atoms': {Atom('Si', 1): (-0.00619, -0.000628, -0.000628),
+                                                 Atom('Si', 2): (0.24619, 0.250628, 0.250628)},
                                        'cell': {'cell_angles': [90.0, 90.0, 90.0],
                                                 'density_amu': 8.748104,
                                                 'density_g': 14.526569,
@@ -2676,8 +2675,8 @@ Final energy =  -2293.681052478     eV
                                                  'volume': 64.151231},
                                         'energies': {'final_energy': [-2293.681052478]},
                                         'enthalpy': [-2293.75785],
-                                        'forces': {'symmetrised': [{('O', 1): (0.29759, 0.29759, -0.0),
-                                                                    ('Ti', 1): (0.0, 0.0, 0.0)}]},
+                                        'forces': {'symmetrised': [{Atom('O', 1): (0.29759, 0.29759, -0.0),
+                                                                    Atom('Ti', 1): (0.0, 0.0, 0.0)}]},
                                         'geom_opt': {'trial': [1.0]},
                                         'memory_estimate':
                                         [{'Electronic energy minimisation requirements': {'disk': 0.0, 'memory': 4.0},
@@ -2704,8 +2703,8 @@ Final energy =  -2293.681052478     eV
                                                           '|dR|max': {'converged': True,
                                                                       'tolerance': 0.001,
                                                                       'value': 0.0}}],
-                                        'positions': {('O', 1): (0.299872, 0.299872, -0.0),
-                                                      ('Ti', 1): (0.0, 0.0, 0.0)},
+                                        'positions': {Atom('O', 1): (0.299872, 0.299872, -0.0),
+                                                      Atom('Ti', 1): (0.0, 0.0, 0.0)},
                                         'scf': [[{'energy': -2294.52355,
                                                   'energy_gain': None,
                                                   'fermi_energy': 0.554395796,
@@ -2794,10 +2793,10 @@ Message: Generation of delocalized internals is successful
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'product': {('H', 1): (0.0, 0.0, 0.0),
-                                                 ('H', 2): (-0.0, -0.0, 0.805)},
-                                     'reactant': {('H', 1): (0.0, 0.0, 0.0),
-                                                  ('H', 2): (-0.0, -0.0, 0.195)}})
+        self.assertEqual(test_dict, {'product': {Atom('H', 1): (0.0, 0.0, 0.0),
+                                                 Atom('H', 2): (-0.0, -0.0, 0.805)},
+                                     'reactant': {Atom('H', 1): (0.0, 0.0, 0.0),
+                                                  Atom('H', 2): (-0.0, -0.0, 0.195)}})
 
     def test_get_tss_info(self):
         test_text = io.StringIO("""
@@ -2923,15 +2922,15 @@ Message: Generation of delocalized internals is successful
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Chemical Shielding',
-                                      ('C', 1): {'aniso': 175.31,
-                                                 'asym': 0.0,
-                                                 'iso': 162.01},
-                                      ('C', 2): {'aniso': 175.31,
-                                                 'asym': None,
-                                                 'iso': 162.0},
-                                      ('C:tag', 2): {'aniso': 175.31,
-                                                     'asym': 1.0,
-                                                     'iso': 162.0}
+                                      Atom('C', 1): {'aniso': 175.31,
+                                                     'asym': 0.0,
+                                                     'iso': 162.01},
+                                      Atom('C', 2): {'aniso': 175.31,
+                                                     'asym': None,
+                                                     'iso': 162.0},
+                                      Atom('C', 2, tag="tag"): {'aniso': 175.31,
+                                                                'asym': 1.0,
+                                                                'iso': 162.0}
                                        }
                                       ]}
                          )
@@ -2953,11 +2952,11 @@ Message: Generation of delocalized internals is successful
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': '(An)Isotropic J-coupling',
-                                       ('C', 2): {'dia': -0.48,
-                                                  'fc': 128.25,
-                                                  'para': -1.22,
-                                                  'sd': 3.2,
-                                                  'tot': 129.75}
+                                       Atom('C', 2): {'dia': -0.48,
+                                                      'fc': 128.25,
+                                                      'para': -1.22,
+                                                      'sd': 3.2,
+                                                      'tot': 129.75}
                                        }
                                       ]}
                          )
@@ -2978,21 +2977,21 @@ Message: Generation of delocalized internals is successful
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Chemical Shielding and Electric '
                                        'Field Gradient',
-                                       ('H', 1): {'aniso': 8.55,
-                                                  'asym': 0.11,
-                                                  'cq': 0.1968,
-                                                  'eta': 0.02,
-                                                  'iso': 28.24},
-                                       ('H', 2): {'aniso': 9.29,
-                                                  'asym': 0.22,
-                                                  'cq': 0.1932,
-                                                  'eta': 0.03,
-                                                  'iso': 28.75},
-                                       ('H:T', 3): {'aniso': 7.26,
-                                                    'asym': None,
-                                                    'cq': 0.1996,
-                                                    'eta': 0.01,
-                                                    'iso': 28.71}}
+                                       Atom('H', 1): {'aniso': 8.55,
+                                                      'asym': 0.11,
+                                                      'cq': 0.1968,
+                                                      'eta': 0.02,
+                                                      'iso': 28.24},
+                                       Atom('H', 2): {'aniso': 9.29,
+                                                      'asym': 0.22,
+                                                      'cq': 0.1932,
+                                                      'eta': 0.03,
+                                                      'iso': 28.75},
+                                       Atom('H', 3, tag="T"): {'aniso': 7.26,
+                                                               'asym': None,
+                                                               'cq': 0.1996,
+                                                               'eta': 0.01,
+                                                               'iso': 28.71}}
                                       ]}
                          )
 
@@ -3012,9 +3011,9 @@ Message: Generation of delocalized internals is successful
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Electric Field Gradient',
-                                       ('H', 1): {'asym': 0.02, 'cq': 0.1968},
-                                       ('H', 2): {'asym': 0.03, 'cq': 0.1932},
-                                       ('H:T', 3): {'asym': None, 'cq': 0.1996}}
+                                       Atom('H', 1): {'asym': 0.02, 'cq': 0.1968},
+                                       Atom('H', 2): {'asym': 0.03, 'cq': 0.1932},
+                                       Atom('H', 3, tag="T"): {'asym': None, 'cq': 0.1996}}
                                       ]
                                      }
                          )
@@ -3033,7 +3032,7 @@ Message: Generation of delocalized internals is successful
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Hyperfine',
-                                       ('H', 1): {'iso': -1227.0}}
+                                       Atom('H', 1): {'iso': -1227.0}}
                                       ]
                                      }
                          )
@@ -3181,9 +3180,9 @@ Ewald Contribution ::
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'atomic_displacements':
-                                     {'0.0': {('Si', 1): (0.002399, 0.002399, 0.002399, 0.0, 0.0, -0.0),
-                                              ('Si', 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)},
-                                      '100.0': {('Si', 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)}}}
+                                     {'0.0': {Atom('Si', 1): (0.002399, 0.002399, 0.002399, 0.0, 0.0, -0.0),
+                                              Atom('Si', 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)},
+                                      '100.0': {Atom('Si', 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)}}}
                          )
 
     def test_elastic_constants_tensor(self):

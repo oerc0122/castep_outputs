@@ -1,6 +1,6 @@
 """ Module containing all regexes """
 
-from typing import List, Sequence, Optional, TextIO
+from typing import List, Sequence, Optional, TextIO, Dict, Union
 import re
 import io
 import itertools
@@ -85,6 +85,11 @@ def gen_table_re(content: str, border: str = r"\s*",
     return tab_re
 
 
+def get_atom_dict(spec: str) -> Dict[str, Union[str, int]]:
+    """ Get dict from species string by component """
+    return {key: val for key, val in ATOM_NAME_LABELLED_RE.match(spec).groupdict().items() if val}
+
+
 # --- RegExes
 # Regexps to recognise numbers
 FNUMBER_RE = r"(?:[+-]?(?:\d*\.\d+|\d+\.\d*))"
@@ -99,6 +104,9 @@ THREEVEC_RE = labelled_floats(("val",), counts=(3,))
 # Regexp to identify extended chemical species
 SPECIES_RE = r"[A-Z][a-z]{0,2}"
 ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b(?:\s*\[[^\]]+\])?"
+ATOM_NAME_LABELLED_RE = re.compile(
+    rf"(?P<species>{SPECIES_RE})(?::(?P<tag>\w+))?(?:\s*\[(?P<label>[^\]]*)\])?"
+)
 
 # Unless we have *VERY* exotic electron shells
 SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
