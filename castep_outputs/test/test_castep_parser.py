@@ -271,6 +271,24 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
                                       ('Mn', 2): (0.811, 0.311, 0.189),
                                       ('Mn:aTag', 3): (0.939, 0.561, 0.439)}})
 
+    def test_get_atom_struct_labelled(self):
+        test_text = io.StringIO("""
+     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+     x  Element    Atom        Fractional coordinates of atoms  User-defined  x
+     x            Number           u          v          w          LABEL     x
+     x------------------------------------------------------------------------x
+     x  H            1         0.000000   0.000000   0.000000     H1          x
+     x  H            2        -0.000000  -0.000000   0.166667     H2          x
+     xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+        """)
+
+        test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'initial_positions': {
+            ('H [H1]', 1): (0.0, 0.0, 0.0),
+            ('H [H2]', 2): (-0.0, -0.0, 0.166667)}
+                                     })
+
     def test_get_atom_struct_mixed(self):
         test_text = io.StringIO("""
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
@@ -279,14 +297,19 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         x------------------------------------------------------------------x
         x    1        0.000000   0.000000   0.000000   Si        0.750000  x
         x                                              Ge        0.250000  x
-        x    2        0.250000   1.250000   0.250000   Si        0.750000  x
-        x                                              Ge        0.250000  x
+        x    2        0.250000   1.250000   0.250000   Si [A1]   0.750000  x
+        x                                              Ge:MyTag  0.250000  x
         xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'initial_positions': {
+            ('Si', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.75},
+            ('Ge', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.25},
+            ('Si [A1]', 2): {'pos': (0.25, 1.25, 0.25), 'weight': 0.75},
+            ('Ge:MyTag', 2): {'pos': (0.25, 1.25, 0.25), 'weight': 0.25}
+                                     }})
 
     def test_get_atom_velocities(self):
         test_text = io.StringIO("""
@@ -1324,7 +1347,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
     def test_get_forces_constrained(self):
         test_text = io.StringIO("""
-******************************** Constrained Forces ********************************
+ ******************************** Constrained Forces ********************************
  *                                                                                  *
  *                           Cartesian components (eV/A)                            *
  * -------------------------------------------------------------------------------- *
@@ -1336,12 +1359,35 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
  ************************************************************************************
 
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
+
         self.assertEqual(test_dict, {'forces':
-                                     {'constrained': [{('Si', 1): (1.0, 2.0, 3.0),
-                                                       ('Si', 2): (0.00818, 0.26933, 0.30025)}]}})
+                                     {'constrained': [{
+                                         ('Si', 1): (1.0, 2.0, 3.0),
+                                         ('Si', 2): (0.00818, 0.26933, 0.30025)}
+                                                      ]}
+                                     })
+
+    def test_get_forces_labelled(self):
+        test_text = io.StringIO("""
+ ************************************** Forces **************************************
+ *                                                                                  *
+ *                           Cartesian components (eV/A)                            *
+ * -------------------------------------------------------------------------------- *
+ *                         x                    y                    z              *
+ *                                                                                  *
+ * H [H1]          1      0.00000              0.00000             -0.06470         *
+ * H [H2]          2     -0.00000             -0.00000              0.06470         *
+ *                                                                                  *
+ ************************************************************************************
+        """)
+
+        test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
+                                                                  ('H [H2]', 2): (-0.0, -0.0, 0.0647)}]
+                                                }})
 
     def test_get_forces_mixed(self):
         test_text = io.StringIO("""
@@ -1358,10 +1404,14 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
  *                                                                                  *
  ************************************************************************************
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'forces':
+                                     {'symmetrised': [{('Ge', 1): (0.0, 0.0, 0.0),
+                                                      ('Ge', 2): (0.0, 0.0, 0.0),
+                                                      ('Si', 1): (0.0, 0.0, 0.0),
+                                                      ('Si', 2): (0.0, 0.0, 0.0)}]
+                                      }})
 
     def test_get_stress(self):
         test_text = io.StringIO("""

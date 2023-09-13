@@ -98,7 +98,7 @@ THREEVEC_RE = labelled_floats(("val",), counts=(3,))
 
 # Regexp to identify extended chemical species
 SPECIES_RE = r"[A-Z][a-z]{0,2}"
-ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b"
+ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b(?:\s*\[[^\]]+\])?"
 
 # Unless we have *VERY* exotic electron shells
 SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
@@ -113,7 +113,20 @@ ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
 
 # Atom reference with 3-vector
 ATDAT3VEC = re.compile(ATREG + labelled_floats(FST_D))
+FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suff=r"(?:\s*\([^)]+\))?"))
 ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
+
+# Labelled positions
+LABELLED_POS_RE = re.compile(ATDAT3VEC.pattern + r"\s*(?P<label>\S+)")
+
+# VCA atoms
+MIXTURE_LINE_1_RE = re.compile(rf"""
+(?P<index>\d+)\s+
+{labelled_floats(FST_D)}\s+
+(?P<spec>{ATOM_NAME_RE})\s+
+{labelled_floats(('weight',))}""", re.VERBOSE)
+MIXTURE_LINE_2_RE = re.compile(rf"(?P<spec>{ATOM_NAME_RE})\s+{labelled_floats(('weight',))}")
+
 
 # SCF Loop
 SCF_LOOP_RE = re.compile(r"\s*(?:Initial|\d+)\s*"
@@ -137,8 +150,8 @@ PSPOT_PROJ_RE = re.compile(rf"""
     (\d)                            # Orbital
     (\d)                            # Shell type
     ({PROJ_TYPES}*)                 # Proj type
-    ((?:[\+-=]{FNUMBER_RE})?) # DE_use
-    ((?:@{FNUMBER_RE})?)     # beta_delta
+    ((?:[\+-=]{FNUMBER_RE})?)       # DE_use
+    ((?:@{FNUMBER_RE})?)            # beta_delta
 """, re.VERBOSE)
 
 PSPOT_REFERENCE_STRUC_RE = re.compile(
