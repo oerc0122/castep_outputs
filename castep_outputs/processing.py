@@ -6,15 +6,16 @@ from typing import NamedTuple
 from .castep_res import get_atom_parts
 
 
-class Label(NamedTuple):
+class AtomLabel(NamedTuple):
     """
     Standard castep atom label
     """
     species: str
     index: int
+    tag: str = ""
     label: str = ""
 
     @staticmethod
     def from_str(string: str):
         """ Build a label from a key-string """
-        return Label(**get_atom_parts(string))
+        return AtomLabel(**get_atom_parts(string))

@@ -1279,8 +1279,6 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 # Dispersion corrected final free energy* (Ecor-TS) =  -1134.338872426     eV
 # NB dispersion corrected est. 0K energy* (Ecor-0.5TS) =  -1234.338872426     eV
 
-
-
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'dedlne': -3.335211,
@@ -1386,8 +1384,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H', 1): (0.0, 0.0, -0.0647),
-                                                                  ('H', 2): (-0.0, -0.0, 0.0647)}]
+        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
+                                                                  ('H [H2]', 2): (-0.0, -0.0, 0.0647)}]
                                                 }})
 
     def test_get_forces_mixed(self):
@@ -2339,9 +2337,9 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'born': [{('Si', 1): ((-2.01676, 0.0, -0.0),
-                                                           (0.0, -3.01676, -0.0),
-                                                           (0.0, -0.0, -4.01676)),
+        self.assertEqual(test_dict, {'born': [{('Si [geoff]', 1): ((-2.01676, 0.0, -0.0),
+                                                                   (0.0, -3.01676, -0.0),
+                                                                   (0.0, -0.0, -4.01676)),
                                                ('Si', 2): ((-5.01676, 0.0, -0.0),
                                                            (0.0, -6.01676, -0.0),
                                                            (0.0, -0.0, -7.01676))}]}

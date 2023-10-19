@@ -1562,6 +1562,10 @@ def _process_born(block: TextIO) -> Dict[AtomIndex, ThreeByThreeMatrix]:
     born_accum = {}
     for line in block:
         if match := REs.BORN_RE.match(line):
+            match = match.groupdict()
+            label = match.pop('label')
+            if label is not None:
+                match["spec"] = f"{match['spec']} [{label}]"
             born_accum[atreg_to_index(match)] = (to_type(match["charges"].split(), float),
                                                  to_type(next(block).split(), float),
                                                  to_type(next(block).split(), float))

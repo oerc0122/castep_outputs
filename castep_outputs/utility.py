@@ -71,10 +71,6 @@ def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
         del dict_in["spec"]
         del dict_in["index"]
 
-    # Strip "label" from atom
-    parts = REs.get_atom_parts(spec)
-    spec = "".join((parts["species"], f":{parts['tag']}" if "tag" in parts else ""))
-
     return (spec, int(ind))
 
 

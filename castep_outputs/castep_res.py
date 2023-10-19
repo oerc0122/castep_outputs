@@ -4,6 +4,7 @@ from typing import List, Sequence, Optional, TextIO, Dict
 import re
 import io
 import itertools
+# pylint: disable=too-many-arguments
 
 from .constants import MINIMISERS, SHELLS, FST_D
 
@@ -330,7 +331,7 @@ POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
                         )
 
 # Regexp for born charges
-BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})")
+BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})(?:\s*ID=(?P<label>\S+))?")
 
 # MagRes REs
 MAGRES_RE = (
