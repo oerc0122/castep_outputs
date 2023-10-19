@@ -284,9 +284,10 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_positions': {
-            ('H [H1]', 1): (0.0, 0.0, 0.0),
-            ('H [H2]', 2): (-0.0, -0.0, 0.166667)}
+        self.assertEqual(test_dict, {'initial_positions': {('H', 1): (0.0, 0.0, 0.0),
+                                                           ('H', 2): (-0.0, -0.0, 0.166667)},
+                                     'labels': {('H', 1): 'H1',
+                                                ('H', 2): 'H2'}
                                      })
 
     def test_get_atom_struct_mixed(self):
@@ -1385,8 +1386,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
-                                                                  ('H [H2]', 2): (-0.0, -0.0, 0.0647)}]
+        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H', 1): (0.0, 0.0, -0.0647),
+                                                                  ('H', 2): (-0.0, -0.0, 0.0647)}]
                                                 }})
 
     def test_get_forces_mixed(self):
@@ -2326,7 +2327,7 @@ WL ********************************************************************
  ===================================================
                    Born Effective Charges
                    ----------------------
-   Si      1        -2.01676     0.00000    -0.00000
+   Si      1        -2.01676     0.00000    -0.00000 ID=geoff
                      0.00000    -3.01676    -0.00000
                      0.00000    -0.00000    -4.01676
    Si      2        -5.01676     0.00000    -0.00000

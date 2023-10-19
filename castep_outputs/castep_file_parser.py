@@ -489,12 +489,16 @@ def parse_castep_file(castep_file_in: TextIO,
             if "position" not in to_parse:
                 continue
 
+            if "labels" not in curr_run:
+                curr_run["labels"] = defaultdict(dict)
+
             logger("Found initial positions")
 
             curr_run["initial_positions"] = {}
             for line in block:
                 if match := REs.LABELLED_POS_RE.search(line):
-                    ind = f"{match['spec'].strip()} [{match['label'].strip()}]", int(match["index"])
+                    ind = atreg_to_index(match)
+                    curr_run["labels"][ind] = match["label"].strip()
                     curr_run["initial_positions"][ind] = to_type(match.group("x", "y", "z"), float)
 
         elif block := get_block(line, castep_file,  # Mixture
