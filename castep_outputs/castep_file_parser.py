@@ -123,6 +123,16 @@ def parse_castep_file(castep_file_in: TextIO,
 
             curr_run["parallel_efficiency"] = float(get_numbers(line)[0])
 
+        # Continuation
+        elif line.startswith("Reading continuation data"):
+
+            if "sys_info" not in to_parse:
+                continue
+
+            logger("Found continuation block")
+
+            curr_run["continuation"] = line.split()[-1]
+
         # Warnings
         elif block := get_block(line, castep_file,
                                 gen_table_re("", r"\?+"),
