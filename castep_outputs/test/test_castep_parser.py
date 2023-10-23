@@ -3286,10 +3286,10 @@ Ewald Contribution ::
         test_text = io.StringIO("""
 Reading continuation data from model file BN.check
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'continuation': 'BN.check'})
 
 
 class test_pspot_parser:
