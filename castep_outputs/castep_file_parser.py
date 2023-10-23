@@ -498,7 +498,13 @@ def parse_castep_file(castep_file_in: TextIO,
             for line in block:
                 if match := REs.LABELLED_POS_RE.search(line):
                     ind = atreg_to_index(match)
-                    curr_run["labels"][ind] = match["label"].strip()
+
+                    if lab := match["label"].strip():
+                        curr_run["labels"][ind] = lab
+                        ind = (f"{ind[0]} [{lab}]", ind[1])
+                    else:
+                        curr_run["labels"][ind] = "NULL"
+
                     curr_run["initial_positions"][ind] = to_type(match.group("x", "y", "z"), float)
 
         elif block := get_block(line, castep_file,  # Mixture

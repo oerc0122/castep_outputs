@@ -129,7 +129,7 @@ FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suff=r"(?:\s*\([^)]+\))
 ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 
 # Labelled positions
-LABELLED_POS_RE = re.compile(ATDAT3VEC.pattern + r"\s*(?P<label>\S+)")
+LABELLED_POS_RE = re.compile(ATDAT3VEC.pattern + r"\s{5}(?P<label>\S{0,8})")
 
 # VCA atoms
 MIXTURE_LINE_1_RE = re.compile(rf"""

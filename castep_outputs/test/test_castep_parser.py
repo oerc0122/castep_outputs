@@ -279,15 +279,18 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
      x------------------------------------------------------------------------x
      x  H            1         0.000000   0.000000   0.000000     H1          x
      x  H            2        -0.000000  -0.000000   0.166667     H2          x
+     x  H            3         1.000000  -1.000000   0.000000                 x
      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_positions': {('H', 1): (0.0, 0.0, 0.0),
-                                                           ('H', 2): (-0.0, -0.0, 0.166667)},
+        self.assertEqual(test_dict, {'initial_positions': {('H [H1]', 1): (0.0, 0.0, 0.0),
+                                                           ('H [H2]', 2): (-0.0, -0.0, 0.166667),
+                                                           ('H', 3): (1.0, -1.0, 0.0)},
                                      'labels': {('H', 1): 'H1',
-                                                ('H', 2): 'H2'}
+                                                ('H', 2): 'H2',
+                                                ('H', 3): 'NULL'}
                                      })
 
     def test_get_atom_struct_mixed(self):
