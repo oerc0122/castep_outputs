@@ -279,14 +279,18 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
      x------------------------------------------------------------------------x
      x  H            1         0.000000   0.000000   0.000000     H1          x
      x  H            2        -0.000000  -0.000000   0.166667     H2          x
+     x  H            3         1.000000  -1.000000   0.000000                 x
      xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
         """)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_positions': {
-            ('H [H1]', 1): (0.0, 0.0, 0.0),
-            ('H [H2]', 2): (-0.0, -0.0, 0.166667)}
+        self.assertEqual(test_dict, {'initial_positions': {('H [H1]', 1): (0.0, 0.0, 0.0),
+                                                           ('H [H2]', 2): (-0.0, -0.0, 0.166667),
+                                                           ('H', 3): (1.0, -1.0, 0.0)},
+                                     'labels': {('H', 1): 'H1',
+                                                ('H', 2): 'H2',
+                                                ('H', 3): 'NULL'}
                                      })
 
     def test_get_atom_struct_mixed(self):
@@ -1277,8 +1281,6 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 # Dispersion corrected final energy*, Ecor          =  -1034.338872426     eV
 # Dispersion corrected final free energy* (Ecor-TS) =  -1134.338872426     eV
 # NB dispersion corrected est. 0K energy* (Ecor-0.5TS) =  -1234.338872426     eV
-
-
 
         test_dict = parse_castep_file(test_text)[0]
 
@@ -2326,7 +2328,7 @@ WL ********************************************************************
  ===================================================
                    Born Effective Charges
                    ----------------------
-   Si      1        -2.01676     0.00000    -0.00000
+   Si      1        -2.01676     0.00000    -0.00000 ID=geoff
                      0.00000    -3.01676    -0.00000
                      0.00000    -0.00000    -4.01676
    Si      2        -5.01676     0.00000    -0.00000
@@ -2338,9 +2340,9 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'born': [{('Si', 1): ((-2.01676, 0.0, -0.0),
-                                                           (0.0, -3.01676, -0.0),
-                                                           (0.0, -0.0, -4.01676)),
+        self.assertEqual(test_dict, {'born': [{('Si [geoff]', 1): ((-2.01676, 0.0, -0.0),
+                                                                   (0.0, -3.01676, -0.0),
+                                                                   (0.0, -0.0, -4.01676)),
                                                ('Si', 2): ((-5.01676, 0.0, -0.0),
                                                            (0.0, -6.01676, -0.0),
                                                            (0.0, -0.0, -7.01676))}]}

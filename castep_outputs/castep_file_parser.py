@@ -489,12 +489,22 @@ def parse_castep_file(castep_file_in: TextIO,
             if "position" not in to_parse:
                 continue
 
+            if "labels" not in curr_run:
+                curr_run["labels"] = defaultdict(dict)
+
             logger("Found initial positions")
 
             curr_run["initial_positions"] = {}
             for line in block:
                 if match := REs.LABELLED_POS_RE.search(line):
-                    ind = f"{match['spec'].strip()} [{match['label'].strip()}]", int(match["index"])
+                    ind = atreg_to_index(match)
+
+                    if lab := match["label"].strip():
+                        curr_run["labels"][ind] = lab
+                        ind = (f"{ind[0]} [{lab}]", ind[1])
+                    else:
+                        curr_run["labels"][ind] = "NULL"
+
                     curr_run["initial_positions"][ind] = to_type(match.group("x", "y", "z"), float)
 
         elif block := get_block(line, castep_file,  # Mixture
@@ -1558,6 +1568,10 @@ def _process_born(block: TextIO) -> Dict[AtomIndex, ThreeByThreeMatrix]:
     born_accum = {}
     for line in block:
         if match := REs.BORN_RE.match(line):
+            match = match.groupdict()
+            label = match.pop('label')
+            if label is not None:
+                match["spec"] = f"{match['spec']} [{label}]"
             born_accum[atreg_to_index(match)] = (to_type(match["charges"].split(), float),
                                                  to_type(next(block).split(), float),
                                                  to_type(next(block).split(), float))
