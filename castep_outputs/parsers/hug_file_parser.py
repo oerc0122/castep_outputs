@@ -2,9 +2,9 @@
 Parse the following castep outputs:
 .hug
 """
-from typing import TextIO, Dict, List
 import re
 from collections import defaultdict
+from typing import Dict, List, TextIO
 
 from ..utilities.castep_res import labelled_floats
 from ..utilities.utility import fix_data_types, stack_dict

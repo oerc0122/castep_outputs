@@ -2,15 +2,14 @@
 Parse the following castep outputs:
 .efield
 """
-from typing import TextIO, Dict, Union
 import re
 from collections import defaultdict
+from typing import Dict, TextIO, Union
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_block, labelled_floats
 from ..utilities.constants import SND_D
-from ..utilities.utility import fix_data_types, stack_dict, log_factory
-
+from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 

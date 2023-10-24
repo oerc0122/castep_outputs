@@ -1,7 +1,8 @@
 # pylint: skip-file
 import io
 import pprint
-from unittest import (TestCase, main)
+from unittest import TestCase, main
+
 from castep_outputs import parse_md_geom_file
 
 

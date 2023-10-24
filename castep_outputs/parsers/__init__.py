@@ -2,24 +2,23 @@
 List of parsers for file formats
 """
 
-from .castep_file_parser import parse_castep_file
-from .cell_param_file_parser import parse_cell_param_file
-from .md_geom_file_parser import parse_md_geom_file
+from typing import Callable, Dict, Tuple
 
 from .bands_file_parser import parse_bands_file
-from .hug_file_parser import parse_hug_file
-from .phonon_dos_file_parser import parse_phonon_dos_file
+from .castep_file_parser import parse_castep_file
+from .cell_param_file_parser import parse_cell_param_file
 from .efield_file_parser import parse_efield_file
-from .xrd_sf_file_parser import parse_xrd_sf_file
 from .elastic_file_parser import parse_elastic_file
-from .ts_file_parser import parse_ts_file
-from .magres_file_parser import parse_magres_file
-from .tddft_file_parser import parse_tddft_file
 from .err_file_parser import parse_err_file
-from .parse_fmt_files import (parse_elf_fmt_file,
-                              parse_chdiff_fmt_file,
-                              parse_pot_fmt_file,
-                              parse_den_fmt_file)
+from .hug_file_parser import parse_hug_file
+from .magres_file_parser import parse_magres_file
+from .md_geom_file_parser import parse_md_geom_file
+from .parse_fmt_files import (parse_chdiff_fmt_file, parse_den_fmt_file,
+                              parse_elf_fmt_file, parse_pot_fmt_file)
+from .phonon_dos_file_parser import parse_phonon_dos_file
+from .tddft_file_parser import parse_tddft_file
+from .ts_file_parser import parse_ts_file
+from .xrd_sf_file_parser import parse_xrd_sf_file
 
 __all__ = ["parse_castep_file",
            "parse_cell_param_file",
@@ -42,7 +41,7 @@ __all__ = ["parse_castep_file",
            "parse_err_file"]
 
 
-_PARSERS = {
+_PARSERS: Dict[str, Callable] = {
     "castep": parse_castep_file,
     "cell": parse_cell_param_file,
     "param": parse_cell_param_file,
@@ -63,5 +62,5 @@ _PARSERS = {
     "tddft": parse_tddft_file,
     "err": parse_err_file
     }
-_CASTEP_OUTPUT_NAMES = tuple(_PARSERS.keys())
-_CASTEP_FILE_FORMATS = tuple(f".{typ}" for typ in _CASTEP_OUTPUT_NAMES)
+_CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(_PARSERS.keys())
+_CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in _CASTEP_OUTPUT_NAMES)

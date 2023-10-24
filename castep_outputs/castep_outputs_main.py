@@ -7,12 +7,11 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, TextIO, Union
 
-from .args import (parse_args, args_to_dict)
-from .utility import (normalise, json_safe, flatten_dict)
-from .dumpers import get_dumpers
-from .constants import OutFormats
-from .parsers import PARSERS
-from .utility import flatten_dict, get_dumpers, json_safe, normalise
+from .cli.args import args_to_dict, parse_args
+from .parsers import _PARSERS
+from .utilities.constants import OutFormats
+from .utilities.dumpers import get_dumpers
+from .utilities.utility import flatten_dict, json_safe, normalise
 
 
 def parse_single(in_file: Union[str, Path, TextIO],
@@ -31,10 +30,10 @@ def parse_single(in_file: Union[str, Path, TextIO],
     if parser is None and isinstance(in_file, Path):
         ext = in_file.suffix.strip(".")
 
-        if ext not in PARSERS:
+        if ext not in _PARSERS:
             raise KeyError(f"Parser for file {in_file} (assumed type: {ext}) not found")
 
-        parser = PARSERS[ext]
+        parser = _PARSERS[ext]
 
     assert parser is not None
 
@@ -65,7 +64,7 @@ def parse_all(output: Optional[Path] = None, out_format: OutFormats = "json",
 
     data = {}
     for typ, paths in files.items():
-        parser = PARSERS[typ]
+        parser = _PARSERS[typ]
         for path in paths:
             data[path] = parse_single(path, parser, out_format, loglevel=loglevel, testing=testing)
 

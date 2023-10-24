@@ -2,8 +2,8 @@
 Parse the following castep outputs:
 .magres
 """
-from typing import TextIO, Dict
 from collections import defaultdict
+from typing import Dict, TextIO
 
 from ..utilities.castep_res import get_block
 from ..utilities.utility import to_type

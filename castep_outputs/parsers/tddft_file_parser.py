@@ -2,13 +2,12 @@
 Parse the following castep outputs:
 .tddft
 """
-from typing import TextIO, Dict, Union
 import re
+from typing import Dict, TextIO, Union
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_block, get_numbers, labelled_floats
 from ..utilities.utility import to_type
-
 from .parse_utilities import parse_regular_header
 
 

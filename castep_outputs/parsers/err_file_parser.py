@@ -2,7 +2,7 @@
 Parse the following castep outputs:
 .err
 """
-from typing import TextIO, Dict, Union, List
+from typing import Dict, List, TextIO, Union
 
 
 def parse_err_file(err_file: TextIO) -> Dict[str, Union[str, List[str]]]:

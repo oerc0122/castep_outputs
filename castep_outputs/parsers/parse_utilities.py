@@ -3,13 +3,14 @@
 Functions generally used in parsing castep files
 """
 
-from typing import TextIO, Sequence, Dict, Union, List, Tuple
 import re
 from collections import defaultdict
+from typing import Dict, List, Sequence, TextIO, Tuple, Union
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers
-from ..utilities.utility import (fix_data_types, stack_dict, to_type, atreg_to_index)
+from ..utilities.utility import (atreg_to_index, fix_data_types, stack_dict,
+                                 to_type)
 
 
 def parse_regular_header(block: TextIO,
@@ -68,4 +69,3 @@ def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[
             stack_dict(qdata, {'q': qpt, **dict(zip(prop, val))})
 
     return qdata
-g

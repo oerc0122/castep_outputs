@@ -1,10 +1,10 @@
 # pylint: skip-file
 
-import unittest
 import io
 import pprint
+import unittest
 
-from castep_outputs.cell_param_file_parser import parse_cell_param_file
+from castep_outputs.parsers import parse_cell_param_file
 
 
 class test_cell_parser(unittest.TestCase):

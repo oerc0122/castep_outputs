@@ -2,13 +2,14 @@
 Parse the following castep outputs:
 .ts
 """
-from typing import TextIO, Dict, Any
 import re
 from collections import defaultdict
+from typing import Any, Dict, TextIO
 
-from ..utilities.castep_res import get_block, get_numbers, labelled_floats, ATDATTAG, TAG_RE
+from ..utilities.castep_res import (ATDATTAG, TAG_RE, get_block, get_numbers,
+                                    labelled_floats)
 from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
-from ..utilities.utility import to_type, atreg_to_index, add_aliases
+from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
 def parse_ts_file(ts_file: TextIO) -> Dict[str, Any]:

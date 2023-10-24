@@ -2,8 +2,8 @@
 Parse the following castep outputs:
 .elastic
 """
-from typing import TextIO, Dict, List
 from collections import defaultdict
+from typing import Dict, List, TextIO
 
 from ..utilities.castep_res import get_block, get_numbers
 from ..utilities.utility import to_type

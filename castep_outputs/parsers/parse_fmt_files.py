@@ -5,7 +5,7 @@ Parse the following castep outputs:
 .pot_fmt
 .den_fmt
 """
-from typing import TextIO, Dict, Union, List
+from typing import Dict, List, TextIO, Union
 
 from .parse_utilities import parse_kpt_info
 

@@ -2,9 +2,9 @@
 Function for parsing xrd_sf files
 """
 
-from typing import TextIO, Dict, Union
 import re
 from collections import defaultdict
+from typing import Dict, TextIO, Union
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats

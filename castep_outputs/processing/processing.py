@@ -3,6 +3,7 @@ Module to assist processing of parsed outputs.
 """
 
 from typing import NamedTuple
+
 from ..utilities.castep_res import get_atom_parts
 
 

@@ -2,14 +2,13 @@
 Parse the following castep outputs:
 .phonon_dos
 """
-from typing import TextIO, Dict, Any
 import re
 from collections import defaultdict
+from typing import Any, Dict, TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_block, labelled_floats
-from ..utilities.utility import fix_data_types, stack_dict, log_factory
-
+from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 

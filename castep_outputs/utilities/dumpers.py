@@ -2,9 +2,9 @@
 Module containing dumpers for formats
 """
 
-from typing import Any, TextIO, Callable
 import json
 import pprint
+from typing import Any, Callable, TextIO
 
 try:
     from ruamel import yaml

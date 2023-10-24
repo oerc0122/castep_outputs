@@ -3,14 +3,20 @@ Utility functions for parsing castep outputs
 """
 
 import collections.abc
-from collections import defaultdict
+import fileinput
+import functools
+import logging
 import re
 from collections import defaultdict
 from copy import copy
-from typing import (Any, Callable, Dict, List, Mapping, MutableMapping, Optional, TextIO, Tuple,
-                    TypeVar, Union, Type, Iterable)
+from typing import (Any, Callable, Dict, Iterable, List, MutableMapping, Tuple,
+                    Type, TypeVar, Union)
 
 import castep_outputs.utilities.castep_res as REs
+
+from .filewrapper import FileWrapper
+
+T = TypeVar('T')
 
 
 def normalise_string(string: str) -> str:
