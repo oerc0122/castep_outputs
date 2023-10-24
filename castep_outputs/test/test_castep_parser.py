@@ -3,8 +3,8 @@
 import pprint
 import io
 from unittest import (TestCase, main)
-from castep_outputs import parse_castep_file
-from castep_outputs.castep_file_parser import _process_pspot_string
+from castep_outputs.parsers import parse_castep_file
+from castep_outputs.parsers.castep_file_parser import _process_pspot_string
 
 
 class test_castep_parser(TestCase):

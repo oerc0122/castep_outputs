@@ -11,25 +11,25 @@ import io
 import re
 import itertools
 
-from . import castep_res as REs
-from .castep_res import labelled_floats, get_numbers, get_block, gen_table_re
+from ..utilities import castep_res as REs
+from ..utilities.castep_res import labelled_floats, get_numbers, get_block, gen_table_re
 
-from .constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
+from ..utilities.constants import SHELLS, ThreeVector, ThreeByThreeMatrix, AtomIndex
 
-from .utility import (FileWrapper, fix_data_types, add_aliases, to_type,
-                      stack_dict, normalise_string, atreg_to_index,
-                      log_factory, determine_type)
+from ..utilities.utility import (FileWrapper, fix_data_types, add_aliases, to_type,
+                                 stack_dict, normalise_string, atreg_to_index,
+                                 log_factory, determine_type)
 from .cell_param_file_parser import _parse_devel_code_block
-from .extra_files_parser import (parse_bands_file,
-                                 parse_hug_file,
-                                 parse_phonon_dos_file,
-                                 parse_efield_file,
-                                 parse_xrd_sf_file,
-                                 parse_elf_fmt_file,
-                                 parse_chdiff_fmt_file,
-                                 parse_pot_fmt_file,
-                                 parse_den_fmt_file,
-                                 parse_elastic_file)
+from .bands_file_parser import parse_bands_file
+from .hug_file_parser import parse_hug_file
+from .phonon_dos_file_parser import parse_phonon_dos_file
+from .efield_file_parser import parse_efield_file
+from .xrd_sf_file_parser import parse_xrd_sf_file
+from .parse_fmt_files import (parse_elf_fmt_file,
+                              parse_chdiff_fmt_file,
+                              parse_pot_fmt_file,
+                              parse_den_fmt_file)
+from .elastic_file_parser import parse_elastic_file
 
 DATA_CLASSES = ("scf", "sys_info", "parameters",
                 "cell", "symmetries", "stress", "force", "position",
