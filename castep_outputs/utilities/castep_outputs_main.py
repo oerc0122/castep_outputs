@@ -8,7 +8,8 @@ import io
 import sys
 
 from .args import (parse_args, args_to_dict)
-from .utility import (normalise, json_safe, flatten_dict, get_dumpers)
+from .utility import (normalise, json_safe, flatten_dict)
+from .dumpers import get_dumpers
 from .constants import OutFormats
 from .parsers import PARSERS
 

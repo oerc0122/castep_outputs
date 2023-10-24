@@ -2,7 +2,7 @@
 Run main castep parser
 """
 
-from .castep_outputs_main import main
+from .utilities.castep_outputs_main import main
 
 __AUTHOR__ = "Jacob Wilkins"
 __VERSION__ = "v0.1"

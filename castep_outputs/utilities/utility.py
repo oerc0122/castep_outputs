@@ -6,21 +6,9 @@ import fileinput
 import logging
 import collections.abc
 from collections import defaultdict
-import json
-import pprint
 import re
 
-import castep_outputs.castep_res as REs
-
-try:
-    from ruamel import yaml
-    _YAML_TYPE = "ruamel"
-except ImportError:
-    try:
-        import yaml
-        _YAML_TYPE = "yaml"
-    except ImportError:
-        _YAML_TYPE = None
+import castep_outputs.utilities.castep_res as REs
 
 
 class FileWrapper:
@@ -135,55 +123,6 @@ def flatten_dict(dictionary: Dict,
         else:
             items.append((new_key, value))
     return dict(items)
-
-
-def json_dumper(data: Any, file: TextIO):
-    """ Basic JSON format dumper """
-    json.dump(data, file, indent=2)
-
-
-def ruamel_dumper(data: Any, file: TextIO):
-    """ Basic ruamel.yaml format dumper """
-    yaml_eng = yaml.YAML(typ='unsafe')
-    yaml_eng.dump(data, file)
-
-
-def yaml_dumper(data: Any, file: TextIO):
-    """ Basic yaml format dumper """
-    yaml.dump(data, file)
-
-
-def pprint_dumper(data: Any, file: TextIO):
-    """ PPrint dumper """
-    print(pprint.pformat(data), file=file)
-
-
-def print_dumper(data: Any, file: TextIO):
-    """ Print dumper """
-    print(data, file=file)
-
-
-SUPPORTED_FORMATS = {"json": json_dumper,
-                     "ruamel": ruamel_dumper,
-                     "yaml": yaml_dumper,
-                     "pprint": pprint_dumper,
-                     "print": print_dumper}
-
-
-def get_dumpers(dump_fmt: str) -> Callable:
-    """
-    Get appropriate dump for unified interface
-    """
-    if dump_fmt not in SUPPORTED_FORMATS:
-        raise ValueError(f"Cannot output in {dump_fmt} format.")
-
-    if dump_fmt == "yaml":
-        if _YAML_TYPE is None:
-            raise ImportError("Couldn't find valid yaml dumper (ruamel.yaml / yaml)"
-                              "please install and try again.")
-        dump_fmt = _YAML_TYPE
-
-    return SUPPORTED_FORMATS[dump_fmt]
 
 
 def stack_dict(out_dict: Dict[Any, List], in_dict: Dict[Any, List]) -> Dict[Any, List]:
