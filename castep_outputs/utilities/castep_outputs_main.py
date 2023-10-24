@@ -7,7 +7,9 @@ import sys
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, TextIO, Union
 
-from .args import args_to_dict, parse_args
+from .args import (parse_args, args_to_dict)
+from .utility import (normalise, json_safe, flatten_dict)
+from .dumpers import get_dumpers
 from .constants import OutFormats
 from .parsers import PARSERS
 from .utility import flatten_dict, get_dumpers, json_safe, normalise

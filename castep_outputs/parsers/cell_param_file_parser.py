@@ -5,10 +5,10 @@ from typing import Dict, TextIO, List, Union, Tuple
 from collections import defaultdict
 import re
 
-import castep_outputs.castep_res as REs
-from .utility import (log_factory, to_type, determine_type, atreg_to_index)
-from .castep_res import get_block
-from .datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
+import castep_outputs.utilities.castep_res as REs
+from ..utilities.utility import (log_factory, to_type, determine_type, atreg_to_index)
+from ..utilities.castep_res import get_block
+from ..utilities.constants import AtomIndex, ThreeByThreeMatrix, ThreeVector
 
 
 def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, Dict[str, str]]]]:
