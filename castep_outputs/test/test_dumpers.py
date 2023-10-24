@@ -6,8 +6,8 @@ import json
 import pprint
 from pathlib import Path
 
-from castep_outputs.castep_outputs_main import (parse_all, parse_single)
-from castep_outputs.utility import normalise
+from castep_outputs.utilities.castep_outputs_main import (parse_all, parse_single)
+from castep_outputs.utilities.utility import normalise
 
 try:
     from ruamel import yaml

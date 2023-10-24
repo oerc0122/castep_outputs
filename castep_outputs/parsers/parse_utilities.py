@@ -68,4 +68,3 @@ def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[
             stack_dict(qdata, {'q': qpt, **dict(zip(prop, val))})
 
     return qdata
-g
