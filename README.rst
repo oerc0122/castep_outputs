@@ -36,9 +36,10 @@ Command-line
 When run as a commandline tool, it attempts to find all files for the given
 seedname, filtered by ``inc`` args (default: all). Explicit files can be passed
 using longname arguments. castep_outputs can parse most human-readable castep
-outputs including: ``.castep``, ``.param``, ``.cell``, ``.geom``, ``.md``,
+outputs including: ``.castep``, ``.cell``, ``.param``, ``.geom``, ``.md``,
 ``.bands``, ``.hug``, ``.phonon_dos``, ``.efield``, ``.xrd_sf``, ``.elf_fmt``,
-``.chdiff_fmt``, ``.pot_fmt``, ``.den_fmt``, ``.elastic``, ``.ts``, ``.magres``.
+``.chdiff_fmt``, ``.pot_fmt``, ``.den_fmt``, ``.elastic``, ``.ts``, ``.magres``,
+``.tddft``, ``.err``.
 
 to run in basic mode:
 
@@ -75,7 +76,7 @@ files.
    python -m castep_outputs -o my_file.yaml -f yaml seedname.castep
 
 Will parse ``seedname.castep``, dump it to ``my_file.yaml`` in ``yaml`` format
-using the ``PyYAML`` engine.
+using the ``PyYAML`` engine if available and the ``RUAMEL`` engine if not.
 
 As a module
 -----------
@@ -139,6 +140,8 @@ The available parsing functions are:
 -  ``parse_ts_file``
 -  ``parse_tddft_file``
 -  ``parse_magres_file``
+-  ``parse_tddft_file``
+-  ``parse_err_file``
 
 Which return processed ``list``\ s of ``dict``\ s of data ready for use
 in other applications.
@@ -163,7 +166,7 @@ Full usage
    Attempts to find all files for seedname, filtered by `inc` args (default: all). Explicit files can be passed
    using longname arguments. castep_outputs can parse most human-readable castep outputs including: .castep, .cell,
    .param, .geom, .md, .bands, .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt, .pot_fmt, .den_fmt,
-   .elastic, .ts, .magres, .tddft
+   .elastic, .ts, .magres, .tddft, .err
 
    positional arguments:
      seedname              Seed name for data
@@ -197,6 +200,7 @@ Full usage
      --inc-ts              Extract .ts information
      --inc-magres          Extract .magres information
      --inc-tddft           Extract .tddft information
+     --inc-err             Extract .err information
      --castep [CASTEP ...]
                            Extract from CASTEP as .castep type
      --cell [CELL ...]     Extract from CELL as .cell type
@@ -225,6 +229,7 @@ Full usage
      --magres [MAGRES ...]
                            Extract from MAGRES as .magres type
      --tddft [TDDFT ...]   Extract from TDDFT as .tddft type
+     --err [ERR ...]       Extract from ERR as .err type
 
 Current Parsers:
 
@@ -246,6 +251,7 @@ Current Parsers:
 -  ``.ts``
 -  ``.magres``
 -  ``.tddft``
+-  ``.err``
 
 Current dumpers:
 
