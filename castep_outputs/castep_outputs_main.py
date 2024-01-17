@@ -1,19 +1,20 @@
 """
 Run main castep parser
 """
-from typing import Callable, Optional, TextIO, Union
-from pathlib import Path
-import logging
 import io
+import logging
 import sys
+from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, TextIO, Union
 
-from .args import (parse_args, args_to_dict)
-from .utility import (normalise, json_safe, flatten_dict, get_dumpers)
+from .args import args_to_dict, parse_args
 from .constants import OutFormats
 from .parsers import PARSERS
+from .utility import flatten_dict, get_dumpers, json_safe, normalise
 
 
-def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
+def parse_single(in_file: Union[str, Path, TextIO],
+                 parser: Optional[Callable[[TextIO], List[Dict[str, Any]]]] = None,
                  out_format: OutFormats = "print",
                  *, loglevel: int = logging.WARNING, testing: bool = False):
     """
@@ -22,10 +23,10 @@ def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
 
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
 
-    if not isinstance(in_file, (io.TextIOBase, Path)):
+    if isinstance(in_file, str):
         in_file = Path(in_file)
 
-    if parser is None:
+    if parser is None and isinstance(in_file, Path):
         ext = in_file.suffix.strip(".")
 
         if ext not in PARSERS:
@@ -33,18 +34,18 @@ def parse_single(in_file: Union[Path, TextIO], parser: Callable = None,
 
         parser = PARSERS[ext]
 
+    assert parser is not None
+
     if isinstance(in_file, io.TextIOBase):
         data = parser(in_file)
-    else:
-        with open(in_file, mode='r', encoding="utf-8") as file:
+    elif isinstance(in_file, Path):
+        with in_file.open(mode='r', encoding="utf-8") as file:
             data = parser(file)
 
     if out_format == "json" or testing:
         data = normalise(data, {dict: json_safe, complex: json_safe})
     elif out_format in ("yaml", "ruamel"):
         data = normalise(data, {tuple: list})
-    else:
-        data = normalise(data)
 
     if testing:
         if isinstance(data, list):
