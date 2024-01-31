@@ -5,6 +5,9 @@ Extract results from .castep file for comparison and further processing
 Port of extract_results.pl
 """
 
+from collections import defaultdict
+from typing import TextIO, List, Dict, Any, Union, Sequence, Tuple, Optional, Literal
+from enum import Flag, auto
 import io
 import itertools
 import re
@@ -26,50 +29,68 @@ from .utility import (FileWrapper, add_aliases, atreg_to_index, determine_type,
                       fix_data_types, log_factory, normalise_key,
                       normalise_string, stack_dict, to_type)
 
-DATA_CLASSES = ("scf", "sys_info", "parameters",
-                "cell", "symmetries", "stress", "force", "position",
-                "geom_opt", "md", "species_props", "popn_analysis",
-                "pspot", "phonon", "solvation", "optics",
-                "thermodynamics", "elf", "tddft", "bs",
-                "dipole", "chem_shielding", "elastic",
-                "test_extra_data", "tss")
 
-DataClassType = Literal["scf", "sys_info", "parameters",
-                        "cell", "symmetries", "stress", "force", "position",
-                        "geom_opt", "md", "species_props", "popn_analysis",
-                        "pspot", "phonon", "solvation", "optics",
-                        "thermodynamics", "elf", "tddft", "bs",
-                        "dipole", "chem_shielding", "elastic",
-                        "test_extra_data", "tss"]
-DataLevelType = Literal["LOW", "MEDIUM", "HIGH", "FULL", "TESTING"]
+class Filters(Flag):
+    """
+    Enum of possible filters for CASTEP file parsing
+    """
+    BS = auto()
+    CELL = auto()
+    CHEM_SHIELDING = auto()
+    DIPOLE = auto()
+    ELASTIC = auto()
+    ELF = auto()
+    FINAL_CONFIG = auto()
+    FORCE = auto()
+    GEOM_OPT = auto()
+    MD = auto()
+    MD_SUMMARY = auto()
+    OPTICS = auto()
+    PARAMETERS = auto()
+    PHONON = auto()
+    POPN_ANALYSIS = auto()
+    POSITION = auto()
+    PSPOT = auto()
+    SCF = auto()
+    SOLVATION = auto()
+    SPECIES_PROPS = auto()
+    STRESS = auto()
+    SYMMETRIES = auto()
+    SYS_INFO = auto()
+    TDDFT = auto()
+    TEST_EXTRA_DATA = auto()
+    THERMODYNAMICS = auto()
+    TSS = auto()
 
-DATA_LEVEL = {"LOW": ("cell", "stress", "force", "position", "final_config", "md_summary",
-                      "species_props", "popn_analysis", "solvation", "optics", "thermodynamics",
-                      "elf", "tddft", "bs", "dipole", "chem_shielding", "elastic", "tss"),
 
-              "MEDIUM": ("parameters", "cell", "stress", "force", "position", "final_config",
-                         "md_summary", "species_props", "popn_analysis", "solvation", "optics",
-                         "thermodynamics", "elf", "tddft", "bs", "dipole", "chem_shielding",
-                         "elastic", "tss"),
+LOW = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
+       Filters.ELASTIC | Filters.ELF | Filters.FINAL_CONFIG | Filters.FORCE |
+       Filters.MD_SUMMARY | Filters.OPTICS | Filters.POPN_ANALYSIS |
+       Filters.POSITION | Filters.SOLVATION | Filters.SPECIES_PROPS |
+       Filters.STRESS | Filters.TDDFT | Filters.THERMODYNAMICS | Filters.TSS)
 
-              "HIGH": ("scf", "sys_info", "parameters", "cell", "symmetries", "stress", "force",
-                       "position", "geom_opt", "md", "species_props", "popn_analysis", "pspot",
-                       "phonon", "solvation", "optics", "thermodynamics", "elf", "tddft", "bs",
-                       "dipole", "chem_shielding", "elastic", "tss"),
+MEDIUM = LOW | Filters.PARAMETERS | Filters.GEOM_OPT | Filters.MD | Filters.PHONON
+HIGH = MEDIUM | Filters.PSPOT | Filters.SCF | Filters.SYMMETRIES | Filters.SYS_INFO
 
-              "FULL": DATA_CLASSES,
+TESTING = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
+           Filters.ELASTIC | Filters.ELF | Filters.FORCE |
+           Filters.GEOM_OPT | Filters.MD | Filters.OPTICS |
+           Filters.PHONON | Filters.POPN_ANALYSIS | Filters.POSITION |
+           Filters.PSPOT | Filters.SOLVATION | Filters.SPECIES_PROPS |
+           Filters.STRESS | Filters.TDDFT | Filters.TEST_EXTRA_DATA |
+           Filters.THERMODYNAMICS | Filters.TSS)
 
-              "TESTING": ("cell", "stress", "force", "position", "geom_opt", "md", "species_props",
-                          "popn_analysis", "pspot", "phonon", "solvation", "optics",
-                          "thermodynamics", "elf", "tddft", "bs", "dipole", "chem_shielding",
-                          "elastic", "test_extra_data", "tss")
-
+DATA_LEVEL = {"LOW": LOW,
+              "MEDIUM": MEDIUM,
+              "HIGH": HIGH,
+              "TESTING": TESTING,
+              "FULL": Filters,
               }
 
 
-def parse_castep_file(castep_file_in: TextIO, *,
-                      filters: Tuple[DataClassType, ...] = (),
-                      level: DataLevelType = "FULL") -> List[Dict[str, Any]]:
+def parse_castep_file(castep_file_in: TextIO,
+                      filters: Optional[Filters] = None,
+                      level: Literal[DATA_LEVEL.keys()] = "FULL") -> List[Dict[str, Any]]:
     """ Parse castep file into lists of dicts ready to JSONise """
     # pylint: disable=redefined-outer-name
 
@@ -96,7 +117,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
             logger("Found run %s", len(runs) + 1)
             curr_run = defaultdict(list)
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found build info")
@@ -104,7 +125,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
         elif re.search(r"Run started", line):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             curr_run["time_started"] = normalise_string(line.split(":", 1)[1])
@@ -112,7 +133,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Finalisation
         elif block := get_block(line, castep_file, "Initialisation time", "Peak Memory Use"):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found finalisation")
@@ -120,7 +141,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
         elif line.startswith("Overall parallel efficiency rating"):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found parallel efficiency")
@@ -130,7 +151,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Continuation
         elif line.startswith("Reading continuation data"):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found continuation block")
@@ -142,7 +163,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("", r"\?+"),
                                 gen_table_re("", r"\?+"), out_fmt=list):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found warning")
@@ -151,7 +172,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
         elif match := re.match(r"(?:\s*[^:]+:)?(\s*)warning", line, re.IGNORECASE):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found warning")
@@ -172,7 +193,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re(r"MEMORY AND SCRATCH[\w\s]+", "[+-]+"),
                                 gen_table_re("", "[+-]+")):
 
-            if "sys_info" not in to_parse:
+            if Filters.SYS_INFO not in to_parse:
                 continue
 
             logger("Found memory estimate")
@@ -182,7 +203,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Title
         elif re.match(gen_table_re("Title", r"\*+"), line):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found title")
@@ -194,7 +215,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("[^*]+ Parameters", r"\*+"),
                                 gen_table_re("", r"\*+")):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found options")
@@ -204,7 +225,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Quantisation axis
         elif "Quantisation axis" in line:
 
-            if "species_props" not in to_parse:
+            if Filters.SPECIES_PROPS not in to_parse:
                 continue
 
             logger("Found Quantisation axis")
@@ -214,7 +235,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Pseudo-atomic energy
         elif block := get_block(line, castep_file, REs.PS_SHELL_RE, REs.EMPTY, cnt=2):
 
-            if "species_props" not in to_parse:
+            if Filters.SPECIES_PROPS not in to_parse:
                 continue
 
             logger("Found pseudo-atomic energy")
@@ -229,7 +250,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Mass
         elif block := get_block(line, castep_file, r"Mass of species in AMU", REs.EMPTY):
 
-            if "species_props" not in to_parse:
+            if Filters.SPECIES_PROPS not in to_parse:
                 continue
 
             logger("Found mass")
@@ -244,7 +265,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file,
                                 r"Electric Quadrupole Moment",
                                 rf"({REs.EMPTY}|^\s*x+$)"):
-            if "species_props" not in to_parse:
+            if Filters.SPECIES_PROPS not in to_parse:
                 continue
 
             logger("Found electric quadrupole moment")
@@ -258,7 +279,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Pseudopots
         elif block := get_block(line, castep_file, r"Files used for pseudopotentials", REs.EMPTY):
 
-            if "species_props" not in to_parse:
+            if Filters.SPECIES_PROPS not in to_parse:
                 continue
 
             logger("Found pseudopotentials")
@@ -267,7 +288,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                 curr_run["species_properties"] = defaultdict(dict)
 
             for key, val in _process_spec_prop(block):
-                if "pspot" in to_parse and "|" in val:
+                if Filters.PSPOT in to_parse and "|" in val:
                     val = _process_pspot_string(val)
 
                 curr_run["species_properties"][key]["pseudopot"] = val
@@ -276,7 +297,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Pseudopotential Report[^|]+", r"\|"),
                                 gen_table_re("", "=+")):
 
-            if "pspot" not in to_parse:
+            if Filters.PSPOT not in to_parse:
                 continue
 
             logger("Found pseudopotential report")
@@ -286,7 +307,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif match := re.match(r"\s*(?P<type>AE|PS) eigenvalue nl (?P<nl>\d+) =" +
                                labelled_floats(("eigenvalue",)), line):
 
-            if "pspot" not in to_parse:
+            if Filters.PSPOT not in to_parse:
                 continue
 
             logger("Found PSPot debug for %s at %s", match["type"], match["nl"])
@@ -301,7 +322,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("PairParams", r"\*+", pre=r"\w*"),
                                 REs.EMPTY):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found pair params")
@@ -313,7 +334,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 "DFT-D parameters",
                                 r"^\s*$", cnt=3):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found DFTD block")
@@ -323,7 +344,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # SCF
         elif block := get_block(line, castep_file, "SCF loop", "^-+ <-- SCF", cnt=2):
 
-            if "scf" not in to_parse:
+            if Filters.SCF not in to_parse:
                 continue
 
             logger("Found SCF")
@@ -336,7 +357,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                              post="<- line"),
                                 gen_table_re("", "[+-]+", post="<- line"), cnt=2):
 
-            if "scf" not in to_parse:
+            if Filters.SCF not in to_parse:
                 continue
 
             logger("Found wvfn line min")
@@ -349,7 +370,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                              post="<- occ", whole_line=False),
                                 r"Have a nice day\."):
 
-            if "scf" not in to_parse:
+            if Filters.SCF not in to_parse:
                 continue
 
             logger("Found occupancies")
@@ -434,7 +455,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Solvation energy
         elif line.startswith(" Free energy of solvation"):
 
-            if "solvation" not in to_parse:
+            if Filters.SOLVATION not in to_parse:
                 continue
 
             logger("Found solvation energy")
@@ -447,7 +468,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Spin densities
         elif match := REs.INTEGRATED_SPIN_DENSITY_RE.match(line):
 
-            if "scf" not in to_parse:
+            if Filters.SCF not in to_parse:
                 continue
 
             logger("Found spin")
@@ -462,7 +483,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Initial cell
         elif block := get_block(line, castep_file, gen_table_re("Unit Cell"), REs.EMPTY, cnt=3):
 
-            if "cell" not in to_parse:
+            if Filters.CELL not in to_parse:
                 continue
 
             logger("Found cell")
@@ -474,7 +495,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Symmetry and Constraints"),
                                 "Cell constraints are"):
 
-            if "symmetries" not in to_parse:
+            if Filters.SYMMETRIES not in to_parse:
                 continue
 
             logger("Found symmetries")
@@ -486,7 +507,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("(Reactant|Product)", "x"),
                                 gen_table_re("", "x+"), cnt=2):
 
-            if "tss" not in to_parse or "position" not in to_parse:
+            if Filters.TSS not in to_parse or Filters.POSITION not in to_parse:
                 continue
 
             mode = "reactant" if "Reactant" in line else "product"
@@ -500,7 +521,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 r"Fractional coordinates of atoms\s+User-defined",
                                 gen_table_re("", "x+")):
 
-            if "position" not in to_parse:
+            if Filters.POSITION not in to_parse:
                 continue
 
             if "labels" not in curr_run:
@@ -525,7 +546,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 r"Mixture\s+Fractional coordinates of atoms",
                                 gen_table_re("", "x+")):
 
-            if "position" not in to_parse:
+            if Filters.POSITION not in to_parse:
                 continue
 
             logger("Found initial positions")
@@ -550,7 +571,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 "Fractional coordinates of atoms",
                                 gen_table_re("", "x+")):
 
-            if "position" not in to_parse:
+            if Filters.POSITION not in to_parse:
                 continue
 
             logger("Found initial positions")
@@ -567,7 +588,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 "User Supplied Ionic Velocities",
                                 gen_table_re("", "x+")):
 
-            if "position" not in to_parse:
+            if Filters.POSITION not in to_parse:
                 continue
 
             logger("Found initial velocities")
@@ -579,7 +600,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 "Initial magnetic",
                                 gen_table_re("", "x+")):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found initial spins")
@@ -589,7 +610,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Target Stress
         elif block := get_block(line, castep_file, "External pressure/stress", "", cnt=3):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found target stress")
@@ -609,7 +630,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # K-Points
         elif block := get_block(line, castep_file, "k-Points For BZ Sampling", REs.EMPTY):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found k-points")
@@ -620,7 +641,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Number +Fractional coordinates +Weight", r"\+"),
                                 gen_table_re("", r"\++")):
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found k-points list")
@@ -629,7 +650,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
         elif "Applied Electric Field" in line:
 
-            if "parameters" not in to_parse:
+            if Filters.PARAMETERS not in to_parse:
                 continue
 
             logger("Found electric field")
@@ -639,7 +660,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Forces blocks
         elif block := get_block(line, castep_file, REs.FORCES_BLOCK_RE, r"^\s*\*+$"):
 
-            if "force" not in to_parse:
+            if Filters.FORCE not in to_parse:
                 continue
 
             if "forces" not in curr_run:
@@ -653,7 +674,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
         # Stress tensor block
         elif block := get_block(line, castep_file, REs.STRESSES_BLOCK_RE, r"^\s*\*+$"):
-            if "stress" not in to_parse:
+            if Filters.STRESS not in to_parse:
                 continue
 
             if "stresses" not in curr_run:
@@ -670,7 +691,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 "Vibrational Frequencies",
                                 gen_table_re("", "=+")):
 
-            if "phonon" not in to_parse:
+            if Filters.PHONON not in to_parse:
                 continue
 
             logger("Found phonon")
@@ -683,7 +704,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file,
                                 "Phonon Symmetry Analysis", REs.EMPTY):
 
-            if "phonon" not in to_parse:
+            if Filters.PHONON not in to_parse:
                 continue
 
             logger("Found phonon symmetry analysis")
@@ -696,7 +717,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Dynamical matrix"),
                                 gen_table_re("", "-+")):
 
-            if "phonon" not in to_parse:
+            if Filters.PHONON not in to_parse:
                 continue
 
             logger("Found dynamical matrix")
@@ -709,7 +730,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Raman Susceptibility Tensors[^+]*", r"\+"),
                                 REs.EMPTY):
 
-            if "phonon" not in to_parse:
+            if Filters.PHONON not in to_parse:
                 continue
 
             logger("Found Raman")
@@ -721,7 +742,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("AUTOSOLVATION CALCULATION RESULTS", r"\*+"),
                                 r"^\s*\*+\s*$"):
 
-            if "solvation" not in to_parse:
+            if Filters.SOLVATION not in to_parse:
                 continue
 
             logger("Found autosolvation")
@@ -732,7 +753,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file,
                                 r"^\s+Optical Permittivity", r"^ =+$"):
 
-            if "optics" not in to_parse:
+            if Filters.OPTICS not in to_parse:
                 continue
 
             logger("Found optical permittivity")
@@ -745,7 +766,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Polarisability
         elif block := get_block(line, castep_file, r"^\s+Polarisabilit(y|ies)", r"^ =+$"):
 
-            if "optics" not in to_parse:
+            if Filters.OPTICS not in to_parse:
                 continue
 
             logger("Found polarisability")
@@ -759,7 +780,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file,
                                 r"^\s+Nonlinear Optical Susceptibility", r"^ =+$"):
 
-            if "optics" not in to_parse:
+            if Filters.OPTICS not in to_parse:
                 continue
 
             logger("Found NLO")
@@ -771,7 +792,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re(r"Atomic Displacement Parameters \(A\*\*2\)"),
                                 gen_table_re("", "-+"), cnt=3):
 
-            if "thermodynamics" not in to_parse:
+            if Filters.THERMODYNAMICS not in to_parse:
                 continue
 
             logger("Found atomic displacements")
@@ -784,7 +805,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Thermodynamics"),
                                 gen_table_re("", "-+"), cnt=3):
 
-            if "thermodynamics" not in to_parse:
+            if Filters.THERMODYNAMICS not in to_parse:
                 continue
 
             logger("Found thermodynamics")
@@ -797,7 +818,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re(r"Atomic Populations \(Mulliken\)"),
                                 gen_table_re("", "=+"), cnt=2):
 
-            if "popn_analysis" not in to_parse:
+            if Filters.POPN_ANALYSIS not in to_parse:
                 continue
 
             logger("Found Mulliken")
@@ -809,7 +830,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Born Effective Charges"),
                                 gen_table_re("", "=+")):
 
-            if "popn_analysis" not in to_parse:
+            if Filters.POPN_ANALYSIS not in to_parse:
                 continue
 
             logger("Found Born")
@@ -821,7 +842,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Orbital Populations"),
                                 gen_table_re("", "-+"), cnt=3):
 
-            if "popn_analysis" not in to_parse:
+            if Filters.POPN_ANALYSIS not in to_parse:
                 continue
 
             logger("Found Orbital populations")
@@ -833,7 +854,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 r"Bond\s+Population(?:\s+Spin)?\s+Length",
                                 gen_table_re("", "=+"), cnt=2):
 
-            if "popn_analysis" not in to_parse:
+            if Filters.POPN_ANALYSIS not in to_parse:
                 continue
 
             logger("Found bond info")
@@ -845,7 +866,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Hirshfeld Analysis"),
                                 gen_table_re("", "=+"), cnt=2):
 
-            if "popn_analysis" not in to_parse:
+            if Filters.POPN_ANALYSIS not in to_parse:
                 continue
 
             logger("Found Hirshfeld")
@@ -857,7 +878,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("ELF grid sample"),
                                 gen_table_re("", "-+"), cnt=2):
 
-            if "elf" not in to_parse:
+            if Filters.ELF not in to_parse:
                 continue
 
             logger("Found ELF")
@@ -869,7 +890,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 "Starting MD iteration",
                                 "finished MD iteration"):
 
-            if "md" not in to_parse:
+            if Filters.MD not in to_parse:
                 continue
 
             logger("Found MD Block (step %d)", len(curr_run["md"])+1)
@@ -886,7 +907,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("MD Data:", "x"),
                                 gen_table_re("", "x+")):
 
-            if "md" not in to_parse and "md_summary" not in to_parse:
+            if Filters.MD not in to_parse and Filters.MD_SUMMARY not in to_parse:
                 continue
 
             curr_run.update(_process_md_block(block))
@@ -895,7 +916,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file, "Final Configuration",
                                 rf"\s*{REs.MINIMISERS_RE}: Final"):
 
-            if "geom_opt" not in to_parse and "final_config" not in to_parse:
+            if Filters.GEOM_OPT not in to_parse and Filters.FINAL_CONFIG not in to_parse:
                 continue
 
             logger("Found final geom configuration")
@@ -906,7 +927,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 rf"Starting {REs.MINIMISERS_RE} iteration\s*\d+\s*\.{{3}}",
                                 rf"^=+$|^\s*Finished\s+{REs.MINIMISERS_RE}\s*$", cnt=2):
 
-            if "geom_opt" not in to_parse:
+            if Filters.GEOM_OPT not in to_parse:
                 continue
 
             if "geom_opt" not in curr_run:
@@ -940,7 +961,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif match := re.search(f"(?P<minim>{REs.MINIMISERS_RE}):"
                                 r" finished iteration\s*\d+\s*with enthalpy", line):
 
-            if "geom_opt" not in to_parse:
+            if Filters.GEOM_OPT not in to_parse:
                 continue
 
             minim = match["minim"]
@@ -961,7 +982,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
-            if "geom_opt" not in to_parse:
+            if Filters.GEOM_OPT not in to_parse:
                 continue
 
             key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
@@ -972,7 +993,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file,
                                 f"<--( min)? {REs.MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
 
-            if "geom_opt" not in to_parse:
+            if Filters.GEOM_OPT not in to_parse:
                 continue
 
             if not (match := re.search(REs.MINIMISERS_RE, line)):
@@ -989,7 +1010,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("TDDFT excitation energies", r"\+", post="TDDFT"),
                                 gen_table_re("=+", r"\+", post="TDDFT"), cnt=2):
 
-            if "tddft" not in to_parse:
+            if Filters.TDDFT not in to_parse:
                 continue
 
             logger("Found TDDFT excitations")
@@ -1001,7 +1022,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("(B A N D|Band Structure Calculation)[^+]+", r"\+"),
                                 gen_table_re("", "=+")):
 
-            if "bs" not in to_parse:
+            if Filters.BS not in to_parse:
                 continue
 
             logger("Found band-structure")
@@ -1015,7 +1036,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                              r"\+"),
                                 gen_table_re("", "=+")):
 
-            if "dipole" not in to_parse:
+            if Filters.DIPOLE not in to_parse:
                 continue
 
             logger("Found molecular dipole")
@@ -1027,7 +1048,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Chemical Shielding Tensor", r"\|"),
                                 gen_table_re("", "=+")):
 
-            if "chem_shielding" not in to_parse:
+            if Filters.CHEM_SHIELDING not in to_parse:
                 continue
 
             logger("Found Chemical Shielding Tensor")
@@ -1040,7 +1061,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                              "Electric Field Gradient Tensors", r"\|"),
                                 gen_table_re("", "=+")):
 
-            if "chem_shielding" not in to_parse:
+            if Filters.CHEM_SHIELDING not in to_parse:
                 continue
 
             logger("Found Chemical Shielding + EField Tensor")
@@ -1052,7 +1073,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Electric Field Gradient Tensor", r"\|"),
                                 gen_table_re("", "=+")):
 
-            if "chem_shielding" not in to_parse:
+            if Filters.CHEM_SHIELDING not in to_parse:
                 continue
 
             logger("Found EField Tensor")
@@ -1064,7 +1085,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("(?:I|Ani)sotropic J-coupling", r"\|"),
                                 gen_table_re("", "=+")):
 
-            if "chem_shielding" not in to_parse:
+            if Filters.CHEM_SHIELDING not in to_parse:
                 continue
 
             logger("Found J-coupling")
@@ -1076,7 +1097,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Hyperfine Tensor", r"\|"),
                                 gen_table_re("", "=+")):
 
-            if "chem_shielding" not in to_parse:
+            if Filters.CHEM_SHIELDING not in to_parse:
                 continue
 
             logger("Found Hyperfine tensor")
@@ -1089,7 +1110,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re(r"Elastic Constants Tensor \(GPa\)"),
                                 gen_table_re("", "=+")):
 
-            if "elastic" not in to_parse:
+            if Filters.ELASTIC not in to_parse:
                 continue
 
             logger("Found elastic constants tensor")
@@ -1103,7 +1124,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re(r"Compliance Matrix \(GPa\^-1\)"),
                                 gen_table_re("", "=+")):
 
-            if "elastic" not in to_parse:
+            if Filters.ELASTIC not in to_parse:
                 continue
 
             logger("Found compliance matrix")
@@ -1121,7 +1142,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
             typ = match.group("type")
             next(block)
 
-            if "elastic" not in to_parse:
+            if Filters.ELASTIC not in to_parse:
                 continue
 
             logger("Found elastic %s contribution", typ)
@@ -1136,7 +1157,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
                                 gen_table_re("Elastic Properties"),
                                 gen_table_re("", "=+")):
 
-            if "elastic" not in to_parse:
+            if Filters.ELASTIC not in to_parse:
                 continue
 
             logger("Found elastic properties")
@@ -1151,7 +1172,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Hugoniot data
         elif block := get_block(line, castep_file, "BEGIN hug", "END hug"):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found hug block")
@@ -1162,7 +1183,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Bands block (spectral data)
         elif block := get_block(line, castep_file, "BEGIN bands", "END bands"):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found bands block")
@@ -1172,7 +1193,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
         elif block := get_block(line, castep_file, "BEGIN phonon_dos", "END phonon_dos"):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found phonon_dos block")
@@ -1184,7 +1205,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # E-Field
         elif block := get_block(line, castep_file, "BEGIN efield", "END efield"):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found efield block")
@@ -1196,7 +1217,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         # Elastic
         elif block := get_block(line, castep_file, "<BEGIN elastic>", "<END elastic>"):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found elastic block")
@@ -1209,7 +1230,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file, "BEGIN xrd_sf", "END xrd_sf",
                                 out_fmt=list):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found xrdsf")
@@ -1224,7 +1245,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file, "BEGIN elf_fmt", "END elf_fmt",
                                 out_fmt=list):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found ELF fmt")
@@ -1241,7 +1262,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file, "BEGIN chdiff_fmt", "END chdiff_fmt",
                                 out_fmt=list):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found CHDIFF fmt")
@@ -1258,7 +1279,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file, "BEGIN pot_fmt", "END pot_fmt",
                                 out_fmt=list):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found POT fmt")
@@ -1275,7 +1296,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
         elif block := get_block(line, castep_file, "BEGIN den_fmt", "END den_fmt",
                                 out_fmt=list):
 
-            if "test_extra_data" not in to_parse:
+            if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
             logger("Found DEN fmt")
