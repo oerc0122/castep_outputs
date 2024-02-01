@@ -4,7 +4,7 @@ import pprint
 import io
 from unittest import (TestCase, main)
 from castep_outputs import parse_castep_file
-from castep_outputs.castep_file_parser import _process_pspot_string
+from castep_outputs.castep_file_parser import _process_pspot_string, Filters
 
 
 class test_castep_parser(TestCase):
@@ -851,7 +851,7 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         """)
 
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'constraints': {'number_of_cell_constraints': 6,
                                                      'number_of_ionic_constraints': 3,
@@ -927,7 +927,7 @@ Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
       2  -8.55990255E+002  6.11946292E+000   3.51127330E-003       4.50  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -843.823694,
                                                'energy_gain': None,
@@ -956,7 +956,7 @@ Initial  -2.37153226E+001  0.00000000E+000                         0.17  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 Total energy has converged after 11 SCF iterations.
         """)
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -23.7153226,
                                                'energy_gain': None,
@@ -1027,7 +1027,7 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
       1  -8.47768701E+002 -1.09214177E+000   3.05621978E-001       3.84  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'apolar_corr_to_eigenvalue_sum': 0.0,
                                                'eigenvalue': [[{'change': 0.6761,
@@ -1120,7 +1120,7 @@ NB est. 0K energy (E-0.5TS)      =  -216.4682741546     eV
 
         """)
 
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'bsc_scf': [[{'energy': -216.330992,
                                                    'energy_gain': None,
@@ -1170,7 +1170,7 @@ Initial  -3.02130061E+002  0.00000000E+000                         3.32  <-- SCF
  Correcting PBC dipole-dipole with self-consistent method: dE =       0.11814 eV
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -302.130061,
                                                'energy_gain': None,
@@ -1200,7 +1200,7 @@ Initial  -8.74382993E+002 -9.34072274E+000                         3.41  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 
         """)
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -874.382993,
                                                'energy_gain': None,
@@ -1232,7 +1232,7 @@ Spin 1, kpoint ( 0.000000  0.000000  0.000000 ) weight = 1.000000
 Have a nice day.
         """)
 
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'occupancies': [[{'band': 1,
                                                        'eigenvalue': -10.3844,
@@ -1254,7 +1254,7 @@ Have a nice day.
  * indicates the final, accepted state (should have the lowest energy)
             """)
 
-        test_dict = parse_castep_file(test_text, level="FULL")[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'wvfn_line_min': [{'gain': (0.1469, 0.1518),
                                                         'init_de_dstep': -0.2376,

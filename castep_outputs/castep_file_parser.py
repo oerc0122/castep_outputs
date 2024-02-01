@@ -5,15 +5,13 @@ Extract results from .castep file for comparison and further processing
 Port of extract_results.pl
 """
 
-from collections import defaultdict
-from typing import TextIO, List, Dict, Any, Union, Sequence, Tuple, Optional, Literal
-from enum import Flag, auto
 import io
 import itertools
 import re
 from collections import defaultdict
 from typing import (Any, Dict, Iterable, Iterator, List, Literal, Optional,
                     Sequence, TextIO, Tuple, Union, cast)
+from enum import Flag, auto
 
 from . import castep_res as REs
 from .castep_res import gen_table_re, get_block, get_numbers, labelled_floats
@@ -63,53 +61,38 @@ class Filters(Flag):
     THERMODYNAMICS = auto()
     TSS = auto()
 
+    # Preset sets
 
-LOW = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
-       Filters.ELASTIC | Filters.ELF | Filters.FINAL_CONFIG | Filters.FORCE |
-       Filters.MD_SUMMARY | Filters.OPTICS | Filters.POPN_ANALYSIS |
-       Filters.POSITION | Filters.SOLVATION | Filters.SPECIES_PROPS | Filters.SPIN |
-       Filters.STRESS | Filters.TDDFT | Filters.THERMODYNAMICS | Filters.TSS)
+    LOW = (BS | CELL | CHEM_SHIELDING | DIPOLE |
+           ELASTIC | ELF | FINAL_CONFIG | FORCE |
+           MD_SUMMARY | OPTICS | POPN_ANALYSIS |
+           POSITION | SOLVATION | SPECIES_PROPS | SPIN |
+           STRESS | TDDFT | THERMODYNAMICS | TSS)
 
-MEDIUM = LOW | Filters.PARAMETERS | Filters.GEOM_OPT | Filters.MD | Filters.PHONON
-HIGH = MEDIUM | Filters.PSPOT | Filters.SYMMETRIES | Filters.SYS_INFO
-FULL = HIGH | Filters.SCF
+    MEDIUM = LOW | PARAMETERS | GEOM_OPT | MD | PHONON
 
-TESTING = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
-           Filters.ELASTIC | Filters.ELF | Filters.FORCE |
-           Filters.GEOM_OPT | Filters.MD | Filters.OPTICS |
-           Filters.PHONON | Filters.POPN_ANALYSIS | Filters.POSITION |
-           Filters.PSPOT | Filters.SOLVATION | Filters.SPECIES_PROPS |
-           Filters.STRESS | Filters.TDDFT | Filters.TEST_EXTRA_DATA |
-           Filters.THERMODYNAMICS | Filters.TSS)
+    HIGH = MEDIUM | PSPOT | SYMMETRIES | SYS_INFO
 
-DATA_LEVEL = {None: Filters(0),
-              "NONE": Filters(0),
-              "LOW": LOW,
-              "MEDIUM": MEDIUM,
-              "HIGH": HIGH,
-              "TESTING": TESTING,
-              "FULL": FULL}
+    FULL = HIGH | SCF
+
+    TESTING = (BS | CELL | CHEM_SHIELDING | DIPOLE |
+               ELASTIC | ELF | FORCE |
+               GEOM_OPT | MD | OPTICS |
+               PHONON | POPN_ANALYSIS | POSITION |
+               PSPOT | SOLVATION | SPECIES_PROPS |
+               STRESS | TDDFT | TEST_EXTRA_DATA |
+               THERMODYNAMICS | TSS)
 
 
-def parse_castep_file(castep_file_in: TextIO, *,
-                      level: Literal[None, "NONE", "LOW", "MEDIUM",
-                                     "HIGH", "TESTING", "FULL"] = "NONE",
-                      extra_filters: Filters = Filters(0)) -> List[Dict[str, Any]]:
-    """ Parse castep file into lists of dicts ready to JSONise
-
-    `level` and `extra_filters` determine the level of detail returned.
-    - If neither `level` nor `extra_filters` passed, `level` defaults to `HIGH`
-    - If `extra_filters` passed, `level` defaults to `NONE`, and is `or`'d with `extra_filters`
-    """
+def parse_castep_file(castep_file_in: TextIO,
+                      filters: Filters = Filters.HIGH) -> List[Dict[str, Any]]:
+    """ Parse castep file into lists of dicts ready to JSONise """
     # pylint: disable=redefined-outer-name
 
     runs: List[Dict[str, Any]] = []
     curr_run: Dict[str, Any] = defaultdict(list)
 
-    if not extra_filters and level == "NONE":  # Default
-        to_parse = HIGH
-    else:
-        to_parse = DATA_LEVEL[level] | extra_filters
+    to_parse = filters
 
     castep_file = FileWrapper(castep_file_in)
 
@@ -398,7 +381,7 @@ def parse_castep_file(castep_file_in: TextIO, *,
             block = get_block(line, castep_file,
                               "",
                               "^-+ <-- SCF", cnt=ncut*3)
-            data = parse_castep_file(block, extra_filters=Filters.SCF)[0]
+            data = parse_castep_file(block, Filters.HIGH | Filters.SCF)[0]
 
             scf = data.pop("scf")
             curr_run["bsc_energies"] = data.pop("energies")
