@@ -54,6 +54,7 @@ class Filters(Flag):
     SCF = auto()
     SOLVATION = auto()
     SPECIES_PROPS = auto()
+    SPIN = auto()
     STRESS = auto()
     SYMMETRIES = auto()
     SYS_INFO = auto()
@@ -66,11 +67,12 @@ class Filters(Flag):
 LOW = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
        Filters.ELASTIC | Filters.ELF | Filters.FINAL_CONFIG | Filters.FORCE |
        Filters.MD_SUMMARY | Filters.OPTICS | Filters.POPN_ANALYSIS |
-       Filters.POSITION | Filters.SOLVATION | Filters.SPECIES_PROPS |
+       Filters.POSITION | Filters.SOLVATION | Filters.SPECIES_PROPS | Filters.SPIN |
        Filters.STRESS | Filters.TDDFT | Filters.THERMODYNAMICS | Filters.TSS)
 
 MEDIUM = LOW | Filters.PARAMETERS | Filters.GEOM_OPT | Filters.MD | Filters.PHONON
-HIGH = MEDIUM | Filters.PSPOT | Filters.SCF | Filters.SYMMETRIES | Filters.SYS_INFO
+HIGH = MEDIUM | Filters.PSPOT | Filters.SYMMETRIES | Filters.SYS_INFO
+FULL = HIGH | Filters.SCF
 
 TESTING = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
            Filters.ELASTIC | Filters.ELF | Filters.FORCE |
@@ -80,27 +82,34 @@ TESTING = (Filters.BS | Filters.CELL | Filters.CHEM_SHIELDING | Filters.DIPOLE |
            Filters.STRESS | Filters.TDDFT | Filters.TEST_EXTRA_DATA |
            Filters.THERMODYNAMICS | Filters.TSS)
 
-DATA_LEVEL = {"LOW": LOW,
+DATA_LEVEL = {None: Filters(0),
+              "NONE": Filters(0),
+              "LOW": LOW,
               "MEDIUM": MEDIUM,
               "HIGH": HIGH,
               "TESTING": TESTING,
-              "FULL": Filters,
-              }
+              "FULL": FULL}
 
 
-def parse_castep_file(castep_file_in: TextIO,
-                      filters: Optional[Filters] = None,
-                      level: Literal[DATA_LEVEL.keys()] = "FULL") -> List[Dict[str, Any]]:
-    """ Parse castep file into lists of dicts ready to JSONise """
+def parse_castep_file(castep_file_in: TextIO, *,
+                      level: Literal[None, "NONE", "LOW", "MEDIUM",
+                                     "HIGH", "TESTING", "FULL"] = "NONE",
+                      extra_filters: Filters = Filters(0)) -> List[Dict[str, Any]]:
+    """ Parse castep file into lists of dicts ready to JSONise
+
+    `level` and `extra_filters` determine the level of detail returned.
+    - If neither `level` nor `extra_filters` passed, `level` defaults to `HIGH`
+    - If `extra_filters` passed, `level` defaults to `NONE`, and is `or`'d with `extra_filters`
+    """
     # pylint: disable=redefined-outer-name
 
     runs: List[Dict[str, Any]] = []
     curr_run: Dict[str, Any] = defaultdict(list)
 
-    val: Any
-    accum: Union[Iterable, Iterator]
-
-    to_parse: Tuple[str, ...] = filters if filters else DATA_LEVEL[level]
+    if not extra_filters and level == "NONE":  # Default
+        to_parse = HIGH
+    else:
+        to_parse = DATA_LEVEL[level] | extra_filters
 
     castep_file = FileWrapper(castep_file_in)
 
@@ -379,13 +388,17 @@ def parse_castep_file(castep_file_in: TextIO,
 
         # SCF Basis set
         elif match := re.search(r" with +(\d) +cut-off energies.", line):
+
+            if Filters.SCF not in to_parse:
+                continue
+
             ncut = int(match.group(1))
             line = ""
             next(castep_file)
             block = get_block(line, castep_file,
                               "",
                               "^-+ <-- SCF", cnt=ncut*3)
-            data = parse_castep_file(block)[0]
+            data = parse_castep_file(block, extra_filters=Filters.SCF)[0]
 
             scf = data.pop("scf")
             curr_run["bsc_energies"] = data.pop("energies")
@@ -468,7 +481,7 @@ def parse_castep_file(castep_file_in: TextIO,
         # Spin densities
         elif match := REs.INTEGRATED_SPIN_DENSITY_RE.match(line):
 
-            if Filters.SCF not in to_parse:
+            if Filters.SCF not in to_parse and Filters.SPIN not in to_parse:
                 continue
 
             logger("Found spin")
