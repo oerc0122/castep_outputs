@@ -62,7 +62,7 @@ class Filters(Flag):
     TSS = auto()
 
     # Preset sets
-
+    NONE = 0
     LOW = (BS | CELL | CHEM_SHIELDING | DIPOLE |
            ELASTIC | ELF | FINAL_CONFIG | FORCE |
            MD_SUMMARY | OPTICS | POPN_ANALYSIS |
@@ -74,6 +74,7 @@ class Filters(Flag):
     HIGH = MEDIUM | PSPOT | SYMMETRIES | SYS_INFO
 
     FULL = HIGH | SCF
+    ALL = FULL
 
     TESTING = (BS | CELL | CHEM_SHIELDING | DIPOLE |
                ELASTIC | ELF | FORCE |
