@@ -9,9 +9,9 @@ import io
 import itertools
 import re
 from collections import defaultdict
-from typing import (Any, Dict, Iterable, Iterator, List, Literal, Optional,
-                    Sequence, TextIO, Tuple, Union, cast)
 from enum import Flag, auto
+from typing import (Any, Dict, List, Optional, Sequence, TextIO, Tuple, Union,
+                    cast)
 
 from . import castep_res as REs
 from .castep_res import gen_table_re, get_block, get_numbers, labelled_floats
