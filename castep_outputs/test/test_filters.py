@@ -33,13 +33,14 @@ class test_castep_filters(TestCase):
                                                'initial_cell', 'initial_positions', 'initial_spins', 'k-points',
                                                'symmetries', 'constraints', 'target_stress', 'memory_estimate')),
                               (Filters.FULL, ('build_info', 'time_started', 'warning', 'pspot_detail',
-                                               'species_properties', 'title', 'options', 'initial_cell',
-                                               'initial_positions', 'initial_spins', 'k-points', 'symmetries',
-                                               'constraints', 'target_stress', 'memory_estimate')),
+                                              'species_properties', 'title', 'options', 'initial_cell',
+                                              'initial_positions', 'initial_spins', 'k-points', 'symmetries',
+                                              'constraints', 'target_stress', 'memory_estimate')),
                               (Filters.TESTING, ('pspot_detail', 'species_properties', 'initial_cell', 'initial_positions'))):
-            self.test_text.seek(0)
-            data = parse_castep_file(self.test_text, filters=filtery)
-            assert all(key in data[0] for key in keys)
+            with self.subTest(filters=filtery.name):
+                self.test_text.seek(0)
+                data = parse_castep_file(self.test_text, filters=filtery)
+                assert all(key in data[0] for key in keys)
 
     def test_filter_none(self):
         data = parse_castep_file(self.test_text, filters=Filters.NONE)
