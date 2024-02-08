@@ -1,3 +1,45 @@
 [build-system]
-requires = ["setuptools"]
+requires = ["setuptools >= 61.0.0"]
 build-backend = "setuptools.build_meta"
+
+[project]
+name = "castep_outputs"
+authors = [{name = "Jacob Wilkins", email = "jacob.wilkins@stfc.ac.uk"}]
+dynamic = ["version"]
+requires-python = ">= 3.8"
+readme = "README.rst"
+description = "A package for extracting information from castep outputs"
+keywords = ["castep", "dft", "parser"]
+license = {text = "BSD-3-Clause"}
+
+classifiers = [
+  "Development Status :: 4 - Beta",
+
+  "Intended Audience :: Science/Research",
+  "Topic :: File Formats :: JSON",
+  "Topic :: Scientific/Engineering :: Physics",
+
+  "License :: OSI Approved :: BSD License",
+
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+]
+
+[project.optional-dependencies]
+ruamel = ["ruamel.yaml>=0.17.22"]
+yaml = ["pyYAML>=3.13"]
+docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0"]
+
+[project.scripts]
+castep_outputs = "castep_outputs.castep_outputs_main:main"
+
+[project.urls]
+Homepage="https://github.com/oerc0122/castep_outputs"
+Documentation = "https://oerc0122.github.io/castep_outputs/"
+Repository="https://github.com/oerc0122/castep_outputs.git"
+"Bug Tracker" = "https://github.com/oerc0122/castep_outputs/issues"
+
+[tool.setuptools.dynamic]
+version = {attr = "castep_outputs.__version__"}
