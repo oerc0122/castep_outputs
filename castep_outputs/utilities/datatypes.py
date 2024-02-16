@@ -133,6 +133,30 @@ class SCFSection(TypedDict):
     change: float
 
 
+class SCFContrib(TypedDict, total=False):
+    apolar_correction: float
+    electronic_entropy_term_ts: float
+    ewald_energy_const: float
+    exchange_correlation_energy: float
+    fermi_energy: float
+    hartree_energy: float
+    hubbard_u_correction: float
+    kinetic_energy: float
+    local_pseudopotential_energy: float
+    non_coulombic_energy_const: float
+    non_local_energy: float
+    potential_energy_total: float
+    total_free_energy_e_ts: float
+    xc_correction: float
+
+
+class SCFDebugInfo(TypedDict, total=False):
+    no_bands: int
+    kinetic_eigenvalue: List[float]
+    eigenvalue: List[SCFSection]
+    contributions: SCFContrib
+
+
 class SCFReport(TypedDict, total=False):
     energy: float
     energy_gain: float
@@ -141,9 +165,7 @@ class SCFReport(TypedDict, total=False):
     density_residual: Optional[float]
     constraint_energy: float
     dipole_corr_energy: float
-    no_bands: int
-    kinetic_eigenvalue: float
-    eigenvalue: List[SCFSection]
+    debug_info: SCFDebugInfo
 
 
 # Bonds
