@@ -759,7 +759,7 @@ Charge spilling parameter for spin component 2 = 0.44%
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'species_properties':
-                                     {'Fe': {'charge_spilling': [0.0009, 0.0044],
+                                     {'Fe': {'charge_spilling': (0.0009, 0.0044),
                                              'pseudo_atomic_energy': -490.5382}}})
 
     def test_get_symmetry(self):
@@ -2155,7 +2155,7 @@ WL ********************************************************************
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict,
-                         {'phonon_symmetry_analysis': [{'mat': [(1, 0, 2, 3, 0, 4, 5, 0, 6, 7, 0, 8),
+                         {'phonon_symmetry_analysis': [{'mat': ((1, 0, 2, 3, 0, 4, 5, 0, 6, 7, 0, 8),
                                                                 (0, 9, 0, 0, 10, 0, 0, 11, 0, 0, 12, 0),
                                                                 (2, 0, 13, 14, 0, 15, 6, 0, 16, 17, 0, 18),
                                                                 (3, 0, 14, 19, 0, 20, 7, 0, 17, 21, 0, 22),
@@ -2166,15 +2166,15 @@ WL ********************************************************************
                                                                 (6, 0, 16, 17, 0, 18, 2, 0, 13, 14, 0, 15),
                                                                 (7, 0, 17, 21, 0, 22, 3, 0, 14, 19, 0, 20),
                                                                 (0, 12, 0, 0, 24, 0, 0, 10, 0, 0, 23, 0),
-                                                                (8, 0, 18, 22, 0, 26, 4, 0, 15, 20, 0, 25)],
+                                                                (8, 0, 18, 22, 0, 26, 4, 0, 15, 20, 0, 25)),
                                                         'title': 'Elements of D with same absolute magnitude'},
-                                                       {'mat': [(1, 0, 0),
+                                                       {'mat': ((1, 0, 0),
                                                                 (0, 1, 0),
-                                                                (0, 0, 1)],
+                                                                (0, 0, 1)),
                                                         'title': 'Elements of BEC with same absolute magnitude'},
-                                                       {'mat': [(0.0, 0.0, 0.0),
+                                                       {'mat': ((0.0, 0.0, 0.0),
                                                                 (0.0, 0.0, 0.0),
-                                                                (0.0, 0.0, 0.0)],
+                                                                (0.0, 0.0, 0.0)),
                                                         'title': 'Phase of Born Effective Charge elements'}]})
 
     def test_get_thermodynamics(self):
@@ -2407,9 +2407,7 @@ WL ********************************************************************
 
         self.assertEqual(test_dict, {'molecular_dipole': {'centre_electronic': (3.0848, 3.0848, 3.0848),
                                                           'centre_positive': (3.0448, 3.0448, 3.0448),
-                                                          'dipole_direction': (0.57735,
-                                                                               0.57735,
-                                                                               0.57735),
+                                                          'dipole_direction': (0.57735, 0.57735, 0.57735),
                                                           'dipole_magnitude': 2.66023,
                                                           'total_ionic': 8.0,
                                                           'total_valence': 8.0}})
@@ -3292,7 +3290,7 @@ Reading continuation data from model file BN.check
         self.assertEqual(test_dict, {'continuation': 'BN.check'})
 
 
-class test_pspot_parser:
+class test_pspot_parser(TestCase):
     def test_pspot_parser(self):
         test_text = io.StringIO("""
 1|0.8|11|15|18|10N(qc=8)[]
@@ -3308,12 +3306,15 @@ class test_pspot_parser:
 2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]
 2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]
         """)
-        self.skipTest()
+        self.skipTest("Correct answers not provided")
         for line in test_text:
-            pprint.pprint(_process_pspot_string(line))
-        test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+            if not line.strip():
+                continue
+            print(f"{line=}")
+            test_dict = _process_pspot_string(line)
+
+            pprint.pprint(test_dict)
+            # self.assertEqual(test_dict, {})
 
 
 if __name__ == '__main__':

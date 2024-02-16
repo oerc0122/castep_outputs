@@ -2,7 +2,7 @@
 Module for constants used in castep_outputs
 """
 
-from typing import Literal, Tuple
+from typing import Literal
 
 SHELLS = ('s', 'p', 'd', 'f')
 FST_D = ('x', 'y', 'z')
@@ -25,7 +25,3 @@ TS_TYPES = {"REA": "reagent",
             "TST": "test"}
 
 OutFormats = Literal["json", "pprint", "print", "ruamel", "yaml"]
-AtomIndex = Tuple[str, int]
-ThreeVector = Tuple[float, float, float]
-SixVector = Tuple[float, float, float, float, float, float]
-ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]
