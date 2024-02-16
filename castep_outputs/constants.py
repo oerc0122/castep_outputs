@@ -25,6 +25,7 @@ TS_TYPES = {"REA": "reagent",
             "TST": "test"}
 
 OutFormats = Literal["json", "pprint", "print", "ruamel", "yaml"]
-AtomIndex = Tuple[str, float]
+AtomIndex = Tuple[str, int]
 ThreeVector = Tuple[float, float, float]
+SixVector = Tuple[float, float, float, float, float, float]
 ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]

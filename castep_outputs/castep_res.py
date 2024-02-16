@@ -1,12 +1,17 @@
 """ Module containing all regexes """
 
-from typing import List, Sequence, Optional, TextIO, Dict
-import re
 import io
 import itertools
+import re
+from typing import Dict, List, Sequence, TextIO, Union
+
+from .constants import FST_D, MINIMISERS, SHELLS
+from .filewrapper import FileWrapper
+
 # pylint: disable=too-many-arguments
 
-from .constants import MINIMISERS, SHELLS, FST_D
+
+Pattern = Union[str, re.Pattern]
 
 
 def get_numbers(line: str) -> List[str]:
@@ -14,8 +19,8 @@ def get_numbers(line: str) -> List[str]:
     return NUMBER_RE.findall(line)
 
 
-def get_block(init_line: str, in_file: TextIO,
-              start: re.Pattern, end: re.Pattern, *, cnt: int = 1,
+def get_block(init_line: str, in_file: Union[TextIO, FileWrapper],
+              start: Pattern, end: Pattern, *, cnt: int = 1,
               out_fmt: type = io.StringIO, eof_possible: bool = False):
     """ Check if line is the start of a block and return
     the block if it is, moving in_file forward as it does so """
@@ -50,7 +55,7 @@ def get_block(init_line: str, in_file: TextIO,
     return out_fmt(block)
 
 
-def labelled_floats(labels: Sequence[str], counts: Sequence[Optional[int]] = (None,),
+def labelled_floats(labels: Sequence[str], counts: Sequence[Union[int, str, None]] = (None,),
                     sep: str = r"\s+?", suff: str = "") -> str:
     """ Constructs a regex for extracting floats with assigned labels
     :param labels:iterable of labels to label each group
@@ -304,9 +309,9 @@ BS_RE = re.compile(
     """, re.VERBOSE)
 
 THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
-ATOMIC_DISP_RE = re.compile(labelled_floats(("T",)) + r"\s*" +
+ATOMIC_DISP_RE = re.compile(labelled_floats(("temperature",)) + r"\s*" +
                             ATREG + r"\s*" +
-                            labelled_floats(('U',), counts=(6,)))
+                            labelled_floats(("displacement",), counts=(6,)))
 
 MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
 GEOMOPT_MIN_TABLE_RE = re.compile(

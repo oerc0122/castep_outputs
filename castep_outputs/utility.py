@@ -1,17 +1,26 @@
 """
 Utility functions for parsing castep outputs
 """
-from typing import Tuple, Any, Dict, TextIO, List, Callable, Union
-import fileinput
-import logging
+
 import collections.abc
-from collections import defaultdict
+import fileinput
+import functools
 import json
+import logging
 import pprint
 import re
+from collections import defaultdict
+from copy import copy
+from typing import (Any, Callable, Dict, List, Mapping, MutableMapping,
+                    Optional, TextIO, Tuple, TypeVar, Union, Type)
 
 import castep_outputs.castep_res as REs
 
+from .filewrapper import FileWrapper
+
+T = TypeVar("T")
+
+_YAML_TYPE: Optional[str]
 try:
     from ruamel import yaml
     _YAML_TYPE = "ruamel"
@@ -23,35 +32,6 @@ except ImportError:
         _YAML_TYPE = None
 
 
-class FileWrapper:
-    """
-    Convenience file wrapper to add rewind and line number capabilities
-    """
-    def __init__(self, file):
-        self.file = file
-        self.pos = 0
-        self.lineno = 0
-        self.name = self.file.name if hasattr(self.file, 'name') else 'unknown'
-
-    def __iter__(self):
-        return self
-
-    def __next__(self):
-        self.lineno += 1
-        self.pos = self.file.tell()
-        nextline = self.file.readline()
-        if not nextline:
-            raise StopIteration()
-        return nextline
-
-    def rewind(self):
-        """Rewinds file to previous line"""
-        if self.file.tell == self.pos:
-            return
-        self.lineno -= 1
-        self.file.seek(self.pos)
-
-
 def normalise_string(string: str) -> str:
     """
     Normalise a string removing leading/trailing space
@@ -60,7 +40,7 @@ def normalise_string(string: str) -> str:
     return " ".join(string.strip().split())
 
 
-def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
+def atreg_to_index(dict_in: Union[Dict[str, str], re.Match], clear: bool = True) -> Tuple[str, int]:
     """
     Transform a matched atreg value to species index tuple
     Also clear value from dictionary for easier processing
@@ -74,7 +54,7 @@ def atreg_to_index(dict_in: dict, clear: bool = True) -> Tuple[str, int]:
     return (spec, int(ind))
 
 
-def normalise(obj: Any, mapping: Dict[type, Union[type, Callable]] = ()) -> Any:
+def normalise(obj: Any, mapping: Dict[type, Union[type, Callable]]) -> Any:
     """
     Standardises data after processing
     """
@@ -109,7 +89,7 @@ def json_safe(obj: Any) -> Any:
     return obj
 
 
-def flatten_dict(dictionary: Dict,
+def flatten_dict(dictionary: MutableMapping[Any, Any],
                  parent_key: bool = False,
                  separator: str = '_') -> Dict[str, Any]:
     """
@@ -124,7 +104,7 @@ def flatten_dict(dictionary: Dict,
     :return: A flattened dictionary
     """
 
-    items = []
+    items: List[Tuple[Any, Any]] = []
     for key, value in dictionary.items():
         new_key = str(parent_key) + separator + key if parent_key else key
         if isinstance(value, collections.abc.MutableMapping):
@@ -186,39 +166,55 @@ def get_dumpers(dump_fmt: str) -> Callable:
     return SUPPORTED_FORMATS[dump_fmt]
 
 
-def stack_dict(out_dict: Dict[Any, List], in_dict: Dict[Any, List]) -> Dict[Any, List]:
+def stack_dict(out_dict: MutableMapping[Any, Any], in_dict: Mapping[Any, Any]):
     """ Append items in `in_dict` to the keys in `out_dict` """
     for key, val in in_dict.items():
         out_dict[key].append(val)
 
 
 def add_aliases(in_dict: Dict[str, Any],
-                alias_dict: [str, str],
-                replace: bool = False) -> Dict[str, Any]:
+                alias_dict: Dict[str, str],
+                replace: bool = False,
+                inplace: bool = True) -> Dict[str, Any]:
     """ Adds aliases of known names into dictionary, if replace is true, remove original """
+    out_dict = in_dict if inplace else copy(in_dict)
+
     for frm, new in alias_dict.items():
         if frm in in_dict:
-            in_dict[new] = in_dict[frm]
+            out_dict[new] = in_dict[frm]
             if replace:
-                in_dict.pop(frm)
+                out_dict.pop(frm)
+    return out_dict
 
 
-def log_factory(file: TextIO) -> Callable:
+@functools.singledispatch
+def log_factory(file) -> Callable:
     """ Return logging function to add file info to logs """
-    if isinstance(file, fileinput.FileInput):
-        def log_file(message, *args, level="info"):
-            getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
-                                    f" {message}", *args)
-    elif isinstance(file, FileWrapper):
-        def log_file(message, *args, level="info"):
-            getattr(logging, level)(f"[{file.name}:{file.lineno}]"
-                                    f" {message}", *args)
-    elif hasattr(file, 'name'):
+
+    if hasattr(file, 'name'):
         def log_file(message, *args, level="info"):
             getattr(logging, level)(f"[{file.name}] {message}", *args)
     else:
         def log_file(message, *args, level="info"):
             getattr(logging, level)(message, *args)
+
+    return log_file
+
+
+@log_factory.register
+def _(file: fileinput.FileInput):
+    def log_file(message, *args, level="info"):
+        getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
+                                f" {message}", *args)
+
+    return log_file
+
+
+@log_factory.register
+def _(file: FileWrapper) -> Callable:
+    def log_file(message, *args, level="info"):
+        getattr(logging, level)(f"[{file.name}:{file.lineno}]"
+                                f" {message}", *args)
 
     return log_file
 
@@ -243,36 +239,41 @@ def determine_type(data: str) -> type:
 def _parse_float_or_rational(val: str) -> float:
     """ Parse a float or a rational to float """
     if "/" in val:
-        val = val.split("/")
-        return float(val[0]) / float(val[1])
+        numerator, denominator = val.split("/")
+        return float(numerator) / float(denominator)
 
     return float(val)
 
 
 def _parse_logical(val: str) -> bool:
     """ Parse a logical to a bool """
-    if val.title() in ("T", "True", "1"):
-        return True
-
-    return False
+    return val.title() in ("T", "True", "1")
 
 
-_TYPE_PARSERS = {float: _parse_float_or_rational,
-                 bool: _parse_logical}
+_TYPE_PARSERS: Dict[type, Callable] = {float: _parse_float_or_rational,
+                                       bool: _parse_logical}
 
 
-def to_type(data_in: Union[str, List, Tuple], typ: type) -> Union[Tuple[type], type]:
+@functools.singledispatch
+def to_type(data_in, _: type):
     """ Convert types to `typ` regardless of if data_in is iterable or otherwise """
-    parser = _TYPE_PARSERS.get(typ, typ)
-
-    if isinstance(data_in, (list, tuple)):
-        data_in = tuple(map(parser, data_in))
-    elif isinstance(data_in, str):
-        data_in = parser(data_in)
     return data_in
 
 
-def fix_data_types(in_dict: Dict, type_dict: Dict[str, type]) -> Dict:
+@to_type.register(str)
+def _(data_in: str, typ: Type[T]) -> T:
+    parser: Callable[[str], T] = _TYPE_PARSERS.get(typ, typ)
+    return parser(data_in)
+
+
+@to_type.register(tuple)
+@to_type.register(list)
+def _(data_in, typ: Type[T]) -> Tuple[T, ...]:
+    parser: Callable[[str], T] = _TYPE_PARSERS.get(typ, typ)
+    return tuple(parser(x) for x in data_in)
+
+
+def fix_data_types(in_dict: MutableMapping, type_dict: Dict[str, type]):
     """ Applies correct types to elements of in_dict by mapping given in type_dict"""
     for key, typ in type_dict.items():
         if key in in_dict:
