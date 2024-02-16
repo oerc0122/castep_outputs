@@ -11,8 +11,8 @@ import pprint
 import re
 from collections import defaultdict
 from copy import copy
-from typing import (Any, Callable, Dict, List, Mapping, MutableMapping,
-                    Optional, TextIO, Tuple, TypeVar, Union, Type)
+from typing import (Any, Callable, Dict, List, Mapping, MutableMapping, Optional, TextIO, Tuple,
+                    TypeVar, Union, Type, Iterable)
 
 import castep_outputs.castep_res as REs
 
@@ -242,6 +242,14 @@ def determine_type(data: str) -> type:
         return float
 
     return str
+
+
+def parse_int_or_float(numbers: Iterable[str]) -> Union[int, float]:
+    """ Parses numbers to `int` if all elements ints or `float` otherwise """
+    if all(x.isdigit() for x in numbers):
+        return to_type(numbers, int)
+
+    return to_type(numbers, float)
 
 
 def _parse_float_or_rational(val: str) -> float:
