@@ -308,7 +308,7 @@ BS_RE = re.compile(
     kpt-group=\s*(?P<kpgrp>{INTNUMBER_RE})
     """, re.VERBOSE)
 
-THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("T", "E", "F", "S", "Cv")))
+THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("t", "e", "f", "s", "cv")))
 ATOMIC_DISP_RE = re.compile(labelled_floats(("temperature",)) + r"\s*" +
                             ATREG + r"\s*" +
                             labelled_floats(("displacement",), counts=(6,)))
@@ -316,7 +316,7 @@ ATOMIC_DISP_RE = re.compile(labelled_floats(("temperature",)) + r"\s*" +
 MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
 GEOMOPT_MIN_TABLE_RE = re.compile(
     r"\s*\|\s* (?P<step>[^|]+)" +
-    labelled_floats(("lambda", "Fdelta", "enthalpy"), sep=r"\s*\|\s*") +
+    labelled_floats(("lambda", "fdelta", "enthalpy"), sep=r"\s*\|\s*") +
     r"\s* \|", re.VERBOSE)
 
 GEOMOPT_TABLE_RE = re.compile(

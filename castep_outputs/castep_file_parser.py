@@ -23,8 +23,8 @@ from .extra_files_parser import (parse_bands_file, parse_chdiff_fmt_file,
                                  parse_hug_file, parse_phonon_dos_file,
                                  parse_pot_fmt_file, parse_xrd_sf_file)
 from .utility import (FileWrapper, add_aliases, atreg_to_index, determine_type,
-                      fix_data_types, log_factory, normalise_string,
-                      stack_dict, to_type)
+                      fix_data_types, log_factory, normalise_key,
+                      normalise_string, stack_dict, to_type)
 
 DATA_CLASSES = ("scf", "sys_info", "parameters",
                 "cell", "symmetries", "stress", "force", "position",
@@ -1348,7 +1348,7 @@ def _process_md_block(block: TextIO) -> Dict[str, float]:
                                         r"(?P<key>[a-zA-Z][A-Za-z ]+):\s*"
                                         rf"(?P<val>{REs.FNUMBER_RE})", line))}
 
-    return {normalise_string(key): val for key, val in curr_data.items()}
+    return {normalise_key(key): val for key, val in curr_data.items()}
 
 
 def _process_elf(block: TextIO) -> List[float]:
@@ -1369,7 +1369,7 @@ def _process_thermodynamics(block: TextIO) -> Dict[str, Union[float, List[float]
     accum: Dict[str, Union[float, List[float]]] = defaultdict(list)
     for line in block:
         if "Zero-point energy" in line:
-            accum["zero-point_energy"] = float(get_numbers(line)[0])
+            accum["zero_point_energy"] = float(get_numbers(line)[0])
 
         if match := REs.THERMODYNAMICS_DATA_RE.match(line):
             stack_dict(accum, match.groupdict())
@@ -1377,7 +1377,7 @@ def _process_thermodynamics(block: TextIO) -> Dict[str, Union[float, List[float]
         #     thermo_label = line.split()
 
     fix_data_types(accum, {key: float for
-                           key in ("T", "E", "F", "S", "Cv")})
+                           key in ("t", "e", "f", "s", "cv")})
     return accum
 
 
@@ -1463,7 +1463,7 @@ def _process_buildinfo(block: Sequence[str]) -> Dict[str, str]:
     for line in block[2:]:
         if ":" in line:
             key, val = map(normalise_string, line.split(":", 1))
-            info[key.strip()] = val.strip()
+            info[normalise_key(key)] = val.strip()
     return info
 
 
@@ -1540,7 +1540,7 @@ def _process_scf(block: TextIO) -> List[Dict[str, Any]]:
 
         elif match := re.match(r"[+(]?(?P<key>[()0-9A-Za-z -]+)="
                                rf"\s*{labelled_floats(('val',))} eV\)?", line):
-            key, val = normalise_string(match["key"]).lower(), float(match["val"])
+            key, val = normalise_key(match["key"]), float(match["val"])
             curr[key] = val
 
     if curr:
@@ -1552,8 +1552,8 @@ def _process_scf(block: TextIO) -> List[Dict[str, Any]]:
 def _process_forces(block: TextIO) -> Tuple[str, Dict[AtomIndex, ThreeVector]]:
     if not (ft_guess := REs.FORCES_BLOCK_RE.search(next(block))):
         raise IOError("Invalid forces block")
-    ftype = ft_guess.group(1) if ft_guess.group(1) else "non-descript"
-    ftype = normalise_string(ftype).lower()
+    ftype = ft_guess.group(1) if ft_guess.group(1) else "non_descript"
+    ftype = normalise_key(ftype)
 
     accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
              for line in block
@@ -1565,8 +1565,8 @@ def _process_forces(block: TextIO) -> Tuple[str, Dict[AtomIndex, ThreeVector]]:
 def _process_stresses(block: TextIO) -> Tuple[str, SixVector]:
     if not (ft_guess := REs.STRESSES_BLOCK_RE.search(next(block))):
         raise IOError("Invalid stresses block")
-    ftype = ft_guess.group(1) if ft_guess.group(1) else "non-descript"
-    ftype = normalise_string(ftype).lower()
+    ftype = ft_guess.group(1) if ft_guess.group(1) else "non_descript"
+    ftype = normalise_key(ftype)
 
     accum = []
     for line in block:
@@ -1636,7 +1636,7 @@ def _process_raman(block: TextIO) -> List[Dict[str, Union[None, list, float,
             tensor = curr_mode["tensor"]
             curr_mode["tensor"] = cast(ThreeByThreeMatrix, tuple(curr_mode["tensor"]))
             curr_mode["trace"] = sum(tensor[i][i] for i in range(3))
-            curr_mode["II"] = (tensor[0][0]*tensor[1][1] +
+            curr_mode["ii"] = (tensor[0][0]*tensor[1][1] +
                                tensor[0][0]*tensor[2][2] +
                                tensor[1][1]*tensor[2][2] -
                                tensor[0][1]*tensor[1][0] -
@@ -1759,7 +1759,7 @@ def _process_finalisation(block: TextIO) -> Dict[str, float]:
     for line in block:
         if line.strip():
             key, val = line.split("=")
-            out[normalise_string(key.lower())] = float(get_numbers(val)[0])
+            out[normalise_key(key)] = float(get_numbers(val)[0])
     return out
 
 
@@ -1771,8 +1771,8 @@ def _process_memory_est(block: TextIO) -> Dict[str, Dict[str, float]]:
         if match := re.match(r"\s*\|([A-Za-z ]+)" +
                              labelled_floats(("memory", "disk"), suff=" MB"), line):
             key, memory, disk = match.groups()
-            accum[normalise_string(key)] = {"memory": float(memory),
-                                            "disk": float(disk)}
+            accum[normalise_key(key)] = {"memory": float(memory),
+                                         "disk": float(disk)}
 
     return accum
 
@@ -1823,7 +1823,9 @@ def _process_symmetry(block: TextIO) -> Tuple[Dict[str, Any], Dict[str, Any]]:
 
     for line in block:
         if "=" in line:
-            key, val = map(normalise_string, line.split("="))
+            key, val = line.split("=")
+            key = normalise_key(key)
+            val = normalise_string(val)
 
             if "Number of" in line:
                 val = to_type(val, int)
@@ -2033,12 +2035,12 @@ def _process_dftd(block: TextIO) -> Dict[str, Any]:
             val = normalise_string(val)
             if "Parameter" in key:
                 val = to_type(get_numbers(val)[0], float)
-            dftd[normalise_string(key).lower()] = val
+            dftd[normalise_key(key)] = val
 
         elif match := re.match(rf"\s*x\s*(?P<spec>{REs.ATOM_NAME_RE})\s*" +
                                labelled_floats(("C6", "R0")), line):
-            dftd["species"][match["spec"]] = {"C6": float(match["C6"]),
-                                              "R0": float(match["R0"])}
+            dftd["species"][match["spec"]] = {"c6": float(match["C6"]),
+                                              "r0": float(match["R0"])}
 
     return dftd
 
@@ -2072,7 +2074,7 @@ def _process_autosolvation(block: TextIO) -> Dict[str, float]:
     accum = {}
     for line in block:
         if len(match := line.split("=")) > 1:
-            key = normalise_string(match[0].strip("-( "))
+            key = normalise_key(match[0])
             val = cast(float, to_type(get_numbers(line)[0], float))
             accum[key] = val
 
@@ -2218,7 +2220,7 @@ def _process_geom_table(block: TextIO) -> Dict[str, Dict[str, Union[bool, float]
     for line in block:
         if match := REs.GEOMOPT_MIN_TABLE_RE.match(line):
             val = match.groupdict()
-            fix_data_types(val, {key: float for key in ("lambda", "Fdelta", "enthalpy")})
+            fix_data_types(val, {key: float for key in ("lambda", "fdelta", "enthalpy")})
 
             key = normalise_string(val.pop("step"))
             accum[key] = cast(Dict[str, Union[bool, float]], val)
@@ -2229,7 +2231,7 @@ def _process_geom_table(block: TextIO) -> Dict[str, Dict[str, Union[bool, float]
 
             val["converged"] = val["converged"] == "Yes"
 
-            key = normalise_string(val.pop("parameter"))
+            key = normalise_key(val.pop("parameter"))
             accum[key] = cast(Dict[str, Union[bool, float]], val)
 
     return accum
@@ -2252,8 +2254,7 @@ def _process_final_config_block(block_in: TextIO) -> Dict[str, Any]:
                                f"(?P<value>{REs.EXPFNUMBER_RE}).*",
                                line, re.IGNORECASE):
 
-            key, val = normalise_string(match["key"]).lower(), to_type(match["value"], float)
-            key = "_".join(key.split())
+            key, val = normalise_key(match["key"]), to_type(match["value"], float)
             accum[key] = val
 
     return accum
@@ -2272,10 +2273,10 @@ def _process_elastic_properties(block: TextIO) -> Dict[str, Union[float, ThreeVe
             if len(val) == 1:
                 val = val[0]
 
-            accum[normalise_string(key)] = val
+            accum[normalise_key(key)] = val
         elif blk := get_block(line, block, "Speed of Sound", REs.EMPTY):
 
-            accum["Speed of Sound"] = cast(ThreeByThreeMatrix,
+            accum["speed_of_sound"] = cast(ThreeByThreeMatrix,
                                            tuple(to_type(numbers, float)
                                                  for blk_line in blk
                                                  if (numbers := get_numbers(blk_line)))

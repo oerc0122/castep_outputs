@@ -2,11 +2,11 @@
   {
     "build_info": {
       "summary": "Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr 14 15:13:22 2023 +0100",
-      "Compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
-      "Comms": "Open MPI v4.1.4",
-      "MATHLIBS": "blas (LAPACK version 3.11.0)",
-      "FFT Lib": "fftw3 version fftw-3.3.10-sse2-avx",
-      "Fundamental constants values": "CODATA 2018"
+      "compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
+      "comms": "Open MPI v4.1.4",
+      "mathlibs": "blas (LAPACK version 3.11.0)",
+      "fft_lib": "fftw3 version fftw-3.3.10-sse2-avx",
+      "fundamental_constants_values": "CODATA 2018"
     },
     "time_started": "Tue, 30 May 2023 11:57:18 +0100",
     "warning": [
@@ -586,15 +586,15 @@
       "num_kpoints": 32
     },
     "symmetries": {
-      "Maximum deviation from symmetry": "0.00000 ANG",
-      "Number of symmetry operations": 1,
-      "Point group of crystal": "1: C1, 1, 1",
-      "Space group of crystal": "213: P4_132, P 4bd 2ab 3"
+      "maximum_deviation_from_symmetry": "0.00000 ANG",
+      "number_of_symmetry_operations": 1,
+      "point_group_of_crystal": "1: C1, 1, 1",
+      "space_group_of_crystal": "213: P4_132, P 4bd 2ab 3"
     },
     "constraints": {
-      "Number of ionic constraints": 3,
+      "number_of_ionic_constraints": 3,
       "com_constrained": true,
-      "Number of cell constraints": 0,
+      "number_of_cell_constraints": 0,
       "cell_constraints": [
         1,
         2,
@@ -616,19 +616,19 @@
     ],
     "memory_estimate": [
       {
-        "BLAS internal memory storage": {
+        "blas_internal_memory_storage": {
           "memory": 0.0,
           "disk": 0.0
         },
-        "Model and support data": {
+        "model_and_support_data": {
           "memory": 3776.4,
           "disk": 0.0
         },
-        "Electronic energy minimisation requirements": {
+        "electronic_energy_minimisation_requirements": {
           "memory": 15189.3,
           "disk": 0.0
         },
-        "Force calculation requirements": {
+        "force_calculation_requirements": {
           "memory": 9.8,
           "disk": 0.0
         }
@@ -638,11 +638,11 @@
   {
     "build_info": {
       "summary": "Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr 14 15:13:22 2023 +0100",
-      "Compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
-      "Comms": "Open MPI v4.1.4",
-      "MATHLIBS": "blas (LAPACK version 3.11.0)",
-      "FFT Lib": "fftw3 version fftw-3.3.10-sse2-avx",
-      "Fundamental constants values": "CODATA 2018"
+      "compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
+      "comms": "Open MPI v4.1.4",
+      "mathlibs": "blas (LAPACK version 3.11.0)",
+      "fft_lib": "fftw3 version fftw-3.3.10-sse2-avx",
+      "fundamental_constants_values": "CODATA 2018"
     },
     "time_started": "Fri, 14 Jul 2023 19:45:17 +0100",
     "pspot_detail": [
@@ -1240,15 +1240,15 @@
       "num_kpoints": 32
     },
     "symmetries": {
-      "Maximum deviation from symmetry": "0.00000 ANG",
-      "Number of symmetry operations": 1,
-      "Point group of crystal": "1: C1, 1, 1",
-      "Space group of crystal": "213: P4_132, P 4bd 2ab 3"
+      "maximum_deviation_from_symmetry": "0.00000 ANG",
+      "number_of_symmetry_operations": 1,
+      "point_group_of_crystal": "1: C1, 1, 1",
+      "space_group_of_crystal": "213: P4_132, P 4bd 2ab 3"
     },
     "constraints": {
-      "Number of ionic constraints": 3,
+      "number_of_ionic_constraints": 3,
       "com_constrained": true,
-      "Number of cell constraints": 0,
+      "number_of_cell_constraints": 0,
       "cell_constraints": [
         1,
         2,
@@ -1270,19 +1270,19 @@
     ],
     "memory_estimate": [
       {
-        "BLAS internal memory storage": {
+        "blas_internal_memory_storage": {
           "memory": 0.0,
           "disk": 0.0
         },
-        "Model and support data": {
+        "model_and_support_data": {
           "memory": 3780.5,
           "disk": 0.0
         },
-        "Electronic energy minimisation requirements": {
+        "electronic_energy_minimisation_requirements": {
           "memory": 6100.6,
           "disk": 0.0
         },
-        "Force calculation requirements": {
+        "force_calculation_requirements": {
           "memory": 9.8,
           "disk": 0.0
         }

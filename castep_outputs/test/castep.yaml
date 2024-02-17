@@ -1,13 +1,13 @@
-- build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
-      FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
-      2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
+- build_info: {comms: Open MPI v4.1.4, compiler: 'GNU Fortran 12.2.1; Optimisation:
+      FAST', fft_lib: fftw3 version fftw-3.3.10-sse2-avx, fundamental_constants_values: CODATA
+      2018, mathlibs: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
       on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr 14
       15:13:22 2023 +0100'}
   constraints:
-    Number of cell constraints: 0
-    Number of ionic constraints: 3
     cell_constraints: [1, 2, 3, 4, 5, 6]
     com_constrained: true
+    number_of_cell_constraints: 0
+    number_of_ionic_constraints: 3
   initial_cell:
     cell_angles: [90.0, 90.0, 90.0]
     density_amu: 4.364016
@@ -109,10 +109,10 @@
     kpoint_mp_offset: [0.0, 0.0, 0.0]
     num_kpoints: 32
   memory_estimate:
-  - BLAS internal memory storage: {disk: 0.0, memory: 0.0}
-    Electronic energy minimisation requirements: {disk: 0.0, memory: 15189.3}
-    Force calculation requirements: {disk: 0.0, memory: 9.8}
-    Model and support data: {disk: 0.0, memory: 3776.4}
+  - blas_internal_memory_storage: {disk: 0.0, memory: 0.0}
+    electronic_energy_minimisation_requirements: {disk: 0.0, memory: 15189.3}
+    force_calculation_requirements: {disk: 0.0, memory: 9.8}
+    model_and_support_data: {disk: 0.0, memory: 3776.4}
   options:
     basis set:
       finite basis set correction: none
@@ -205,8 +205,8 @@
         - {orbital: 3, shell: d, type: null}
         r_inner: 0.6
         string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
-  symmetries: {Maximum deviation from symmetry: 0.00000 ANG, Number of symmetry operations: 1,
-    Point group of crystal: '1: C1, 1, 1', Space group of crystal: '213: P4_132, P
+  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
+    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '213: P4_132, P
       4bd 2ab 3'}
   target_stress:
   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
@@ -214,16 +214,16 @@
   title: ''
   warning: ['Warning in parameters_read: presetting of magnetic moments on atoms cannot
       be guaranteed when metals_method /= density mixing']
-- build_info: {Comms: Open MPI v4.1.4, Compiler: 'GNU Fortran 12.2.1; Optimisation:
-      FAST', FFT Lib: fftw3 version fftw-3.3.10-sse2-avx, Fundamental constants values: CODATA
-      2018, MATHLIBS: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
+- build_info: {comms: Open MPI v4.1.4, compiler: 'GNU Fortran 12.2.1; Optimisation:
+      FAST', fft_lib: fftw3 version fftw-3.3.10-sse2-avx, fundamental_constants_values: CODATA
+      2018, mathlibs: blas (LAPACK version 3.11.0), summary: 'Compiled for GNU 12.2.1
       on 14-04-2023 15:14:41 from code version 2c6c6d262 update-jenkins Fri Apr 14
       15:13:22 2023 +0100'}
   constraints:
-    Number of cell constraints: 0
-    Number of ionic constraints: 3
     cell_constraints: [1, 2, 3, 4, 5, 6]
     com_constrained: true
+    number_of_cell_constraints: 0
+    number_of_ionic_constraints: 3
   initial_cell:
     cell_angles: [90.0, 90.0, 90.0]
     density_amu: 4.364016
@@ -325,10 +325,10 @@
     kpoint_mp_offset: [0.0, 0.0, 0.0]
     num_kpoints: 32
   memory_estimate:
-  - BLAS internal memory storage: {disk: 0.0, memory: 0.0}
-    Electronic energy minimisation requirements: {disk: 0.0, memory: 6100.6}
-    Force calculation requirements: {disk: 0.0, memory: 9.8}
-    Model and support data: {disk: 0.0, memory: 3780.5}
+  - blas_internal_memory_storage: {disk: 0.0, memory: 0.0}
+    electronic_energy_minimisation_requirements: {disk: 0.0, memory: 6100.6}
+    force_calculation_requirements: {disk: 0.0, memory: 9.8}
+    model_and_support_data: {disk: 0.0, memory: 3780.5}
   options:
     basis set:
       finite basis set correction: none
@@ -427,8 +427,8 @@
         - {orbital: 3, shell: d, type: null}
         r_inner: 0.6
         string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
-  symmetries: {Maximum deviation from symmetry: 0.00000 ANG, Number of symmetry operations: 1,
-    Point group of crystal: '1: C1, 1, 1', Space group of crystal: '213: P4_132, P
+  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
+    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '213: P4_132, P
       4bd 2ab 3'}
   target_stress:
   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
