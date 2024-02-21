@@ -34,6 +34,8 @@ docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.
 
 [project.scripts]
 castep_outputs = "castep_outputs.castep_outputs_main:main"
+castep2ase = "castep_outputs.tools.castep2ase:_main"
+castep2cell = "castep_outputs.tools.casep2cell:main"
 
 [project.urls]
 Homepage="https://github.com/oerc0122/castep_outputs"
