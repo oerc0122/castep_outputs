@@ -92,6 +92,7 @@ ignore = [
     "PLR2004",  # Magic constant value
     "D105",     # Magic method doc
 ]
+allowed-confusables = ["α", "β", "γ"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
