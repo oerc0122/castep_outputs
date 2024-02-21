@@ -109,6 +109,7 @@ ignore = [
     "D105",     # Magic method doc
     "ANN401",   # No typing.Any
 ]
+allowed-confusables = ["α", "β", "γ"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

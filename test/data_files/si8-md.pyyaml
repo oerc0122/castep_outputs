@@ -165,7 +165,7 @@
       - 5
       - 6
       com_constrained: false
-      number_of_cell_constraints: 0
+      num_cell_constraints: 0
     energies: !!python/object/apply:collections.defaultdict
       args:
       - *id001
@@ -980,10 +980,17 @@
           pseudo_atomic_energy: -101.0726
           pseudopot: Si_00PBE.usp
     symmetries:
-      maximum_deviation_from_symmetry: 0.00000 ANG
-      number_of_symmetry_operations: 1
-      point_group_of_crystal: '1: C1, 1, 1'
-      space_group_of_crystal: '1: P1, P 1'
+      max_deviation: 0.0
+      num_symmetry_operations: 1
+      point_group:
+        hermann_mauguin: '1'
+        hermann_mauguin_full: '1'
+        id: 1
+        schoenflies: C1
+      space_group:
+        hall: P 1
+        id: 1
+        international: P1
     target_stress:
     - - 0.0
       - 0.0

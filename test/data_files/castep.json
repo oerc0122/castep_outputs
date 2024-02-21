@@ -586,15 +586,24 @@
       "num_kpoints": 32
     },
     "symmetries": {
-      "maximum_deviation_from_symmetry": "0.00000 ANG",
-      "number_of_symmetry_operations": 1,
-      "point_group_of_crystal": "1: C1, 1, 1",
-      "space_group_of_crystal": "213: P4_132, P 4bd 2ab 3"
+      "max_deviation": 0.0,
+      "num_symmetry_operations": 1,
+      "point_group": {
+        "id": 1,
+        "schoenflies": "C1",
+        "hermann_mauguin": "1",
+        "hermann_mauguin_full": "1"
+      },
+      "space_group": {
+        "id": 213,
+        "international": "P4_132",
+        "hall": "P 4bd 2ab 3"
+      }
     },
     "constraints": {
-      "number_of_ionic_constraints": 3,
+      "num_ionic_constraints": 3,
       "com_constrained": true,
-      "number_of_cell_constraints": 0,
+      "num_cell_constraints": 0,
       "cell_constraints": [
         1,
         2,
@@ -1240,15 +1249,24 @@
       "num_kpoints": 32
     },
     "symmetries": {
-      "maximum_deviation_from_symmetry": "0.00000 ANG",
-      "number_of_symmetry_operations": 1,
-      "point_group_of_crystal": "1: C1, 1, 1",
-      "space_group_of_crystal": "213: P4_132, P 4bd 2ab 3"
+      "max_deviation": 0.0,
+      "num_symmetry_operations": 1,
+      "point_group": {
+        "id": 1,
+        "schoenflies": "C1",
+        "hermann_mauguin": "1",
+        "hermann_mauguin_full": "1"
+      },
+      "space_group": {
+        "id": 213,
+        "international": "P4_132",
+        "hall": "P 4bd 2ab 3"
+      }
     },
     "constraints": {
-      "number_of_ionic_constraints": 3,
+      "num_ionic_constraints": 3,
       "com_constrained": true,
-      "number_of_cell_constraints": 0,
+      "num_cell_constraints": 0,
       "cell_constraints": [
         1,
         2,
