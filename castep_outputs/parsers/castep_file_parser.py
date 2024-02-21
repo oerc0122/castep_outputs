@@ -1860,8 +1860,8 @@ def _process_kpoint_blocks(block: Block,
 
 def _process_symmetry(block: Block) -> Tuple[SymmetryReport, ConstraintsReport]:
 
-    sym: Dict[str, Any] = {}
-    con: Dict[str, Any] = {}
+    sym: SymmetryReport = {}
+    con: ConstraintsReport = {}
     val: Any
 
     for line in block:
@@ -1870,8 +1870,29 @@ def _process_symmetry(block: Block) -> Tuple[SymmetryReport, ConstraintsReport]:
             key = normalise_key(key)
             val = normalise_string(val)
 
-            if "Number of" in line:
+            if key == "maximum_deviation_from_symmetry":
+                key, val = "max_deviation", float(val.split()[0])
+
+            elif "number_of" in key:
+                key = "num_" + "_".join(key.split("_")[2:]).lower()
                 val = to_type(val, int)
+
+            elif "point_group" in key:
+                key = "point_group"
+                num, val = val.split(":", 1)
+                schoenflies, hm_short, hm_long = map(lambda x: x.strip(), val.split(","))
+                val = {'id': int(num),
+                       'schoenflies': schoenflies,
+                       'hermann_mauguin': hm_short,
+                       'hermann_mauguin_full': hm_long}
+
+            elif "space_group" in key:
+                key = "space_group"
+                num, val = val.split(":", 1)
+                international, hall = map(lambda x: x.strip(), val.split(","))
+                val = {'id': int(num),
+                       'international': international,
+                       'hall': hall}
 
             if "constraints" in key:
                 con[key] = val
