@@ -651,6 +651,22 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
             curr_run["forces"][key].append(val)
 
+        elif block := get_block(line, castep_file,
+                                "firstd_calculate: removing force on centre of mass", r"^\s*$"):
+
+            if "force" not in to_parse:
+                continue
+
+            if "forces" not in curr_run:
+                curr_run["forces"] = defaultdict(list)
+
+            key = "com_force_removal"
+            val = to_type([get_numbers(line)[0] for line in block if line.startswith(" dF")], float)
+
+            logger("Found %s forces", key)
+
+            curr_run["forces"][key].append(val)
+
         # Stress tensor block
         elif block := get_block(line, castep_file, REs.STRESSES_BLOCK_RE, r"^\s*\*+$"):
             if "stress" not in to_parse:
