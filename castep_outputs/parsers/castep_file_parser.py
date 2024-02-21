@@ -983,11 +983,11 @@ def parse_castep_file(castep_file_in: TextIO,
 
             curr_run["md"].append(data)
 
-        elif block := get_block(line, castep_file,  # Capture 0th iteration
-                                "Starting MD",
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,  # Capture 0th iteration
+                                    "Starting MD",
+                                    gen_table_re("", "=+")):
 
-            if "md" not in to_parse:
+            if Filters.MD not in to_parse:
                 continue
 
             logger("Found MD Block (step 0)")
