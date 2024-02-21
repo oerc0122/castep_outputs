@@ -689,11 +689,14 @@ firstd_calculate: removing force on centre of mass
  dFx:  -1.0633987424376136E-008 eV/A
  dFy:   4.9260774814424966E-008 eV/A
  dFz:  -9.5379737861699631E-004 eV/A
+
     """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'forces': {'com_force_removal': [(-1.0633987424376136e-08,
+                                                                       4.9260774814424966e-08,
+                                                                       -0.0009537973786169963)]}})
 
     def test_get_k_pts(self):
         test_text = io.StringIO("""
