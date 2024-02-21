@@ -967,7 +967,30 @@ def parse_castep_file(castep_file_in: TextIO,
             if Filters.MD not in to_parse:
                 continue
 
-            logger("Found MD Block (step %d)", len(curr_run["md"])+1)
+            logger("Found MD Block (step %d)", len(curr_run["md"]))
+
+            # Avoid infinite recursion
+            next(block)
+            data = parse_castep_file(block)[0]
+            add_aliases(data, {"initial_positions": "positions",
+                               "initial_cell": "cell"},
+                        replace=True)
+
+            # Put memory estimate to top level
+            # TODO: Check if memory estimate can appear multiple times
+            if "memory_estimate" in data:
+                curr_run["memory_estimate"] = data.pop("memory_estimate")
+
+            curr_run["md"].append(data)
+
+        elif block := get_block(line, castep_file,  # Capture 0th iteration
+                                "Starting MD",
+                                gen_table_re("", "=+")):
+
+            if "md" not in to_parse:
+                continue
+
+            logger("Found MD Block (step 0)")
 
             # Avoid infinite recursion
             next(block)
