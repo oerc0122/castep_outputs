@@ -1,0 +1,564 @@
+- build_info: {comms: Open MPI v4.1.5, compiler: 'GNU Fortran 13.2.1; Optimisation:
+      FAST', fft_lib: fftw3 version fftw-3.3.10-sse2-avx, fundamental_constants_values: CODATA
+      2018, mathlibs: default (LAPACK version 3.11.0), summary: 'Compiled for GNU
+      13.2.1 on 15-01-2024 15:40:33 from code version c68e15f54 default Thu Jan 11
+      16:32:37 2024 +0000'}
+  calculation_time: 4.08
+  constraints:
+    cell_constraints: [0, 0, 0, 0, 0, 0]
+    com_constrained: true
+    number_of_cell_constraints: 6
+    number_of_ionic_constraints: 3
+  energies:
+    final_energy: [-9.151337939619e-06]
+  finalisation_time: 0.0
+  forces:
+    non_descript:
+    - ? !!python/tuple [Ar, 1]
+      : [-0.0, 1e-05, -0.0]
+      ? !!python/tuple [Ar, 2]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 3]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 4]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 5]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 6]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 7]
+      : [1e-05, -1e-05, 1e-05]
+      ? !!python/tuple [Ar, 8]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 9]
+      : [-0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 10]
+      : [-0.0, -0.0, -1e-05]
+      ? !!python/tuple [Ar, 11]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 12]
+      : [0.0004, -0.00278, -0.00094]
+      ? !!python/tuple [Ar, 13]
+      : [6e-05, 0.00019, -0.00012]
+      ? !!python/tuple [Ar, 14]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 15]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 16]
+      : [-1e-05, -0.0, 0.0]
+      ? !!python/tuple [Ar, 17]
+      : [0.0, -1e-05, 1e-05]
+      ? !!python/tuple [Ar, 18]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 19]
+      : [-1e-05, 1e-05, -1e-05]
+      ? !!python/tuple [Ar, 20]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 21]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 22]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 23]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 24]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 25]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 26]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 27]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 28]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 29]
+      : [4e-05, -0.0, 0.0]
+      ? !!python/tuple [Ar, 30]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 31]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 32]
+      : [1e-05, 0.0, -0.0]
+      ? !!python/tuple [Ar, 33]
+      : [-0.0004, 0.00277, 0.00097]
+      ? !!python/tuple [Ar, 34]
+      : [-0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 35]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 36]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 37]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 38]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 39]
+      : [-0.0, -0.0, 1e-05]
+      ? !!python/tuple [Ar, 40]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 41]
+      : [0.0, -1e-05, 0.0]
+      ? !!python/tuple [Ar, 42]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 43]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 44]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 45]
+      : [0.0013, 0.00665, -0.00156]
+      ? !!python/tuple [Ar, 46]
+      : [3e-05, -2e-05, 3e-05]
+      ? !!python/tuple [Ar, 47]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 48]
+      : [-4e-05, 0.0, -0.0]
+      ? !!python/tuple [Ar, 49]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 50]
+      : [1e-05, -0.0, -0.0]
+      ? !!python/tuple [Ar, 51]
+      : [-0.0, 1e-05, 1e-05]
+      ? !!python/tuple [Ar, 52]
+      : [-4e-05, -1e-05, 3e-05]
+      ? !!python/tuple [Ar, 53]
+      : [-0.0, 1e-05, -3e-05]
+      ? !!python/tuple [Ar, 54]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 55]
+      : [-0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 56]
+      : [-0.0, -0.0, -1e-05]
+      ? !!python/tuple [Ar, 57]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 58]
+      : [1e-05, 1e-05, -0.0]
+      ? !!python/tuple [Ar, 59]
+      : [0.0, -0.0, -1e-05]
+      ? !!python/tuple [Ar, 60]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 61]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 62]
+      : [-6e-05, -0.0002, 0.00011]
+      ? !!python/tuple [Ar, 63]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 64]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 65]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 66]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 67]
+      : [-2e-05, 2e-05, -4e-05]
+      ? !!python/tuple [Ar, 68]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 69]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 70]
+      : [0.0, -0.0, 1e-05]
+      ? !!python/tuple [Ar, 71]
+      : [-0.0, 1e-05, -1e-05]
+      ? !!python/tuple [Ar, 72]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 73]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 74]
+      : [0.0, -0.0, -1e-05]
+      ? !!python/tuple [Ar, 75]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 76]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 77]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 78]
+      : [-1e-05, 1e-05, -2e-05]
+      ? !!python/tuple [Ar, 79]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 80]
+      : [-0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 81]
+      : [-0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 82]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 83]
+      : [-1e-05, 0.0, 0.0]
+      ? !!python/tuple [Ar, 84]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 85]
+      : [-0.00128, -0.00667, 0.00155]
+      ? !!python/tuple [Ar, 86]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 87]
+      : [-0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 88]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 89]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 90]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 91]
+      : [0.0, 0.0, 1e-05]
+      ? !!python/tuple [Ar, 92]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 93]
+      : [0.0, 0.0, -0.0]
+      ? !!python/tuple [Ar, 94]
+      : [0.0, -0.0, 0.0]
+      ? !!python/tuple [Ar, 95]
+      : [2e-05, 1e-05, 0.0]
+      ? !!python/tuple [Ar, 96]
+      : [-0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 97]
+      : [-0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 98]
+      : [0.0, -0.0, -0.0]
+      ? !!python/tuple [Ar, 99]
+      : [0.0, 0.0, 0.0]
+      ? !!python/tuple [Ar, 100]
+      : [1e-05, -0.0, 0.0]
+  initial_cell:
+    cell_angles: [90.0, 90.0, 90.0]
+    density_amu: 0.758926
+    density_g: 1.260226
+    lattice_parameters: [17.395297, 17.395297, 17.395297]
+    real_lattice:
+    - [17.395297, 0.0, 0.0]
+    - [0.0, 17.395297, 0.0]
+    - [0.0, 0.0, 17.395297]
+    recip_lattice:
+    - [0.361200232, 0.0, 0.0]
+    - [0.0, 0.361200232, 0.0]
+    - [0.0, 0.0, 0.361200232]
+    volume: 5263.753514
+  initial_positions:
+    ? !!python/tuple [Ar, 1]
+    : [0.231325, 0.129759, 0.142367]
+    ? !!python/tuple [Ar, 2]
+    : [0.246742, 0.042652, -0.088655]
+    ? !!python/tuple [Ar, 3]
+    : [0.047965, 0.281388, 0.289269]
+    ? !!python/tuple [Ar, 4]
+    : [-0.453918, -0.052587, -0.010711]
+    ? !!python/tuple [Ar, 5]
+    : [-0.340386, -0.073584, 0.340242]
+    ? !!python/tuple [Ar, 6]
+    : [0.338051, 0.262686, -0.216013]
+    ? !!python/tuple [Ar, 7]
+    : [-0.108234, 0.184432, -0.01561]
+    ? !!python/tuple [Ar, 8]
+    : [-0.160787, -0.08731, -0.155673]
+    ? !!python/tuple [Ar, 9]
+    : [-0.224863, -0.335053, -0.209785]
+    ? !!python/tuple [Ar, 10]
+    : [-0.21771, 0.453389, -0.107478]
+    ? !!python/tuple [Ar, 11]
+    : [-0.422321, -0.326807, -0.344697]
+    ? !!python/tuple [Ar, 12]
+    : [0.333571, -0.086611, 0.178388]
+    ? !!python/tuple [Ar, 13]
+    : [0.185987, -0.354726, 0.410968]
+    ? !!python/tuple [Ar, 14]
+    : [-0.303455, -0.288594, 0.19213]
+    ? !!python/tuple [Ar, 15]
+    : [0.204526, 0.196056, 0.416707]
+    ? !!python/tuple [Ar, 16]
+    : [-0.275154, 0.045704, -0.483329]
+    ? !!python/tuple [Ar, 17]
+    : [-0.046037, -0.100459, 0.124164]
+    ? !!python/tuple [Ar, 18]
+    : [-0.303247, 0.388146, 0.261178]
+    ? !!python/tuple [Ar, 19]
+    : [0.04631, 0.333812, -0.149268]
+    ? !!python/tuple [Ar, 20]
+    : [-0.25563, 0.303632, 0.01312]
+    ? !!python/tuple [Ar, 21]
+    : [-0.242283, 0.238138, -0.191916]
+    ? !!python/tuple [Ar, 22]
+    : [0.113195, 0.139226, -0.242767]
+    ? !!python/tuple [Ar, 23]
+    : [-0.436335, -0.293372, 0.00729]
+    ? !!python/tuple [Ar, 24]
+    : [0.200195, 0.417578, 0.405337]
+    ? !!python/tuple [Ar, 25]
+    : [0.138405, -0.478098, 0.036313]
+    ? !!python/tuple [Ar, 26]
+    : [0.056222, -0.43407, 0.236476]
+    ? !!python/tuple [Ar, 27]
+    : [-0.221436, 0.305384, 0.429029]
+    ? !!python/tuple [Ar, 28]
+    : [0.353985, 0.078899, 0.295307]
+    ? !!python/tuple [Ar, 29]
+    : [-0.159492, 0.259684, 0.216229]
+    ? !!python/tuple [Ar, 30]
+    : [0.348758, 0.453476, -0.213795]
+    ? !!python/tuple [Ar, 31]
+    : [0.499131, -0.444749, 0.184094]
+    ? !!python/tuple [Ar, 32]
+    : [-0.442688, 0.019936, 0.190721]
+    ? !!python/tuple [Ar, 33]
+    : [-0.477146, 0.030176, -0.182729]
+    ? !!python/tuple [Ar, 34]
+    : [0.091881, 0.278091, 0.090466]
+    ? !!python/tuple [Ar, 35]
+    : [0.355472, -0.492582, -0.003379]
+    ? !!python/tuple [Ar, 36]
+    : [-0.180104, -0.290623, -0.014795]
+    ? !!python/tuple [Ar, 37]
+    : [-0.005467, -0.271801, -0.165935]
+    ? !!python/tuple [Ar, 38]
+    : [-0.01681, 0.010157, 0.49442]
+    ? !!python/tuple [Ar, 39]
+    : [0.418839, 0.082813, -0.454905]
+    ? !!python/tuple [Ar, 40]
+    : [0.243452, -0.224081, -0.258575]
+    ? !!python/tuple [Ar, 41]
+    : [0.448285, 0.334541, 0.16058]
+    ? !!python/tuple [Ar, 42]
+    : [-0.13984, -0.413736, 0.181316]
+    ? !!python/tuple [Ar, 43]
+    : [-0.408042, -0.461124, -0.146762]
+    ? !!python/tuple [Ar, 44]
+    : [-0.061094, 0.430431, -0.308376]
+    ? !!python/tuple [Ar, 45]
+    : [0.237836, 0.357668, 0.185156]
+    ? !!python/tuple [Ar, 46]
+    : [-0.04225, -0.450845, -0.065659]
+    ? !!python/tuple [Ar, 47]
+    : [-0.272246, -0.264974, 0.439613]
+    ? !!python/tuple [Ar, 48]
+    : [0.309741, -0.12075, -0.432583]
+    ? !!python/tuple [Ar, 49]
+    : [-0.396318, -0.160593, -0.196685]
+    ? !!python/tuple [Ar, 50]
+    : [-0.030873, -0.238387, 0.280014]
+    ? !!python/tuple [Ar, 51]
+    : [0.188974, 0.293923, -0.383184]
+    ? !!python/tuple [Ar, 52]
+    : [-0.465438, -0.182105, 0.223731]
+    ? !!python/tuple [Ar, 53]
+    : [0.384086, -0.428444, 0.406001]
+    ? !!python/tuple [Ar, 54]
+    : [0.116759, -0.04476, -0.245919]
+    ? !!python/tuple [Ar, 55]
+    : [-0.468948, -0.064117, -0.385583]
+    ? !!python/tuple [Ar, 56]
+    : [0.381701, -0.14227, -0.12597]
+    ? !!python/tuple [Ar, 57]
+    : [-0.034729, -0.137673, -0.318775]
+    ? !!python/tuple [Ar, 58]
+    : [-0.133048, -0.076055, 0.33392]
+    ? !!python/tuple [Ar, 59]
+    : [0.061936, -0.175672, 0.480945]
+    ? !!python/tuple [Ar, 60]
+    : [0.264378, -0.45186, -0.387126]
+    ? !!python/tuple [Ar, 61]
+    : [0.314909, -0.00554, -0.276643]
+    ? !!python/tuple [Ar, 62]
+    : [0.259457, -0.409436, 0.208225]
+    ? !!python/tuple [Ar, 63]
+    : [-0.303981, 0.486464, -0.310431]
+    ? !!python/tuple [Ar, 64]
+    : [-0.466464, 0.298261, -0.076658]
+    ? !!python/tuple [Ar, 65]
+    : [0.244834, 0.33801, -0.039532]
+    ? !!python/tuple [Ar, 66]
+    : [0.198873, 0.054637, -0.417761]
+    ? !!python/tuple [Ar, 67]
+    : [-0.090664, 0.444934, 0.333959]
+    ? !!python/tuple [Ar, 68]
+    : [-0.001531, 0.261865, -0.423017]
+    ? !!python/tuple [Ar, 69]
+    : [-0.075992, 0.111847, -0.28654]
+    ? !!python/tuple [Ar, 70]
+    : [0.183878, -0.440085, -0.155076]
+    ? !!python/tuple [Ar, 71]
+    : [0.015625, -0.287946, 0.051884]
+    ? !!python/tuple [Ar, 72]
+    : [-0.096937, -0.297263, -0.441243]
+    ? !!python/tuple [Ar, 73]
+    : [-0.275047, -0.128474, -0.358521]
+    ? !!python/tuple [Ar, 74]
+    : [-0.42639, 0.42932, -0.459709]
+    ? !!python/tuple [Ar, 75]
+    : [-0.187925, -0.482786, -0.472378]
+    ? !!python/tuple [Ar, 76]
+    : [-0.125109, 0.136396, 0.387943]
+    ? !!python/tuple [Ar, 77]
+    : [0.162758, -0.2003, 0.194921]
+    ? !!python/tuple [Ar, 78]
+    : [-0.389355, 0.221837, -0.442596]
+    ? !!python/tuple [Ar, 79]
+    : [-0.449259, 0.133782, 0.379992]
+    ? !!python/tuple [Ar, 80]
+    : [0.439313, -0.063945, 0.395557]
+    ? !!python/tuple [Ar, 81]
+    : [0.023379, 0.00911, -0.024279]
+    ? !!python/tuple [Ar, 82]
+    : [0.183479, -0.045046, 0.353847]
+    ? !!python/tuple [Ar, 83]
+    : [0.034497, 0.057645, 0.228096]
+    ? !!python/tuple [Ar, 84]
+    : [0.407804, -0.348418, -0.172733]
+    ? !!python/tuple [Ar, 85]
+    : [0.243935, -0.253555, -0.03889]
+    ? !!python/tuple [Ar, 86]
+    : [-0.379826, 0.153617, 0.074464]
+    ? !!python/tuple [Ar, 87]
+    : [-0.197409, 0.270738, -0.38389]
+    ? !!python/tuple [Ar, 88]
+    : [-0.274139, 0.045492, -0.263568]
+    ? !!python/tuple [Ar, 89]
+    : [-0.451133, -0.208955, 0.455198]
+    ? !!python/tuple [Ar, 90]
+    : [0.334701, -0.22234, 0.353778]
+    ? !!python/tuple [Ar, 91]
+    : [-0.059124, 0.425157, 0.087941]
+    ? !!python/tuple [Ar, 92]
+    : [-0.384974, 0.461596, 0.061543]
+    ? !!python/tuple [Ar, 93]
+    : [-0.204466, 0.071173, 0.173435]
+    ? !!python/tuple [Ar, 94]
+    : [0.027647, -0.492438, -0.478448]
+    ? !!python/tuple [Ar, 95]
+    : [0.401749, 0.135902, 0.048149]
+    ? !!python/tuple [Ar, 96]
+    : [-0.234288, -0.10257, 0.068427]
+    ? !!python/tuple [Ar, 97]
+    : [0.076109, -0.365642, -0.344708]
+    ? !!python/tuple [Ar, 98]
+    : [-0.345897, -0.452247, 0.379562]
+    ? !!python/tuple [Ar, 99]
+    : [-0.269691, 0.053697, -0.068055]
+    ? !!python/tuple [Ar, 100]
+    : [0.382159, -0.26995, 0.090624]
+  initialisation_time: 17.1
+  k-points:
+    kpoint_mp_grid: [1, 1, 1]
+    kpoint_mp_offset: [0.0, 0.0, 0.0]
+    num_kpoints: 1
+  md:
+  - {hamilt_energy: 1.02373, kinetic_energy: 1.023739, potential_energy: -9e-06, temperature: 80.0,
+    time: 0.0, total_energy: 1.02373}
+  - {hamilt_energy: 1.02373, kinetic_energy: 1.023739, potential_energy: -9e-06, temperature: 80.0,
+    time: 0.005, total_energy: 1.02373}
+  - {hamilt_energy: 1.02373, kinetic_energy: 1.023739, potential_energy: -9e-06, temperature: 80.0,
+    time: 0.01, total_energy: 1.02373}
+  - {hamilt_energy: 1.02373, kinetic_energy: 1.023739, potential_energy: -9e-06, temperature: 80.000001,
+    time: 0.015, total_energy: 1.02373}
+  memory_estimate:
+  - model_and_support_data: {disk: 0.0, memory: 282.8}
+    molecular_dynamics_requirements: {disk: 0.0, memory: 346.2}
+  options:
+    basis set:
+      finite basis set correction: none
+      largest prime factor in FFT: 5
+      plane wave basis set cut-off: [100.0, eV]
+      size of fine gmax: [8.9655, 1/A]
+      size of standard grid: 1.75
+    density mixing:
+      charge density mixing amplitude: 0.8
+      charge density mixing g-vector: [1.5, 1/A]
+      cut-off energy for mixing: [100.0, eV]
+      density-mixing scheme: Broyden
+      max. length of mixing history: 20
+    devel_code:
+      PP: true
+      pp: {LJ: true, LJ_EPS_Ar: 120.0, LJ_SIG_Ar: 0.3405}
+    electronic: {net charge of system: 0.0, number of bands: 480, number of electrons: 2.0}
+    electronic minimization:
+      Fermi energy convergence tolerance: [2.721e-14, eV]
+      Method: Treating system as metallic with density mixing treatment of electrons,
+      and number of CG steps: 4
+      and number of SD steps: 1
+      convergence tolerance window: [3, cycles]
+      eigen-energy convergence tolerance: [1e-06, eV]
+      max force / atom convergence tol.: ignored
+      max. number of SCF cycles: 30
+      number of fixed-spin iterations: 10
+      periodic dipole correction: NONE
+      smearing scheme: Gaussian
+      smearing width: [0.2, eV]
+      total energy / atom convergence tol.: [1e-05, eV]
+    exchange-correlation: {DFT+D Semi-empirical dispersion correction: off, relativistic treatment: Koelling-Harmon,
+      using functional: Local Density Approximation}
+    general: {Hirshfeld analysis: off, checkpoint writing: off, data distribution: optimal
+        for this architecture, deltaSCF calculation: off, density difference calculation: off,
+      electron localisation func (ELF) calculation: off, memory usage estimate: on,
+      molecular orbital projected DOS: off, optimization strategy: balance speed and
+        memory, output verbosity: normal (1), polarisation (Berry phase) analysis: off,
+      random number generator seed: 163212971, stress calculation: off, timing information: on,
+      type of calculation: molecular dynamics, wavefunctions paging: none, write BibTeX reference list: off,
+      write OTFG pseudopotential files: on, write bands file: on, write checkpoint data to: pair-pot-lj.check,
+      write electrostatic potential file: on, write extra output files: on, write final density to formatted file: off,
+      write final potential to formatted file: off}
+    molecular dynamics:
+      MD SCF convergence tolerance window: [3, cycles]
+      MD SCF eigenenergies tolerance: [1e-06, eV]
+      MD SCF energy / atom convergence tol.: [1e-05, eV]
+      ab initio properties sampled every: [0, MD, steps]
+      backup results every: [5, steps]
+      enhanced equilibration method: NONE
+      ensemble: NVE
+      number of MD steps: 3
+      path integral MD: OFF
+      temperature: [80.0, K]
+      time step: [0.005, ps]
+      write MD trajectory file: on
+    output_units: {IR intensity: (D/A)**2/amu, charge: e, dipole: D, efield: eV/A/e,
+      efield chi2: pm/V, energy: eV, entropy: J/mol/K, force: eV/A, force constant: eV/A**2,
+      frequency: cm-1, inv_length: 1/A, length: A, mass: amu, pressure: GPa, spin: hbar/2,
+      time: ps, velocity: A/ps, volume: A**3}
+    population analysis:
+      Population analysis output: summary only
+      Population analysis with cutoff: [3.0, A]
+    pseudopotential: {<beta|phi> representation: reciprocal space, pseudopotential representation: reciprocal
+        space, spin-orbit coupling: off}
+  pair_params:
+  - LJ:
+      e:
+        ? &id001 !!python/tuple [Ar]
+        : 0.0103407999
+      r:
+        *id001: 8.5125
+      s:
+        *id001: 0.3405
+  peak_memory_use: 479316.0
+  pspot_detail:
+  - augmentation_charge_rinner: [1.116]
+    partial_core_correction: [1.116]
+    pseudopotential_definition:
+    - {Rc: 1.597, beta: 1, e: -0.892, j: null, l: 0, norm: 0, scheme: qc}
+    - {Rc: 1.597, beta: 2, e: 0.25, j: null, l: 0, norm: 0, scheme: qc}
+    - {Rc: 1.597, beta: 3, e: -0.382, j: null, l: 1, norm: 0, scheme: qc}
+    - {Rc: 1.597, beta: 4, e: 0.25, j: null, l: 1, norm: 0, scheme: qc}
+    - {Rc: 1.597, beta: loc, e: 0.0, j: null, l: 2, norm: 0, scheme: pn}
+    reference_electronic_structure:
+    - {energy: -0.892, occupation: 2.0, orb: 3s}
+    - {energy: -0.382, occupation: 6.0, orb: 3p}
+    solver: Koelling-Harmon
+  species_properties:
+    Ar:
+      electric_quadrupole_moment: 1.0
+      mass: 39.948
+      pseudo_atomic_energy: -583.0922
+      pseudopot:
+        coarse: 7.0
+        core_radius: 1.6
+        fine: 9.0
+        local_channel: 2
+        medium: 8.0
+        opt: null
+        print: false
+        proj: 30:31
+        projectors:
+        - {orbital: 3, shell: s, type: null}
+        - {orbital: 3, shell: p, type: null}
+        string: 2|1.6|7|8|9|30:31
+  stresses:
+    non_descript:
+    - [-1.7e-05, -1.7e-05, 8e-06, -0.000197, 1.4e-05, -2.4e-05]
+  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
+    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '1: P1, P 1'}
+  target_stress:
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  time_started: Mon, 15 Jan 2024 16:32:12 +0000
+  title: ''
+  total_time: 21.18
