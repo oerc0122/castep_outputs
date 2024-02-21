@@ -918,7 +918,7 @@ def parse_castep_file(castep_file_in: TextIO,
                                 "Starting MD",
                                 gen_table_re("", "=+")):
 
-            if "md" not in to_parse:
+            if Filters.MD not in to_parse:
                 continue
 
             logger("Found MD Block (step 0)")
