@@ -146,6 +146,18 @@ class SCFReport(TypedDict, total=False):
     eigenvalue: List[SCFSection]
 
 
+class DeltaState(TypedDict):
+    band: int
+    file: str
+    pop: float
+    spin: int
+
+
+class DeltaSCFReport(TypedDict, total=False):
+    file: str
+    states: List[DeltaState]
+
+
 # Bonds
 
 class BondInfo(TypedDict):
