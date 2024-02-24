@@ -352,6 +352,28 @@ class SCFReport(TypedDict, total=False):
     debug_info: SCFDebugInfo
 
 
+class DeltaState(TypedDict):
+    """Delta SCF state information."""
+
+    #: Band checked.
+    band: int
+    #: Original source.
+    file: str
+    #: State population.
+    pop: float
+    #: Spin state.
+    spin: int
+
+
+class DeltaSCFReport(TypedDict, total=False):
+    """Delta SCF total report."""
+
+    #: Source file
+    file: str
+    #: Checked states.
+    states: list[DeltaState]
+
+
 # Bonds
 
 class BondInfo(TypedDict):
