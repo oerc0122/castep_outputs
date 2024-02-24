@@ -900,7 +900,8 @@ Charge spilling parameter for spin component 2 = 0.44%
 
     def test_delta_scf(self):
         test_text = io.StringIO("""
-+-------------------INPUT PARAMETERS-------------------+
+               Calculating MODOS weights
+ +-------------------INPUT PARAMETERS-------------------+
 Taking band from model   N2-base.check
   MODOS state               1
   MODOS band  nr.           5
@@ -910,12 +911,22 @@ Taking band from model   N2-base.check
   MODOS band has spin       1
 |DeltaSCF| Population of state:     5     1   1.000000
 |DeltaSCF| Population of state:     6     1   0.000000
+ Writing file   N2-modos.modos_state_5_1
+ Writing file   N2-modos.modos_state_6_1
 
     """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'delta_scf': {'file': 'N2-base.check',
+                                                   'states': [{'band': 5,
+                                                               'file': 'N2-modos.modos_state_5_1',
+                                                               'pop': 1.0,
+                                                               'spin': 1},
+                                                              {'band': 6,
+                                                               'file': 'N2-modos.modos_state_6_1',
+                                                               'pop': 0.0,
+                                                               'spin': 1}]}})
 
     def test_get_scf(self):
         test_text = io.StringIO("""

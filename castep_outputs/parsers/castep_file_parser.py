@@ -27,6 +27,7 @@ from ..utilities.datatypes import (
     ConstraintsReport,
     DelocActiveSpace,
     DelocInternalsTable,
+    DeltaSCFReport,
     DipoleTable,
     ElasticProperties,
     FinalConfig,
@@ -105,6 +106,7 @@ class Filters(Flag):
     BS = auto()
     CELL = auto()
     CHEM_SHIELDING = auto()
+    DELTA_SCF = auto()
     DIPOLE = auto()
     ELASTIC = auto()
     ELF = auto()
@@ -138,7 +140,7 @@ class Filters(Flag):
            ELASTIC | ELF | FINAL_CONFIG | FORCE |
            MD_SUMMARY | OPTICS | POPN_ANALYSIS |
            POSITION | POLARISATION | SOLVATION | SPECIES_PROPS | SPIN |
-           STRESS | TDDFT | THERMODYNAMICS | TSS)
+           STRESS | TDDFT | THERMODYNAMICS | TSS | DELTA_SCF)
 
     MEDIUM = LOW | PARAMETERS | GEOM_OPT | MD | PHONON
 
@@ -1328,6 +1330,18 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run.setdefault("berry_phase", {})
 
             curr_run["berry_phase"].update(_process_berry_phase(block))
+
+        # DeltaSCF
+
+        elif block := Block.from_re(line, castep_file,
+                                    "Calculating MODOS weights", r"^\s*$"):
+
+            if Filters.DELTA_SCF not in to_parse:
+                continue
+
+            logger("Found delta SCF data")
+
+            curr_run["delta_scf"] = _process_delta_scf(block)
 
         # --- Extra blocks for testing
 
@@ -2626,5 +2640,41 @@ def _process_berry_phase(block: Block) -> dict[str, Any]:
                 for line in table_blk:
                     curr = line.split()[0]
                     accum[key][curr] = to_type(get_numbers(line), float)
+
+    return accum
+
+
+def _process_delta_scf(block: Block) -> DeltaSCFReport:
+    """Process MODOS delta SCF block.
+
+    Returns
+    -------
+    DeltaSCFReport
+        Processed data.
+    """
+    accum: DeltaSCFReport = {"states": []}
+
+    for line in block:
+        if line.startswith("Taking band from"):
+            accum["file"] = line.split()[-1]
+        elif "MODOS state" in line:
+            accum["states"].append({})
+        elif "nr." in line:
+            accum["states"][-1]["band"] = int(get_numbers(line)[0])
+        elif "spin" in line:
+            accum["states"][-1]["spin"] = int(get_numbers(line)[0])
+        elif "Population of state" in line:
+            numbers = get_numbers(line)
+            band, spin, pop = int(numbers[0]), int(numbers[1]), float(numbers[2])
+
+            for state in accum["states"]:
+                if state["band"] == band and state["spin"] == spin:
+                    state["pop"] = pop
+
+        elif "Writing file" in line:
+            band, spin = map(int, get_numbers(line)[-2:])
+            for state in accum["states"]:
+                if state["band"] == band and state["spin"] == spin:
+                    state["file"] = line.split()[-1]
 
     return accum
