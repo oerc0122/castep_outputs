@@ -1146,6 +1146,18 @@ def parse_castep_file(castep_file_in: TextIO, *,
 
             curr_run["elastic"].update(_process_elastic_properties(block))
 
+        # DeltaSCF
+
+        elif block := get_block(line, castep_file,
+                                "Calculating MODOS weights", r"^\s*$"):
+
+            if "scf" not in to_parse:
+                continue
+
+            logger("Found delta SCF data")
+
+            curr_run["delta_scf"] = _process_delta_scf(block)
+
         # --- Extra blocks for testing
 
         # Hugoniot data
@@ -2281,5 +2293,36 @@ def _process_elastic_properties(block: TextIO) -> Dict[str, Union[float, ThreeVe
                                                  for blk_line in blk
                                                  if (numbers := get_numbers(blk_line)))
                                            )
+
+    return accum
+
+
+def _process_delta_scf(block: TextIO) -> Dict[str, Union[str, List[Dict[str, Any]]]]:
+    """Process MODOS delta SCF block"""
+    accum: Dict[str, Union[str, List[Dict[str, Any]]]] = {"states": []}
+    assert isinstance(accum["states"], list)
+
+    for line in block:
+        if line.startswith("Taking band from"):
+            accum["file"] = line.split()[-1]
+        elif "MODOS state" in line:
+            accum["states"].append({})
+        elif "nr." in line:
+            accum["states"][-1]["band"] = int(get_numbers(line)[0])
+        elif "spin" in line:
+            accum["states"][-1]["spin"] = int(get_numbers(line)[0])
+        elif "Population of state" in line:
+            numbers = get_numbers(line)
+            band, spin, pop = int(numbers[0]), int(numbers[1]), float(numbers[2])
+
+            for state in accum["states"]:
+                if state["band"] == band and state["spin"] == spin:
+                    state["pop"] = pop
+
+        elif "Writing file" in line:
+            band, spin = map(int, get_numbers(line)[-2:])
+            for state in accum["states"]:
+                if state["band"] == band and state["spin"] == spin:
+                    state["file"] = line.split()[-1]
 
     return accum
