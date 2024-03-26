@@ -24,11 +24,11 @@ class test_castep_parser(TestCase):
                                      {'summary': ('Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 '
                                                   'from code version 2c6c6d262 update-jenkins '
                                                   'Fri Apr 14 15:13:22 2023 +0100'),
-                                      'Compiler': 'GNU Fortran 12.2.1; Optimisation: FAST',
-                                      'Comms': 'Open MPI v4.1.4',
-                                      'MATHLIBS': 'blas (LAPACK version 3.11.0)',
-                                      'FFT Lib': 'fftw3 version fftw-3.3.10-sse2-avx',
-                                      'Fundamental constants values': 'CODATA 2018'}})
+                                      'compiler': 'GNU Fortran 12.2.1; Optimisation: FAST',
+                                      'comms': 'Open MPI v4.1.4',
+                                      'mathlibs': 'blas (LAPACK version 3.11.0)',
+                                      'fft_lib': 'fftw3 version fftw-3.3.10-sse2-avx',
+                                      'fundamental_constants_values': 'CODATA 2018'}})
 
     def test_get_final_printout(self):
         test_text = io.StringIO("""
@@ -42,11 +42,11 @@ Overall parallel efficiency rating: Satisfactory (64%)
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'calculation time': 135.01,
-                                     'finalisation time': 0.03,
-                                     'initialisation time': 1.07,
-                                     'peak memory use': 149108.0,
-                                     'total time': 136.11,
+        self.assertEqual(test_dict, {'calculation_time': 135.01,
+                                     'finalisation_time': 0.03,
+                                     'initialisation_time': 1.07,
+                                     'peak_memory_use': 149108.0,
+                                     'total_time': 136.11,
                                      'parallel_efficiency': 64.0})
 
     def test_get_title(self):
@@ -189,11 +189,11 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'memory_estimate':
-                                     [{'BLAS internal memory storage': {'disk': 0.0, 'memory': 0.0},
-                                       'Electronic energy minimisation requirements': {'disk': 0.0,
+                                     [{'blas_internal_memory_storage': {'disk': 0.0, 'memory': 0.0},
+                                       'electronic_energy_minimisation_requirements': {'disk': 0.0,
                                                                                        'memory': 6100.6},
-                                       'Force calculation requirements': {'disk': 0.0, 'memory': 9.8},
-                                       'Model and support data': {'disk': 0.0, 'memory': 3780.5}}
+                                       'force_calculation_requirements': {'disk': 0.0, 'memory': 9.8},
+                                       'model_and_support_data': {'disk': 0.0, 'memory': 3780.5}}
                                       ]})
 
     def test_get_cell_structure(self):
@@ -653,11 +653,11 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'dftd': {'dispersion-correction scheme': 'G06',
-                                              'parameter d': 20.0,
-                                              'parameter s6': 0.75,
-                                              'species': {'H': {'C6': 1.451, 'R0': 1.001},
-                                                          'N': {'C6': 12.7481, 'R0': 1.397}}
+        self.assertEqual(test_dict, {'dftd': {'dispersion_correction_scheme': 'G06',
+                                              'parameter_d': 20.0,
+                                              'parameter_s6': 0.75,
+                                              'species': {'H': {'c6': 1.451, 'r0': 1.001},
+                                                          'N': {'c6': 12.7481, 'r0': 1.397}}
                                               }}
                          )
 
@@ -675,10 +675,10 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'dftd': {'dispersion-correction scheme': 'XDM',
-                                              'parameter a1': 0.3454,
-                                              'parameter a2': 5.229439,
-                                              'parameter sc': 1.0,
+        self.assertEqual(test_dict, {'dftd': {'dispersion_correction_scheme': 'XDM',
+                                              'parameter_a1': 0.3454,
+                                              'parameter_a2': 5.229439,
+                                              'parameter_sc': 1.0,
                                               'species': {}}}
                          )
 
@@ -787,14 +787,14 @@ Charge spilling parameter for spin component 2 = 0.44%
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 0,
-                                                     'Number of ionic constraints': 3,
+        self.assertEqual(test_dict, {'constraints': {'number_of_cell_constraints': 0,
+                                                     'number_of_ionic_constraints': 3,
                                                      'cell_constraints': (1, 2, 3, 4, 5, 6),
                                                      'com_constrained': True},
-                                     'symmetries': {'Maximum deviation from symmetry': '0.00000 ANG',
-                                                    'Number of symmetry operations': 1,
-                                                    'Point group of crystal': '1: C1, 1, 1',
-                                                    'Space group of crystal': '1: P1, P 1',
+                                     'symmetries': {'maximum_deviation_from_symmetry': '0.00000 ANG',
+                                                    'number_of_symmetry_operations': 1,
+                                                    'point_group_of_crystal': '1: C1, 1, 1',
+                                                    'space_group_of_crystal': '1: P1, P 1',
                                                     'n_primitives': 2}})
 
         test_text = io.StringIO("""
@@ -853,8 +853,8 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'constraints': {'Number of cell constraints': 6,
-                                                     'Number of ionic constraints': 3,
+        self.assertEqual(test_dict, {'constraints': {'number_of_cell_constraints': 6,
+                                                     'number_of_ionic_constraints': 3,
                                                      'cell_constraints': (0, 0, 0, 0, 0, 0),
                                                      'com_constrained': True,
                                                      'ionic_constraints':
@@ -867,10 +867,10 @@ Charge spilling parameter for spin component 2 = 0.44%
                                                       ('Se', 3): [(143935.2749, 0.0, 0.0),
                                                                   (0.0, 143935.2749, 0.0),
                                                                   (0.0, 0.0, 143935.2749)]}},
-                                     'symmetries': {'Maximum deviation from symmetry': '0.00000 ANG',
-                                                    'Number of symmetry operations': 1,
-                                                    'Point group of crystal': '1: C1, 1, 1',
-                                                    'Space group of crystal': '213: P4_132, P 4bd 2ab 3',
+                                     'symmetries': {'maximum_deviation_from_symmetry': '0.00000 ANG',
+                                                    'number_of_symmetry_operations': 1,
+                                                    'point_group_of_crystal': '1: C1, 1, 1',
+                                                    'space_group_of_crystal': '213: P4_132, P 4bd 2ab 3',
                                                     'symop': [{'displacement': (0.0, 0.0, -0.0),
                                                                'rotation': [(1.0, 0.0, 0.0),
                                                                             (0.0, 1.0, -0.0),
@@ -1029,7 +1029,7 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'scf': [[{'apolar corr to eigenvalue sum': 0.0,
+        self.assertEqual(test_dict, {'scf': [[{'apolar_corr_to_eigenvalue_sum': 0.0,
                                                'eigenvalue': [[{'change': 0.6761,
                                                                 'final': -28.57,
                                                                 'initial': -27.89},
@@ -1042,24 +1042,23 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
                                                                {'change': 0.2696,
                                                                 'final': -20.22,
                                                                 'initial': -19.95}]],
-                                               'electronic entropy term (-ts)': -2.12e-15,
+                                               'electronic_entropy_term_ts': -2.12e-15,
                                                'energy': -845.018104,
                                                'energy_gain': None,
-                                               'ewald energy (const)': -74.1082045250128,
-                                               'exchange-correlation energy': -232.32975595141912,
-                                               'fermi energy': -1.0921,
-                                               'fermi_energy': 0.0,
-                                               'hartree energy': 555.1912117485839,
-                                               'kinetic energy': 539.6822775381202,
+                                               'ewald_energy_const': -74.1082045250128,
+                                               'exchange_correlation_energy': -232.32975595141912,
+                                               'fermi_energy': -1.0921,
+                                               'hartree_energy': 555.1912117485839,
+                                               'kinetic_energy': 539.6822775381202,
                                                'kinetic_eigenvalue': 12.921903,
-                                               'local pseudopotential energy': -1615.3773885728504,
+                                               'local_pseudopotential_energy': -1615.3773885728504,
                                                'no_bands': 7,
-                                               'non-coulombic energy (const)': 6.361496575714284,
-                                               'non-local energy': 126.6514284153757,
-                                               'potential energy (total)': -1446.3556994346502,
+                                               'non_coulombic_energy_const': 6.361496575714284,
+                                               'non_local_energy': 126.6514284153757,
+                                               'potential_energy_total': -1446.3556994346502,
                                                'time': 3.81,
-                                               'total free energy (e-ts)': -847.7687014304528,
-                                               'xc correction to eigenvalue sum': 65.01253419559009},
+                                               'total_free_energy_e_ts': -847.7687014304528,
+                                               'xc_correction_to_eigenvalue_sum': 65.01253419559009},
                                               {'energy': -847.768701,
                                                'energy_gain': 0.305621978,
                                                'fermi_energy': -1.09214177,
@@ -1334,7 +1333,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'forces':
-                                     {'non-descript': [{
+                                     {'non_descript': [{
                                          ('Si', 1): (-2.27362, -0.18351, -0.11133),
                                          ('Si', 2): (-2.003, -0.71954, -0.89066),
                                          ('Si', 3): (-1.83082, -0.17303, -0.91369)
@@ -1387,7 +1386,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces': {'non-descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
+        self.assertEqual(test_dict, {'forces': {'non_descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
                                                                   ('H [H2]', 2): (-0.0, -0.0, 0.0647)}]
                                                 }})
 
@@ -1450,7 +1449,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         self.assertEqual(test_dict, {'stresses':
                                      {
-                                         'non-descript': [(10.491143, -1.300645, -2.326648,
+                                         'non_descript': [(10.491143, -1.300645, -2.326648,
                                                           3.068913, -5.026993,
                                                           6.215774)],
                                          'fun': [(10.882675, 0.0, 0.0,
@@ -1570,16 +1569,16 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'md': [
-            {'Enthalpy': -854.758633,
-             'Hamilt Energy': -854.677308,
-             'Kinetic Energy': 0.673458,
-             'Potential Energy': -855.432091,
-             'Temperature': 651.262915,
-             'Total Energy': -854.758633,
+            {'enthalpy': -854.758633,
+             'hamilt_energy': -854.677308,
+             'kinetic_energy': 0.673458,
+             'potential_energy': -855.432091,
+             'temperature': 651.262915,
+             'total_energy': -854.758633,
              'energies': {'est_0K': [-855.4216728959],
                           'final_energy': [-855.4197401755],
                           'free_energy': [-855.4236056162]},
-             'forces': {'non-descript': [{('Si', 1): (-0.05358, -0.04038, 0.69168),
+             'forces': {'non_descript': [{('Si', 1): (-0.05358, -0.04038, 0.69168),
                                           ('Si', 2): (0.72539, 0.3538, -1.12992)}]},
              'cell': {'cell_angles': [90.0, 90.0, 90.0],
                       'density_amu': 1.403372,
@@ -1594,8 +1593,8 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                       'volume': 160.103007},
              'positions': {('Si', 1): (0.001291, 0.00032, 0.001059),
                            ('Si', 2): (0.000729, 0.504323, 0.520521)},
-             'memory_estimate': [{'Model and support data': {'disk': 0.0, 'memory': 27.2},
-                                  'Molecular Dynamics requirements': {'disk': 0.0, 'memory': 13.4}}],
+             'memory_estimate': [{'model_and_support_data': {'disk': 0.0, 'memory': 27.2},
+                                  'molecular_dynamics_requirements': {'disk': 0.0, 'memory': 13.4}}],
              'scf': [[{'energy': -854.989696,
                        'energy_gain': None,
                        'fermi_energy': 0.0,
@@ -1609,7 +1608,7 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                        'fermi_energy': 6.32839049,
                        'time': 18.95}
                       ]],
-             'stresses': {'non-descript': [(2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)]},
+             'stresses': {'non_descript': [(2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)]},
              'time': 0.002}]}
                          )
 
@@ -2199,12 +2198,12 @@ WL ********************************************************************
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'thermodynamics':
-                                     {'zero-point_energy': 0.125987,
-                                      'Cv': (0.0, 14.858, 30.902),
-                                      'E': (0.125987, 0.131824, 0.156189),
-                                      'F': (0.125987, 0.123323, 0.106755),
-                                      'S': (0.0, 8.203, 23.849),
-                                      'T': (0.0, 100.0, 200.0)}})
+                                     {'zero_point_energy': 0.125987,
+                                      'cv': (0.0, 14.858, 30.902),
+                                      'e': (0.125987, 0.131824, 0.156189),
+                                      'f': (0.125987, 0.123323, 0.106755),
+                                      's': (0.0, 8.203, 23.849),
+                                      't': (0.0, 100.0, 200.0)}})
 
     def test_get_dynamical_matrix(self):
         test_text = io.StringIO("""
@@ -2367,13 +2366,13 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'raman': [[{'II': 0.0,
+        self.assertEqual(test_dict, {'raman': [[{'ii': 0.0,
                                                  'depolarisation': 0.749632,
                                                  'tensor': ((-0.0, 0.0, -0.0),
                                                             (0.0, 0.0, 0.0),
                                                             (-0.0, 0.0, 0.0)),
                                                  'trace': 0.0},
-                                                {'II': 0.79384156,
+                                                {'ii': 0.79384156,
                                                  'depolarisation': 0.75,
                                                  'tensor': ((0.0, -0.0, -0.0),
                                                             (-0.0, -2.5, -1.3062),
@@ -2653,18 +2652,18 @@ Final energy =  -2293.681052478     eV
                                        'final_enthalpy': -217.004345},
                                       'iterations':
                                       [{'enthalpy': [-2293.74356],
-                                        'minimisation': [{'Smax': {'converged': False,
+                                        'minimisation': [{'smax': {'converged': False,
                                                                    'tolerance': 0.25,
                                                                    'value': 12.78436},
-                                                          'dE/ion': {'converged': False,
+                                                          'de_ion': {'converged': False,
                                                                      'tolerance': 2.5e-05,
                                                                      'value': 0.0},
-                                                          '|F|max': {'converged': False,
-                                                                     'tolerance': 0.05,
-                                                                     'value': 0.4266993},
-                                                          '|dR|max': {'converged': False,
-                                                                      'tolerance': 0.001,
-                                                                      'value': 0.0}}]},
+                                                          'f_max': {'converged': False,
+                                                                    'tolerance': 0.05,
+                                                                    'value': 0.4266993},
+                                                          'dr_max': {'converged': False,
+                                                                     'tolerance': 0.001,
+                                                                     'value': 0.0}}]},
                                        {'cell': {'cell_angles': [90.0, 90.0, 90.0],
                                                  'density_amu': 2.489923,
                                                  'density_g': 4.134614,
@@ -2682,30 +2681,30 @@ Final energy =  -2293.681052478     eV
                                                                     ('Ti', 1): (0.0, 0.0, 0.0)}]},
                                         'geom_opt': {'trial': [1.0]},
                                         'memory_estimate':
-                                        [{'Electronic energy minimisation requirements': {'disk': 0.0, 'memory': 4.0},
-                                          'Geometry minimisation requirements': {'disk': 0.0, 'memory': 4.6},
-                                          'Model and support data': {'disk': 0.0, 'memory': 64.3}}],
-                                        'minimisation': [{'previous': {'Fdelta': 0.306114,
+                                        [{'electronic_energy_minimisation_requirements': {'disk': 0.0, 'memory': 4.0},
+                                          'geometry_minimisation_requirements': {'disk': 0.0, 'memory': 4.6},
+                                          'model_and_support_data': {'disk': 0.0, 'memory': 64.3}}],
+                                        'minimisation': [{'previous': {'fdelta': 0.306114,
                                                                        'enthalpy': -2293.743561,
                                                                        'lambda': 0.0}},
-                                                         {'previous': {'Fdelta': 0.306114,
+                                                         {'previous': {'fdelta': 0.306114,
                                                                        'enthalpy': -2293.743561,
                                                                        'lambda': 0.0},
-                                                          'trial step': {'Fdelta': -0.064103,
+                                                          'trial step': {'fdelta': -0.064103,
                                                                          'enthalpy': -2293.757852,
                                                                          'lambda': 1.0}},
-                                                         {'Smax': {'converged': True,
+                                                         {'smax': {'converged': True,
                                                                    'tolerance': 0.1,
                                                                    'value': 0.0},
-                                                          'dE/ion': {'converged': True,
+                                                          'de_ion': {'converged': True,
                                                                      'tolerance': 2e-05,
                                                                      'value': 0.0},
-                                                          '|F|max': {'converged': True,
-                                                                     'tolerance': 0.05,
-                                                                     'value': 0.0},
-                                                          '|dR|max': {'converged': True,
-                                                                      'tolerance': 0.001,
-                                                                      'value': 0.0}}],
+                                                          'f_max': {'converged': True,
+                                                                    'tolerance': 0.05,
+                                                                    'value': 0.0},
+                                                          'dr_max': {'converged': True,
+                                                                     'tolerance': 0.001,
+                                                                     'value': 0.0}}],
                                         'positions': {('O', 1): (0.299872, 0.299872, -0.0),
                                                       ('Ti', 1): (0.0, 0.0, 0.0)},
                                         'scf': [[{'energy': -2294.52355,
@@ -3061,13 +3060,13 @@ Message: Generation of delocalized internals is successful
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'autosolvation': {'Apolar cavitation energy': 0.23174076832973722,
-                                                       'Apolar dis-rep energy': -0.16660423187145634,
-                                                       'Free energy of solvation': 0.01835035141161526,
-                                                       'Total apolar solvation energy': 0.0651365364582809,
-                                                       'Total energy in solvent': -30.701990109989108,
-                                                       'Total energy in vacuum': -30.720340461400724,
-                                                       'Total polar solvation energy': -0.04678618504666563}})
+        self.assertEqual(test_dict, {'autosolvation': {'apolar_cavitation_energy': 0.23174076832973722,
+                                                       'apolar_dis_rep_energy': -0.16660423187145634,
+                                                       'free_energy_of_solvation': 0.01835035141161526,
+                                                       'total_apolar_solvation_energy': 0.0651365364582809,
+                                                       'total_energy_in_solvent': -30.701990109989108,
+                                                       'total_energy_in_vacuum': -30.720340461400724,
+                                                       'total_polar_solvation_energy': -0.04678618504666563}})
 
     def test_get_tddft(self):
         test_text = io.StringIO("""
@@ -3273,15 +3272,15 @@ Ewald Contribution ::
         test_dict = parse_castep_file(test_text)[0]
 
         self.assertEqual(test_dict, {'elastic':
-                                     {'Bulk Modulus': (94.979845, 94.979845, 94.979845),
-                                      'Longitudinal waves': 91.95017,
-                                      'Poisson Ratios': (0.259856, 0.259856, 0.259856, 0.259856, 0.259856, 0.259856),
-                                      'Shear Modulus': (82.945704, 75.499588, 79.222646),
-                                      'Speed of Sound': ((83.994377, 49.768951, 49.768951),
+                                     {'bulk_modulus': (94.979845, 94.979845, 94.979845),
+                                      'longitudinal_waves': 91.95017,
+                                      'poisson_ratios': (0.259856, 0.259856, 0.259856, 0.259856, 0.259856, 0.259856),
+                                      'shear_modulus': (82.945704, 75.499588, 79.222646),
+                                      'speed_of_sound': ((83.994377, 49.768951, 49.768951),
                                                          (49.768951, 83.994377, 49.768951),
                                                          (49.768951, 49.768951, 83.994377)),
-                                      'Transverse waves': 57.783105,
-                                      "Young's Modulus": (136.853034, 136.853034, 136.853034)}})
+                                      'transverse_waves': 57.783105,
+                                      "young_s_modulus": (136.853034, 136.853034, 136.853034)}})
 
     def test_get_continuation(self):
         test_text = io.StringIO("""

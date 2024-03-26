@@ -40,6 +40,14 @@ def normalise_string(string: str) -> str:
     return " ".join(string.strip().split())
 
 
+def normalise_key(string: str) -> str:
+    """
+    Normalise a key removing punctuation
+    and making all spacing single-underscore
+    """
+    return re.sub(r"[_\W]+", "_", string).strip("_").lower()
+
+
 def atreg_to_index(dict_in: Union[Dict[str, str], re.Match], clear: bool = True) -> Tuple[str, int]:
     """
     Transform a matched atreg value to species index tuple
