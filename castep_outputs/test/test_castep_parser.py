@@ -4,7 +4,7 @@ import pprint
 import io
 from unittest import (TestCase, main)
 from castep_outputs import parse_castep_file
-from castep_outputs.castep_file_parser import _process_pspot_string
+from castep_outputs.castep_file_parser import _process_pspot_string, Filters
 
 
 class test_castep_parser(TestCase):
@@ -851,7 +851,7 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         """)
 
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'constraints': {'number_of_cell_constraints': 6,
                                                      'number_of_ionic_constraints': 3,
@@ -927,7 +927,7 @@ Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
       2  -8.55990255E+002  6.11946292E+000   3.51127330E-003       4.50  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -843.823694,
                                                'energy_gain': None,
@@ -956,7 +956,7 @@ Initial  -2.37153226E+001  0.00000000E+000                         0.17  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 Total energy has converged after 11 SCF iterations.
         """)
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -23.7153226,
                                                'energy_gain': None,
@@ -1027,7 +1027,7 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
       1  -8.47768701E+002 -1.09214177E+000   3.05621978E-001       3.84  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'apolar_corr_to_eigenvalue_sum': 0.0,
                                                'eigenvalue': [[{'change': 0.6761,
@@ -1120,7 +1120,7 @@ NB est. 0K energy (E-0.5TS)      =  -216.4682741546     eV
 
         """)
 
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'bsc_scf': [[{'energy': -216.330992,
                                                    'energy_gain': None,
@@ -1170,7 +1170,7 @@ Initial  -3.02130061E+002  0.00000000E+000                         3.32  <-- SCF
  Correcting PBC dipole-dipole with self-consistent method: dE =       0.11814 eV
 ------------------------------------------------------------------------ <-- SCF
         """)
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -302.130061,
                                                'energy_gain': None,
@@ -1200,7 +1200,7 @@ Initial  -8.74382993E+002 -9.34072274E+000                         3.41  <-- SCF
 ------------------------------------------------------------------------ <-- SCF
 
         """)
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'scf': [[{'energy': -874.382993,
                                                'energy_gain': None,
@@ -1232,7 +1232,7 @@ Spin 1, kpoint ( 0.000000  0.000000  0.000000 ) weight = 1.000000
 Have a nice day.
         """)
 
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'occupancies': [[{'band': 1,
                                                        'eigenvalue': -10.3844,
@@ -1241,7 +1241,7 @@ Have a nice day.
                                                        'eigenvalue': 0.32633,
                                                        'occupancy': 1.11022e-16}]]})
 
-    def test_get_line_min(self):
+    def test_wvfn_get_line_min(self):
         test_text = io.StringIO("""
 +------------------- WAVEFUNCTION LINE MINIMISATION --------------------+<- line
 | Initial energy = -1.031551E+003 eV; initial dE/dstep = -2.376E-001 eV |<- line
@@ -1254,7 +1254,7 @@ Have a nice day.
  * indicates the final, accepted state (should have the lowest energy)
             """)
 
-        test_dict = parse_castep_file(test_text)[0]
+        test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
         self.assertEqual(test_dict, {'wvfn_line_min': [{'gain': (0.1469, 0.1518),
                                                         'init_de_dstep': -0.2376,
@@ -1595,19 +1595,6 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                            ('Si', 2): (0.000729, 0.504323, 0.520521)},
              'memory_estimate': [{'model_and_support_data': {'disk': 0.0, 'memory': 27.2},
                                   'molecular_dynamics_requirements': {'disk': 0.0, 'memory': 13.4}}],
-             'scf': [[{'energy': -854.989696,
-                       'energy_gain': None,
-                       'fermi_energy': 0.0,
-                       'time': 17.06},
-                      {'energy': -855.716038,
-                       'energy_gain': 0.0907927915,
-                       'fermi_energy': 6.32845976,
-                       'time': 17.93},
-                      {'energy': -855.71759,
-                       'energy_gain': 0.000194010456,
-                       'fermi_energy': 6.32839049,
-                       'time': 18.95}
-                      ]],
              'stresses': {'non_descript': [(2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)]},
              'time': 0.002}]}
                          )
@@ -2707,14 +2694,6 @@ Final energy =  -2293.681052478     eV
                                                                      'value': 0.0}}],
                                         'positions': {('O', 1): (0.299872, 0.299872, -0.0),
                                                       ('Ti', 1): (0.0, 0.0, 0.0)},
-                                        'scf': [[{'energy': -2294.52355,
-                                                  'energy_gain': None,
-                                                  'fermi_energy': 0.554395796,
-                                                  'time': 27.0},
-                                                 {'energy': -2294.63448,
-                                                  'energy_gain': None,
-                                                  'fermi_energy': 0.0184884599,
-                                                  'time': 27.57}]],
                                         'stresses': {'symmetrised': [(-1.624594, 0.0, 0.0,
                                                                       -1.624594, 0.0, -0.176493)]
                                                      }}]}}
