@@ -250,19 +250,32 @@ class Symop(TypedDict):
     symmetry_related: List[AtomIndex]
 
 
+class PointGroup(TypedDict):
+    id: int
+    schoenflies: str
+    hermann_mauguin: str
+    hermann_mauguin_full: str
+
+
+class SpaceGroup(TypedDict):
+    id: int
+    international: str
+    hall: str
+
+
 class ConstraintsReport(TypedDict, total=False):
-    number_of_cell_constraints: int
-    number_of_ionic_constraints: int
+    num_cell_constraints: int
+    num_ionic_constraints: int
     cell_constraints: Tuple[int, int, int, int, int, int]
     com_constrained: bool
     ionic_constraints: Dict[AtomIndex, ThreeByThreeMatrix]
 
 
 class SymmetryReport(TypedDict, total=False):
-    maximum_deviation_from_symmetry: str
-    number_of_symmetry_operations: int
-    point_group_of_crystal: str
-    space_group_of_crystal: str
+    maximum_deviation: float
+    num_symmetry_operations: int
+    point_group: PointGroup
+    space_group: SpaceGroup
     symop: List[Symop]
     n_primitives: int
 
