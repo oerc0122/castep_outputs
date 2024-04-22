@@ -18,14 +18,14 @@ from .castep_res import gen_table_re, get_block, get_numbers, labelled_floats
 from .cell_param_file_parser import _parse_devel_code_block
 from .constants import SHELLS
 from .datatypes import (AtomIndex, AtomPropBlock, BandStructure, BondData,
-                        CellInfo, CharTable, ConstraintsReport, DipoleTable,
-                        ElasticProperties, FinalConfig, GeomTable, InitialSpin,
-                        KPointsList, KPointsSpec, MDInfo, MemoryEst,
-                        MullikenInfo, Occupancies, PhononSymmetryReport,
-                        PSPotEnergy, PSPotReport, PSPotStrInfo, QData,
-                        RamanReport, SCFReport, SixVector, SymmetryReport,
-                        TDDFTData, Thermodynamics, ThreeByThreeMatrix,
-                        ThreeVector, WvfnLineMin)
+                        CellInfo, CharTable, ConstraintsReport, DeltaSCFReport,
+                        DipoleTable, ElasticProperties, FinalConfig, GeomTable,
+                        InitialSpin, KPointsList, KPointsSpec, MDInfo,
+                        MemoryEst, MullikenInfo, Occupancies,
+                        PhononSymmetryReport, PSPotEnergy, PSPotReport,
+                        PSPotStrInfo, QData, RamanReport, SCFReport, SixVector,
+                        SymmetryReport, TDDFTData, Thermodynamics,
+                        ThreeByThreeMatrix, ThreeVector, WvfnLineMin)
 from .extra_files_parser import (parse_bands_file, parse_chdiff_fmt_file,
                                  parse_den_fmt_file, parse_efield_file,
                                  parse_elastic_file, parse_elf_fmt_file,
@@ -33,7 +33,8 @@ from .extra_files_parser import (parse_bands_file, parse_chdiff_fmt_file,
                                  parse_pot_fmt_file, parse_xrd_sf_file)
 from .utility import (FileWrapper, add_aliases, atreg_to_index, determine_type,
                       fix_data_types, log_factory, normalise_key,
-                      normalise_string, stack_dict, to_type, parse_int_or_float)
+                      normalise_string, parse_int_or_float, stack_dict,
+                      to_type)
 
 
 class Filters(Flag):
@@ -43,6 +44,7 @@ class Filters(Flag):
     BS = auto()
     CELL = auto()
     CHEM_SHIELDING = auto()
+    DELTA_SCF = auto()
     DIPOLE = auto()
     ELASTIC = auto()
     ELF = auto()
@@ -75,7 +77,7 @@ class Filters(Flag):
            ELASTIC | ELF | FINAL_CONFIG | FORCE |
            MD_SUMMARY | OPTICS | POPN_ANALYSIS |
            POSITION | SOLVATION | SPECIES_PROPS | SPIN |
-           STRESS | TDDFT | THERMODYNAMICS | TSS)
+           STRESS | TDDFT | THERMODYNAMICS | TSS | DELTA_SCF)
 
     MEDIUM = LOW | PARAMETERS | GEOM_OPT | MD | PHONON
 
@@ -1171,6 +1173,18 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["elastic"] = {}
 
             curr_run["elastic"].update(_process_elastic_properties(block))
+
+        # DeltaSCF
+
+        elif block := get_block(line, castep_file,
+                                "Calculating MODOS weights", r"^\s*$"):
+
+            if Filters.DELTA_SCF not in to_parse:
+                continue
+
+            logger("Found delta SCF data")
+
+            curr_run["delta_scf"] = _process_delta_scf(block)
 
         # --- Extra blocks for testing
 
@@ -2304,5 +2318,35 @@ def _process_elastic_properties(block: TextIO) -> ElasticProperties:
                                                  for blk_line in blk
                                                  if (numbers := get_numbers(blk_line)))
                                            )
+
+    return accum
+
+
+def _process_delta_scf(block: TextIO) -> DeltaSCFReport:
+    """Process MODOS delta SCF block"""
+    accum: DeltaSCFReport = {"states": []}
+
+    for line in block:
+        if line.startswith("Taking band from"):
+            accum["file"] = line.split()[-1]
+        elif "MODOS state" in line:
+            accum["states"].append({})
+        elif "nr." in line:
+            accum["states"][-1]["band"] = int(get_numbers(line)[0])
+        elif "spin" in line:
+            accum["states"][-1]["spin"] = int(get_numbers(line)[0])
+        elif "Population of state" in line:
+            numbers = get_numbers(line)
+            band, spin, pop = int(numbers[0]), int(numbers[1]), float(numbers[2])
+
+            for state in accum["states"]:
+                if state["band"] == band and state["spin"] == spin:
+                    state["pop"] = pop
+
+        elif "Writing file" in line:
+            band, spin = map(int, get_numbers(line)[-2:])
+            for state in accum["states"]:
+                if state["band"] == band and state["spin"] == spin:
+                    state["file"] = line.split()[-1]
 
     return accum
