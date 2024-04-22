@@ -1,0 +1,654 @@
+ +-------------------------------------------------+
+ |                                                 |
+ |      CCC   AA    SSS  TTTTT  EEEEE  PPPP        |
+ |     C     A  A  S       T    E      P   P       |
+ |     C     AAAA   SS     T    EEE    PPPP        |
+ |     C     A  A     S    T    E      P           |
+ |      CCC  A  A  SSS     T    EEEEE  P           |
+ |                                                 |
+ +-------------------------------------------------+
+ |                                                 |
+ | Welcome to Academic Release CASTEP version 25.1 |
+ | Ab Initio Total Energy Program                  |
+ |                                                 |
+ | Authors:                                        |
+ | M. Segall, M. Probert, C. Pickard, P. Hasnip,   |
+ | S. Clark, K. Refson, J. R. Yates,               |
+ | A. Bartok-Partay, M. Payne                      |
+ |                                                 |
+ | Contributors:                                   |
+ | P. Lindan, P. Haynes, J. White, V. Milman,      |
+ | N. Govind, M. Gibson, P. Tulip, V. Cocula,      |
+ | B. Montanari, D. Quigley, M. Glover,            |
+ | L. Bernasconi, A. Perlov, M. Plummer,           |
+ | E. McNellis, J. Meyer, J. Gale, D. Jochym       |
+ | J. Aarons, B. Walker, R. Gillen, D. Jones       |
+ | T. Green, I. J. Bush, C. J. Armstrong,          |
+ | E. J. Higgins, E. L. Brown, M. S. McFly,        |
+ | J. Wilkins, B-C. Shih, P. J. P. Byrne,          |
+ | R. J. Maurer, J. C. Womack, J. Dziedzic,        |
+ | L. LeBlanc, T. K. Stenczel, J. Kermode,         |
+ | S. Sturniolo, B. Shi, B. Durham, M. Evans,      |
+ | M. J. Smith, A. Tamerus, Z. Hawkhead,           |
+ | V. Ravindran, T. Hollins, S. A. Joyce,          |
+ | R. T. Strong, A. M. Reilly                      |
+ |                                                 |
+ | Copyright (c) 2000 - 2024                       |
+ |                                                 |
+ |     Distributed under license from Cambridge    |
+ |     Enterprise for academic use only.           |
+ |                                                 |
+ | Please cite                                     |
+ |                                                 |
+ |     "First principles methods using CASTEP"     |
+ |                                                 |
+ |         Zeitschrift fuer Kristallographie       |
+ |           220(5-6) pp. 567-570 (2005)           |
+ |                                                 |
+ | S. J. Clark, M. D. Segall, C. J. Pickard,       |
+ | P. J. Hasnip, M. J. Probert, K. Refson,         |
+ | M. C. Payne                                     |
+ |                                                 |
+ |       in all publications arising from          |
+ |              your use of CASTEP                 |
+ |                                                 |
+ +-------------------------------------------------+
+ |                                                 |
+ |              http://www.castep.org              |
+ |                                                 |
+ +-------------------------------------------------+
+
+
+
+ Compiled for  GNU 13.2.1 on 15-01-2024 15:40:33
+ from code version c68e15f54 default Thu Jan 11 16:32:37 2024 +0000
+ Compiler: GNU Fortran 13.2.1; Optimisation: FAST
+ Comms   : Open MPI v4.1.5
+ MATHLIBS: default (LAPACK version 3.11.0)
+ FFT Lib : fftw3 version fftw-3.3.10-sse2-avx
+ Fundamental constants values: CODATA 2018
+
+ Run started: Mon, 15 Jan 2024 16:32:12 +0000
+
+ Atomic calculation performed for Ar: 1s2 2s2 2p6 3s2 3p6
+
+ Converged in 59 iterations to an ae energy of -14362.357 eV
+
+   ============================================================
+   | Pseudopotential Report - Date of generation 15-01-2024   |
+   ------------------------------------------------------------
+   | Element: Ar Ionic charge:  8.00 Level of theory: LDA     |
+   | Atomic Solver: Koelling-Harmon                           |
+   |                                                          |
+   |               Reference Electronic Structure             |
+   |         Orbital         Occupation         Energy        |
+   |            3s              2.000           -0.892        |
+   |            3p              6.000           -0.382        |
+   |                                                          |
+   |                 Pseudopotential Definition               |
+   |        Beta     l      e      Rc     scheme   norm       |
+   |          1      0   -0.892   1.597     qc      0         |
+   |          2      0    0.250   1.597     qc      0         |
+   |          3      1   -0.382   1.597     qc      0         |
+   |          4      1    0.250   1.597     qc      0         |
+   |         loc     2    0.000   1.597     pn      0         |
+   |                                                          |
+   | Augmentation charge Rinner = 1.116                       |
+   | Partial core correction Rc = 1.116                       |
+   ------------------------------------------------------------
+   | "2|1.6|7|8|9|30:31"                                      |
+   ------------------------------------------------------------
+   |      Author: Chris J. Pickard, Cambridge University      |
+   ============================================================
+
+ Pseudo atomic calculation performed for Ar 3s2 3p6
+
+ Converged in 17 iterations to a total energy of -583.0922 eV
+ Calculation not parallelised.
+
+ ************************************ Title ************************************
+
+
+ ***************************** General Parameters ******************************
+
+ output verbosity                               : normal  (1)
+ write checkpoint data to                       : pair-pot-lj.check
+ type of calculation                            : molecular dynamics
+ stress calculation                             : off
+ density difference calculation                 : off
+ electron localisation func (ELF) calculation   : off
+ Hirshfeld analysis                             : off
+ polarisation (Berry phase) analysis            : off
+ molecular orbital projected DOS                : off
+ deltaSCF calculation                           : off
+ unlimited duration calculation
+ timing information                             : on
+ memory usage estimate                          : on
+ write extra output files                       : on
+ write final potential to formatted file        : off
+ write final density to formatted file          : off
+ write BibTeX reference list                    : off
+ write OTFG pseudopotential files               : on
+ write electrostatic potential file             : on
+ write bands file                               : on
+ checkpoint writing                             : off
+
+ output         length unit                     : A
+ output           mass unit                     : amu
+ output           time unit                     : ps
+ output         charge unit                     : e
+ output           spin unit                     : hbar/2
+ output         energy unit                     : eV
+ output          force unit                     : eV/A
+ output       velocity unit                     : A/ps
+ output       pressure unit                     : GPa
+ output     inv_length unit                     : 1/A
+ output      frequency unit                     : cm-1
+ output force constant unit                     : eV/A**2
+ output         volume unit                     : A**3
+ output   IR intensity unit                     : (D/A)**2/amu
+ output         dipole unit                     : D
+ output         efield unit                     : eV/A/e
+ output        entropy unit                     : J/mol/K
+ output    efield chi2 unit                     : pm/V
+
+ wavefunctions paging                           : none
+ random number generator seed                   :  163212971
+ data distribution                              : optimal for this architecture
+ optimization strategy                          : balance speed and memory
+
+ *********************** Exchange-Correlation Parameters ***********************
+
+ using functional                               : Local Density Approximation
+ relativistic treatment                         : Koelling-Harmon
+ DFT+D: Semi-empirical dispersion correction    : off
+
+ ************************* Pseudopotential Parameters **************************
+
+ pseudopotential representation                 : reciprocal space
+ <beta|phi> representation                      : reciprocal space
+ spin-orbit coupling                            : off
+
+ **************************** Basis Set Parameters *****************************
+
+ plane wave basis set cut-off                   :   100.0000   eV
+ size of standard grid                          :     1.7500
+ size of   fine   gmax                          :     8.9655   1/A
+ largest prime factor in FFT                    :          5
+ finite basis set correction                    : none
+
+ **************************** Electronic Parameters ****************************
+
+ number of  electrons                           :  2.000
+ net charge of system                           :  0.000
+ treating system as non-spin-polarized
+ number of bands                                :        480
+
+ ********************* Electronic Minimization Parameters **********************
+
+ Method: Treating system as metallic with density mixing treatment of electrons,
+         and number of  SD  steps               :          1
+         and number of  CG  steps               :          4
+
+ total energy / atom convergence tol.           : 0.1000E-04   eV
+ eigen-energy convergence tolerance             : 0.1000E-05   eV
+ max force / atom convergence tol.              : ignored
+ convergence tolerance window                   :          3   cycles
+ max. number of SCF cycles                      :         30
+ number of fixed-spin iterations                :         10
+ smearing scheme                                : Gaussian
+ smearing width                                 : 0.2000       eV
+ Fermi energy convergence tolerance             : 0.2721E-13   eV
+ periodic dipole correction                     : NONE
+
+ ************************** Density Mixing Parameters **************************
+
+ density-mixing scheme                          : Broyden
+ max. length of mixing history                  :         20
+ charge density mixing amplitude                : 0.8000
+ cut-off energy for mixing                      :  100.0       eV
+ charge density mixing g-vector                 :  1.500       1/A
+
+ *********************** Population Analysis Parameters ************************
+
+ Population analysis with cutoff                :  3.000       A
+ Population analysis output                     : summary only
+
+ ************************ Molecular Dynamics Parameters ************************
+
+ ensemble                                       : NVE
+ temperature                                    :  80.00       K
+ path integral MD                               : OFF
+ time step                                      : 0.5000E-02   ps
+ number of MD steps                             :          3
+ ab initio properties sampled every             :          0   MD steps
+ enhanced equilibration method                  : NONE
+ using best-fit first order extrapolation for wavefunctions and charge density
+ backup results every                           :          5   steps
+
+ MD SCF energy / atom convergence tol.          : 0.1000E-04   eV
+ MD SCF eigenenergies tolerance                 : 0.1000E-05   eV
+ MD SCF convergence tolerance window            :          3   cycles
+ write MD trajectory file                       : on
+
+ ******************************* Developer Code ********************************
+
+ PP=T
+ PP:
+ LJ=T
+ LJ_EPS_Ar=120.
+ LJ_SIG_Ar=0.3405
+ :ENDPP
+
+ *******************************************************************************
+
+
+                           -------------------------------
+                                      Unit Cell
+                           -------------------------------
+        Real Lattice(A)                      Reciprocal Lattice(1/A)
+    17.3952970     0.0000000     0.0000000        0.361200232   0.000000000   0.000000000
+     0.0000000    17.3952970     0.0000000        0.000000000   0.361200232   0.000000000
+     0.0000000     0.0000000    17.3952970        0.000000000   0.000000000   0.361200232
+
+                       Lattice parameters(A)       Cell Angles
+                    a =     17.395297          alpha =   90.000000
+                    b =     17.395297          beta  =   90.000000
+                    c =     17.395297          gamma =   90.000000
+
+                       Current cell volume =          5263.753514       A**3
+                                   density =             0.758926   AMU/A**3
+                                           =             1.260226     g/cm^3
+
+                           -------------------------------
+                                     Cell Contents
+                           -------------------------------
+                         Total number of ions in cell =  100
+                      Total number of species in cell =    1
+                        Max number of any one species =  100
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x  Element    Atom        Fractional coordinates of atoms  x
+            x            Number           u          v          w      x
+            x----------------------------------------------------------x
+            x  Ar           1         0.231325   0.129759   0.142367   x
+            x  Ar           2         0.246742   0.042652  -0.088655   x
+            x  Ar           3         0.047965   0.281388   0.289269   x
+            x  Ar           4        -0.453918  -0.052587  -0.010711   x
+            x  Ar           5        -0.340386  -0.073584   0.340242   x
+            x  Ar           6         0.338051   0.262686  -0.216013   x
+            x  Ar           7        -0.108234   0.184432  -0.015610   x
+            x  Ar           8        -0.160787  -0.087310  -0.155673   x
+            x  Ar           9        -0.224863  -0.335053  -0.209785   x
+            x  Ar          10        -0.217710   0.453389  -0.107478   x
+            x  Ar          11        -0.422321  -0.326807  -0.344697   x
+            x  Ar          12         0.333571  -0.086611   0.178388   x
+            x  Ar          13         0.185987  -0.354726   0.410968   x
+            x  Ar          14        -0.303455  -0.288594   0.192130   x
+            x  Ar          15         0.204526   0.196056   0.416707   x
+            x  Ar          16        -0.275154   0.045704  -0.483329   x
+            x  Ar          17        -0.046037  -0.100459   0.124164   x
+            x  Ar          18        -0.303247   0.388146   0.261178   x
+            x  Ar          19         0.046310   0.333812  -0.149268   x
+            x  Ar          20        -0.255630   0.303632   0.013120   x
+            x  Ar          21        -0.242283   0.238138  -0.191916   x
+            x  Ar          22         0.113195   0.139226  -0.242767   x
+            x  Ar          23        -0.436335  -0.293372   0.007290   x
+            x  Ar          24         0.200195   0.417578   0.405337   x
+            x  Ar          25         0.138405  -0.478098   0.036313   x
+            x  Ar          26         0.056222  -0.434070   0.236476   x
+            x  Ar          27        -0.221436   0.305384   0.429029   x
+            x  Ar          28         0.353985   0.078899   0.295307   x
+            x  Ar          29        -0.159492   0.259684   0.216229   x
+            x  Ar          30         0.348758   0.453476  -0.213795   x
+            x  Ar          31         0.499131  -0.444749   0.184094   x
+            x  Ar          32        -0.442688   0.019936   0.190721   x
+            x  Ar          33        -0.477146   0.030176  -0.182729   x
+            x  Ar          34         0.091881   0.278091   0.090466   x
+            x  Ar          35         0.355472  -0.492582  -0.003379   x
+            x  Ar          36        -0.180104  -0.290623  -0.014795   x
+            x  Ar          37        -0.005467  -0.271801  -0.165935   x
+            x  Ar          38        -0.016810   0.010157   0.494420   x
+            x  Ar          39         0.418839   0.082813  -0.454905   x
+            x  Ar          40         0.243452  -0.224081  -0.258575   x
+            x  Ar          41         0.448285   0.334541   0.160580   x
+            x  Ar          42        -0.139840  -0.413736   0.181316   x
+            x  Ar          43        -0.408042  -0.461124  -0.146762   x
+            x  Ar          44        -0.061094   0.430431  -0.308376   x
+            x  Ar          45         0.237836   0.357668   0.185156   x
+            x  Ar          46        -0.042250  -0.450845  -0.065659   x
+            x  Ar          47        -0.272246  -0.264974   0.439613   x
+            x  Ar          48         0.309741  -0.120750  -0.432583   x
+            x  Ar          49        -0.396318  -0.160593  -0.196685   x
+            x  Ar          50        -0.030873  -0.238387   0.280014   x
+            x  Ar          51         0.188974   0.293923  -0.383184   x
+            x  Ar          52        -0.465438  -0.182105   0.223731   x
+            x  Ar          53         0.384086  -0.428444   0.406001   x
+            x  Ar          54         0.116759  -0.044760  -0.245919   x
+            x  Ar          55        -0.468948  -0.064117  -0.385583   x
+            x  Ar          56         0.381701  -0.142270  -0.125970   x
+            x  Ar          57        -0.034729  -0.137673  -0.318775   x
+            x  Ar          58        -0.133048  -0.076055   0.333920   x
+            x  Ar          59         0.061936  -0.175672   0.480945   x
+            x  Ar          60         0.264378  -0.451860  -0.387126   x
+            x  Ar          61         0.314909  -0.005540  -0.276643   x
+            x  Ar          62         0.259457  -0.409436   0.208225   x
+            x  Ar          63        -0.303981   0.486464  -0.310431   x
+            x  Ar          64        -0.466464   0.298261  -0.076658   x
+            x  Ar          65         0.244834   0.338010  -0.039532   x
+            x  Ar          66         0.198873   0.054637  -0.417761   x
+            x  Ar          67        -0.090664   0.444934   0.333959   x
+            x  Ar          68        -0.001531   0.261865  -0.423017   x
+            x  Ar          69        -0.075992   0.111847  -0.286540   x
+            x  Ar          70         0.183878  -0.440085  -0.155076   x
+            x  Ar          71         0.015625  -0.287946   0.051884   x
+            x  Ar          72        -0.096937  -0.297263  -0.441243   x
+            x  Ar          73        -0.275047  -0.128474  -0.358521   x
+            x  Ar          74        -0.426390   0.429320  -0.459709   x
+            x  Ar          75        -0.187925  -0.482786  -0.472378   x
+            x  Ar          76        -0.125109   0.136396   0.387943   x
+            x  Ar          77         0.162758  -0.200300   0.194921   x
+            x  Ar          78        -0.389355   0.221837  -0.442596   x
+            x  Ar          79        -0.449259   0.133782   0.379992   x
+            x  Ar          80         0.439313  -0.063945   0.395557   x
+            x  Ar          81         0.023379   0.009110  -0.024279   x
+            x  Ar          82         0.183479  -0.045046   0.353847   x
+            x  Ar          83         0.034497   0.057645   0.228096   x
+            x  Ar          84         0.407804  -0.348418  -0.172733   x
+            x  Ar          85         0.243935  -0.253555  -0.038890   x
+            x  Ar          86        -0.379826   0.153617   0.074464   x
+            x  Ar          87        -0.197409   0.270738  -0.383890   x
+            x  Ar          88        -0.274139   0.045492  -0.263568   x
+            x  Ar          89        -0.451133  -0.208955   0.455198   x
+            x  Ar          90         0.334701  -0.222340   0.353778   x
+            x  Ar          91        -0.059124   0.425157   0.087941   x
+            x  Ar          92        -0.384974   0.461596   0.061543   x
+            x  Ar          93        -0.204466   0.071173   0.173435   x
+            x  Ar          94         0.027647  -0.492438  -0.478448   x
+            x  Ar          95         0.401749   0.135902   0.048149   x
+            x  Ar          96        -0.234288  -0.102570   0.068427   x
+            x  Ar          97         0.076109  -0.365642  -0.344708   x
+            x  Ar          98        -0.345897  -0.452247   0.379562   x
+            x  Ar          99        -0.269691   0.053697  -0.068055   x
+            x  Ar         100         0.382159  -0.269950   0.090624   x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+                         No user defined ionic velocities
+
+                           -------------------------------
+                                   Details of Species
+                           -------------------------------
+
+                               Mass of species in AMU
+                                    Ar   39.9480000
+
+                          Electric Quadrupole Moment (Barn)
+                                    Ar    1.0000000 No Isotope Defined
+
+                          Files used for pseudopotentials:
+                                    Ar 2|1.6|7|8|9|30:31
+
+                           -------------------------------
+                              k-Points For BZ Sampling
+                           -------------------------------
+                       MP grid size for SCF calculation is  1  1  1
+                            with an offset of   0.000  0.000  0.000
+                       Number of kpoints used =             1
+
+                           -------------------------------
+                               Symmetry and Constraints
+                           -------------------------------
+
+                      Maximum deviation from symmetry =  0.00000         ANG
+
+                      Number of symmetry operations   =           1
+                      Number of ionic constraints     =           3
+                      Point group of crystal =     1: C1, 1, 1
+                      Space group of crystal =     1: P1, P 1
+
+             Set iprint > 1 for details on symmetry rotations/translations
+
+                         Centre of mass is constrained
+             Set iprint > 1 for details of linear ionic constraints
+
+                         Number of cell constraints= 6
+                         Cell constraints are:  0 0 0 0 0 0
+
+                         External pressure/stress (GPa)
+                          0.00000   0.00000   0.00000
+                                    0.00000   0.00000
+                                              0.00000
+
+   ************************     PairParams     ************************
+   *                                                                  *
+   *                               Two Body                           *
+   *                               Ar                                 *
+   *    r                      8.5125000000                  A        * <--   LJ
+   *    e                      0.0103407999                  eV       * <--   LJ
+   *    s                      0.3405000000                  A        * <--   LJ
+   ********************************************************************
+
+Final energy = -0.9151337939619E-005eV
+ Starting MD
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x                                               MD Data:     x
+            x                                                            x
+            x              time :      0.000000                   ps     x
+            x                                                            x
+            x   Potential Energy:     -0.000009                   eV     x
+            x   Kinetic   Energy:      1.023739                   eV     x
+            x   Total     Energy:      1.023730                   eV     x
+            x   Hamilt    Energy:      1.023730                   eV     x
+            x                                                            x
+            x        Temperature:     80.000000                    K     x
+            x      T/=0 Pressure:      0.000000                  GPa     x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+================================================================================
+ Starting MD iteration          1 ...
+================================================================================
+
++---------------- MEMORY AND SCRATCH DISK ESTIMATES PER PROCESS --------------+
+|                                                     Memory          Disk    |
+| Model and support data                              282.8 MB         0.0 MB |
+| Molecular Dynamics requirements                     346.2 MB         0.0 MB |
+|                                               ----------------------------- |
+| Approx. total storage required per process          629.1 MB         0.0 MB |
+|                                                                             |
+| Requirements will fluctuate during execution and may exceed these estimates |
++-----------------------------------------------------------------------------+
+
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x                                               MD Data:     x
+            x                                                            x
+            x              time :      0.005000                   ps     x
+            x                                                            x
+            x   Potential Energy:     -0.000009                   eV     x
+            x   Kinetic   Energy:      1.023739                   eV     x
+            x   Total     Energy:      1.023730                   eV     x
+            x   Hamilt    Energy:      1.023730                   eV     x
+            x                                                            x
+            x        Temperature:     80.000000                    K     x
+            x      T/=0 Pressure:      0.000000                  GPa     x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+--------------------------------------------------------------------------------
+ ... finished MD iteration          1
+
+================================================================================
+ Starting MD iteration          2 ...
+================================================================================
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x                                               MD Data:     x
+            x                                                            x
+            x              time :      0.010000                   ps     x
+            x                                                            x
+            x   Potential Energy:     -0.000009                   eV     x
+            x   Kinetic   Energy:      1.023739                   eV     x
+            x   Total     Energy:      1.023730                   eV     x
+            x   Hamilt    Energy:      1.023730                   eV     x
+            x                                                            x
+            x        Temperature:     80.000000                    K     x
+            x      T/=0 Pressure:      0.000000                  GPa     x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+--------------------------------------------------------------------------------
+ ... finished MD iteration          2
+
+================================================================================
+ Starting MD iteration          3 ...
+================================================================================
+
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+            x                                               MD Data:     x
+            x                                                            x
+            x              time :      0.015000                   ps     x
+            x                                                            x
+            x   Potential Energy:     -0.000009                   eV     x
+            x   Kinetic   Energy:      1.023739                   eV     x
+            x   Total     Energy:      1.023730                   eV     x
+            x   Hamilt    Energy:      1.023730                   eV     x
+            x                                                            x
+            x        Temperature:     80.000001                    K     x
+            x      T/=0 Pressure:      0.000000                  GPa     x
+            xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+
+
+--------------------------------------------------------------------------------
+ ... finished MD iteration          3
+ Finished MD
+
+ ************************************** Forces **************************************
+ *                                                                                  *
+ *                           Cartesian components (eV/A)                            *
+ * -------------------------------------------------------------------------------- *
+ *                         x                    y                    z              *
+ *                                                                                  *
+ * Ar              1     -0.00000              0.00001             -0.00000         *
+ * Ar              2      0.00000              0.00000              0.00000         *
+ * Ar              3     -0.00000             -0.00000             -0.00000         *
+ * Ar              4      0.00000             -0.00000              0.00000         *
+ * Ar              5      0.00000             -0.00000             -0.00000         *
+ * Ar              6     -0.00000              0.00000             -0.00000         *
+ * Ar              7      0.00001             -0.00001              0.00001         *
+ * Ar              8     -0.00000              0.00000              0.00000         *
+ * Ar              9     -0.00000             -0.00000              0.00000         *
+ * Ar             10     -0.00000             -0.00000             -0.00001         *
+ * Ar             11     -0.00000              0.00000             -0.00000         *
+ * Ar             12      0.00040             -0.00278             -0.00094         *
+ * Ar             13      0.00006              0.00019             -0.00012         *
+ * Ar             14      0.00000              0.00000              0.00000         *
+ * Ar             15      0.00000             -0.00000             -0.00000         *
+ * Ar             16     -0.00001             -0.00000              0.00000         *
+ * Ar             17      0.00000             -0.00001              0.00001         *
+ * Ar             18      0.00000             -0.00000              0.00000         *
+ * Ar             19     -0.00001              0.00001             -0.00001         *
+ * Ar             20      0.00000             -0.00000             -0.00000         *
+ * Ar             21     -0.00000              0.00000              0.00000         *
+ * Ar             22     -0.00000             -0.00000             -0.00000         *
+ * Ar             23     -0.00000              0.00000             -0.00000         *
+ * Ar             24      0.00000              0.00000             -0.00000         *
+ * Ar             25     -0.00000              0.00000             -0.00000         *
+ * Ar             26      0.00000              0.00000             -0.00000         *
+ * Ar             27      0.00000             -0.00000             -0.00000         *
+ * Ar             28     -0.00000             -0.00000             -0.00000         *
+ * Ar             29      0.00004             -0.00000              0.00000         *
+ * Ar             30      0.00000             -0.00000              0.00000         *
+ * Ar             31      0.00000             -0.00000             -0.00000         *
+ * Ar             32      0.00001              0.00000             -0.00000         *
+ * Ar             33     -0.00040              0.00277              0.00097         *
+ * Ar             34     -0.00000             -0.00000              0.00000         *
+ * Ar             35      0.00000              0.00000              0.00000         *
+ * Ar             36      0.00000              0.00000             -0.00000         *
+ * Ar             37      0.00000              0.00000              0.00000         *
+ * Ar             38      0.00000              0.00000              0.00000         *
+ * Ar             39     -0.00000             -0.00000              0.00001         *
+ * Ar             40      0.00000              0.00000              0.00000         *
+ * Ar             41      0.00000             -0.00001              0.00000         *
+ * Ar             42     -0.00000              0.00000              0.00000         *
+ * Ar             43      0.00000             -0.00000              0.00000         *
+ * Ar             44      0.00000              0.00000              0.00000         *
+ * Ar             45      0.00130              0.00665             -0.00156         *
+ * Ar             46      0.00003             -0.00002              0.00003         *
+ * Ar             47     -0.00000             -0.00000             -0.00000         *
+ * Ar             48     -0.00004              0.00000             -0.00000         *
+ * Ar             49     -0.00000              0.00000              0.00000         *
+ * Ar             50      0.00001             -0.00000             -0.00000         *
+ * Ar             51     -0.00000              0.00001              0.00001         *
+ * Ar             52     -0.00004             -0.00001              0.00003         *
+ * Ar             53     -0.00000              0.00001             -0.00003         *
+ * Ar             54     -0.00000              0.00000             -0.00000         *
+ * Ar             55     -0.00000             -0.00000              0.00000         *
+ * Ar             56     -0.00000             -0.00000             -0.00001         *
+ * Ar             57      0.00000             -0.00000             -0.00000         *
+ * Ar             58      0.00001              0.00001             -0.00000         *
+ * Ar             59      0.00000             -0.00000             -0.00001         *
+ * Ar             60     -0.00000              0.00000              0.00000         *
+ * Ar             61     -0.00000             -0.00000             -0.00000         *
+ * Ar             62     -0.00006             -0.00020              0.00011         *
+ * Ar             63     -0.00000              0.00000             -0.00000         *
+ * Ar             64     -0.00000              0.00000             -0.00000         *
+ * Ar             65      0.00000             -0.00000              0.00000         *
+ * Ar             66     -0.00000              0.00000             -0.00000         *
+ * Ar             67     -0.00002              0.00002             -0.00004         *
+ * Ar             68      0.00000              0.00000             -0.00000         *
+ * Ar             69      0.00000              0.00000              0.00000         *
+ * Ar             70      0.00000             -0.00000              0.00001         *
+ * Ar             71     -0.00000              0.00001             -0.00001         *
+ * Ar             72      0.00000             -0.00000              0.00000         *
+ * Ar             73     -0.00000             -0.00000             -0.00000         *
+ * Ar             74      0.00000             -0.00000             -0.00001         *
+ * Ar             75      0.00000             -0.00000             -0.00000         *
+ * Ar             76     -0.00000              0.00000              0.00000         *
+ * Ar             77     -0.00000             -0.00000             -0.00000         *
+ * Ar             78     -0.00001              0.00001             -0.00002         *
+ * Ar             79     -0.00000              0.00000             -0.00000         *
+ * Ar             80     -0.00000             -0.00000              0.00000         *
+ * Ar             81     -0.00000             -0.00000              0.00000         *
+ * Ar             82     -0.00000              0.00000              0.00000         *
+ * Ar             83     -0.00001              0.00000              0.00000         *
+ * Ar             84     -0.00000              0.00000              0.00000         *
+ * Ar             85     -0.00128             -0.00667              0.00155         *
+ * Ar             86     -0.00000             -0.00000             -0.00000         *
+ * Ar             87     -0.00000              0.00000             -0.00000         *
+ * Ar             88      0.00000              0.00000             -0.00000         *
+ * Ar             89      0.00000             -0.00000             -0.00000         *
+ * Ar             90      0.00000              0.00000             -0.00000         *
+ * Ar             91      0.00000              0.00000              0.00001         *
+ * Ar             92     -0.00000             -0.00000             -0.00000         *
+ * Ar             93      0.00000              0.00000             -0.00000         *
+ * Ar             94      0.00000             -0.00000              0.00000         *
+ * Ar             95      0.00002              0.00001              0.00000         *
+ * Ar             96     -0.00000             -0.00000             -0.00000         *
+ * Ar             97     -0.00000              0.00000              0.00000         *
+ * Ar             98      0.00000             -0.00000             -0.00000         *
+ * Ar             99      0.00000              0.00000              0.00000         *
+ * Ar            100      0.00001             -0.00000              0.00000         *
+ *                                                                                  *
+ ************************************************************************************
+
+ ***************** Stress Tensor *****************
+ *                                               *
+ *          Cartesian components (GPa)           *
+ * --------------------------------------------- *
+ *             x             y             z     *
+ *                                               *
+ *  x     -0.000017     -0.000017      0.000008  *
+ *  y     -0.000017     -0.000197      0.000014  *
+ *  z      0.000008      0.000014     -0.000024  *
+ *                                               *
+ *  Pressure:    0.0001                          *
+ *                                               *
+ *************************************************
+Initialisation time =     17.10 s
+Calculation time    =      4.08 s
+Finalisation time   =      0.00 s
+Total time          =     21.18 s
+Peak Memory Use     = 479316 kB
