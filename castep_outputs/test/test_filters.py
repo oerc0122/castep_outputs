@@ -4,7 +4,7 @@ from pathlib import Path
 from unittest import TestCase
 
 from castep_outputs import parse_castep_file
-from castep_outputs.castep_file_parser import Filters
+from castep_outputs.parsers.castep_file_parser import Filters
 
 _TEST_FOLDER = Path(__file__).parent
 _TEST_FILE = _TEST_FOLDER / "test.castep"

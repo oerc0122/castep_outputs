@@ -3,7 +3,8 @@ Module to assist processing of parsed outputs.
 """
 
 from typing import NamedTuple
-from .castep_res import get_atom_parts
+
+from ..utilities.castep_res import get_atom_parts
 
 
 class AtomLabel(NamedTuple):
