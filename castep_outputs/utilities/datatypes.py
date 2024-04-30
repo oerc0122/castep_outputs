@@ -116,6 +116,46 @@ class GeomTable(TypedDict):
     dr_max: GeomTableElem
 
 
+class InternalConstraints(TypedDict):
+    """Internal constraints information."""
+
+    #: Constraint type.
+    type: Literal["Bond", "Angle", "Torsion"]
+    #: Current value of constraint.
+    current: float
+    #: Required constraint value; ``None`` if satisfied.
+    target: float | None
+    #: Dictionary mapping constraint index to constraints.
+    constraints: dict[int, ThreeVector]
+    #: Whether the constraint is satisfied.
+    satisfied: bool
+
+
+class DelocInternalsTable(TypedDict):
+    """Table of delocalised internal coordinates."""
+
+    #: Number of bond coordinates.
+    num_bonds: int
+    #: Number of angular coordinates.
+    num_angles: int
+    #: Number of dihedral coordinates.
+    num_dihedrals: int
+    #: Total number of internal coordinates.
+    num_internals: int
+    #: Dictionary mapping constraint ID to primative.
+    constraint_mapping: dict[int, int]
+
+
+class DelocActiveSpace(TypedDict):
+    """Information about delocalised internal coordinates."""
+
+    #: Number of degrees of freedom.
+    num_dof: int
+    #: Number of primitive internal coordinates.
+    num_primitive_internals: int
+    #: Size of the active space.
+    active_space_size: int
+
 # Dipole
 
 class DipoleTable(TypedDict):

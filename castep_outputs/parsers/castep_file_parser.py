@@ -26,11 +26,14 @@ from ..utilities.datatypes import (
     CellInfo,
     CharTable,
     ConstraintsReport,
+    DelocActiveSpace,
+    DelocInternalsTable,
     DipoleTable,
     ElasticProperties,
     FinalConfig,
     GeomTable,
     InitialSpin,
+    InternalConstraints,
     KPointsList,
     KPointsSpec,
     MDInfo,
@@ -1088,6 +1091,38 @@ def parse_castep_file(castep_file_in: TextIO,
             logger("Found %s geom_block", typ)
 
             curr_run["minimisation"].append(_process_geom_table(block))
+
+        # GeomOpt Deloc
+
+        elif block := Block.from_re(line, castep_file,
+                                    "INTERNAL CONSTRAINTS", REs.EMPTY, n_end=2):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            curr_run["internal_constraints"] = _process_internal_constraints(block)
+
+        elif block := Block.from_re(line, castep_file,
+                                    "Message: Generating deloc", "Message: Generation of deloc"):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            logger("Found Delocalisaed GeomOpt Table")
+
+            curr_run.setdefault("delocalised_internal", {})
+            curr_run["delocalised_internal"].update(_process_deloc_table(block))
+
+        elif block := Block.from_re(line, castep_file,
+                                    "The size of active space", REs.EMPTY):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            logger("Found Delocalisaed GeomOpt")
+
+            curr_run.setdefault("delocalised_internal", {})
+            curr_run["delocalised_internal"].update(_process_deloc_act_space_table(block))
 
         # TDDFT
         elif block := Block.from_re(line, castep_file,
@@ -2401,5 +2436,75 @@ def _process_elastic_properties(block: Block) -> ElasticProperties:
                                                  for blk_line in blk
                                                  if (numbers := get_numbers(blk_line))),
                                            )
+
+    return accum
+
+
+def _process_internal_constraints(block: TextIO) -> list[InternalConstraints]:
+
+    # Skip table headers
+    for _ in zip(range(3), block):
+        pass
+
+    accum = []
+    for line in block:
+        if not line.strip():
+            continue
+
+        _, type_, target, current, *definitions = line.split()
+        assert type_ in ("Bond", "Angle", "Torsion")
+
+        satisfied = current == "Satisfied"
+        if satisfied:
+            # Castep dumps current in target spot for reasons..?
+            # index type current "Satisfied" ...
+            target, current = None, float(target)
+        else:
+            # index type target current ...
+            target, current = float(target), float(current)
+
+        definitions = " ".join(definitions).split(")")
+        const = {val[0]: tuple(val[1:])
+                 for definition in definitions
+                 if definition and
+                 (val := to_type(get_numbers(definition), int))}
+
+        elem: InternalConstraints = {"type": type_,
+                                     "target": target,
+                                     "current": current,
+                                     "satisfied": satisfied,
+                                     "constraints": const}
+        accum.append(elem)
+
+    return accum
+
+
+def _process_deloc_table(block: TextIO) -> DelocInternalsTable:
+
+    accum: DelocInternalsTable = {"constraint_mapping": {}}
+    for line in block:
+        if line.startswith(" constraint"):
+            key, val = to_type(get_numbers(line), int)
+            accum["constraint_mapping"][key] = val
+        elif line.startswith("Total number of primitive"):
+            type_, val = line.split()[4:6]
+            type_ = "num_" + type_.strip(":")
+            val = int(val)
+
+            accum[type_] = val
+
+    return accum
+
+
+def _process_deloc_act_space_table(block: TextIO) -> DelocActiveSpace:
+
+    accum = {}
+    for line in block:
+        if "active space" in line:
+            accum["active_space_size"] = to_type(get_numbers(line)[0], int)
+        if "degrees" in line:
+            accum["num_dof"] = to_type(get_numbers(line)[0], int)
+        if "primitive" in line:
+            accum["num_primitive_internals"] = to_type(get_numbers(line)[0], int)
 
     return accum
