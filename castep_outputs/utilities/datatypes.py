@@ -66,6 +66,26 @@ class GeomTable(TypedDict):
     dr_max: GeomTableElem
 
 
+class InternalConstraints(TypedDict):
+    type: Literal["Bond", "Angle", "Torsion"]
+    actual: float
+    target: Union[Literal["Satisfied"], float]
+    constraints: Dict[int, ThreeVector]
+
+
+class DelocInternalsTable(TypedDict):
+    num_bonds: int
+    num_angles: int
+    num_dihedrals: int
+    num_internals: int
+    contraints: Dict[int, int]
+
+
+class DelocActiveSpace(TypedDict):
+    num_dof: int
+    num_primitive_internals: int
+    active_space_size: int
+
 # Dipole
 
 class DipoleTable(TypedDict):
