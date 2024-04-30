@@ -18,14 +18,15 @@ from .castep_res import gen_table_re, get_block, get_numbers, labelled_floats
 from .cell_param_file_parser import _parse_devel_code_block
 from .constants import SHELLS
 from .datatypes import (AtomIndex, AtomPropBlock, BandStructure, BondData,
-                        CellInfo, CharTable, ConstraintsReport, DipoleTable,
-                        ElasticProperties, FinalConfig, GeomTable, InitialSpin,
-                        KPointsList, KPointsSpec, MDInfo, MemoryEst,
-                        MullikenInfo, Occupancies, PhononSymmetryReport,
-                        PSPotEnergy, PSPotReport, PSPotStrInfo, QData,
-                        RamanReport, SCFReport, SixVector, SymmetryReport,
-                        TDDFTData, Thermodynamics, ThreeByThreeMatrix,
-                        ThreeVector, WvfnLineMin)
+                        CellInfo, CharTable, ConstraintsReport, DelocActiveSpace,
+                        DelocInternalsTable, DipoleTable, ElasticProperties,
+                        FinalConfig, GeomTable, InitialSpin,
+                        InternalConstraints, KPointsList, KPointsSpec, MDInfo,
+                        MemoryEst, MullikenInfo, Occupancies,
+                        PhononSymmetryReport, PSPotEnergy, PSPotReport,
+                        PSPotStrInfo, QData, RamanReport, SCFReport, SixVector,
+                        SymmetryReport, TDDFTData, Thermodynamics,
+                        ThreeByThreeMatrix, ThreeVector, WvfnLineMin)
 from .extra_files_parser import (parse_bands_file, parse_chdiff_fmt_file,
                                  parse_den_fmt_file, parse_efield_file,
                                  parse_elastic_file, parse_elf_fmt_file,
@@ -33,7 +34,8 @@ from .extra_files_parser import (parse_bands_file, parse_chdiff_fmt_file,
                                  parse_pot_fmt_file, parse_xrd_sf_file)
 from .utility import (FileWrapper, add_aliases, atreg_to_index, determine_type,
                       fix_data_types, log_factory, normalise_key,
-                      normalise_string, stack_dict, to_type, parse_int_or_float)
+                      normalise_string, parse_int_or_float, stack_dict,
+                      to_type)
 
 
 class Filters(Flag):
@@ -132,7 +134,8 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["time_started"] = normalise_string(line.split(":", 1)[1])
 
         # Finalisation
-        elif block := get_block(line, castep_file, "Initialisation time", "Peak Memory Use"):
+        elif block := get_block(line, castep_file, "Initialisation time", "Peak Memory Use",
+                                eof_possible=True):
 
             if Filters.SYS_INFO not in to_parse:
                 continue
@@ -1009,6 +1012,38 @@ def parse_castep_file(castep_file_in: TextIO,
             logger("Found %s geom_block", typ)
 
             curr_run["minimisation"].append(_process_geom_table(block))
+
+        # GeomOpt Deloc
+
+        elif block := get_block(line, castep_file,
+                                "INTERNAL CONSTRAINTS", REs.EMPTY, cnt=2):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            curr_run["internal_constraints"] = _process_internal_constraints(block)
+
+        elif block := get_block(line, castep_file,
+                                "Message: Generating deloc", "Message: Generation of deloc"):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            if "delocalised_internal" not in curr_run:
+                curr_run["delocalised_internal"] = {}
+
+            curr_run["delocalised_internal"].update(_process_deloc_table(block))
+
+        elif block := get_block(line, castep_file,
+                                "The size of active space", REs.EMPTY):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            if "delocalised_internal" not in curr_run:
+                curr_run["delocalised_internal"] = {}
+
+            curr_run["delocalised_internal"].update(_process_deloc_act_space_table(block))
 
         # TDDFT
         elif block := get_block(line, castep_file,
@@ -2304,5 +2339,70 @@ def _process_elastic_properties(block: TextIO) -> ElasticProperties:
                                                  for blk_line in blk
                                                  if (numbers := get_numbers(blk_line)))
                                            )
+
+    return accum
+
+
+def _process_internal_constraints(block: TextIO) -> List[InternalConstraints]:
+
+    # Skip table headers
+    for _ in zip(range(3), block):
+        pass
+
+    accum = []
+    for line in block:
+        if not line.strip():
+            continue
+
+        _, type_, target, actual, *definitions = line.split()
+        if actual == "Satisfied":
+            target, actual = actual, target
+        else:
+            target = float(target)
+        actual = float(actual)
+
+        definitions = " ".join(definitions).split(")")
+        const = {val[0]: tuple(val[1:])
+                 for definition in definitions
+                 if definition and
+                 (val := to_type(get_numbers(definition), int))}
+        assert type_ in ("Bond", "Angle", "Torsion")
+
+        elem: InternalConstraints = {"type": type_,
+                                     "target": target,
+                                     "actual": actual,
+                                     "constraints": const}
+        accum.append(elem)
+
+    return accum
+
+
+def _process_deloc_table(block: TextIO) -> DelocInternalsTable:
+
+    accum: DelocInternalsTable = {"constraint_mapping": {}}
+    for line in block:
+        if line.startswith(" constraint"):
+            key, val = to_type(get_numbers(line), int)
+            accum["constraint_mapping"][key] = val
+        elif line.startswith("Total number of primitive"):
+            type_, val = line.split()[4:6]
+            type_ = "num_" + type_.strip(":")
+            val = int(val)
+
+            accum[type_] = val
+
+    return accum
+
+
+def _process_deloc_act_space_table(block: TextIO) -> DelocActiveSpace:
+
+    accum = {}
+    for line in block:
+        if "active space" in line:
+            accum["active_space_size"] = to_type(get_numbers(line)[0], int)
+        if "degrees" in line:
+            accum["num_dof"] = to_type(get_numbers(line)[0], int)
+        if "primitive" in line:
+            accum["num_primitive_internals"] = to_type(get_numbers(line)[0], int)
 
     return accum

@@ -5,14 +5,16 @@ Utility functions for parsing castep outputs
 import collections.abc
 import fileinput
 import functools
+import itertools
 import json
 import logging
 import pprint
 import re
 from collections import defaultdict
 from copy import copy
-from typing import (Any, Callable, Dict, List, Mapping, MutableMapping, Optional, TextIO, Tuple,
-                    TypeVar, Union, Type, Iterable)
+from typing import (Any, Callable, Dict, Iterable, List, Mapping,
+                    MutableMapping, Optional, TextIO, Tuple, Type, TypeVar,
+                    Union)
 
 import castep_outputs.castep_res as REs
 
