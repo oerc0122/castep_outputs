@@ -2,6 +2,6 @@
 Run main castep parser
 """
 
-from .castep_outputs_main import main
+from .cli.castep_outputs_main import main
 
 main()

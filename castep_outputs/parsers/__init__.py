@@ -41,7 +41,7 @@ __all__ = ["parse_castep_file",
            "parse_err_file"]
 
 
-_PARSERS: Dict[str, Callable] = {
+PARSERS: Dict[str, Callable] = {
     "castep": parse_castep_file,
     "cell": parse_cell_param_file,
     "param": parse_cell_param_file,
@@ -62,5 +62,5 @@ _PARSERS: Dict[str, Callable] = {
     "tddft": parse_tddft_file,
     "err": parse_err_file
     }
-_CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(_PARSERS.keys())
-_CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in _CASTEP_OUTPUT_NAMES)
+CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(PARSERS.keys())
+CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

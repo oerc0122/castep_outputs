@@ -6,7 +6,7 @@ import pprint
 import unittest
 from pathlib import Path
 
-from castep_outputs.castep_outputs_main import parse_all, parse_single
+from castep_outputs.cli.castep_outputs_main import parse_all, parse_single
 from castep_outputs.utilities.utility import normalise
 
 try:

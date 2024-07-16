@@ -8,4 +8,4 @@ __version__ = "0.1.7"
 # pylint: disable=unused-import
 
 from .parsers import *
-from .castep_outputs_main import parse_single
+from .cli.castep_outputs_main import parse_single
