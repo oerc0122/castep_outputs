@@ -2,12 +2,12 @@
 Parse castep .md or .geom files
 """
 
-from typing import TextIO, List, Dict
 from collections import defaultdict
+from typing import Dict, List, TextIO
 
-from .castep_res import ATDATTAG, TAG_RE, get_numbers
-from .constants import FST_D, TAG_ALIASES
-from .utility import to_type, add_aliases, atreg_to_index
+from ..utilities.castep_res import ATDATTAG, TAG_RE, get_numbers
+from ..utilities.constants import FST_D, TAG_ALIASES
+from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
 def parse_md_geom_file(md_geom_file: TextIO) -> List[Dict[str, float]]:

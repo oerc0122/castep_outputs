@@ -1,13 +1,16 @@
 """
 Argument parser
 """
-from typing import Sequence, Dict, List
-from pathlib import Path
 import argparse
+from pathlib import Path
+from typing import Dict, List, Sequence
+
+from castep_outputs.parsers import CASTEP_FILE_FORMATS
+from castep_outputs.parsers import CASTEP_OUTPUT_NAMES
+from castep_outputs.utilities.dumpers import SUPPORTED_FORMATS
+
 # pylint: disable=line-too-long
 
-from .utility import SUPPORTED_FORMATS
-from .parsers import CASTEP_OUTPUT_NAMES, CASTEP_FILE_FORMATS
 
 AP = argparse.ArgumentParser(
     prog="castep_outputs",

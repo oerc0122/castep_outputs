@@ -8,9 +8,10 @@ from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, TextIO, Union
 
 from .args import args_to_dict, parse_args
-from .constants import OutFormats
-from .parsers import PARSERS
-from .utility import flatten_dict, get_dumpers, json_safe, normalise
+from ..parsers import PARSERS
+from ..utilities.constants import OutFormats
+from ..utilities.dumpers import get_dumpers
+from ..utilities.utility import flatten_dict, json_safe, normalise
 
 
 def parse_single(in_file: Union[str, Path, TextIO],

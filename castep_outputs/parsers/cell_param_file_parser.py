@@ -1,14 +1,16 @@
 """
 Parse castep .cell and .param files
 """
-from typing import Dict, TextIO, List, Union, Tuple
-from collections import defaultdict
 import re
+from collections import defaultdict
+from typing import Dict, List, TextIO, Tuple, Union
 
-import castep_outputs.castep_res as REs
-from .utility import (log_factory, to_type, determine_type, atreg_to_index)
-from .castep_res import get_block
-from .datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
+import castep_outputs.utilities.castep_res as REs
+
+from ..utilities.castep_res import get_block
+from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
+from ..utilities.utility import (atreg_to_index, determine_type, log_factory,
+                                 to_type)
 
 
 def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, Dict[str, str]]]]:
