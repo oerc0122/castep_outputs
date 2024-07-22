@@ -19,6 +19,7 @@ from .phonon_dos_file_parser import parse_phonon_dos_file
 from .tddft_file_parser import parse_tddft_file
 from .ts_file_parser import parse_ts_file
 from .xrd_sf_file_parser import parse_xrd_sf_file
+from .phonon_file_parser import parse_phonon_file
 
 __all__ = ["parse_castep_file",
            "parse_cell_param_file",
@@ -38,7 +39,8 @@ __all__ = ["parse_castep_file",
            "parse_ts_file",
            "parse_magres_file",
            "parse_tddft_file",
-           "parse_err_file"]
+           "parse_err_file",
+           "parse_phonon_file"]
 
 
 PARSERS: Dict[str, Callable] = {
@@ -60,7 +62,8 @@ PARSERS: Dict[str, Callable] = {
     "ts": parse_ts_file,
     "magres": parse_magres_file,
     "tddft": parse_tddft_file,
-    "err": parse_err_file
+    "err": parse_err_file,
+    "phonon": parse_phonon_file
     }
 CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(PARSERS.keys())
 CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
