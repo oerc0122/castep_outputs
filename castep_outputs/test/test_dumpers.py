@@ -169,5 +169,11 @@ class test_dumper(unittest.TestCase):
     def test_err_yaml(self):
         self._test_dump(_TEST_FOLDER / "test.err", "err", "yaml")
 
+    def test_phonon_json(self):
+        self._test_dump(_TEST_FOLDER / "test.phonon", "phonon", "json")
+
+    def test_phonon_yaml(self):
+        self._test_dump(_TEST_FOLDER / "test.phonon", "phonon", "yaml") 
+
 if __name__ == '__main__':
     unittest.main()
