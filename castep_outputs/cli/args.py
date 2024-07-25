@@ -1,5 +1,5 @@
 """
-Argument parser
+Argument parser.
 """
 from __future__ import annotations
 
@@ -13,38 +13,58 @@ from castep_outputs.utilities.dumpers import SUPPORTED_FORMATS
 # pylint: disable=line-too-long
 
 
-AP = argparse.ArgumentParser(
+ARG_PARSER = argparse.ArgumentParser(
     prog="castep_outputs",
     description=f"""Attempts to find all files for seedname, filtered by `inc` args (default: all).
     Explicit files can be passed using longname arguments.
     castep_outputs can parse most castep outputs including: {', '.join(CASTEP_FILE_FORMATS)}""",
 )
 
-AP.add_argument("seedname", nargs=argparse.REMAINDER, help="Seed name for data")
-AP.add_argument("-V", "--version", action="version", version="%(prog)s v0.1")
-AP.add_argument("-L", "--log", help="Verbose output",
-                choices=("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"), default="WARNING")
-AP.add_argument("-o", "--output", help="File to write output, default: screen", default=None)
-AP.add_argument("-f", "--out-format",
-                help="Output format", choices=SUPPORTED_FORMATS, default="json")
+ARG_PARSER.add_argument("seedname", nargs=argparse.REMAINDER, help="Seed name for data")
+ARG_PARSER.add_argument("-V", "--version", action="version", version="%(prog)s v0.1")
+ARG_PARSER.add_argument("-L", "--log", help="Verbose output",
+                        choices=("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"),
+                        default="WARNING")
+ARG_PARSER.add_argument("-o", "--output", help="File to write output, default: screen",
+                        default=None)
+ARG_PARSER.add_argument("-f", "--out-format", help="Output format", choices=SUPPORTED_FORMATS,
+                        default="json")
 
-AP.add_argument("-t", "--testing",
-                action="store_true", help="Set testing mode to produce flat outputs")
+ARG_PARSER.add_argument("-t", "--testing", action="store_true",
+                        help="Set testing mode to produce flat outputs")
 
-AP.add_argument("-A", "--inc-all", action="store_true", help="Extract all available information")
+ARG_PARSER.add_argument("-A", "--inc-all", action="store_true",
+                        help="Extract all available information")
 
 for output_name in CASTEP_OUTPUT_NAMES:
-    AP.add_argument(f"--inc-{output_name}",
-                    action="store_true", help=f"Extract .{output_name} information")
+    ARG_PARSER.add_argument(f"--inc-{output_name}", action="store_true",
+                            help=f"Extract .{output_name} information")
 
 for output_name in CASTEP_OUTPUT_NAMES:
-    AP.add_argument(f"--{output_name}", nargs="*",
-                    help=f"Extract from {output_name.upper()} as .{output_name} type", default=[])
+    ARG_PARSER.add_argument(f"--{output_name}", nargs="*",
+                            help=f"Extract from {output_name.upper()} as .{output_name} type",
+                            default=[])
 
 
 def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
-    """ Parse all arguments and add those caught by flags """
-    args = AP.parse_args()
+    """
+    Parse all arguments and add those caught by flags.
+
+    Parameters
+    ----------
+    to_parse : Sequence[str]
+        Arguments to handle in this call.
+
+    Returns
+    -------
+    argparse.Namespace
+        Parsed args.
+
+    Examples
+    --------
+    >>> parse_args()
+    """
+    args = ARG_PARSER.parse_args()
 
     parse_all = args.inc_all or not any(getattr(args, f"inc_{typ}") for typ in CASTEP_OUTPUT_NAMES)
 
@@ -75,5 +95,18 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
 
 
 def args_to_dict(args: argparse.Namespace) -> dict[str, list[str]]:
-    """ Convert args namespace to dictionary """
-    return {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
+    """
+    Convert args ``Namespace`` to dictionary.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Namespace to convert.
+
+    Returns
+    -------
+    dict[str, list[str]]
+        Converted namespace.
+    """
+    out_dict = {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
+    return out_dict
