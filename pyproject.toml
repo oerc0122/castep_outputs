@@ -43,3 +43,22 @@ Repository="https://github.com/oerc0122/castep_outputs.git"
 
 [tool.setuptools.dynamic]
 version = {attr = "castep_outputs.__version__"}
+
+[tool.numpydoc_validation]
+checks = [
+    "all",   # report on all checks, except the below
+    "EX01",
+    "SA01",
+    "ES01",
+]
+# remember to use single quotes for regex in TOML
+exclude = [  # don't report on objects that match any of these regex
+    '\.undocumented_method$',
+    '\.__[^.]*__$',
+]
+override_SS05 = [  # override SS05 to allow docstrings starting with these words
+    '^Process ',
+    '^Assess ',
+    '^Access ',
+    '^Class ',
+]
