@@ -50,5 +50,13 @@ sphinx:
       inherited-members: False
       private-members: True
       show-inheritance: True
+    autodoc_type_aliases:
+      AtomIndex: castep_outputs.utilities.datatypes.AtomIndex
+      ThreeVector: castep_outputs.utilities.datatypes.ThreeVector
+      SixVector: castep_outputs.utilities.datatypes.SixVector
+      ThreeByThreeMatrix: castep_outputs.utilities.datatypes.ThreeByThreeMatrix
+      AtomPropBlock: castep_outputs.utilities.datatypes.AtomPropBlock
     intersphinx_mapping:
-      python: 'https://docs.python.org/3/'
+      python:
+        - 'https://docs.python.org/3/'
+        - ""

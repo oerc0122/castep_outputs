@@ -16,8 +16,19 @@ from ..utilities.utility import (atreg_to_index, fix_data_types, stack_dict,
 
 def parse_regular_header(block: Block,
                          extra_opts: Sequence[str] = tuple()) -> Dict[str, Union[float, int]]:
-    """ Parse (semi-)standard castep file header block (given as iterable over lines) """
-
+    """
+    Parse (semi-)standard castep file header block.
+    Parameters
+    ----------
+    block : TextIO
+        Block to parse.
+    extra_opts : Sequence[str]
+        Extra regexes to match (stored as floats).
+    Returns
+    -------
+    Dict[str, Union[float, int]]
+        Parsed header block.
+    """
     data = {}
     coords = defaultdict(list)
     for line in block:
@@ -48,7 +59,19 @@ def parse_regular_header(block: Block,
 
 
 def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[Union[int, float]]]:
-    """ Parse standard form of kpt related .*_fmt files """
+    """
+    Parse standard form of kpt related .*_fmt files.
+
+    Parameters
+    ----------
+    inp : TextIO
+        File to parse.
+
+    Returns
+    -------
+    Dict[str, List[Union[int, float]]]
+        Parsed data.
+    """
 
     # Skip header
     while "END header" not in inp.readline():
