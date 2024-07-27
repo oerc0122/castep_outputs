@@ -1,19 +1,46 @@
 """
 Parse the following castep outputs:
-.hug
+
+- .hug
 """
 from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import TextIO
+from typing import TextIO, TypedDict
 
 from ..utilities.castep_res import labelled_floats
 from ..utilities.utility import fix_data_types, stack_dict
 
 
-def parse_hug_file(hug_file: TextIO) -> dict[str, list[float]]:
-    """ Parse castep .hug file """
+class HugFileInfo(TypedDict):
+    """
+    Hugoniot information.
+    """
+    #: Percentage change in lattice parameters.
+    compression: tuple[float, ...]
+    #: Temperature at given compression.
+    temperature: tuple[float, ...]
+    #: Pressure at given compression.
+    pressure: tuple[float, ...]
+    #: Total energy at given compression.
+    energy: tuple[float, ...]
+
+
+def parse_hug_file(hug_file: TextIO) -> HugFileInfo:
+    """
+    Parse castep .hug file.
+
+    Parameters
+    ----------
+    hug_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    HugFileInfo
+        Parsed info.
+    """
 
     cols = ("compression", "temperature", "pressure", "energy")
     data = defaultdict(list)

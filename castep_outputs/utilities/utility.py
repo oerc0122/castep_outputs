@@ -26,6 +26,7 @@ def normalise_string(string: str) -> str:
     Normalise a string.
 
     This includes:
+
     - Removing leading/trailing whitespace.
     - Making all spacing single-space.
 
@@ -42,7 +43,7 @@ def normalise_string(string: str) -> str:
     Examples
     --------
     >>> normalise_string(" Several   words  ")
-    "Several words"
+    'Several words'
     """
     return " ".join(string.strip().split())
 
@@ -52,6 +53,7 @@ def normalise_key(string: str) -> str:
     Normalise a dictionary key.
 
     This includes:
+
     - Removing all punctuation.
     - Lower-casing all.
     - Making all spacing single-underscore.
@@ -69,11 +71,11 @@ def normalise_key(string: str) -> str:
     Examples
     --------
     >>> normalise_key(" Several   words  ")
-    "several_words"
+    'several_words'
     >>> normalise_key("A sentence.")
-    "a_sentence"
+    'a_sentence'
     >>> normalise_key("I<3;;semi-colons;;!!!")
-    "i_3_semi_colons"
+    'i_3_semi_colons'
     """
     return re.sub(r"[_\W]+", "_", string).strip("_").lower()
 
@@ -95,13 +97,20 @@ def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) ->
     -------
     species : str
         Atomic species.
-    ind : index
+    ind : int
         Internal index.
 
     Examples
     --------
-    >>> atreg_to_index({'x': 3.1, 'y': 2.1, 'z': 1.0, 'spec': "Ar", 'index': "1"})
-    ("Ar", 1)
+    >>> parsed_line = {'x': 3.1, 'y': 2.1, 'z': 1.0, 'spec': 'Ar', 'index': '1'}
+    >>> atreg_to_index(parsed_line, clear=False)
+    ('Ar', 1)
+    >>> parsed_line
+    {'x': 3.1, 'y': 2.1, 'z': 1.0, 'spec': 'Ar', 'index': '1'}
+    >>> atreg_to_index(parsed_line)
+    ('Ar', 1)
+    >>> parsed_line
+    {'x': 3.1, 'y': 2.1, 'z': 1.0}
     """
     spec, ind = dict_in["spec"], dict_in["index"]
 
@@ -117,8 +126,9 @@ def normalise(obj: Any, mapping: dict[type, type | Callable]) -> Any:
     Standardise data after processing.
 
     Recursively converts:
-    - lists to tuples
-    - defaultdicts to dicts
+
+    - ``list`` s to ``tuple`` s
+    - ``defaultdict`` s to ``dict`` s
     - types in `mapping` to their mapped type or apply mapped function.
 
     Parameters
@@ -150,6 +160,7 @@ def json_safe(obj: Any) -> Any:
     Recursively transform datatypes into JSON safe variants.
 
     Including:
+
     - Ensuring dict keys are strings without spaces.
     - Ensuring complex numbers are split into real/imag components.
 
@@ -165,12 +176,12 @@ def json_safe(obj: Any) -> Any:
 
     Examples
     --------
-    >>> json_safe(3 + 4i)
-    {"real": 3., "imag": 4.}
-    >>> json_safe({("Ar", "Sr"): 3})
-    {"Ar_Sr": 3}
-    >>> json_safe({(("Ar", 1), ("Sr", 1)): 3})
-    {"Ar_1_Sr_1": 3}
+    >>> json_safe(3 + 4j)
+    {'real': 3.0, 'imag': 4.0}
+    >>> json_safe({('Ar', 'Sr'): 3})
+    {'Ar_Sr': 3}
+    >>> json_safe({(('Ar', 1), ('Sr', 1)): 3})
+    {'Ar_1_Sr_1': 3}
     """
     if isinstance(obj, dict):
         obj_out = {}
@@ -199,7 +210,7 @@ def flatten_dict(dictionary: MutableMapping[Any, Any],
     Parameters
     ----------
 
-    dictionary : MutableMapping[Any, Any]
+    dictionary : ~typing.MutableMapping[Any, Any]
         The dictionary to flatten.
     parent_key : str
         The string to prepend to dictionary's keys.
@@ -215,6 +226,12 @@ def flatten_dict(dictionary: MutableMapping[Any, Any],
     -----
     Taken from:
     https://stackoverflow.com/a/62186053
+
+    Examples
+    --------
+    >>> flatten_dict({'hello': ['is', 'me'],
+    ...               "goodbye": {"nest": "birds", "child": "moon"}})
+    {'hello_0': 'is', 'hello_1': 'me', 'goodbye_nest': 'birds', 'goodbye_child': 'moon'}
     """
 
     items: list[tuple[Any, Any]] = []
@@ -250,27 +267,32 @@ def add_aliases(in_dict: dict[str, Any],
                 replace: bool = False,
                 inplace: bool = True) -> dict[str, Any]:
     """
-    Add aliases of known names into dictionary, if replace is true, remove original.
+    Add aliases of known names into dictionary.
+
+    If replace is `True`, this will remove the original.
 
     Parameters
     ----------
     in_dict : Dict[str, Any]
-        FIXME: Add docs.
+        Dictionary of data to alias.
     alias_dict : Dict[str, str]
-        FIXME: Add docs.
+        Mapping of from->to for keys in `in_dict`.
     replace : bool
-        FIXME: Add docs.
+        Whether to remove the `from` key from `in_dict`.
     inplace : bool
-        FIXME: Add docs.
+        Whether to return a copy or overwrite `in_dict`.
 
     Returns
     -------
     Dict[str, Any]
-        FIXME: Add docs.
+        `in_dict` with keys substituted.
 
     Examples
     --------
-    FIXME: Add docs.
+    >>> add_aliases({'hi': 1, 'bye': 2}, {'hi': 'frog'})
+    {'hi': 1, 'bye': 2, 'frog': 1}
+    >>> add_aliases({'hi': 1, 'bye': 2}, {'hi': 'frog'}, replace=True)
+    {'bye': 2, 'frog': 1}
     """
     out_dict = in_dict if inplace else copy(in_dict)
 
@@ -289,7 +311,7 @@ def log_factory(file) -> Callable:
 
     Parameters
     ----------
-    file : TextIO or ~fileinput.FileInput or FileWrapper
+    file : ~typing.TextIO or ~fileinput.FileInput or FileWrapper
         File to apply logging for.
 
     Returns
@@ -308,7 +330,7 @@ def log_factory(file) -> Callable:
 
 
 @log_factory.register
-def _(file: fileinput.FileInput):
+def _(file: fileinput.FileInput) -> Callable:
     def log_file(message, *args, level="info"):
         getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
                                 f" {message}", *args)
@@ -344,31 +366,29 @@ def determine_type(data: str) -> type:
     Examples
     --------
     >>> determine_type('T')
-    bool
+    <class 'bool'>
     >>> determine_type('False')
-    bool
+    <class 'bool'>
     >>> determine_type('3.1415')
-    float
+    <class 'float'>
     >>> determine_type('123')
-    int
+    <class 'int'>
     >>> determine_type('1/3')
-    float
+    <class 'float'>
     >>> determine_type('BEEF')
-    str
+    <class 'str'>
     """
-
-    """  """
     if data.title() in ("T", "True", "F", "False"):
         return bool
 
     if re.match(rf"(?:\s*{REs.EXPFNUMBER_RE})+", data):
         return float
 
+    if re.match(rf"(?:\s*{REs.RATIONAL_RE})+", data):
+        return float
+
     if re.match(rf"(?:\s*{REs.INTNUMBER_RE})+", data):
         return int
-
-    if re.match(rf"(?:\s*{REs.FLOAT_RAT_RE.pattern})+", data):
-        return float
 
     return str
 
@@ -401,7 +421,26 @@ def parse_int_or_float(numbers: Iterable[str]) -> int | float:
 
 
 def _parse_float_or_rational(val: str) -> float:
-    """ Parse a float or a rational to float """
+    """
+    Parse a float or rational to float.
+
+    Parameters
+    ----------
+    val : str
+        Value to parse.
+
+    Returns
+    -------
+    float
+        Parsed value.
+
+    Examples
+    --------
+    >>> _parse_float_or_rational("0.5")
+    0.5
+    >>> _parse_float_or_rational("1/2")
+    0.5
+    """
     if "/" in val:
         numerator, denominator = val.split("/")
         return float(numerator) / float(denominator)
@@ -410,7 +449,34 @@ def _parse_float_or_rational(val: str) -> float:
 
 
 def _parse_logical(val: str) -> bool:
-    """ Parse a logical to a bool """
+    """
+    Parse a logical to a bool.
+
+    Parameters
+    ----------
+    val : str
+        String to parse.
+
+    Returns
+    -------
+    bool
+        Parsed value.
+
+    Notes
+    -----
+    Case-insensitive.
+
+    Examples
+    --------
+    >>> _parse_logical("T")
+    True
+    >>> _parse_logical("TrUe")
+    True
+    >>> _parse_logical("1")
+    True
+    >>> _parse_logical("F")
+    False
+    """
     return val.title() in ("T", "True", "1")
 
 
@@ -419,8 +485,22 @@ _TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational,
 
 
 @functools.singledispatch
-def to_type(data_in, _: type):
-    """ Convert types to `typ` regardless of if data_in is iterable or otherwise """
+def to_type(data_in, _typ: type):
+    """
+    Convert types to `typ` regardless of if data_in is iterable or otherwise.
+
+    Parameters
+    ----------
+    data_in : str or ~collections.abc.Sequence
+        Data to convert.
+    typ : type
+        Type to convert to.
+
+    Returns
+    -------
+    `typ` or tuple[`typ`, ...]
+        Converted data.
+    """
     return data_in
 
 
@@ -438,7 +518,33 @@ def _(data_in, typ: type[T]) -> tuple[T, ...]:
 
 
 def fix_data_types(in_dict: MutableMapping, type_dict: dict[str, type]):
-    """ Applies correct types to elements of in_dict by mapping given in type_dict"""
+    """
+    Appliy correct types to elements of `in_dict` by mapping given in `type_dict`.
+
+    Parameters
+    ----------
+    in_dict : dict[str, ~typing.Any]
+        Dictionary of {key: values} to convert.
+    type_dict : dict[str, type]
+        Mapping of keys to types the keys should be converted to.
+
+    See Also
+    --------
+    to_type : Conversion function.
+
+    Notes
+    -----
+    Modifies the dictionary in-place.
+
+    Examples
+    --------
+    >>> my_dict = {"int": "7", "float": "3.141", "bool": "T",
+    ...            "vector": ["3", "4", "5"], "blank": "Hello"}
+    >>> type_map = {"int": int, "float": float, "bool": bool, "vector": float}
+    >>> fix_data_types(my_dict, type_map)
+    >>> print(my_dict)
+    {'int': 7, 'float': 3.141, 'bool': True, 'vector': (3.0, 4.0, 5.0), 'blank': 'Hello'}
+    """
     for key, typ in type_dict.items():
         if key in in_dict:
             in_dict[key] = to_type(in_dict[key], typ)

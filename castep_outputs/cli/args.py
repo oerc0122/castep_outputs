@@ -108,5 +108,4 @@ def args_to_dict(args: argparse.Namespace) -> dict[str, list[str]]:
     dict[str, list[str]]
         Converted namespace.
     """
-    out_dict = {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
-    return out_dict
+    return {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}

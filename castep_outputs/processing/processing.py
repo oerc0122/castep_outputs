@@ -20,6 +20,7 @@ class AtomLabel(NamedTuple):
     #: Overridden internal name via label.
     label: str = ""
 
+    @classmethod
     def from_str(cls, string: str):
         """
         Build a label from a key-string.

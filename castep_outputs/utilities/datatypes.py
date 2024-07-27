@@ -4,19 +4,25 @@ Types produced by castep_outputs.
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Any, Dict, Literal, TextIO, Tuple, TypedDict
+from typing import Dict, Literal, Tuple, TypedDict
 
-# Parser protocol
-
-ParserFunction = Callable[[TextIO], Dict[str, Any]]
+#: Parser protocol
+ParserFunction = Callable  # [[TextIO], Dict[str, Any]] limited by 3.8
 
 
 # General types
 
+#: CASTEP atom keys.
 AtomIndex = Tuple[str, int]
+#: Standard 3D vector.
 ThreeVector = Tuple[float, float, float]
+#: Complex 3D vector.
+ComplexThreeVector = Tuple[complex, complex, complex]
+#: Voigt notation vector.
 SixVector = Tuple[float, float, float, float, float, float]
+#: Three by three matrix.
 ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]
+#: Atom properties linking unique atom to a physical property.
 AtomPropBlock = Dict[AtomIndex, ThreeVector]
 
 
@@ -194,11 +200,12 @@ class RamanReport(TypedDict, total=False):
     """
     #: Raman susceptibility.
     tensor: ThreeByThreeMatrix
-    #: Trace of array
+    #: Trace of susceptibility.
     trace: float
-    #: Sum(diagonal**2) - sum(off-diagonal :math:`xy*yx`...)
+    #: :math:`\sum\limits_{i} \sigma{}_{ii}^{2} -`
+    #: :math:`\sum\limits_{i,j} \sigma{}_{ij}\sigma{}_{ji}`
     ii: float
-    #: Depolarisation ratio in 0.5 A/amu
+    #: Depolarisation ratio in 0.5 A/amu.
     depolarisation: float | None
 
 
@@ -325,154 +332,354 @@ class MullikenInfo(TypedDict, total=False):
 # PSPot
 
 class PSPotProj(TypedDict):
+    """
+    Pseudopotential projector information.
+    """
+    #: Electronic orbital.
     orbital: int
+    #: Electronic shell state.
     shell: Literal["s", "p", "d", "f"]
-    type: Literal["N", "U", "UU", "L", "LL", "G", "GG", "LGG", None]
+    #: Pseudopotential projector handling.
+    #: Type can be:
+    #:
+    #: - ``U`` - a single ultrasoft projector.
+    #: - ``UU`` - Two ultrasoft projectors.
+    #: - ``N`` - a single norm-conserving projector.
+    #: - ``L`` - use this projector as the local component.
+    #: - ``G`` - an ultrasoft GIPAW Gamma projector.
+    #: - ``H`` - an norm-conserving GIPAW Gamma projector.
+    #: - ``P`` - Dummy: do not make a projector.
+    #: - ``LG`` - Make Gammas for local channel (not done by default).
+    type: Literal["U", "UU", "N", "L", "G", "H", "P", "LG", "LL", "GG", "LGG", None]
 
 
 class PSPotStrInfo(TypedDict, total=False):
+    """
+    Information about pseudopotential string.
+    """
+    #: 0, 1, 2 for s, p, d respectively.
     local_channel: int
+    #: Pseudisation radius for augmentation functions (:math:`\beta`) in Bohr.
     beta_radius: float
+    #: Pseudisation radius for pseudo-core charge in Bohr.
     core_radius: float
+    #: Pseudisation radius for augmentation functions in Bohr.
     r_inner: float
+    #: Estimated cut-off energy for coarse precision in Ha.
     coarse: float
+    #: Estimated cut-off energy for medium precision in Ha.
     medium: float
+    #: Estimated cut-off energy for fine precision in Ha.
     fine: float
+    #: Projection
     proj: str
+    #: All pseudopotential projectors.
     projectors: tuple[PSPotProj, ...]
+    #: Extra options.
     opt: list[str]
+    #: Swap particular orbitals.
     shell_swp: str
+    #: ?
     shell_swp_end: str
+    #: Print detailed debug information of PSpot.
     print: bool
+    #: Total PSPot string.
     string: str
 
 
 class PSPotElecStruct(TypedDict):
+    """
+    Reference electronic structure detail.
+    """
+    #: Energy of orbital.
     energy: float
+    #: Electronic occupancy of shell.
     occupation: float
+    #: Orbital e.g. 6d3/2.
     orb: str
 
 
 class PSPotDebugInfo(TypedDict):
+    #: Eigenvalue of :attr:`nl`
     eigenvalue: float
+    #: Nonlocal orbital number.
     nl: int
+    #: Type of ?
     type: Literal["AE", "PS"]
 
 
 class PSPotTableInfo(TypedDict, total=False):
+    #: Orbital cutoff.
     rc: float
+    #: The projector name.
     beta: float | str
+    #: Energy of corresponding orbital.
     e: float
+    #: Spin quantum number.
     j: int
+    #: Angular momentum quantum number.
     l: int  # noqa: E741
-    norm: int
+    #: 1=Norm-conserving, 0=Ultrasoft
+    norm: Literal[0, 1]
+    #: Pseudisation scheme.
+    #:
+    #: - ``qc`` - qc tuned.
+    #: - ``tm`` - Troullier-Martins pseudosation scheme.
+    #: - ``pn`` - Polynomial fit.
+    #: - ``pb`` - Bessel fit.
+    #: - ``es`` - "extra soft" scheme.
+    #: - ``esr=val`` - Extra-soft with explicit specification of r_c.
+    #: - ``nonlcc`` - Do not generate of unscreen with a pseudo-core charge.
+    #: - ``schro`` - Use non-relativistic schroedinger equation for AE calculation
+    #:   (default is scalar relativistic eqn).
+    #: - ``aug`` - Explicitly turn on augmentation charges.
+    #: - ``scpsp`` - Generate a self-consistent pseudopotential.
     scheme: Literal["2b", "es", "ev", "fh", "pn", "pv", "qb", "qc", "tm"]
 
 
 class PSPotReport(TypedDict, total=False):
+    #: Chemical element being calculated.
     element: str
+    #: Full breakdown of PSPot string.
     detail: PSPotStrInfo
+    #: Core charge of ion.
     ionic_charge: float
+    #: Level of DFT theory used.
     level_of_theory: Literal["LDA"]
+    #: Argumentation charge nodification.
     augmentation_charge_rinner: tuple[float, ...]
+    #: Correction to partial core charge.
     partial_core_correction: tuple[float, ...]
+    #: Pseudopotential breakdown of projectors.
     pseudopotential_definition: PSPotTableInfo
+    #: Outer electronic orbital set.
     reference_electronic_structure: list[PSPotElecStruct]
-    solver: Literal["Koelling-Harmon", "Schroedinger", "ZORA", "Unknown"]
+    #: Pseudopotential calculator.
+    solver: Literal["Koelling-Harmon", "Schroedinger", "ZORA", "Dirac (FR)", "Unknown"]
 
 
 class PSPotEnergy(TypedDict):
+    #: Electronic energy of atom.
     pseudo_atomic_energy: float
+    #: Spin spilling from pure state.
     charge_spilling: tuple[float, ...]
 
 
 # Symmetry & Constraints
 
 class Symop(TypedDict):
+    """
+    Symmetry operation definition.
+    """
+    #: Displacement vector for symop.
     displacement: ThreeVector
+    #: Rotational transformation for symop.
     rotation: ThreeByThreeMatrix
+    #: List of atoms which are identical under symmetry.
     symmetry_related: list[AtomIndex]
 
 
 class ConstraintsReport(TypedDict, total=False):
+    """
+    Constraints block information.
+    """
+    #: Number of constraints on cell vectors.
     number_of_cell_constraints: int
+    #: Number of constraints on ions.
     number_of_ionic_constraints: int
+    #: Constraints on a,b,c,:math:`\alpha`,:math:`\beta`,:math:`\gamma`.
+    #:
+    #: 0 implies fixed, matching indices are tied.
     cell_constraints: tuple[int, int, int, int, int, int]
+    #: Whether centre of mass is constrained.
     com_constrained: bool
+    #: Nonlinear constraints on ions.
     ionic_constraints: dict[AtomIndex, ThreeByThreeMatrix]
 
 
 class SymmetryReport(TypedDict, total=False):
+    """
+    Symmetry block information.
+    """
+    #: Largest deviation from ideal symmetry in Ang.
     maximum_deviation_from_symmetry: str
+    #: Number of symmetry operations.
     number_of_symmetry_operations: int
+    #: Space group.
     point_group_of_crystal: str
+    #: Point group.
     space_group_of_crystal: str
+    #: List of all symmetry operations.
     symop: list[Symop]
+    #: Number of primitive cells in system.
     n_primitives: int
 
 
 # KPoints
 
 class KPoint(TypedDict):
+    """
+    Single :math:`k`-point definition.
+    """
+    #: :math:`k`-point position.
     qpt: ThreeVector
+    #: :math:`k`-point weighting.
     weight: float
 
 
 class KPointsList(TypedDict):
+    """
+    :math:`k`-points list specification.
+    """
+    #: List of :math:`k`-points.
     points: list[KPoint]
+    #: Number of :math:`k`-points.
     num_kpoints: int
 
 
 class KPointsSpec(TypedDict, total=False):
+    """
+    :math:`k`-point grid specification.
+    """
+    #: Monkhurst-Pack Grid.
     kpoint_mp_grid: tuple[int, int, int]
-    kpoint_mp_offset: tuple[float, float, float]
+    #: Monkhurst-Pack offset in 1/Ang.
+    kpoint_mp_offset: ThreeVector
+    #: Number of :math:`k`-points.
     num_kpoints: int
 
 
 # Memory Report
 
 class MemoryEst(TypedDict):
+    """
+    Memory estimate.
+    """
+    #: Estimated RAM usage in MiB.
     memory: float
+    #: Estimated disk usage in MiB.
     disk: float
 
 
 # Band Structure
 
 class BandStructure(TypedDict):
+    """
+    Band structure table information.
+    """
+    #: Band spin.
     spin: int
+    #: :math:`k`-point x coordinate.
     kx: float
+    #: :math:`k`-point y coordinate.
     ky: float
+    #: :math:`k`-point z coordinate.
     kz: float
+    #: :math:`k`-point group.
     kpgrp: int
+    #: Band number.
     band: tuple[int, ...]
+    #: Energy in eV.
     energy: tuple[float, ...]
 
 
 # Thermodynamics
 
 class Thermodynamics(TypedDict):
+    """
+    Thermodynamic properties.
+
+    Notes
+    -----
+    See
+    https://www.tcm.phy.cam.ac.uk/castep/documentation/WebHelp/content/modules/castep/thcastepthermo.htm
+    for more info.
+    """
+    #: Temperature in K.
     t: tuple[float, ...]
+    #: Temperature dependence of energy in eV.
     e: tuple[float, ...]
+    #: Free energy in eV.
     f: tuple[float, ...]
+    #: Entropy in J/mol/K.
     s: tuple[float, ...]
+    #: Heat capacity in J/mol/K.
     cv: tuple[float, ...]
+    #: Zero-point energy in eV.
     zero_point_energy: float
 
 
 # MD
 
 class MDInfo(TypedDict, total=False):
+    """
+    Per-step MD information block.
+    """
+    #: Current MD time passed in s.
     time: float
+    #: Hamiltonian energy in eV.
     hamilt_energy: float
+    #: Kinetic energy in eV.
+    #:
+    #: :math:`\mathcal{K} = \sum\limits^{N}\frac{1}{2}mv^{2}`
     kinetic_energy: float
+    #: Potential energy in eV.
     potential_energy: float
+    #: Kinetic temperature in eV.
+    #:
+    #: :math:`T = k_{B} \frac{\left<2\mathcal{K}\right>}{3N}`
     temperature: float
+    #: Sum of KE and PE.
     total_energy: float
 
 
 # TDDFT
 
 class TDDFTData(TypedDict):
+    """
+    Time-dependent DFT information.
+    """
+    #: State energy in eV.
     energy: float
+    #: Estimated error.
     error: float
+    #: Whether state is: Spurious, Single, Doublet, etc.
     type: str
+
+
+# Files
+
+
+class HeaderAtomInfo(TypedDict):
+    """
+    Atom info from header.
+    """
+    #: Atom indices.
+    index: tuple[int, ...]
+    #: Atom species.
+    spec: list[str]
+    #: Positions in u.
+    u: tuple[float, ...]
+    #: Positions in v.
+    v: tuple[float, ...]
+    #: Positions in w.
+    w: tuple[float, ...]
+    #: Atom masses.
+    mass: tuple[float, ...]
+
+
+class StandardHeader(TypedDict):
+    """
+    Standard header from CASTEP outputs.
+    Includes:
+
+    - phonon
+    - phonon_dos
+    - efield
+    - tddft
+    - bands
+    """
+    #: System box.
+    unit_cell: ThreeByThreeMatrix
+    #: Atomic info.
+    coords: HeaderAtomInfo | dict[AtomIndex, ThreeVector]

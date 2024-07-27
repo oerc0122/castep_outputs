@@ -15,7 +15,19 @@ from ..utilities.utility import atreg_to_index, determine_type, log_factory, to_
 
 
 def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[str, str]]]:
-    """ Parse .cell/.param files into dict ready to JSONise """
+    """
+    Parse castep .cell and param files.
+
+    Parameters
+    ----------
+    cell_param_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    list[dict[str, str | dict[str, str]]]
+        Parsed info.
+    """
 
     logger = log_factory(cell_param_file)
     curr = {}
@@ -57,7 +69,9 @@ parse_param_file = parse_cell_param_file
 
 
 def _parse_devel_code_block(in_block: Block) -> dict[str, str | float | int]:
-    """ Parse devel_code block to dict """
+    """
+    Parse devel_code block to dict.
+    """
 
     in_block = str(in_block)
     in_block = " ".join(in_block.splitlines())
@@ -97,7 +111,10 @@ def _parse_devel_code_block(in_block: Block) -> dict[str, str | float | int]:
     return devel_code_parsed
 
 
-def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, tuple[float, float, float]]:
+def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
+    """
+    Parse ionic constraints to dict.
+    """
     accum = defaultdict(list)
 
     for line in block:
@@ -109,7 +126,10 @@ def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, tuple[float, float
     return accum
 
 
-def _parse_nonlinear_constraints(block: Block):
+def _parse_nonlinear_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
+    """
+    Parse nonlinear constraints to dict.
+    """
     accum = []
 
     for line in block:
