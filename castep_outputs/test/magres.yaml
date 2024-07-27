@@ -1,21 +1,32 @@
+atom_info:
+  ? &id001 !!python/tuple [H, 1]
+  : anisotropy: -0.0884
+    asymmetry: 0.0
+    coords: [0.0, 0.0, 0.0]
+    eigvenvalue: [15.9647, 15.9647, 15.8763]
+    eigvenvector:
+    - [0.3571, -0.8144, 0.4573]
+    - [0.7343, -0.0579, -0.6764]
+    - [-0.5774, -0.5774, -0.5774]
+    isotropic: 15.9352
 atoms:
-  ? !!python/tuple [H, 1]
-  : [0.0, 0.0, 0.0]
-calc_code: CASTEP
-calc_code_hgversion: 81dc23eb6+  LDA-fix  Tue May 24 15:32:31 2022 +0100
-calc_code_platform: linux_x86_64_gfortran
-calc_code_version: '23.1'
-calc_cutoffenergy: 200.00000000 eV
-calc_kpoint_mp_grid: 1 1 1
-calc_kpoint_mp_offset: 0.25000000      0.25000000      0.25000000
-calc_name: h
-calc_pspot: H 1|0.8|0.8|0.6|2|6|8|10(qc=6)
-calc_xcfunctional: PBE
-lattice: [3.7042404783592575, 0.0, 0.0, 2.2681931225473627e-16, 3.7042404783592575,
-  0.0, 2.2681931225473627e-16, 2.2681931225473627e-16, 3.7042404783592575]
-ms:
-  ? !!python/tuple [H, 1]
-  : [15.935205760550641, -0.029465207825065915, -0.029465208436315116, -0.029465209603394566,
-    15.935205760174004, -0.029465210306093507, -0.029465207935827645, -0.02946520829774064,
-    15.935205759657912]
-units: {atom: Angstrom, lattice: Angstrom, ms: ppm}
+  coords:
+    *id001: [0.0, 0.0, 0.0]
+  lattice: [3.7042404783592575, 0.0, 0.0, 2.2681931225473627e-16, 3.7042404783592575,
+    0.0, 2.2681931225473627e-16, 2.2681931225473627e-16, 3.7042404783592575]
+  units: {atom: Angstrom, lattice: Angstrom}
+calc: {code: CASTEP, code_hgversion: '81dc23eb6+  LDA-fix  Tue May 24 15:32:31 2022
+    +0100', code_platform: linux_x86_64_gfortran, code_version: '23.1', cutoffenergy: 200.00000000
+    eV, kpoint_mp_grid: 1 1 1, kpoint_mp_offset: 0.25000000      0.25000000      0.25000000,
+  name: h, pspot: H 1|0.8|0.8|0.6|2|6|8|10(qc=6), xcfunctional: PBE}
+magres:
+  ms:
+    ? !!python/tuple [H, 1]
+    : [15.935205760550641, -0.029465207825065915, -0.029465208436315116, -0.029465209603394566,
+      15.935205760174004, -0.029465210306093507, -0.029465207935827645, -0.02946520829774064,
+      15.935205759657912]
+  units: {ms: ppm}
+total_shielding:
+- [15.9352, -0.0295, -0.0295]
+- [-0.0295, 15.9352, -0.0295]
+- [-0.0295, -0.0295, 15.9352]
