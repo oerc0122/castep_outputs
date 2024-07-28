@@ -1,7 +1,7 @@
-Number of k-points    32
+Number of k-points    2
 Number of spin components 1
 Number of electrons  300.0
-Number of eigenvalues    180
+Number of eigenvalues    3
 Fermi energy (in atomic units)     0.323077
 Unit cell vectors
    11.932676    0.000000    0.000000
