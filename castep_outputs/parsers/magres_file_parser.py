@@ -9,13 +9,12 @@ import castep_outputs.utilities.castep_res as REs
 from ..utilities.castep_res import get_numbers
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import normalise_key, to_type
+from ..utilities.utility import add_aliases, determine_type, normalise_key, to_type
 
 
 class AtomsInfo(TypedDict):
-    """
-    Per atom magres information.
-    """
+    """Per atom magres information."""
+
     #: Susceptability anisotropy.
     anisotropy: float
     #: Isotropic susceptability.
@@ -90,10 +89,11 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
 
             if block_name == "calculation":
                 accum["calc"] = _process_calculation_block(block)
+                version = int(accum["calc"]["code_version"].split(".")[0])
             elif block_name == "atoms":
                 accum["atoms"] = _process_atoms_block(block)
             elif block_name == "magres":
-                accum["magres"] = _process_magres_block(block)
+                accum["magres"] = _process_magres_block(block, version)
             elif block_name == "magres_old":
                 (accum["total_shielding"],
                  accum["atom_info"]) = _process_magres_old_block(block, accum)
@@ -159,7 +159,7 @@ def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
     return accum
 
 
-def _process_magres_block(block: Block) -> dict[str, str | ThreeByThreeMatrix]:
+def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeByThreeMatrix]:
     """
     Process the main magres block.
 
@@ -173,16 +173,39 @@ def _process_magres_block(block: Block) -> dict[str, str | ThreeByThreeMatrix]:
     dict[str, str]
         Processed data.
     """
-    accum = {"units": {}, "ms": {}}
+    accum = defaultdict(dict)
+
+    munge_fix = 3 if version < 22 else 5
+
     for line in block:
-        if line.startswith("ms"):
-
-            key, spec, ind, *val = line.split()
-            accum[key][(spec, int(ind))] = to_type(val, float)
-
-        elif line.startswith("units"):
+        if line.startswith("units"):
             _, key, val = line.split()
             accum["units"][key] = val
+
+        elif (words := line.split())[0] in ("ms", "efg", "efg_local", "efg_nonlocal"):
+            key, spec, ind, *val = words
+
+            if determine_type(ind) is float:  # Have a munged spec-ind
+                val.insert(0, ind)
+                spec, ind = spec[:-munge_fix], spec[-munge_fix:]
+
+            accum[key][(spec, int(ind))] = to_type(val, float)
+
+        elif words[0].startswith("isc"):  # ISC props explicitly have spaces!
+            key, speca, inda, specb, indb, *val = words
+
+            accum[key][((speca, int(inda)),
+                        (specb, int(indb)))] = to_type(val, float)
+
+    add_aliases(accum, {"ms": "magnetic_resonance_shielding",
+                        "efg": "electric_field_gradient",
+                        "efg_local": "local_electric_field_gradient",
+                        "efg_nonlocal": "nonlocal_electric_field_gradient",
+                        "isc_fc": "j_coupling_fc",
+                        "isc_orbital_p": "j_coupling_orbital_p",
+                        "isc_orbital_d": "j_coupling_orbital_d",
+                        "isc_spin": "j_coupling_spin",
+                        "isc": "j_coupling_k_total"})
 
     return accum
 
