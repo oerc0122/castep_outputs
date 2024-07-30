@@ -52,7 +52,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
                 fix(qdata)
                 phonon_dos_info['gradients'].append(qdata)
 
-        elif block := get_block(line, phonon_dos_file, "BEGIN DOS", "END DOS", out_fmt=list):
+        elif block := get_block(line, phonon_dos_file, "BEGIN DOS", "END DOS"):
 
             logger("Found DOS block")
 
@@ -62,7 +62,9 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
             headers = ('freq', 'g', *species)
             rows = re.compile(labelled_floats(headers))
 
-            for line in block[1:-2]:
+            block.remove_bounds(1, 2)
+
+            for line in block:
                 match = rows.match(line)
                 stack_dict(dos, match.groupdict())
 

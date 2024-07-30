@@ -27,7 +27,7 @@ def parse_phonon_file(phonon_file: TextIO) -> Dict[str, Any]:
             eigenvectors_endblock = (format(phonon_info["branches"], ">4") +
                                      format(phonon_info["ions"], ">4"))
 
-        elif block := get_block(line, phonon_file, "q-pt", "Phonon Eigenvectors", out_fmt=list):
+        elif block := get_block(line, phonon_file, "q-pt", "Phonon Eigenvectors"):
 
             logger("Found eigenvalue block")
             for line in block:
@@ -47,7 +47,7 @@ def parse_phonon_file(phonon_file: TextIO) -> Dict[str, Any]:
                         phonon_info["evals"].append(evals)
                         evals = []
 
-        elif block := get_block(line, phonon_file, "Mode Ion", eigenvectors_endblock, out_fmt=list):
+        elif block := get_block(line, phonon_file, "Mode Ion", eigenvectors_endblock):
 
             logger("Found eigenvector block")
             for line in block:
