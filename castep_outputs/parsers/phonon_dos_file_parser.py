@@ -58,7 +58,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
 
             dos = defaultdict(list)
             # First chunk is " BEGIN DOS   Freq (cm-1)  g(f)", thus need the 5th on
-            species = map(str.lower, block[0].split()[5:])
+            species = block[0].split()[5:]
             headers = ('freq', 'g', *species)
             rows = re.compile(labelled_floats(headers))
 
