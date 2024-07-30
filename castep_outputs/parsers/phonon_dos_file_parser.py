@@ -57,14 +57,17 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
             logger("Found DOS block")
 
             dos = defaultdict(list)
+            # First chunk is " BEGIN DOS   Freq (cm-1)  g(f)", thus need the 5th on
+            species = block[0].split()[5:]
+            headers = ('freq', 'g', *species)
+            rows = re.compile(labelled_floats(headers))
+
             for line in block[1:-2]:
-                match = re.match(labelled_floats(('freq', 'g', 'si')), line)
+                match = rows.match(line)
                 stack_dict(dos, match.groupdict())
 
             if dos:
-                fix_data_types(dos, {'freq': float,
-                                     'g': float,
-                                     'si': float})
+                fix_data_types(dos, {key: float for key in headers})
                 phonon_dos_info['dos'].append(dos)
 
     return phonon_dos_info
