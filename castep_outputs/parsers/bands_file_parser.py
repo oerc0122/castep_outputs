@@ -17,13 +17,13 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
 
     bands_info = defaultdict(list)
     qdata = {}
+
+    block = get_block("", bands_file, "", REs.THREEVEC_RE, cnt=3)
+    data = parse_regular_header(block, ("Fermi energy",))
+    bands_info.update(data)
+
     for line in bands_file:
-        if block := get_block(line, bands_file, "BEGIN header", "END header"):
-
-            data = parse_regular_header(block)
-            bands_info.update(data)
-
-        elif line.startswith("K-point"):
+        if line.startswith("K-point"):
             if qdata:
                 fix_data_types(qdata, {'qpt': float,
                                        'weight': float,

@@ -1,3 +1,4 @@
+Fermi energy: [0.323077]
 bands:
 - band: [-2.56339233, -2.56319008, -2.5626493]
   qpt: [-0.375, -0.375, -0.375]
@@ -7,3 +8,12 @@ bands:
   qpt: [-0.375, -0.375, -0.125]
   spin_comp: 1
   weight: 0.03125
+coords: {}
+eigenvalues: 3
+electrons: 300
+k-points: 2
+spin components: 1
+unit_cell:
+- [11.932676, 0.0, 0.0]
+- [0.0, 11.932676, 0.0]
+- [0.0, 0.0, 11.932676]
