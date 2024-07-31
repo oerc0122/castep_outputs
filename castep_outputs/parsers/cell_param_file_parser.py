@@ -7,7 +7,6 @@ from typing import Dict, List, TextIO, Tuple, Union
 
 import castep_outputs.utilities.castep_res as REs
 
-from ..utilities.castep_res import get_block
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
 from ..utilities.utility import (atreg_to_index, determine_type, log_factory,
@@ -24,9 +23,9 @@ def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, 
         # Strip comments
         line = re.split("[#!]", line)[0]
 
-        if block := get_block(line, cell_param_file,
-                              re.compile(r"^\s*%block ", re.IGNORECASE),
-                              re.compile(r"^\s*%endblock", re.IGNORECASE)):
+        if block := Block.from_re(line, cell_param_file,
+                                  re.compile(r"^\s*%block ", re.IGNORECASE),
+                                  re.compile(r"^\s*%endblock", re.IGNORECASE)):
 
             block_title = next(block).split()[1].lower()
 

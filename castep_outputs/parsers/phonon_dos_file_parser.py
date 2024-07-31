@@ -7,7 +7,8 @@ from collections import defaultdict
 from typing import Any, Dict, TextIO
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import get_block, labelled_floats
+from ..utilities.castep_res import labelled_floats
+from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
@@ -19,11 +20,11 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
     phonon_dos_info = defaultdict(list)
 
     for line in phonon_dos_file:
-        if block := get_block(line, phonon_dos_file, "BEGIN header", "END header"):
+        if block := Block.from_re(line, phonon_dos_file, "BEGIN header", "END header"):
             data = parse_regular_header(block)
             phonon_dos_info.update(data)
 
-        elif block := get_block(line, phonon_dos_file, "BEGIN GRADIENTS", "END GRADIENTS"):
+        elif block := Block.from_re(line, phonon_dos_file, "BEGIN GRADIENTS", "END GRADIENTS"):
 
             logger("Found gradient block")
             qdata = defaultdict(list)
@@ -40,6 +41,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
                     if qdata:
                         fix(qdata)
                         phonon_dos_info['gradients'].append(qdata)
+
                     qdata = defaultdict(list)
 
                     for key, val in match.groupdict().items():
@@ -52,7 +54,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
                 fix(qdata)
                 phonon_dos_info['gradients'].append(qdata)
 
-        elif block := get_block(line, phonon_dos_file, "BEGIN DOS", "END DOS"):
+        elif block := Block.from_re(line, phonon_dos_file, "BEGIN DOS", "END DOS"):
 
             logger("Found DOS block")
 

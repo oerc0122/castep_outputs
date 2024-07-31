@@ -5,7 +5,7 @@ Parse the following castep outputs:
 from collections import defaultdict
 from typing import Any, Dict, TextIO
 
-from ..utilities.castep_res import get_block
+from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types, log_factory
 from .parse_utilities import parse_regular_header
 
@@ -19,7 +19,7 @@ def parse_phonon_file(phonon_file: TextIO) -> Dict[str, Any]:
     evecs = []
 
     for line in phonon_file:
-        if block := get_block(line, phonon_file, "BEGIN header", "END header"):
+        if block := Block.from_re(line, phonon_file, "BEGIN header", "END header"):
 
             data = parse_regular_header(block)
             phonon_info.update(data)
@@ -27,7 +27,7 @@ def parse_phonon_file(phonon_file: TextIO) -> Dict[str, Any]:
             eigenvectors_endblock = (format(phonon_info["branches"], ">4") +
                                      format(phonon_info["ions"], ">4"))
 
-        elif block := get_block(line, phonon_file, "q-pt", "Phonon Eigenvectors"):
+        elif block := Block.from_re(line, phonon_file, "q-pt", "Phonon Eigenvectors"):
 
             logger("Found eigenvalue block")
             for line in block:
@@ -47,7 +47,7 @@ def parse_phonon_file(phonon_file: TextIO) -> Dict[str, Any]:
                         phonon_info["evals"].append(evals)
                         evals = []
 
-        elif block := get_block(line, phonon_file, "Mode Ion", eigenvectors_endblock):
+        elif block := Block.from_re(line, phonon_file, "Mode Ion", eigenvectors_endblock):
 
             logger("Found eigenvector block")
             for line in block:

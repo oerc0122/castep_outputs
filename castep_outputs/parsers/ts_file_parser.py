@@ -6,9 +6,10 @@ import re
 from collections import defaultdict
 from typing import Any, Dict, TextIO
 
-from ..utilities.castep_res import (ATDATTAG, TAG_RE, get_block, get_numbers,
+from ..utilities.castep_res import (ATDATTAG, TAG_RE, get_numbers,
                                     labelled_floats)
 from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
+from ..utilities.filewrapper import Block
 from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
@@ -21,7 +22,7 @@ def parse_ts_file(ts_file: TextIO) -> Dict[str, Any]:
         if "TSConfirmation" in line:
             accum["confirmation"] = True
 
-        elif block := get_block(line, ts_file, "(REA|PRO|TST)", r"^\s*$", eof_possible=True):
+        elif block := Block.from_re(line, ts_file, "(REA|PRO|TST)", r"^\s*$", eof_possible=True):
             curr = defaultdict(list)
             match = re.match(r"\s*(?P<type>REA|PRO|TST)\s*\d+\s*" +
                              labelled_floats(('reaction_coordinate',)), line)

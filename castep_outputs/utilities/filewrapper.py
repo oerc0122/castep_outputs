@@ -1,8 +1,11 @@
 """
 Convenient filewrapper class.
 """
+import re
 from io import StringIO
-from typing import List, TextIO, Union, NoReturn
+from typing import List, NoReturn, TextIO, Tuple, Union
+
+from .castep_res import Pattern
 
 
 class FileWrapper:
@@ -89,13 +92,128 @@ class Block:
 
     Emulates the properties of both a file, and sequence.
     """
+    # pylint: disable=too-many-arguments
     def __init__(self, parent: Union[TextIO, FileWrapper, "Block"]):
         if isinstance(parent, (FileWrapper, Block)):
             self._lineno = parent.lineno
+        else:
+            self._lineno = 0
 
         self._name = parent.name if hasattr(parent, 'name') else 'unknown'
         self._i = -1
-        self._data = []
+        self._data: Tuple[str, ...] = ()
+
+    @classmethod
+    def get_lines(
+            cls,
+            in_file: Union[TextIO, FileWrapper, "Block"],
+            n_lines: int,
+            *,
+            eof_possible: bool = False,
+    ) -> "Block":
+        """
+        Read the next `n_lines` from `in_file` and return the block.
+
+        Parameters
+        ----------
+        in_file : ~typing.TextIO | FileWrapper | Block
+            File to read data from.
+        n_lines : int
+            Number of lines to read.
+
+        Returns
+        -------
+        Block
+            Read data.
+
+        Raises
+        ------
+        IOError
+            If EOF reached and ``not eof_possible``.
+        """
+        block = cls(in_file)
+
+        data: List[str] = []
+        for i, line in enumerate(in_file, 1):
+            if i > n_lines:
+                break
+            data += line
+        else:
+            if not eof_possible:
+                if hasattr(in_file, 'name'):
+                    raise IOError(f"Unexpected end of file in {in_file.name}.")
+                raise IOError("Unexpected end of file.")
+
+        block._data = tuple(data)
+        return block
+
+    @classmethod
+    def from_re(
+            cls,
+            init_line: str,
+            in_file: Union[TextIO, FileWrapper, "Block"],
+            start: Pattern,
+            end: Pattern,
+            *,
+            n_end: int = 1,
+            eof_possible: bool = False,
+    ) -> "Block":
+        """
+        Check if line is the start of a block and return the block if it is.
+
+        Parameters
+        ----------
+        init_line : str
+            Initial line which may start the block.
+        in_file : ~typing.TextIO | FileWrapper | Block
+            File handle to read data from.
+        start : Pattern
+            RegEx matched against `init_line` to see if is start of block.
+        end : Pattern
+            RegEx to verify if block has ended.
+        n_end : int
+            Number of times `end` must match before block is returned.
+        eof_possible : bool
+            Whether it is possible block is ended by EOF.
+
+        Returns
+        -------
+        Block
+            Recovered block of data matching prereqs.
+
+        Notes
+        -----
+        Advances `in_file` as it does so.
+
+        Raises
+        ------
+        IOError
+            If EOF reached and ``not eof_possible``.
+        """
+
+        block = cls(in_file)
+
+        if not re.search(start, init_line):
+            return block
+
+        data: List[str] = []
+        data.append(init_line)
+
+        fnd = n_end
+        for line in in_file:
+            data.append(line)
+            if re.search(end, line):
+                fnd -= 1
+                if fnd == 0:
+                    break
+        else:
+            if not eof_possible:
+                if hasattr(in_file, 'name'):
+                    raise IOError(f"Unexpected end of file in {in_file.name}.")
+                raise IOError("Unexpected end of file.")
+
+        block._data = tuple(data)
+        return block
 
     def remove_bounds(self, fore: int = 1, back: int = 2):
         """
@@ -106,11 +224,12 @@ class Block:
 
         Parameters
         ----------
-        fore : bool
+        fore : int
             Whether to strip leading line from data.
-        back : bool
+        back : int
             Whether to strip trailing line from data.
         """
+        self._lineno += fore
         self._data = self._data[fore:
                                 -back if back else None]
 
@@ -148,10 +267,6 @@ class Block:
 
     def __bool__(self):
         return bool(self._data)
-
-    def __add__(self, other: str):
-        self._data.append(other.strip("\n"))
-        return self
 
     def __str__(self):
         return "\n".join(self._data)

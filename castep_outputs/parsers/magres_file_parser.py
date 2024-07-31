@@ -5,7 +5,7 @@ Parse the following castep outputs:
 from collections import defaultdict
 from typing import Dict, TextIO
 
-from ..utilities.castep_res import get_block
+from ..utilities.filewrapper import Block
 from ..utilities.utility import to_type
 
 
@@ -16,7 +16,7 @@ def parse_magres_file(magres_file: TextIO) -> Dict[str, float]:
     accum = defaultdict(dict)
 
     for line in magres_file:
-        if block := get_block(line, magres_file, r"^\s*\[\w+\]\s*$", r"^\s*\[/\w+\]\s*$"):
+        if block := Block.from_re(line, magres_file, r"^\s*\[\w+\]\s*$", r"^\s*\[/\w+\]\s*$"):
 
             block_name = next(block).strip().strip("[").strip("]")
 

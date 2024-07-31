@@ -2,12 +2,9 @@
 
 import itertools
 import re
-from typing import Dict, List, Sequence, TextIO, Union
+from typing import Dict, List, Sequence, Union
 
 from .constants import FST_D, MINIMISERS, SHELLS
-from .filewrapper import Block, FileWrapper
-
-# pylint: disable=too-many-arguments
 
 
 Pattern = Union[str, re.Pattern]
@@ -16,71 +13,6 @@ Pattern = Union[str, re.Pattern]
 def get_numbers(line: str) -> List[str]:
     """ Get all numbers in a string as a list """
     return NUMBER_RE.findall(line)
-
-
-def get_block(
-        init_line: str,
-        in_file: Union[TextIO, FileWrapper, Block],
-        start: Pattern,
-        end: Pattern,
-        *,
-        cnt: int = 1,
-        eof_possible: bool = False,
-) -> Block:
-    """
-    Check if line is the start of a block and return the block if it is.
-    Parameters
-    ----------
-    init_line : str
-        Initial line which may start the block.
-    in_file : ~typing.TextIO | FileWrapper
-        File handle to read data from.
-    start : Pattern
-        RegEx matched against `init_line` to see if is start of block.
-    end : Pattern
-        RegEx to verify if block has ended.
-    cnt : int
-        Number of times `end` must match before block is returned.
-    out_fmt : type
-        Datatype to return parsed block as.
-    eof_possible : bool
-        Whether it is possible block is ended by EOF.
-
-    Returns
-    -------
-    Block
-        Recovered block of data matching prereqs.
-
-    Notes
-    -----
-    Advances `in_file` as it does so.
-
-    Raises
-    ------
-    IOError
-        If EOF reached and ``not eof_possible``.
-    """
-
-    block = Block(in_file)
-
-    if not re.search(start, init_line):
-        return block
-
-    block += init_line
-    fnd = cnt
-    for line in in_file:
-        block += line
-        if re.search(end, line):
-            fnd -= 1
-            if fnd == 0:
-                break
-    else:
-        if not eof_possible:
-            if hasattr(in_file, 'name'):
-                raise IOError(f"Unexpected end of file in {in_file.name}.")
-            raise IOError("Unexpected end of file.")
-
-    return block
 
 
 def labelled_floats(labels: Sequence[str], counts: Sequence[Union[int, str, None]] = (None,),
