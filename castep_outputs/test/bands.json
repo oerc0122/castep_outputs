@@ -1,11 +1,9 @@
 {
-  "k-points": 2,
-  "spin components": 1,
+  "k_points": 2,
+  "spin_components": 1,
   "electrons": 300,
   "eigenvalues": 3,
-  "Fermi energy": [
-    0.323077
-  ],
+  "fermi_energy_in_atomic_units": 0.323077,
   "unit_cell": [
     [
       11.932676,
@@ -23,7 +21,6 @@
       11.932676
     ]
   ],
-  "coords": {},
   "bands": [
     {
       "qpt": [

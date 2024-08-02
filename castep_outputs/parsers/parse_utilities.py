@@ -5,24 +5,27 @@ Functions generally used in parsing castep files
 
 import re
 from collections import defaultdict
-from typing import Dict, List, Sequence, TextIO, Tuple, Union
+from typing import Any, Dict, List, Sequence, TextIO, Tuple, Union
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import get_numbers
-from ..utilities.utility import (atreg_to_index, fix_data_types, stack_dict,
+from ..utilities.utility import (atreg_to_index, determine_type,
+                                 fix_data_types, normalise_key, stack_dict,
                                  to_type)
 
 
 def parse_regular_header(block: TextIO,
                          extra_opts: Sequence[str] = tuple()) -> Dict[str, Union[float, int]]:
     """ Parse (semi-)standard castep file header block (given as iterable over lines) """
+    val: Any
+    key: Union[str, Sequence[str]]
 
     data = {}
     coords = defaultdict(list)
     for line in block:
         if line.strip().startswith("Number of"):
             _, _, *key, val = line.split()
-            data[" ".join(key)] = int(float(val))
+            key = normalise_key(" ".join(key))
+            data[key] = int(float(val))
         elif "Unit cell vectors" in line:
             data['unit_cell'] = [to_type(next(block).split(), float)
                                  for _ in range(3)]
@@ -32,17 +35,25 @@ def parse_regular_header(block: TextIO,
             coords[ind] = to_type(match.group("x", "y", "z"), float)
 
         elif match := REs.FRACCOORDS_RE.match(line):
-            stack_dict(coords, match.groupdict())
+            val = match.groupdict()
+            ind = atreg_to_index(val)
+            fix_data_types(val, {'u': float,
+                                 'v': float,
+                                 'w': float,
+                                 'mass': float})
+            coords[ind] = val
 
-        elif match := re.search(f"({'|'.join(extra_opts)})", line):
-            data[match.group(0)] = to_type(get_numbers(line), float)
+        elif extra_opts and (match := re.search(f"({'|'.join(extra_opts)})", line)):
+            key = normalise_key(match.group(0))
+            val = line[match.end():].split()
+            if len(val) == 1:
+                data[key] = to_type(val[0], determine_type(val[0]))
+            else:
+                data[key] = to_type(val, determine_type(val[0]))
 
-    fix_data_types(coords, {'index': int,
-                            'u': float,
-                            'v': float,
-                            'w': float,
-                            'mass': float})
-    data['coords'] = coords
+    if coords:
+        data['coords'] = coords
+
     return data
 
 

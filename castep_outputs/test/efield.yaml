@@ -1,14 +1,12 @@
-Oscillator Q: [50.0]
 branches: 6
 coords:
-  index: [1, 2]
-  mass: [10.811, 14.00674]
-  spec: [B, N]
-  u: [0.0, 0.331459]
-  v: [0.0, 0.331459]
-  w: [0.0, 0.331459]
+  ? !!python/tuple [B, 1]
+  : {mass: 10.811, u: 0.0, v: 0.0, w: 0.0}
+  ? !!python/tuple [N, 2]
+  : {mass: 14.00674, u: 0.331459, v: 0.331459, w: 0.331459}
 frequencies: 6000
 ions: 2
+oscillator_q: 50.0
 oscillator_strengths:
 - Sxx: [0.049184, 0.034768, 0.034768, 726.895537, 1371.811893]
   Sxy: [0.0, -0.0, 0.0, 0.0, -0.0]

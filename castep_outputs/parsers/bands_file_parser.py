@@ -19,7 +19,7 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
     qdata = {}
 
     block = get_block("", bands_file, "", REs.THREEVEC_RE, cnt=3)
-    data = parse_regular_header(block, ("Fermi energy",))
+    data = parse_regular_header(block, (r"Fermi energy[^)]+\)",))
     bands_info.update(data)
 
     for line in bands_file:
