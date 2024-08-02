@@ -194,17 +194,18 @@ class Block:
         block = cls(in_file)
 
         if not re.search(start, init_line):
+            # Return empty block. (bool -> False)
             return block
 
         data: List[str] = []
         data.append(init_line)
 
-        fnd = n_end
+        found = 0
         for line in in_file:
             data.append(line)
             if re.search(end, line):
-                fnd -= 1
-                if fnd == 0:
+                found += 1
+                if found == n_end:
                     break
         else:
             if not eof_possible:
@@ -215,7 +216,7 @@ class Block:
         block._data = tuple(data)
         return block
 
-    def remove_bounds(self, fore: int = 1, back: int = 2):
+    def remove_bounds(self, /, fore: int = 1, back: int = 2):
         """
         Remove the bounding lines of the block.
 
@@ -253,16 +254,20 @@ class Block:
         list[str]
             Block as list of lines.
         """
-        return self._data
+        return list(self._data)
 
     def rewind(self):
         """
-        Rewind file to previous line.
+        Rewind to previous line.
 
         Useful for blocks not terminated by a clear
         statement, where we can only check if next line
         does *NOT* match.
         """
+        if self._i < 0:
+            self._i = -1
+            raise ValueError("Block already at beginning.")
+
         self._i -= 1
 
     def __bool__(self):
