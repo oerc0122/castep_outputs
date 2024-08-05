@@ -1,16 +1,68 @@
 """
 Parse the following castep outputs:
-.magres
-"""
-from collections import defaultdict
-from typing import Dict, TextIO
 
+- .magres
+"""
+from __future__ import annotations
+from collections import defaultdict
+from typing import Dict, List, Literal, TextIO, Tuple, TypedDict
+
+from ..utilities.datatypes import AtomIndex, ThreeVector
 from ..utilities.filewrapper import Block
 from ..utilities.utility import to_type
 
 
-def parse_magres_file(magres_file: TextIO) -> Dict[str, float]:
-    """ Parse .magres file to dict """
+class UnitsInfo(TypedDict):
+    """
+    Information on magres units.
+    """
+    #: Position units.
+    atom: str
+    #: Lattice length units.
+    lattice: str
+    #: Magnetic reponse units.
+    ms: str
+
+
+class MagresInfo(TypedDict):
+    """
+    NMR Magnetic reponse information.
+    """
+    #: Atom coordinates
+    atoms: Dict[AtomIndex, ThreeVector]
+    calc_code: Literal['CASTEP']
+    calc_code_hgversion: str
+    calc_code_platform: str
+    calc_code_version: str
+    calc_cutoffenergy: str
+    calc_kpoint_mp_grid: str
+    calc_kpoint_mp_offset: str
+    calc_name: str
+    calc_pspot: str
+    calc_xcfunctional: str
+    #: Crystal lattice.
+    lattice: Tuple[float, float, float,
+                   float, float, float,
+                   float, float, float]
+    #: Magnetic susceptibility tensor.
+    ms: Dict[AtomIndex, List[float]]
+    units: UnitsInfo
+
+
+def parse_magres_file(magres_file: TextIO) -> MagresInfo:
+    """
+    Parse castep .magres file.
+
+    Parameters
+    ----------
+    magres_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    MagresInfo
+        Parsed info.
+    """
     # pylint: disable=too-many-branches
 
     accum = defaultdict(dict)

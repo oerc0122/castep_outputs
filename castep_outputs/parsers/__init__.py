@@ -1,5 +1,5 @@
 """
-List of parsers for file formats
+List of parsers for file formats.
 """
 
 from typing import Callable, Dict, Tuple
@@ -43,6 +43,7 @@ __all__ = ["parse_castep_file",
            "parse_phonon_file"]
 
 
+#: Dictionary of available parsers.
 PARSERS: Dict[str, Callable] = {
     "castep": parse_castep_file,
     "cell": parse_cell_param_file,
@@ -65,5 +66,9 @@ PARSERS: Dict[str, Callable] = {
     "err": parse_err_file,
     "phonon": parse_phonon_file
     }
+
+#: Names of parsers/parsable file extensions (without ``"."``).
 CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(PARSERS.keys())
+
+#: Names of parsable file extensions.
 CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

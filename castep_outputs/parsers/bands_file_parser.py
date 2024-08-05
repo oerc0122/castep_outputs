@@ -1,21 +1,63 @@
 """
 Parse the following castep outputs:
-.bands
+
+- .bands
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Any, Dict, TextIO
+from typing import List, TextIO, TypedDict
 
 from ..utilities import castep_res as REs
+from ..utilities.datatypes import ThreeVector
 from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types
 from .parse_utilities import parse_regular_header
 
 
-def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
-    """ Parse castep .bonds file """
+class BandsQData(TypedDict, total=False):
+    """
+    Per k-point info of band.
+    """
+    #: List of band eigenvalues.
+    band: ThreeVector
+    #: List of eigenvalues for up component of band.
+    band_up: ThreeVector
+    #: List of eigenvalues for down component of band.
+    band_dn: ThreeVector
+    #: Position in space.
+    qpt: ThreeVector
+    #: Current spin component.
+    spin_comp: int
+    #: K point weight
+    weight: float
 
-    bands_info = defaultdict(list)
+
+class BandsFileInfo(TypedDict, total=False):
+    """
+    Bands eigenvalue info of a bands calculation.
+    """
+    #: Bands info in file.
+    bands: List[BandsQData]
+
+
+def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
+    """
+    Parse castep .bands file.
+
+    Parameters
+    ----------
+    bands_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    BandsFileInfo
+        Parsed info.
+    """
+
+    bands_info: BandsFileInfo = defaultdict(list)
     qdata = {}
 
     block = Block.from_re("", bands_file, "", REs.THREEVEC_RE, n_end=3)

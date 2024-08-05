@@ -1,20 +1,83 @@
 """
 Parse the following castep outputs:
-.phonon_dos
+
+- .phonon_dos.
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Any, Dict, TextIO
+from typing import List, TextIO, TypedDict
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
+from ..utilities.datatypes import StandardHeader, ThreeVector
 from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 
-def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
-    """ Parse castep .phonon_dos file """
+class GradientInfo(TypedDict, total=False):
+    """
+    Info on phonon DOS gradients.
+    """
+    #: :math:`q`-point weight.
+    pth: List[float]
+    #: :math:`q`-point.
+    qpt: ThreeVector
+    #: Branch index.
+    n: List[int]
+    #: :math:`f` at point.
+    f: List[float]
+    #: :math:`\nabla_{q} \cdot f` at :math:`q`-point.
+    Grad_qf: List[float]
+
+
+class DOSInfo(TypedDict, total=False):
+    """
+    Density of states contribution.
+
+    Notes
+    -----
+    Also includes per-species contributions whose keys are
+    the species.
+    """
+    #: Frequencies.
+    freq: List[float]
+    #: Density out to Frequncy.
+    g: List[float]
+
+
+class PhononDosFileInfo(StandardHeader, total=False):
+    """
+    Phonon Density of states info.
+    """
+    #: Number of ions in system.
+    ions: int
+    #: Number of species in system.
+    species: int
+    #: Number of phonon branches.
+    branches: int
+    #: Phonon density of states information.
+    dos: List[DOSInfo]
+    #: Phonon DoS gradients information.
+    gradients: List[GradientInfo]
+
+
+def parse_phonon_dos_file(phonon_dos_file: TextIO) -> PhononDosFileInfo:
+    """
+    Parse castep .phonon_dos file.
+
+    Parameters
+    ----------
+    phonon_dos_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    PhononDosFileInfo
+        Parsed info.
+    """
     # pylint: disable=too-many-branches,redefined-outer-name
     logger = log_factory(phonon_dos_file)
     phonon_dos_info = defaultdict(list)
