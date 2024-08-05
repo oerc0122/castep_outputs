@@ -16,18 +16,22 @@ from ..utilities import castep_res as REs
 from ..utilities.castep_res import (gen_table_re, get_numbers,
                                     labelled_floats)
 from ..utilities.constants import SHELLS
-from ..utilities.datatypes import (AtomIndex, AtomPropBlock, BandStructure,
-                                   BondData, CellInfo, CharTable,
-                                   ConstraintsReport, DipoleTable,
-                                   ElasticProperties, FinalConfig, GeomTable,
-                                   InitialSpin, KPointsList, KPointsSpec,
-                                   MDInfo, MemoryEst, MullikenInfo,
-                                   Occupancies, PhononSymmetryReport,
-                                   PSPotEnergy, PSPotReport, PSPotStrInfo,
-                                   QData, RamanReport, SCFReport, SixVector,
-                                   SymmetryReport, TDDFTData, Thermodynamics,
-                                   ThreeByThreeMatrix, ThreeVector,
-                                   WvfnLineMin)
+from ..utilities.datatypes import (AtomIndex, AtomPropBlock,
+                                   BandStructure, BondData, CellInfo,
+                                   CharTable, ConstraintsReport,
+                                   DelocActiveSpace,
+                                   DelocInternalsTable, DipoleTable,
+                                   ElasticProperties, FinalConfig,
+                                   GeomTable, InitialSpin,
+                                   InternalConstraints, KPointsList,
+                                   KPointsSpec, MDInfo, MemoryEst,
+                                   MullikenInfo, Occupancies,
+                                   PhononSymmetryReport, PSPotEnergy,
+                                   PSPotReport, PSPotStrInfo, QData,
+                                   RamanReport, SCFReport, SixVector,
+                                   SymmetryReport, TDDFTData,
+                                   Thermodynamics, ThreeByThreeMatrix,
+                                   ThreeVector, WvfnLineMin)
 from ..utilities.filewrapper import Block, FileWrapper
 from ..utilities.utility import (add_aliases, atreg_to_index, determine_type,
                                  fix_data_types, log_factory, normalise_key,
@@ -1023,6 +1027,38 @@ def parse_castep_file(castep_file_in: TextIO,
             logger("Found %s geom_block", typ)
 
             curr_run["minimisation"].append(_process_geom_table(block))
+
+        # GeomOpt Deloc
+
+        elif block := Block.from_re(line, castep_file,
+                                    "INTERNAL CONSTRAINTS", REs.EMPTY, n_end=2):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            curr_run["internal_constraints"] = _process_internal_constraints(block)
+
+        elif block := Block.from_re(line, castep_file,
+                                    "Message: Generating deloc", "Message: Generation of deloc"):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            if "delocalised_internal" not in curr_run:
+                curr_run["delocalised_internal"] = {}
+
+            curr_run["delocalised_internal"].update(_process_deloc_table(block))
+
+        elif block := Block.from_re(line, castep_file,
+                                    "The size of active space", REs.EMPTY):
+
+            if Filters.GEOM_OPT not in to_parse:
+                continue
+
+            if "delocalised_internal" not in curr_run:
+                curr_run["delocalised_internal"] = {}
+
+            curr_run["delocalised_internal"].update(_process_deloc_act_space_table(block))
 
         # TDDFT
         elif block := Block.from_re(line, castep_file,
@@ -2324,5 +2360,70 @@ def _process_elastic_properties(block: Block) -> ElasticProperties:
                                                  for blk_line in blk
                                                  if (numbers := get_numbers(blk_line)))
                                            )
+
+    return accum
+
+
+def _process_internal_constraints(block: TextIO) -> List[InternalConstraints]:
+
+    # Skip table headers
+    for _ in zip(range(3), block):
+        pass
+
+    accum = []
+    for line in block:
+        if not line.strip():
+            continue
+
+        _, type_, target, actual, *definitions = line.split()
+        if actual == "Satisfied":
+            target, actual = actual, target
+        else:
+            target = float(target)
+        actual = float(actual)
+
+        definitions = " ".join(definitions).split(")")
+        const = {val[0]: tuple(val[1:])
+                 for definition in definitions
+                 if definition and
+                 (val := to_type(get_numbers(definition), int))}
+        assert type_ in ("Bond", "Angle", "Torsion")
+
+        elem: InternalConstraints = {"type": type_,
+                                     "target": target,
+                                     "actual": actual,
+                                     "constraints": const}
+        accum.append(elem)
+
+    return accum
+
+
+def _process_deloc_table(block: TextIO) -> DelocInternalsTable:
+
+    accum: DelocInternalsTable = {"constraint_mapping": {}}
+    for line in block:
+        if line.startswith(" constraint"):
+            key, val = to_type(get_numbers(line), int)
+            accum["constraint_mapping"][key] = val
+        elif line.startswith("Total number of primitive"):
+            type_, val = line.split()[4:6]
+            type_ = "num_" + type_.strip(":")
+            val = int(val)
+
+            accum[type_] = val
+
+    return accum
+
+
+def _process_deloc_act_space_table(block: TextIO) -> DelocActiveSpace:
+
+    accum = {}
+    for line in block:
+        if "active space" in line:
+            accum["active_space_size"] = to_type(get_numbers(line)[0], int)
+        if "degrees" in line:
+            accum["num_dof"] = to_type(get_numbers(line)[0], int)
+        if "primitive" in line:
+            accum["num_primitive_internals"] = to_type(get_numbers(line)[0], int)
 
     return accum
