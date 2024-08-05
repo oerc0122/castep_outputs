@@ -6,8 +6,8 @@
   constraints:
     cell_constraints: [1, 2, 3, 4, 5, 6]
     com_constrained: true
-    number_of_cell_constraints: 0
-    number_of_ionic_constraints: 3
+    num_cell_constraints: 0
+    num_ionic_constraints: 3
   initial_cell:
     cell_angles: [90.0, 90.0, 90.0]
     density_amu: 4.364016
@@ -205,9 +205,11 @@
         - {orbital: 3, shell: d, type: null}
         r_inner: 0.6
         string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
-  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
-    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '213: P4_132, P
-      4bd 2ab 3'}
+  symmetries:
+    max_deviation: 0.0
+    num_symmetry_operations: 1
+    point_group: {hermann_mauguin: '1', hermann_mauguin_full: '1', id: 1, schoenflies: C1}
+    space_group: {hall: P 4bd 2ab 3, id: 213, international: P4_132}
   target_stress:
   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Tue, 30 May 2023 11:57:18 +0100
@@ -222,8 +224,8 @@
   constraints:
     cell_constraints: [1, 2, 3, 4, 5, 6]
     com_constrained: true
-    number_of_cell_constraints: 0
-    number_of_ionic_constraints: 3
+    num_cell_constraints: 0
+    num_ionic_constraints: 3
   initial_cell:
     cell_angles: [90.0, 90.0, 90.0]
     density_amu: 4.364016
@@ -427,9 +429,11 @@
         - {orbital: 3, shell: d, type: null}
         r_inner: 0.6
         string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
-  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
-    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '213: P4_132, P
-      4bd 2ab 3'}
+  symmetries:
+    max_deviation: 0.0
+    num_symmetry_operations: 1
+    point_group: {hermann_mauguin: '1', hermann_mauguin_full: '1', id: 1, schoenflies: C1}
+    space_group: {hall: P 4bd 2ab 3, id: 213, international: P4_132}
   target_stress:
   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Fri, 14 Jul 2023 19:45:17 +0100
