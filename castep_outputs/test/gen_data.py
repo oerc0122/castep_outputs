@@ -3,7 +3,7 @@ import pathlib
 
 from castep_outputs.cli.castep_outputs_main import parse_all
 
-for typ in ('castep', 'bands', 'cell', 'param', 'elastic', 'md', 'ts', 'efield',
+for typ in ('castep', 'bands', 'cell', 'param', 'elastic', 'md', 'ts',
             'den_fmt', 'chdiff_fmt', 'pot_fmt', 'elf_fmt', 'xrd_sf', 'phonon_dos',
             'magres', 'efield', 'tddft', 'err', 'phonon'):
     for fmt in ('json', 'yaml'):
