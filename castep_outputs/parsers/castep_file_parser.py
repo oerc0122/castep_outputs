@@ -10,11 +10,10 @@ import itertools
 import re
 from collections import defaultdict
 from enum import Flag, auto
-from typing import (Any, Dict, List, Optional, Sequence, TextIO, Tuple, Union,
-                    cast)
+from typing import Any, Dict, List, Optional, TextIO, Tuple, Union, cast
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import (gen_table_re, get_block, get_numbers,
+from ..utilities.castep_res import (gen_table_re, get_numbers,
                                     labelled_floats)
 from ..utilities.constants import SHELLS
 from ..utilities.datatypes import (AtomIndex, AtomPropBlock, BandStructure,
@@ -29,7 +28,7 @@ from ..utilities.datatypes import (AtomIndex, AtomPropBlock, BandStructure,
                                    SymmetryReport, TDDFTData, Thermodynamics,
                                    ThreeByThreeMatrix, ThreeVector,
                                    WvfnLineMin)
-from ..utilities.filewrapper import FileWrapper
+from ..utilities.filewrapper import Block, FileWrapper
 from ..utilities.utility import (add_aliases, atreg_to_index, determine_type,
                                  fix_data_types, log_factory, normalise_key,
                                  normalise_string, parse_int_or_float,
@@ -112,15 +111,18 @@ def parse_castep_file(castep_file_in: TextIO,
 
     to_parse = filters
 
-    castep_file = FileWrapper(castep_file_in)
+    if not isinstance(castep_file_in, (FileWrapper, Block)):
+        castep_file = FileWrapper(castep_file_in)
+    else:
+        castep_file = castep_file_in
 
     logger = log_factory(castep_file)
 
     for line in castep_file:
         # Build Info
-        if block := get_block(line, castep_file,
-                              r"^\s*Compiled for",
-                              REs.EMPTY, out_fmt=list):
+        if block := Block.from_re(line, castep_file,
+                                  r"^\s*Compiled for",
+                                  REs.EMPTY):
 
             if curr_run:
                 runs.append(curr_run)
@@ -141,7 +143,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["time_started"] = normalise_string(line.split(":", 1)[1])
 
         # Finalisation
-        elif block := get_block(line, castep_file, "Initialisation time", "Peak Memory Use"):
+        elif block := Block.from_re(line, castep_file, "Initialisation time", "Peak Memory Use"):
 
             if Filters.SYS_INFO not in to_parse:
                 continue
@@ -169,9 +171,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["continuation"] = line.split()[-1]
 
         # Warnings
-        elif block := get_block(line, castep_file,
-                                gen_table_re("", r"\?+"),
-                                gen_table_re("", r"\?+"), out_fmt=list):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("", r"\?+"),
+                                    gen_table_re("", r"\?+")):
 
             if Filters.SYS_INFO not in to_parse:
                 continue
@@ -199,9 +201,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["warning"].append(warn)
 
         # Memory estimate
-        elif block := get_block(line, castep_file,
-                                gen_table_re(r"MEMORY AND SCRATCH[\w\s]+", "[+-]+"),
-                                gen_table_re("", "[+-]+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re(r"MEMORY AND SCRATCH[\w\s]+", "[+-]+"),
+                                    gen_table_re("", "[+-]+")):
 
             if Filters.SYS_INFO not in to_parse:
                 continue
@@ -221,9 +223,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["title"] = next(castep_file).strip()
 
         # Parameters
-        elif block := get_block(line, castep_file,
-                                gen_table_re("[^*]+ Parameters", r"\*+"),
-                                gen_table_re("", r"\*+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("[^*]+ Parameters", r"\*+"),
+                                    gen_table_re("", r"\*+")):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -243,7 +245,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["quantisation_axis"] = to_type(get_numbers(line), float)
 
         # Pseudo-atomic energy
-        elif block := get_block(line, castep_file, REs.PS_SHELL_RE, REs.EMPTY, cnt=2):
+        elif block := Block.from_re(line, castep_file, REs.PS_SHELL_RE, REs.EMPTY, n_end=2):
 
             if Filters.SPECIES_PROPS not in to_parse:
                 continue
@@ -258,7 +260,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["species_properties"][key].update(val)
 
         # Mass
-        elif block := get_block(line, castep_file, r"Mass of species in AMU", REs.EMPTY):
+        elif block := Block.from_re(line, castep_file, r"Mass of species in AMU", REs.EMPTY):
 
             if Filters.SPECIES_PROPS not in to_parse:
                 continue
@@ -272,9 +274,9 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["species_properties"][key]["mass"] = float(val)
 
         # Electric Quadrupole Moment
-        elif block := get_block(line, castep_file,
-                                r"Electric Quadrupole Moment",
-                                rf"({REs.EMPTY}|^\s*x+$)"):
+        elif block := Block.from_re(line, castep_file,
+                                    r"Electric Quadrupole Moment",
+                                    rf"({REs.EMPTY}|^\s*x+$)"):
             if Filters.SPECIES_PROPS not in to_parse:
                 continue
 
@@ -287,7 +289,8 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["species_properties"][key]["electric_quadrupole_moment"] = float(val)
 
         # Pseudopots
-        elif block := get_block(line, castep_file, r"Files used for pseudopotentials", REs.EMPTY):
+        elif block := Block.from_re(line, castep_file,
+                                    r"Files used for pseudopotentials", REs.EMPTY):
 
             if Filters.SPECIES_PROPS not in to_parse:
                 continue
@@ -303,9 +306,9 @@ def parse_castep_file(castep_file_in: TextIO,
 
                 curr_run["species_properties"][key]["pseudopot"] = val
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Pseudopotential Report[^|]+", r"\|"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Pseudopotential Report[^|]+", r"\|"),
+                                    gen_table_re("", "=+")):
 
             if Filters.PSPOT not in to_parse:
                 continue
@@ -328,9 +331,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["pspot_debug"].append(val)
 
         # Pair Params
-        elif block := get_block(line, castep_file,
-                                gen_table_re("PairParams", r"\*+", pre=r"\w*"),
-                                REs.EMPTY):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("PairParams", r"\*+", pre=r"\w*"),
+                                    REs.EMPTY):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -340,9 +343,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["pair_params"].append(_process_pair_params(block))
 
         # DFTD
-        elif block := get_block(line, castep_file,
-                                "DFT-D parameters",
-                                r"^\s*$", cnt=3):
+        elif block := Block.from_re(line, castep_file,
+                                    "DFT-D parameters",
+                                    r"^\s*$", n_end=3):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -352,7 +355,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["dftd"] = _process_dftd(block)
 
         # SCF
-        elif block := get_block(line, castep_file, "SCF loop", "^-+ <-- SCF", cnt=2):
+        elif block := Block.from_re(line, castep_file, "SCF loop", "^-+ <-- SCF", n_end=2):
 
             if Filters.SCF not in to_parse:
                 continue
@@ -362,10 +365,10 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["scf"].append(_process_scf(block))
 
         # SCF Line min
-        elif block := get_block(line, castep_file,
-                                gen_table_re("WAVEFUNCTION LINE MINIMISATION", "[+-]+",
-                                             post="<- line"),
-                                gen_table_re("", "[+-]+", post="<- line"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("WAVEFUNCTION LINE MINIMISATION", "[+-]+",
+                                                 post="<- line"),
+                                    gen_table_re("", "[+-]+", post="<- line"), n_end=2):
 
             if Filters.SCF not in to_parse:
                 continue
@@ -375,10 +378,10 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["wvfn_line_min"].append(_process_wvfn_line_min(block))
 
         # SCF Occupancy
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Occupancy", r"\|",
-                                             post="<- occ", whole_line=False),
-                                r"Have a nice day\."):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Occupancy", r"\|",
+                                                 post="<- occ", whole_line=False),
+                                    r"Have a nice day\."):
 
             if Filters.SCF not in to_parse:
                 continue
@@ -396,9 +399,9 @@ def parse_castep_file(castep_file_in: TextIO,
             ncut = int(match.group(1))
             line = ""
             next(castep_file)
-            block = get_block(line, castep_file,
-                              "",
-                              "^-+ <-- SCF", cnt=ncut*3)
+            block = Block.from_re(line, castep_file,
+                                  "",
+                                  "^-+ <-- SCF", n_end=ncut*3)
             data = parse_castep_file(block, Filters.HIGH | Filters.SCF)[0]
 
             scf = data.pop("scf")
@@ -495,7 +498,8 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["spin"].append(to_type(val, float))
 
         # Initial cell
-        elif block := get_block(line, castep_file, gen_table_re("Unit Cell"), REs.EMPTY, cnt=3):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Unit Cell"), REs.EMPTY, n_end=3):
 
             if Filters.CELL not in to_parse:
                 continue
@@ -505,9 +509,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["initial_cell"] = _process_unit_cell(block)
 
         # Cell Symmetry and contstraints
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Symmetry and Constraints"),
-                                "Cell constraints are"):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Symmetry and Constraints"),
+                                    "Cell constraints are"):
 
             if Filters.SYMMETRIES not in to_parse:
                 continue
@@ -517,9 +521,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["symmetries"], curr_run["constraints"] = _process_symmetry(block)
 
         # TSS (must be ahead of initial pos)
-        elif block := get_block(line, castep_file,
-                                gen_table_re("(Reactant|Product)", "x"),
-                                gen_table_re("", "x+"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("(Reactant|Product)", "x"),
+                                    gen_table_re("", "x+"), n_end=2):
 
             if Filters.TSS not in to_parse or Filters.POSITION not in to_parse:
                 continue
@@ -531,9 +535,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run[mode] = _process_atreg_block(block)
 
         # Initial pos
-        elif block := get_block(line, castep_file,  # Labelled
-                                r"Fractional coordinates of atoms\s+User-defined",
-                                gen_table_re("", "x+")):
+        elif block := Block.from_re(line, castep_file,  # Labelled
+                                    r"Fractional coordinates of atoms\s+User-defined",
+                                    gen_table_re("", "x+")):
 
             if Filters.POSITION not in to_parse:
                 continue
@@ -556,9 +560,9 @@ def parse_castep_file(castep_file_in: TextIO,
 
                     curr_run["initial_positions"][ind] = to_type(match.group("x", "y", "z"), float)
 
-        elif block := get_block(line, castep_file,  # Mixture
-                                r"Mixture\s+Fractional coordinates of atoms",
-                                gen_table_re("", "x+")):
+        elif block := Block.from_re(line, castep_file,  # Mixture
+                                    r"Mixture\s+Fractional coordinates of atoms",
+                                    gen_table_re("", "x+")):
 
             if Filters.POSITION not in to_parse:
                 continue
@@ -581,9 +585,9 @@ def parse_castep_file(castep_file_in: TextIO,
 
                     curr_run["initial_positions"][(spec, idx)] = {'pos': pos, 'weight': weight}
 
-        elif block := get_block(line, castep_file,
-                                "Fractional coordinates of atoms",
-                                gen_table_re("", "x+")):
+        elif block := Block.from_re(line, castep_file,
+                                    "Fractional coordinates of atoms",
+                                    gen_table_re("", "x+")):
 
             if Filters.POSITION not in to_parse:
                 continue
@@ -598,9 +602,9 @@ def parse_castep_file(castep_file_in: TextIO,
                                           for _ in range(3))
 
         # Initial vel
-        elif block := get_block(line, castep_file,
-                                "User Supplied Ionic Velocities",
-                                gen_table_re("", "x+")):
+        elif block := Block.from_re(line, castep_file,
+                                    "User Supplied Ionic Velocities",
+                                    gen_table_re("", "x+")):
 
             if Filters.POSITION not in to_parse:
                 continue
@@ -610,9 +614,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["initial_velocities"] = _process_atreg_block(block)
 
         # Initial spins
-        elif block := get_block(line, castep_file,
-                                "Initial magnetic",
-                                gen_table_re("", "x+")):
+        elif block := Block.from_re(line, castep_file,
+                                    "Initial magnetic",
+                                    gen_table_re("", "x+")):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -622,7 +626,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["initial_spins"] = _process_initial_spins(block)
 
         # Target Stress
-        elif block := get_block(line, castep_file, "External pressure/stress", "", cnt=3):
+        elif block := Block.from_re(line, castep_file, "External pressure/stress", "", n_end=3):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -642,7 +646,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["dedlne"] = to_type(match.group(1), float)
 
         # K-Points
-        elif block := get_block(line, castep_file, "k-Points For BZ Sampling", REs.EMPTY):
+        elif block := Block.from_re(line, castep_file, "k-Points For BZ Sampling", REs.EMPTY):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -651,9 +655,9 @@ def parse_castep_file(castep_file_in: TextIO,
 
             curr_run["k-points"] = _process_kpoint_blocks(block, True)
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Number +Fractional coordinates +Weight", r"\+"),
-                                gen_table_re("", r"\++")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Number +Fractional coordinates +Weight", r"\+"),
+                                    gen_table_re("", r"\++")):
 
             if Filters.PARAMETERS not in to_parse:
                 continue
@@ -672,7 +676,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["applied_field"] = to_type(get_numbers(line), float)
 
         # Forces blocks
-        elif block := get_block(line, castep_file, REs.FORCES_BLOCK_RE, r"^\s*\*+$"):
+        elif block := Block.from_re(line, castep_file, REs.FORCES_BLOCK_RE, r"^\s*\*+$"):
 
             if Filters.FORCE not in to_parse:
                 continue
@@ -687,7 +691,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["forces"][key].append(val)
 
         # Stress tensor block
-        elif block := get_block(line, castep_file, REs.STRESSES_BLOCK_RE, r"^\s*\*+$"):
+        elif block := Block.from_re(line, castep_file, REs.STRESSES_BLOCK_RE, r"^\s*\*+$"):
             if Filters.STRESS not in to_parse:
                 continue
 
@@ -701,9 +705,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["stresses"][key].append(val)
 
             # Phonon block
-        elif block := get_block(line, castep_file,
-                                "Vibrational Frequencies",
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    "Vibrational Frequencies",
+                                    gen_table_re("", "=+")):
 
             if Filters.PHONON not in to_parse:
                 continue
@@ -715,8 +719,8 @@ def parse_castep_file(castep_file_in: TextIO,
             logger("Found %d phonon samples", len(curr_run["phonons"]))
 
         # Phonon Symmetry
-        elif block := get_block(line, castep_file,
-                                "Phonon Symmetry Analysis", REs.EMPTY):
+        elif block := Block.from_re(line, castep_file,
+                                    "Phonon Symmetry Analysis", REs.EMPTY):
 
             if Filters.PHONON not in to_parse:
                 continue
@@ -727,9 +731,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["phonon_symmetry_analysis"].append(val)
 
         # Dynamical Matrix
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Dynamical matrix"),
-                                gen_table_re("", "-+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Dynamical matrix"),
+                                    gen_table_re("", "-+")):
 
             if Filters.PHONON not in to_parse:
                 continue
@@ -740,9 +744,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["dynamical_matrix"] = val
 
         # Raman tensors
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Raman Susceptibility Tensors[^+]*", r"\+"),
-                                REs.EMPTY):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Raman Susceptibility Tensors[^+]*", r"\+"),
+                                    REs.EMPTY):
 
             if Filters.PHONON not in to_parse:
                 continue
@@ -752,9 +756,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["raman"].append(_process_raman(block))
 
         # Solvation
-        elif block := get_block(line, castep_file,
-                                gen_table_re("AUTOSOLVATION CALCULATION RESULTS", r"\*+"),
-                                r"^\s*\*+\s*$"):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("AUTOSOLVATION CALCULATION RESULTS", r"\*+"),
+                                    r"^\s*\*+\s*$"):
 
             if Filters.SOLVATION not in to_parse:
                 continue
@@ -764,8 +768,8 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["autosolvation"] = _process_autosolvation(block)
 
         # Permittivity and NLO Susceptibility
-        elif block := get_block(line, castep_file,
-                                r"^\s+Optical Permittivity", r"^ =+$"):
+        elif block := Block.from_re(line, castep_file,
+                                    r"^\s+Optical Permittivity", r"^ =+$"):
 
             if Filters.OPTICS not in to_parse:
                 continue
@@ -778,7 +782,7 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["dc_permittivity"] = val[1]
 
         # Polarisability
-        elif block := get_block(line, castep_file, r"^\s+Polarisabilit(y|ies)", r"^ =+$"):
+        elif block := Block.from_re(line, castep_file, r"^\s+Polarisabilit(y|ies)", r"^ =+$"):
 
             if Filters.OPTICS not in to_parse:
                 continue
@@ -791,8 +795,8 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["static_polarisability"] = val[1]
 
         # Non-linear
-        elif block := get_block(line, castep_file,
-                                r"^\s+Nonlinear Optical Susceptibility", r"^ =+$"):
+        elif block := Block.from_re(line, castep_file,
+                                    r"^\s+Nonlinear Optical Susceptibility", r"^ =+$"):
 
             if Filters.OPTICS not in to_parse:
                 continue
@@ -802,9 +806,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["nlo"], _ = _process_3_6_matrix(block, False)
 
         # Atomic displacements
-        elif block := get_block(line, castep_file,
-                                gen_table_re(r"Atomic Displacement Parameters \(A\*\*2\)"),
-                                gen_table_re("", "-+"), cnt=3):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re(r"Atomic Displacement Parameters \(A\*\*2\)"),
+                                    gen_table_re("", "-+"), n_end=3):
 
             if Filters.THERMODYNAMICS not in to_parse:
                 continue
@@ -815,9 +819,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["atomic_displacements"] = accum
 
         # Thermodynamics
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Thermodynamics"),
-                                gen_table_re("", "-+"), cnt=3):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Thermodynamics"),
+                                    gen_table_re("", "-+"), n_end=3):
 
             if Filters.THERMODYNAMICS not in to_parse:
                 continue
@@ -828,9 +832,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["thermodynamics"] = accum
 
         # Mulliken Population Analysis
-        elif block := get_block(line, castep_file,
-                                gen_table_re(r"Atomic Populations \(Mulliken\)"),
-                                gen_table_re("", "=+"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re(r"Atomic Populations \(Mulliken\)"),
+                                    gen_table_re("", "=+"), n_end=2):
 
             if Filters.POPN_ANALYSIS not in to_parse:
                 continue
@@ -840,9 +844,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["mulliken_popn"] = _process_mulliken(block)
 
         # Born charges
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Born Effective Charges"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Born Effective Charges"),
+                                    gen_table_re("", "=+")):
 
             if Filters.POPN_ANALYSIS not in to_parse:
                 continue
@@ -852,9 +856,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["born"].append(_process_born(block))
 
         # Orbital populations
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Orbital Populations"),
-                                gen_table_re("", "-+"), cnt=3):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Orbital Populations"),
+                                    gen_table_re("", "-+"), n_end=3):
 
             if Filters.POPN_ANALYSIS not in to_parse:
                 continue
@@ -864,9 +868,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["orbital_popn"] = _process_orbital_populations(block)
 
         # Bond analysis
-        elif block := get_block(line, castep_file,
-                                r"Bond\s+Population(?:\s+Spin)?\s+Length",
-                                gen_table_re("", "=+"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    r"Bond\s+Population(?:\s+Spin)?\s+Length",
+                                    gen_table_re("", "=+"), n_end=2):
 
             if Filters.POPN_ANALYSIS not in to_parse:
                 continue
@@ -876,9 +880,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["bonds"] = _process_bond_analysis(block)
 
         # Hirshfeld Population Analysis
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Hirshfeld Analysis"),
-                                gen_table_re("", "=+"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Hirshfeld Analysis"),
+                                    gen_table_re("", "=+"), n_end=2):
 
             if Filters.POPN_ANALYSIS not in to_parse:
                 continue
@@ -888,9 +892,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["hirshfeld"] = _process_hirshfeld(block)
 
         # ELF
-        elif block := get_block(line, castep_file,
-                                gen_table_re("ELF grid sample"),
-                                gen_table_re("", "-+"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("ELF grid sample"),
+                                    gen_table_re("", "-+"), n_end=2):
 
             if Filters.ELF not in to_parse:
                 continue
@@ -900,9 +904,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["elf"] = _process_elf(block)
 
         # MD Block
-        elif block := get_block(line, castep_file,
-                                "Starting MD iteration",
-                                "finished MD iteration"):
+        elif block := Block.from_re(line, castep_file,
+                                    "Starting MD iteration",
+                                    "finished MD iteration"):
 
             if Filters.MD not in to_parse:
                 continue
@@ -917,9 +921,9 @@ def parse_castep_file(castep_file_in: TextIO,
                         replace=True)
             curr_run["md"].append(data)
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("MD Data:", "x"),
-                                gen_table_re("", "x+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("MD Data:", "x"),
+                                    gen_table_re("", "x+")):
 
             if Filters.MD not in to_parse and Filters.MD_SUMMARY not in to_parse:
                 continue
@@ -927,8 +931,8 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run.update(_process_md_block(block))
 
         # GeomOpt
-        elif block := get_block(line, castep_file, "Final Configuration",
-                                rf"\s*{REs.MINIMISERS_RE}: Final"):
+        elif block := Block.from_re(line, castep_file, "Final Configuration",
+                                    rf"\s*{REs.MINIMISERS_RE}: Final"):
 
             if Filters.GEOM_OPT not in to_parse and Filters.FINAL_CONFIG not in to_parse:
                 continue
@@ -937,9 +941,9 @@ def parse_castep_file(castep_file_in: TextIO,
 
             curr_run["geom_opt"]["final_configuration"] = _process_final_config_block(block)
 
-        elif block := get_block(line, castep_file,
-                                rf"Starting {REs.MINIMISERS_RE} iteration\s*\d+\s*\.{{3}}",
-                                rf"^=+$|^\s*Finished\s+{REs.MINIMISERS_RE}\s*$", cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    rf"Starting {REs.MINIMISERS_RE} iteration\s*\d+\s*\.{{3}}",
+                                    rf"^=+$|^\s*Finished\s+{REs.MINIMISERS_RE}\s*$", n_end=2):
 
             if Filters.GEOM_OPT not in to_parse:
                 continue
@@ -1004,8 +1008,9 @@ def parse_castep_file(castep_file_in: TextIO,
             logger("Found geomopt %s", key)
             curr_run["geom_opt"]["final_configuration"][key] = val
 
-        elif block := get_block(line, castep_file,
-                                f"<--( min)? {REs.MINIMISERS_RE}$", r"\+(?:-+\+){4,5}", cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    f"<--( min)? {REs.MINIMISERS_RE}$",
+                                    r"\+(?:-+\+){4,5}", n_end=2):
 
             if Filters.GEOM_OPT not in to_parse:
                 continue
@@ -1020,9 +1025,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["minimisation"].append(_process_geom_table(block))
 
         # TDDFT
-        elif block := get_block(line, castep_file,
-                                gen_table_re("TDDFT excitation energies", r"\+", post="TDDFT"),
-                                gen_table_re("=+", r"\+", post="TDDFT"), cnt=2):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("TDDFT excitation energies", r"\+", post="TDDFT"),
+                                    gen_table_re("=+", r"\+", post="TDDFT"), n_end=2):
 
             if Filters.TDDFT not in to_parse:
                 continue
@@ -1032,9 +1037,10 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["tddft"] = _process_tddft(block)
 
         # Band structure
-        elif block := get_block(line, castep_file,
-                                gen_table_re("(B A N D|Band Structure Calculation)[^+]+", r"\+"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("(B A N D|Band Structure Calculation)[^+]+",
+                                                 r"\+"),
+                                    gen_table_re("", "=+")):
 
             if Filters.BS not in to_parse:
                 continue
@@ -1044,11 +1050,11 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["bs"] = _process_band_structure(block)
 
         # Molecular Dipole
-        elif block := get_block(line, castep_file,
-                                gen_table_re("D I P O L E   O F   M O L E C U L E"
-                                             "   I N   S U P E R C E L L",
-                                             r"\+"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("D I P O L E   O F   M O L E C U L E"
+                                                 "   I N   S U P E R C E L L",
+                                                 r"\+"),
+                                    gen_table_re("", "=+")):
 
             if Filters.DIPOLE not in to_parse:
                 continue
@@ -1058,9 +1064,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["molecular_dipole"] = _process_dipole(block)
 
         # Chemical shielding
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Chemical Shielding Tensor", r"\|"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Chemical Shielding Tensor", r"\|"),
+                                    gen_table_re("", "=+")):
 
             if Filters.CHEM_SHIELDING not in to_parse:
                 continue
@@ -1070,10 +1076,10 @@ def parse_castep_file(castep_file_in: TextIO,
             val = _parse_magres_block(0, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Chemical Shielding and "
-                                             "Electric Field Gradient Tensors", r"\|"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Chemical Shielding and "
+                                                 "Electric Field Gradient Tensors", r"\|"),
+                                    gen_table_re("", "=+")):
 
             if Filters.CHEM_SHIELDING not in to_parse:
                 continue
@@ -1083,9 +1089,9 @@ def parse_castep_file(castep_file_in: TextIO,
             val = _parse_magres_block(1, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Electric Field Gradient Tensor", r"\|"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Electric Field Gradient Tensor", r"\|"),
+                                    gen_table_re("", "=+")):
 
             if Filters.CHEM_SHIELDING not in to_parse:
                 continue
@@ -1095,9 +1101,9 @@ def parse_castep_file(castep_file_in: TextIO,
             val = _parse_magres_block(2, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("(?:I|Ani)sotropic J-coupling", r"\|"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("(?:I|Ani)sotropic J-coupling", r"\|"),
+                                    gen_table_re("", "=+")):
 
             if Filters.CHEM_SHIELDING not in to_parse:
                 continue
@@ -1107,9 +1113,9 @@ def parse_castep_file(castep_file_in: TextIO,
             val = _parse_magres_block(3, block)
             curr_run["magres"].append(val)
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Hyperfine Tensor", r"\|"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Hyperfine Tensor", r"\|"),
+                                    gen_table_re("", "=+")):
 
             if Filters.CHEM_SHIELDING not in to_parse:
                 continue
@@ -1120,9 +1126,9 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["magres"].append(val)
 
         # Elastic
-        elif block := get_block(line, castep_file,
-                                gen_table_re(r"Elastic Constants Tensor \(GPa\)"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re(r"Elastic Constants Tensor \(GPa\)"),
+                                    gen_table_re("", "=+")):
 
             if Filters.ELASTIC not in to_parse:
                 continue
@@ -1131,12 +1137,13 @@ def parse_castep_file(castep_file_in: TextIO,
 
             if "elastic" not in curr_run:
                 curr_run["elastic"] = {}
+
             val, _ = _process_3_6_matrix(block, False)
             curr_run["elastic"]["elastic_constants"] = val
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re(r"Compliance Matrix \(GPa\^-1\)"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re(r"Compliance Matrix \(GPa\^-1\)"),
+                                    gen_table_re("", "=+")):
 
             if Filters.ELASTIC not in to_parse:
                 continue
@@ -1145,10 +1152,11 @@ def parse_castep_file(castep_file_in: TextIO,
 
             if "elastic" not in curr_run:
                 curr_run["elastic"] = {}
+
             val, _ = _process_3_6_matrix(block, False)
             curr_run["elastic"]["compliance_matrix"] = val
 
-        elif block := get_block(line, castep_file, "Contribution ::", REs.EMPTY):
+        elif block := Block.from_re(line, castep_file, "Contribution ::", REs.EMPTY):
 
             if not (match := re.match("(?P<type>.* Contribution)", line)):
                 raise IOError("Invalid elastic block")
@@ -1167,9 +1175,9 @@ def parse_castep_file(castep_file_in: TextIO,
             val, _ = _process_3_6_matrix(block, False)
             curr_run["elastic"][typ] = val
 
-        elif block := get_block(line, castep_file,
-                                gen_table_re("Elastic Properties"),
-                                gen_table_re("", "=+")):
+        elif block := Block.from_re(line, castep_file,
+                                    gen_table_re("Elastic Properties"),
+                                    gen_table_re("", "=+")):
 
             if Filters.ELASTIC not in to_parse:
                 continue
@@ -1184,7 +1192,7 @@ def parse_castep_file(castep_file_in: TextIO,
         # --- Extra blocks for testing
 
         # Hugoniot data
-        elif block := get_block(line, castep_file, "BEGIN hug", "END hug"):
+        elif block := Block.from_re(line, castep_file, "BEGIN hug", "END hug"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1195,7 +1203,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["hug"].append(val)
 
         # Bands block (spectral data)
-        elif block := get_block(line, castep_file, "BEGIN bands", "END bands"):
+        elif block := Block.from_re(line, castep_file, "BEGIN bands", "END bands"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1205,7 +1213,7 @@ def parse_castep_file(castep_file_in: TextIO,
             val = parse_bands_file(block)
             curr_run["bands"].append(val["bands"])
 
-        elif block := get_block(line, castep_file, "BEGIN phonon_dos", "END phonon_dos"):
+        elif block := Block.from_re(line, castep_file, "BEGIN phonon_dos", "END phonon_dos"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1217,7 +1225,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["gradients"] = val["gradients"]
 
         # E-Field
-        elif block := get_block(line, castep_file, "BEGIN efield", "END efield"):
+        elif block := Block.from_re(line, castep_file, "BEGIN efield", "END efield"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1229,7 +1237,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["permittivity"] = val["permittivity"]
 
         # Elastic
-        elif block := get_block(line, castep_file, "<BEGIN elastic>", "<END elastic>"):
+        elif block := Block.from_re(line, castep_file, "<BEGIN elastic>", "<END elastic>"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1241,8 +1249,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["permittivity"] = val["compliance_matrix"]
 
         # XRD Structure Factor
-        elif block := get_block(line, castep_file, "BEGIN xrd_sf", "END xrd_sf",
-                                out_fmt=list):
+        elif block := Block.from_re(line, castep_file, "BEGIN xrd_sf", "END xrd_sf"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1256,8 +1263,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["xrd_sf"] = val
 
         # ELF FMT
-        elif block := get_block(line, castep_file, "BEGIN elf_fmt", "END elf_fmt",
-                                out_fmt=list):
+        elif block := Block.from_re(line, castep_file, "BEGIN elf_fmt", "END elf_fmt"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1273,8 +1279,7 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["kpt-data"].update(val)
 
         # CHDIFF FMT
-        elif block := get_block(line, castep_file, "BEGIN chdiff_fmt", "END chdiff_fmt",
-                                out_fmt=list):
+        elif block := Block.from_re(line, castep_file, "BEGIN chdiff_fmt", "END chdiff_fmt"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1290,8 +1295,7 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["kpt-data"].update(val)
 
         # POT FMT
-        elif block := get_block(line, castep_file, "BEGIN pot_fmt", "END pot_fmt",
-                                out_fmt=list):
+        elif block := Block.from_re(line, castep_file, "BEGIN pot_fmt", "END pot_fmt"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1307,8 +1311,7 @@ def parse_castep_file(castep_file_in: TextIO,
                 curr_run["kpt-data"].update(val)
 
         # DEN FMT
-        elif block := get_block(line, castep_file, "BEGIN den_fmt", "END den_fmt",
-                                out_fmt=list):
+        elif block := Block.from_re(line, castep_file, "BEGIN den_fmt", "END den_fmt"):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
@@ -1330,7 +1333,7 @@ def parse_castep_file(castep_file_in: TextIO,
     return runs
 
 
-def _process_ps_energy(block: TextIO) -> Tuple[str, PSPotEnergy]:
+def _process_ps_energy(block: Block) -> Tuple[str, PSPotEnergy]:
     if not (match := REs.PS_SHELL_RE.search(next(block))):
         raise IOError("Invalid PS Energy")
 
@@ -1350,7 +1353,7 @@ def _process_ps_energy(block: TextIO) -> Tuple[str, PSPotEnergy]:
     return key, accum
 
 
-def _process_tddft(block: TextIO) -> List[TDDFTData]:
+def _process_tddft(block: Block) -> List[TDDFTData]:
     tddata = [{"energy": float(match["energy"]),
                "error": float(match["error"]),
                "type": match["type"]}
@@ -1359,7 +1362,7 @@ def _process_tddft(block: TextIO) -> List[TDDFTData]:
     return tddata
 
 
-def _process_atreg_block(block: TextIO) -> AtomPropBlock:
+def _process_atreg_block(block: Block) -> AtomPropBlock:
     accum: AtomPropBlock = {
         atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
         for line in block
@@ -1367,7 +1370,7 @@ def _process_atreg_block(block: TextIO) -> AtomPropBlock:
     return accum
 
 
-def _process_spec_prop(block: TextIO) -> List[List[str]]:
+def _process_spec_prop(block: Block) -> List[List[str]]:
 
     accum = []
 
@@ -1380,7 +1383,7 @@ def _process_spec_prop(block: TextIO) -> List[List[str]]:
     return accum
 
 
-def _process_md_block(block: TextIO) -> MDInfo:
+def _process_md_block(block: Block) -> MDInfo:
     curr_data = {match.group("key").strip(): float(match.group("val"))
                  for line in block
                  if (match := re.search(r"x\s+"
@@ -1390,20 +1393,20 @@ def _process_md_block(block: TextIO) -> MDInfo:
     return {normalise_key(key): val for key, val in curr_data.items()}
 
 
-def _process_elf(block: TextIO) -> List[float]:
+def _process_elf(block: Block) -> List[float]:
     curr_data = [float(match.group(1)) for line in block
                  if (match := re.match(rf"\s+ELF\s+\d+\s+({REs.FNUMBER_RE})", line))]
     return curr_data
 
 
-def _process_hirshfeld(block: TextIO) -> Dict[AtomIndex, float]:
+def _process_hirshfeld(block: Block) -> Dict[AtomIndex, float]:
     """ Process Hirshfeld block to dict of charges """
     accum = {atreg_to_index(match): float(match["charge"]) for line in block
              if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))}
     return accum
 
 
-def _process_thermodynamics(block: TextIO) -> Thermodynamics:
+def _process_thermodynamics(block: Block) -> Thermodynamics:
     """ Process a thermodynamics block into a dict of lists """
     accum: Thermodynamics = defaultdict(list)
     for line in block:
@@ -1412,6 +1415,7 @@ def _process_thermodynamics(block: TextIO) -> Thermodynamics:
 
         if match := REs.THERMODYNAMICS_DATA_RE.match(line):
             stack_dict(accum, match.groupdict())
+
         # elif re.match(r"\s+T\(", line):  # Can make dict/re based on labels
         #     thermo_label = line.split()
 
@@ -1420,7 +1424,7 @@ def _process_thermodynamics(block: TextIO) -> Thermodynamics:
     return accum
 
 
-def _process_atom_disp(block: TextIO) -> Dict[str, Dict[AtomIndex, SixVector]]:
+def _process_atom_disp(block: Block) -> Dict[str, Dict[AtomIndex, SixVector]]:
     """ Process a atom disp block into a dict of lists """
     accum: Dict[str, Dict[AtomIndex, SixVector]] = defaultdict(dict)
     for line in block:
@@ -1433,8 +1437,8 @@ def _process_atom_disp(block: TextIO) -> Dict[str, Dict[AtomIndex, SixVector]]:
     return accum
 
 
-def _process_3_6_matrix(block: TextIO, split: bool) -> Tuple[ThreeByThreeMatrix,
-                                                             Optional[ThreeByThreeMatrix]]:
+def _process_3_6_matrix(block: Block, split: bool) -> Tuple[ThreeByThreeMatrix,
+                                                            Optional[ThreeByThreeMatrix]]:
     """ Process a single or pair of 3x3 matrices or 3x6 matrix """
     parsed = tuple(to_type(vals, float) for line in block
                    if (vals := get_numbers(line)) and len(vals) in (3, 6))
@@ -1449,7 +1453,7 @@ def _process_3_6_matrix(block: TextIO, split: bool) -> Tuple[ThreeByThreeMatrix,
     return fst, snd
 
 
-def _process_params(block: TextIO) -> Dict[str, Dict[str, Union[str, Tuple[Any, ...]]]]:
+def _process_params(block: Block) -> Dict[str, Dict[str, Union[str, Tuple[Any, ...]]]]:
     """ Process a parameters block into a dict of params """
 
     opt: Dict[str, Any] = {}
@@ -1461,7 +1465,7 @@ def _process_params(block: TextIO) -> Dict[str, Dict[str, Union[str, Tuple[Any, 
     val: Any
 
     for line in block:
-        if dev_block := get_block(line, block, "Developer Code", gen_table_re("", r"\*+")):
+        if dev_block := Block.from_re(line, block, "Developer Code", gen_table_re("", r"\*+")):
 
             opt["devel_code"] = _parse_devel_code_block(dev_block)
 
@@ -1487,6 +1491,7 @@ def _process_params(block: TextIO) -> Dict[str, Dict[str, Union[str, Tuple[Any, 
                 val = to_type(val, determine_type(val))
                 if unit:
                     val = (val, *unit)
+
             curr_opt[" ".join(key).strip()] = val
 
     if curr_opt:
@@ -1495,7 +1500,7 @@ def _process_params(block: TextIO) -> Dict[str, Dict[str, Union[str, Tuple[Any, 
     return opt
 
 
-def _process_buildinfo(block: Sequence[str]) -> Dict[str, str]:
+def _process_buildinfo(block: Block) -> Dict[str, str]:
     info = {}
 
     info["summary"] = " ".join(map(normalise_string, block[0:2]))
@@ -1506,7 +1511,7 @@ def _process_buildinfo(block: Sequence[str]) -> Dict[str, str]:
     return info
 
 
-def _process_unit_cell(block: TextIO) -> CellInfo:
+def _process_unit_cell(block: Block) -> CellInfo:
     cell: CellInfo = defaultdict(list)
     prop = []
 
@@ -1532,13 +1537,14 @@ def _process_unit_cell(block: TextIO) -> CellInfo:
     return cell
 
 
-def _process_scf(block: TextIO) -> List[SCFReport]:
+def _process_scf(block: Block) -> List[SCFReport]:
     scf = []
     curr: SCFReport = {}
     for line in block:
         if match := REs.SCF_LOOP_RE.match(line):
             if curr:
                 scf.append(curr)
+
             curr = match.groupdict()
             fix_data_types(curr, {"energy": float,
                                   "energy_gain": float,
@@ -1588,7 +1594,7 @@ def _process_scf(block: TextIO) -> List[SCFReport]:
     return scf
 
 
-def _process_forces(block: TextIO) -> Tuple[str, AtomPropBlock]:
+def _process_forces(block: Block) -> Tuple[str, AtomPropBlock]:
     if not (ft_guess := REs.FORCES_BLOCK_RE.search(next(block))):
         raise IOError("Invalid forces block")
     ftype = ft_guess.group(1) if ft_guess.group(1) else "non_descript"
@@ -1601,7 +1607,7 @@ def _process_forces(block: TextIO) -> Tuple[str, AtomPropBlock]:
     return ftype, accum
 
 
-def _process_stresses(block: TextIO) -> Tuple[str, SixVector]:
+def _process_stresses(block: Block) -> Tuple[str, SixVector]:
     if not (ft_guess := REs.STRESSES_BLOCK_RE.search(next(block))):
         raise IOError("Invalid stresses block")
     ftype = ft_guess.group(1) if ft_guess.group(1) else "non_descript"
@@ -1620,7 +1626,7 @@ def _process_stresses(block: TextIO) -> Tuple[str, SixVector]:
     return ftype, to_type(accum, float)
 
 
-def _process_initial_spins(block: TextIO) -> Dict[AtomIndex, InitialSpin]:
+def _process_initial_spins(block: Block) -> Dict[AtomIndex, InitialSpin]:
     """ Process a set of initial spins into appropriate dict """
     accum: Dict[AtomIndex, InitialSpin] = {}
     for line in block:
@@ -1635,7 +1641,7 @@ def _process_initial_spins(block: TextIO) -> Dict[AtomIndex, InitialSpin]:
     return accum
 
 
-def _process_born(block: TextIO) -> Dict[AtomIndex, ThreeByThreeMatrix]:
+def _process_born(block: Block) -> Dict[AtomIndex, ThreeByThreeMatrix]:
     """ Process a Born block into a dict of charges """
 
     born_accum = {}
@@ -1645,13 +1651,14 @@ def _process_born(block: TextIO) -> Dict[AtomIndex, ThreeByThreeMatrix]:
             label = val.pop('label')
             if label is not None:
                 val["spec"] = f"{val['spec']} [{label}]"
+
             born_accum[atreg_to_index(val)] = (to_type(val["charges"].split(), float),
                                                to_type(next(block).split(), float),
                                                to_type(next(block).split(), float))
     return born_accum
 
 
-def _process_raman(block: TextIO) -> List[RamanReport]:
+def _process_raman(block: Block) -> List[RamanReport]:
     """ Process a Mulliken block into a list of modes """
 
     next(block)  # Skip first captured line
@@ -1661,6 +1668,7 @@ def _process_raman(block: TextIO) -> List[RamanReport]:
         if "Mode number" in line:
             if curr_mode:
                 modes.append(curr_mode)
+
             curr_mode = {"tensor": [], "depolarisation": None}
         elif numbers := get_numbers(line):
             assert isinstance(curr_mode["tensor"], list)
@@ -1686,7 +1694,7 @@ def _process_raman(block: TextIO) -> List[RamanReport]:
     return modes
 
 
-def _process_mulliken(block: TextIO) -> Dict[AtomIndex, MullikenInfo]:
+def _process_mulliken(block: Block) -> Dict[AtomIndex, MullikenInfo]:
     """ Process a mulliken block into a dict of points """
     accum = {}
 
@@ -1720,7 +1728,7 @@ def _process_mulliken(block: TextIO) -> Dict[AtomIndex, MullikenInfo]:
     return accum
 
 
-def _process_band_structure(block: TextIO) -> List[BandStructure]:
+def _process_band_structure(block: Block) -> List[BandStructure]:
     """ Process a band structure into a list of kpts"""
 
     def fdt(qdat):
@@ -1740,6 +1748,7 @@ def _process_band_structure(block: TextIO) -> List[BandStructure]:
             if qdata:
                 fdt(qdata)
                 bands.append(qdata)
+
             qdata = {"band": [], "energy": [], **match.groupdict()}
 
         elif match := re.search(labelled_floats(("band", "energy"), sep=r"\s+"), line):
@@ -1767,8 +1776,8 @@ def _process_qdata(qdata: Dict[str, Union[str, List[str]]]) -> QData:
     return cast(QData, qdata)
 
 
-def _parse_magres_block(task: int, inp: TextIO) -> Dict[Union[str, AtomIndex],
-                                                        Union[str, Dict[str, Optional[float]]]]:
+def _parse_magres_block(task: int, inp: Block) -> Dict[Union[str, AtomIndex],
+                                                       Union[str, Dict[str, Optional[float]]]]:
     """ Parse MagRes data tables from inp according to task """
 
     data: Dict[Union[str, AtomIndex], Union[str, Dict[str, Optional[float]]]] = {}
@@ -1789,7 +1798,7 @@ def _parse_magres_block(task: int, inp: TextIO) -> Dict[Union[str, AtomIndex],
     return data
 
 
-def _process_finalisation(block: TextIO) -> Dict[str, float]:
+def _process_finalisation(block: Block) -> Dict[str, float]:
 
     out = {}
 
@@ -1800,7 +1809,7 @@ def _process_finalisation(block: TextIO) -> Dict[str, float]:
     return out
 
 
-def _process_memory_est(block: TextIO) -> Dict[str, MemoryEst]:
+def _process_memory_est(block: Block) -> Dict[str, MemoryEst]:
 
     accum = {}
 
@@ -1814,7 +1823,7 @@ def _process_memory_est(block: TextIO) -> Dict[str, MemoryEst]:
     return accum
 
 
-def _process_phonon_sym_analysis(block: TextIO) -> PhononSymmetryReport:
+def _process_phonon_sym_analysis(block: Block) -> PhononSymmetryReport:
     accum: PhononSymmetryReport = {'title': '', 'mat': ()}
     accum["title"] = normalise_string(next(block).split(":")[1])
     next(block)
@@ -1824,7 +1833,7 @@ def _process_phonon_sym_analysis(block: TextIO) -> PhononSymmetryReport:
     return accum
 
 
-def _process_kpoint_blocks(block: TextIO,
+def _process_kpoint_blocks(block: Block,
                            implicit_kpoints: bool) -> Union[KPointsList, KPointsSpec]:
 
     if implicit_kpoints:
@@ -1849,7 +1858,7 @@ def _process_kpoint_blocks(block: TextIO,
     return accum
 
 
-def _process_symmetry(block: TextIO) -> Tuple[SymmetryReport, ConstraintsReport]:
+def _process_symmetry(block: Block) -> Tuple[SymmetryReport, ConstraintsReport]:
 
     sym: Dict[str, Any] = {}
     con: Dict[str, Any] = {}
@@ -1897,12 +1906,11 @@ def _process_symmetry(block: TextIO) -> Tuple[SymmetryReport, ConstraintsReport]
         elif "Centre of mass" in line:
             con["com_constrained"] = "NOT" not in line
 
-        elif cons_block := get_block(line, block,
-                                     r"constraints\.{5}", r"\s*x+\.{4}\s*", out_fmt=str):
+        elif cons_block := Block.from_re(line, block, r"constraints\.{5}", r"\s*x+\.{4}\s*"):
             con["ionic_constraints"] = defaultdict(list)
             for match in re.finditer(rf"{REs.ATREG}\s*[xyz]\s*" +
                                      labelled_floats(("pos",), counts=(3,)),
-                                     cons_block):
+                                     str(cons_block)):
                 val = match.groupdict()
                 ind = atreg_to_index(val)
                 con["ionic_constraints"][ind].append(to_type(val["pos"].split(), float))
@@ -1913,7 +1921,7 @@ def _process_symmetry(block: TextIO) -> Tuple[SymmetryReport, ConstraintsReport]
     return sym, con
 
 
-def _process_dynamical_matrix(block: TextIO) -> Tuple[Tuple[complex, ...], ...]:
+def _process_dynamical_matrix(block: Block) -> Tuple[Tuple[complex, ...], ...]:
     next(block)  # Skip header line
     next(block)
 
@@ -1986,7 +1994,7 @@ def _process_pspot_string(string: str, debug=False) -> PSPotStrInfo:
     return pspot
 
 
-def _process_pspot_report(block: TextIO) -> PSPotReport:
+def _process_pspot_report(block: Block) -> PSPotReport:
 
     accum: PSPotReport = {"reference_electronic_structure": [],
                           "pseudopotential_definition": []}
@@ -2025,7 +2033,7 @@ def _process_pspot_report(block: TextIO) -> PSPotReport:
     return accum
 
 
-def _process_bond_analysis(block: TextIO) -> BondData:
+def _process_bond_analysis(block: Block) -> BondData:
     accum = {((match["spec1"], int(match["ind1"])),
               (match["spec2"], int(match["ind2"]))):
              {"population": float(match["population"]),
@@ -2041,7 +2049,7 @@ def _process_bond_analysis(block: TextIO) -> BondData:
     return accum
 
 
-def _process_orbital_populations(block: TextIO) -> Dict[Union[str, AtomIndex], Any]:
+def _process_orbital_populations(block: Block) -> Dict[Union[str, AtomIndex], Any]:
 
     accum: Dict[Union[str, AtomIndex], Any] = defaultdict(dict)
     for line in block:
@@ -2057,7 +2065,7 @@ def _process_orbital_populations(block: TextIO) -> Dict[Union[str, AtomIndex], A
     return accum
 
 
-def _process_dftd(block: TextIO) -> Dict[str, Any]:
+def _process_dftd(block: Block) -> Dict[str, Any]:
     dftd: Dict[str, Any] = {"species": {}}
     match: Union[List[str], Optional[re.Match]]
     val: Any
@@ -2068,6 +2076,7 @@ def _process_dftd(block: TextIO) -> Dict[str, Any]:
             val = normalise_string(val)
             if "Parameter" in key:
                 val = to_type(get_numbers(val)[0], float)
+
             dftd[normalise_key(key)] = val
 
         elif match := re.match(rf"\s*x\s*(?P<spec>{REs.ATOM_NAME_RE})\s*" +
@@ -2078,7 +2087,7 @@ def _process_dftd(block: TextIO) -> Dict[str, Any]:
     return dftd
 
 
-def _process_occupancies(block: TextIO) -> List[Occupancies]:
+def _process_occupancies(block: Block) -> List[Occupancies]:
     label = ("band", "eigenvalue", "occupancy")
 
     accum = [dict(zip(label, numbers)) for line in block if (numbers := get_numbers(line))]
@@ -2089,7 +2098,7 @@ def _process_occupancies(block: TextIO) -> List[Occupancies]:
     return cast(List[Occupancies], accum)
 
 
-def _process_wvfn_line_min(block: TextIO) -> WvfnLineMin:
+def _process_wvfn_line_min(block: Block) -> WvfnLineMin:
     accum: WvfnLineMin = {}
     for line in block:
         if "initial" in line:
@@ -2102,7 +2111,7 @@ def _process_wvfn_line_min(block: TextIO) -> WvfnLineMin:
     return accum
 
 
-def _process_autosolvation(block: TextIO) -> Dict[str, float]:
+def _process_autosolvation(block: Block) -> Dict[str, float]:
 
     accum = {}
     for line in block:
@@ -2114,7 +2123,7 @@ def _process_autosolvation(block: TextIO) -> Dict[str, float]:
     return accum
 
 
-def _process_phonon(block: TextIO, logger) -> List[QData]:
+def _process_phonon(block: Block, logger) -> List[QData]:
     qdata: Dict[str, Any] = defaultdict(list)
     accum: List[QData] = []
 
@@ -2123,6 +2132,7 @@ def _process_phonon(block: TextIO, logger) -> List[QData]:
             if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"]
                                                      for phonon in accum):
                 accum.append(_process_qdata(qdata))
+
             qdata = defaultdict(list)
             qdata["qpt"] = match["qpt"].split()
 
@@ -2134,9 +2144,9 @@ def _process_phonon(block: TextIO, logger) -> List[QData]:
             # ==By prop
             stack_dict(qdata, match.groupdict())
 
-        elif char_table := get_block(line, block,
-                                     r"Rep\s+Mul", gen_table_re("[-=]+", r"\+"),
-                                     eof_possible=True):
+        elif char_table := Block.from_re(line, block,
+                                         r"Rep\s+Mul", gen_table_re("[-=]+", r"\+"),
+                                         eof_possible=True):
             headers = next(char_table).split()[4:]
             next(char_table)
             char: List[CharTable] = []
@@ -2157,6 +2167,7 @@ def _process_phonon(block: TextIO, logger) -> List[QData]:
                     del row["name"]
                 else:
                     row["name"] = row["name"][0]
+
             qdata["char_table"] = char
 
     if qdata["qpt"] and qdata["qpt"] not in (phonon["qpt"] for phonon in accum):
@@ -2165,7 +2176,7 @@ def _process_phonon(block: TextIO, logger) -> List[QData]:
     return accum
 
 
-def _process_dipole(block: TextIO) -> DipoleTable:
+def _process_dipole(block: Block) -> DipoleTable:
 
     accum: DipoleTable = {}
 
@@ -2186,12 +2197,12 @@ def _process_dipole(block: TextIO) -> DipoleTable:
     return accum
 
 
-def _process_pair_params(block_in: TextIO) -> Dict[str, Dict[str, Union[dict, str]]]:
+def _process_pair_params(block_in: Block) -> Dict[str, Dict[str, Union[dict, str]]]:
 
     accum: Dict[str, Any] = {}
     for line in block_in:
         # Two-body
-        if block := get_block(line, block_in, "Two Body", r"^\w*\s*\*+\s*$"):
+        if block := Block.from_re(line, block_in, "Two Body", r"^\w*\s*\*+\s*$"):
             for blk_line in block:
                 if REs.PAIR_POT_RES["two_body_spec"].search(blk_line):
                     matches = REs.PAIR_POT_RES["two_body_spec"].finditer(blk_line)
@@ -2214,7 +2225,7 @@ def _process_pair_params(block_in: TextIO) -> Dict[str, Dict[str, Union[dict, st
                     labels = ((match["spec"],),)
 
         # Three-body
-        elif block := get_block(line, block_in, "Three Body", r"^\s*\*+\s*$"):
+        elif block := Block.from_re(line, block_in, "Three Body", r"^\s*\*+\s*$"):
             for blk_line in block:
                 if match := REs.PAIR_POT_RES["three_body_spec"].match(blk_line):
                     labels = (tuple(match["spec"].split()),)
@@ -2247,7 +2258,7 @@ def _process_pair_params(block_in: TextIO) -> Dict[str, Dict[str, Union[dict, st
     return accum
 
 
-def _process_geom_table(block: TextIO) -> GeomTable:
+def _process_geom_table(block: Block) -> GeomTable:
 
     accum: GeomTable = {}
     for line in block:
@@ -2270,16 +2281,16 @@ def _process_geom_table(block: TextIO) -> GeomTable:
     return accum
 
 
-def _process_final_config_block(block_in: TextIO) -> FinalConfig:
+def _process_final_config_block(block_in: Block) -> FinalConfig:
 
     accum: Dict[str, Any] = {}
     for line in block_in:
-        if block := get_block(line, block_in, r"\s*Unit Cell\s*", REs.EMPTY, cnt=3):
+        if block := Block.from_re(line, block_in, r"\s*Unit Cell\s*", REs.EMPTY, n_end=3):
             accum["cell"] = _process_unit_cell(block)
 
-        elif block := get_block(line, block_in,
-                                gen_table_re("Cell Contents"),
-                                gen_table_re("", "x+"), cnt=2):
+        elif block := Block.from_re(line, block_in,
+                                    gen_table_re("Cell Contents"),
+                                    gen_table_re("", "x+"), n_end=2):
             accum["atoms"] = _process_atreg_block(block)
 
         elif match := re.match(rf"^\s*(?:{REs.MINIMISERS_RE}):"
@@ -2293,7 +2304,7 @@ def _process_final_config_block(block_in: TextIO) -> FinalConfig:
     return accum
 
 
-def _process_elastic_properties(block: TextIO) -> ElasticProperties:
+def _process_elastic_properties(block: Block) -> ElasticProperties:
     accum: Dict[str, Union[float, ThreeVector, SixVector, ThreeByThreeMatrix]] = {}
     val: Union[float, ThreeVector, SixVector, ThreeByThreeMatrix, Tuple[float, ...]]
 
@@ -2306,7 +2317,7 @@ def _process_elastic_properties(block: TextIO) -> ElasticProperties:
                 val = val[0]
 
             accum[normalise_key(key)] = val
-        elif blk := get_block(line, block, "Speed of Sound", REs.EMPTY):
+        elif blk := Block.from_re(line, block, "Speed of Sound", REs.EMPTY):
 
             accum["speed_of_sound"] = cast(ThreeByThreeMatrix,
                                            tuple(to_type(numbers, float)

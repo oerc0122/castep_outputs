@@ -7,8 +7,8 @@ from typing import Dict, List, TextIO, Tuple, Union
 
 import castep_outputs.utilities.castep_res as REs
 
-from ..utilities.castep_res import get_block
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
+from ..utilities.filewrapper import Block
 from ..utilities.utility import (atreg_to_index, determine_type, log_factory,
                                  to_type)
 
@@ -23,9 +23,9 @@ def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, 
         # Strip comments
         line = re.split("[#!]", line)[0]
 
-        if block := get_block(line, cell_param_file,
-                              re.compile(r"^\s*%block ", re.IGNORECASE),
-                              re.compile(r"^\s*%endblock", re.IGNORECASE)):
+        if block := Block.from_re(line, cell_param_file,
+                                  re.compile(r"^\s*%block ", re.IGNORECASE),
+                                  re.compile(r"^\s*%endblock", re.IGNORECASE)):
 
             block_title = next(block).split()[1].lower()
 
@@ -55,10 +55,10 @@ parse_cell_file = parse_cell_param_file
 parse_param_file = parse_cell_param_file
 
 
-def _parse_devel_code_block(in_block: TextIO) -> Dict[str, Union[str, float, int]]:
+def _parse_devel_code_block(in_block: Block) -> Dict[str, Union[str, float, int]]:
     """ Parse devel_code block to dict """
 
-    in_block = in_block.read()
+    in_block = str(in_block)
     in_block = " ".join(in_block.splitlines())
     matches = re.finditer(REs.DEVEL_CODE_BLOCK_GENERIC_RE, in_block, re.IGNORECASE | re.MULTILINE)
     devel_code_parsed = {}
@@ -96,7 +96,7 @@ def _parse_devel_code_block(in_block: TextIO) -> Dict[str, Union[str, float, int
     return devel_code_parsed
 
 
-def _parse_ionic_constraints(block: TextIO) -> Dict[AtomIndex, Tuple[float, float, float]]:
+def _parse_ionic_constraints(block: Block) -> Dict[AtomIndex, Tuple[float, float, float]]:
     accum = defaultdict(list)
 
     for line in block:
@@ -108,7 +108,7 @@ def _parse_ionic_constraints(block: TextIO) -> Dict[AtomIndex, Tuple[float, floa
     return accum
 
 
-def _parse_nonlinear_constraints(block: TextIO):
+def _parse_nonlinear_constraints(block: Block):
     accum = []
 
     for line in block:
@@ -124,7 +124,7 @@ def _parse_nonlinear_constraints(block: TextIO):
     return accum
 
 
-def _parse_positions(block: TextIO) -> Dict[AtomIndex, Tuple[float, float, float]]:
+def _parse_positions(block: Block) -> Dict[AtomIndex, Tuple[float, float, float]]:
     accum = {}
     cnt = defaultdict(lambda: 0)
 
@@ -147,7 +147,7 @@ def _parse_positions(block: TextIO) -> Dict[AtomIndex, Tuple[float, float, float
     return accum
 
 
-def _parse_hubbard_u(block: TextIO) -> Dict[Union[str, AtomIndex], Dict[str, float]]:
+def _parse_hubbard_u(block: Block) -> Dict[Union[str, AtomIndex], Dict[str, float]]:
     accum = {}
 
     for line in block:
@@ -168,7 +168,7 @@ def _parse_hubbard_u(block: TextIO) -> Dict[Union[str, AtomIndex], Dict[str, flo
     return accum
 
 
-def _parse_sedc(block: TextIO) -> Dict[str, Dict[str, float]]:
+def _parse_sedc(block: Block) -> Dict[str, Dict[str, float]]:
     accum = {}
     for line in block:
         if re.match(r"^\s*%endblock", line, re.IGNORECASE):
@@ -184,7 +184,7 @@ def _parse_sedc(block: TextIO) -> Dict[str, Dict[str, float]]:
     return accum
 
 
-def _parse_symops(block: TextIO) -> List[Dict[str, Union[ThreeByThreeMatrix, ThreeVector]]]:
+def _parse_symops(block: Block) -> List[Dict[str, Union[ThreeByThreeMatrix, ThreeVector]]]:
 
     accum = []
     tmp = [to_type(numbers, float)
@@ -198,7 +198,7 @@ def _parse_symops(block: TextIO) -> List[Dict[str, Union[ThreeByThreeMatrix, Thr
     return accum
 
 
-def _parse_general(block: TextIO) -> Dict[str, Union[str, float]]:
+def _parse_general(block: Block) -> Dict[str, Union[str, float]]:
     block_data = {"data": []}
     for line in block:
         line = re.split("[#!]", line)[0]

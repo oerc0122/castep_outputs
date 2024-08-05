@@ -9,11 +9,12 @@ from typing import Dict, List, Sequence, TextIO, Tuple, Union
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers
+from ..utilities.filewrapper import Block
 from ..utilities.utility import (atreg_to_index, fix_data_types, stack_dict,
                                  to_type)
 
 
-def parse_regular_header(block: TextIO,
+def parse_regular_header(block: Block,
                          extra_opts: Sequence[str] = tuple()) -> Dict[str, Union[float, int]]:
     """ Parse (semi-)standard castep file header block (given as iterable over lines) """
 

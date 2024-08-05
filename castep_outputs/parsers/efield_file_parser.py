@@ -7,8 +7,9 @@ from collections import defaultdict
 from typing import Dict, TextIO, Union
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import get_block, labelled_floats
+from ..utilities.castep_res import labelled_floats
 from ..utilities.constants import SND_D
+from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
@@ -21,18 +22,18 @@ def parse_efield_file(efield_file: TextIO) -> Dict[str, Union[float, int]]:
     logger = log_factory(efield_file)
 
     for line in efield_file:
-        if block := get_block(line, efield_file, "BEGIN header", "END header"):
+        if block := Block.from_re(line, efield_file, "BEGIN header", "END header"):
             data = parse_regular_header(block, ('Oscillator Q',))
             efield_info.update(data)
 
-        elif block := get_block(line, efield_file, "BEGIN Oscillator Strengths",
-                                "END Oscillator Strengths",
-                                out_fmt=list):
+        elif block := Block.from_re(line, efield_file, "BEGIN Oscillator Strengths",
+                                    "END Oscillator Strengths"):
 
             logger("Found Oscillator Strengths")
 
             osc = defaultdict(list)
-            for line in block[1:-2]:
+            block.remove_bounds(1, 2)
+            for line in block:
                 match = re.match(rf"\s*(?P<freq>{REs.INTNUMBER_RE})" +
                                  labelled_floats([*(f'S{d}' for d in SND_D)]), line)
                 stack_dict(osc, match.groupdict())
@@ -42,13 +43,13 @@ def parse_efield_file(efield_file: TextIO) -> Dict[str, Union[float, int]]:
                                      **{f'S{d}': float for d in SND_D}})
                 efield_info['oscillator_strengths'].append(osc)
 
-        elif block := get_block(line, efield_file, "BEGIN permittivity", "END permittivity",
-                                out_fmt=list):
+        elif block := Block.from_re(line, efield_file, "BEGIN permittivity", "END permittivity"):
 
             logger("Found permittivity")
 
             perm = defaultdict(list)
-            for line in block[1:-2]:
+            block.remove_bounds(1, 2)
+            for line in block:
                 match = re.match(labelled_floats(['freq',
                                                   *(f'e_r_{d}' for d in SND_D)]), line)
                 stack_dict(perm, match.groupdict())

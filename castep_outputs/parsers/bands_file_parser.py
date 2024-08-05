@@ -7,7 +7,7 @@ from collections import defaultdict
 from typing import Any, Dict, TextIO
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import get_block
+from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types
 from .parse_utilities import parse_regular_header
 
@@ -18,7 +18,7 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
     bands_info = defaultdict(list)
     qdata = {}
 
-    block = get_block("", bands_file, "", REs.THREEVEC_RE, cnt=3)
+    block = Block.from_re("", bands_file, "", REs.THREEVEC_RE, n_end=3)
     data = parse_regular_header(block, ("Fermi energy",))
     bands_info.update(data)
 

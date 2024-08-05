@@ -1,14 +1,10 @@
 """ Module containing all regexes """
 
-import io
 import itertools
 import re
-from typing import Dict, List, Sequence, TextIO, Union
+from typing import Dict, List, Sequence, Union
 
 from .constants import FST_D, MINIMISERS, SHELLS
-from .filewrapper import FileWrapper
-
-# pylint: disable=too-many-arguments
 
 
 Pattern = Union[str, re.Pattern]
@@ -17,42 +13,6 @@ Pattern = Union[str, re.Pattern]
 def get_numbers(line: str) -> List[str]:
     """ Get all numbers in a string as a list """
     return NUMBER_RE.findall(line)
-
-
-def get_block(init_line: str, in_file: Union[TextIO, FileWrapper],
-              start: Pattern, end: Pattern, *, cnt: int = 1,
-              out_fmt: type = io.StringIO, eof_possible: bool = False):
-    """ Check if line is the start of a block and return
-    the block if it is, moving in_file forward as it does so """
-
-    block = ""
-
-    if not re.search(start, init_line):
-        return block
-
-    block = init_line
-    fnd = cnt
-    for line in in_file:
-        block += line
-        if re.search(end, line):
-            fnd -= 1
-            if fnd == 0:
-                break
-    else:
-        if not eof_possible:
-            if hasattr(in_file, 'name'):
-                raise IOError(f"Unexpected end of file in {in_file.name}.")
-            raise IOError("Unexpected end of file.")
-
-    if not block:
-        return ""
-    if out_fmt is str:
-        return block
-    if out_fmt is list:
-        return block.splitlines()
-    if out_fmt is io.StringIO:
-        return io.StringIO(block)
-    return out_fmt(block)
 
 
 def labelled_floats(labels: Sequence[str], counts: Sequence[Union[int, str, None]] = (None,),

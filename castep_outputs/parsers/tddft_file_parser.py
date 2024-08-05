@@ -6,7 +6,8 @@ import re
 from typing import Dict, TextIO, Union
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import get_block, get_numbers, labelled_floats
+from ..utilities.castep_res import get_numbers, labelled_floats
+from ..utilities.filewrapper import Block
 from ..utilities.utility import to_type
 from .parse_utilities import parse_regular_header
 
@@ -19,13 +20,13 @@ def parse_tddft_file(tddft_file: TextIO) -> Dict[str, Dict[str, Union[bool,
     tddft_info = {}
 
     for line in tddft_file:
-        if block := get_block(line, tddft_file, "BEGIN header", "END header"):
+        if block := Block.from_re(line, tddft_file, "BEGIN header", "END header"):
             data = parse_regular_header(block, ("Higest occupied band",))
             tddft_info.update(data)
 
-        elif block := get_block(line, tddft_file,
-                                "BEGIN Characterisation of states as Kohn-Sham bands",
-                                "END Characterisation of states as Kohn-Sham bands"):
+        elif block := Block.from_re(line, tddft_file,
+                                    "BEGIN Characterisation of states as Kohn-Sham bands",
+                                    "END Characterisation of states as Kohn-Sham bands"):
 
             tddft_info["overlap"] = []
             curr = {}
@@ -39,9 +40,9 @@ def parse_tddft_file(tddft_file: TextIO) -> Dict[str, Dict[str, Union[bool,
                     tddft_info["overlap"].append(curr)
                     curr = {}
 
-        elif block := get_block(line, tddft_file,
-                                "BEGIN TDDFT Spectroscopic Data",
-                                "END TDDFT Spectroscopic Data"):
+        elif block := Block.from_re(line, tddft_file,
+                                    "BEGIN TDDFT Spectroscopic Data",
+                                    "END TDDFT Spectroscopic Data"):
 
             tddft_info["spectroscopic_data"] = []
 
