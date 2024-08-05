@@ -1770,7 +1770,7 @@ def _process_qdata(qdata: Dict[str, Union[str, List[str]]]) -> QData:
                    {"qpt": float,
                     "N": int,
                     "frequency": float,
-                    "intensity": float,
+                    "ir_intensity": float,
                     "raman_intensity": float
                     })
     return cast(QData, qdata)

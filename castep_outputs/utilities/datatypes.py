@@ -9,6 +9,7 @@ from typing import Dict, List, Literal, Optional, Tuple, TypedDict, Union
 
 AtomIndex = Tuple[str, int]
 ThreeVector = Tuple[float, float, float]
+ComplexThreeVector = Tuple[complex, complex, complex]
 SixVector = Tuple[float, float, float, float, float, float]
 ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]
 AtomPropBlock = Dict[AtomIndex, ThreeVector]
@@ -86,16 +87,19 @@ class CharTable(TypedDict):
     name: str
 
 
-class QData(TypedDict, total=False):
-    char_table: CharTable
+class BaseQPointPhonon(TypedDict, total=False):
     qpt: ThreeVector
-    n: Tuple[int, ...]
     frequency: Tuple[float, ...]
-    intensity: Tuple[float, ...]
-    irrep: Tuple[str, ...]
-    active: Tuple[Literal["Y", "N"], ...]
+    ir_intensity: Tuple[float, ...]
+    ir_active: Tuple[Literal["Y", "N"], ...]
     raman_active: Tuple[Literal["Y", "N"], ...]
     raman_intensity: Tuple[float, ...]
+
+
+class QData(BaseQPointPhonon, total=False):
+    char_table: CharTable
+    n: Tuple[int, ...]
+    irrep: Tuple[str, ...]
 
 
 class PhononSymmetryReport(TypedDict):
@@ -108,7 +112,6 @@ class RamanReport(TypedDict, total=False):
     trace: float
     ii: float
     depolarisation: Optional[float]
-
 
 # Occupancies
 
@@ -332,3 +335,63 @@ class TDDFTData(TypedDict):
     energy: float
     error: float
     type: str
+
+# Other Files
+
+
+class HeaderAtomInfo(TypedDict):
+    """
+    Atom info from header.
+    """
+    index: Tuple[int, ...]
+    spec: List[str]
+    u: Tuple[float, ...]
+    v: Tuple[float, ...]
+    w: Tuple[float, ...]
+    mass: Tuple[float, ...]
+
+
+class StandardHeader(TypedDict):
+    """
+    Standard header from CASTEP outputs.
+
+    Includes:
+
+    - phonon
+    - phonon_dos
+    - efield
+    - tddft
+    - bands
+    """
+    #: System box.
+    unit_cell: ThreeByThreeMatrix
+    #: Atomic info.
+    coords: HeaderAtomInfo
+
+# Phonon File
+
+
+class PhononFileQPoint(BaseQPointPhonon, total=False):
+    """
+    Q-point info from a phonon file.
+    """
+    #: Direction to next Q-point
+    dir: ThreeVector
+    #: Eigenvalues of Q-point.
+    eigenvalues: List[float]
+    #: Eigenvectors of Q-point.
+    eigenvectors: List[ComplexThreeVector]
+
+
+class PhononFileInfo(StandardHeader, total=False):
+    """
+    Full phonon file information.
+    """
+    #: Number of ions in system.
+    ions: int
+    #: Number of phonon branches.
+    branches: int
+    #: Number of wavevectors in calculation.
+    wavevectors: int
+    #: Per Q-point information.
+    qpts: List[PhononFileQPoint]
