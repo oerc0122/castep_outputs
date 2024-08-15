@@ -187,16 +187,13 @@ def _parse_sedc(block: Block) -> dict[str, dict[str, float]]:
 
 def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVector]]:
 
-    accum = []
     tmp = [to_type(numbers, float)
            for line in block
            if (numbers := REs.FLOAT_RAT_RE.findall(line))]
 
-    accum = [{"r": tmp[i:i+3],
-              "t": tmp[i+3]}
-             for i in range(0, len(tmp), 4)]
-
-    return accum
+    return [{"r": tmp[i:i+3],
+             "t": tmp[i+3]}
+            for i in range(0, len(tmp), 4)]
 
 
 def _parse_general(block: Block) -> dict[str, str | float]:

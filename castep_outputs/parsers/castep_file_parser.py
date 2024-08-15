@@ -688,7 +688,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found k-points")
 
-            curr_run["k-points"] = _process_kpoint_blocks(block, True)
+            curr_run["k-points"] = _process_kpoint_blocks(block, implicit_kpoints=True)
 
         elif block := Block.from_re(line, castep_file,
                                     gen_table_re("Number +Fractional coordinates +Weight", r"\+"),
@@ -699,7 +699,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found k-points list")
 
-            curr_run["k-points"] = _process_kpoint_blocks(block, False)
+            curr_run["k-points"] = _process_kpoint_blocks(block, implicit_kpoints=False)
 
         elif "Applied Electric Field" in line:
 
@@ -811,7 +811,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found optical permittivity")
 
-            val = _process_3_6_matrix(block, True)
+            val = _process_3_6_matrix(block, split=True)
             curr_run["optical_permittivity"] = val[0]
             if val[1]:
                 curr_run["dc_permittivity"] = val[1]
@@ -824,7 +824,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found polarisability")
 
-            val = _process_3_6_matrix(block, True)
+            val = _process_3_6_matrix(block, split=True)
             curr_run["optical_polarisability"] = val[0]
             if val[1]:
                 curr_run["static_polarisability"] = val[1]
@@ -838,7 +838,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found NLO")
 
-            curr_run["nlo"], _ = _process_3_6_matrix(block, False)
+            curr_run["nlo"], _ = _process_3_6_matrix(block, split=False)
 
         # Atomic displacements
         elif block := Block.from_re(line, castep_file,
@@ -1051,7 +1051,7 @@ def parse_castep_file(castep_file_in: TextIO,
                 continue
 
             if not (match := re.search(REs.MINIMISERS_RE, line)):
-                raise OSError("Invalid Geom block")
+                raise ValueError("Invalid Geom block")
 
             typ = match.group(0)
 
@@ -1173,7 +1173,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if "elastic" not in curr_run:
                 curr_run["elastic"] = {}
 
-            val, _ = _process_3_6_matrix(block, False)
+            val, _ = _process_3_6_matrix(block, split=False)
             curr_run["elastic"]["elastic_constants"] = val
 
         elif block := Block.from_re(line, castep_file,
@@ -1188,7 +1188,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if "elastic" not in curr_run:
                 curr_run["elastic"] = {}
 
-            val, _ = _process_3_6_matrix(block, False)
+            val, _ = _process_3_6_matrix(block, split=False)
             curr_run["elastic"]["compliance_matrix"] = val
 
         elif block := Block.from_re(line, castep_file, "Contribution ::", REs.EMPTY):
@@ -1207,7 +1207,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if "elastic" not in curr_run:
                 curr_run["elastic"] = {}
 
-            val, _ = _process_3_6_matrix(block, False)
+            val, _ = _process_3_6_matrix(block, split=False)
             curr_run["elastic"][typ] = val
 
         elif block := Block.from_re(line, castep_file,
@@ -1389,20 +1389,22 @@ def _process_ps_energy(block: Block) -> tuple[str, PSPotEnergy]:
 
 
 def _process_tddft(block: Block) -> list[TDDFTData]:
-    tddata = [{"energy": float(match["energy"]),
-               "error": float(match["error"]),
-               "type": match["type"]}
-              for line in block
-              if (match := REs.TDDFT_RE.match(line))]
-    return tddata
+    return [
+        {"energy": float(match["energy"]),
+         "error": float(match["error"]),
+         "type": match["type"]}
+        for line in block
+        if (match := REs.TDDFT_RE.match(line))
+    ]
 
 
 def _process_atreg_block(block: Block) -> AtomPropBlock:
-    accum: AtomPropBlock = {
+    return {
         atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
         for line in block
-        if (match := REs.ATDAT3VEC.search(line))}
-    return accum
+        if (match := REs.ATDAT3VEC.search(line))
+    }
+
 
 
 def _process_spec_prop(block: Block) -> list[list[str]]:
@@ -1429,16 +1431,18 @@ def _process_md_block(block: Block) -> MDInfo:
 
 
 def _process_elf(block: Block) -> list[float]:
-    curr_data = [float(match.group(1)) for line in block
-                 if (match := re.match(rf"\s+ELF\s+\d+\s+({REs.FNUMBER_RE})", line))]
-    return curr_data
+    return [
+        float(match.group(1)) for line in block
+        if (match := re.match(rf"\s+ELF\s+\d+\s+({REs.FNUMBER_RE})", line))
+    ]
 
 
 def _process_hirshfeld(block: Block) -> dict[AtomIndex, float]:
     """ Process Hirshfeld block to dict of charges """
-    accum = {atreg_to_index(match): float(match["charge"]) for line in block
-             if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))}
-    return accum
+    return {
+        atreg_to_index(match): float(match["charge"]) for line in block
+        if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))
+    }
 
 
 def _process_thermodynamics(block: Block) -> Thermodynamics:
@@ -1473,8 +1477,7 @@ def _process_atom_disp(block: Block) -> dict[str, dict[AtomIndex, SixVector]]:
 
 
 def _process_3_6_matrix(
-        block: Block,
-        split: bool,
+        block: Block, *, split: bool,
 ) -> tuple[ThreeByThreeMatrix, ThreeByThreeMatrix | None]:
     """ Process a single or pair of 3x3 matrices or 3x6 matrix """
     parsed = tuple(to_type(vals, float) for line in block
@@ -1870,7 +1873,7 @@ def _process_phonon_sym_analysis(block: Block) -> PhononSymmetryReport:
     return accum
 
 
-def _process_kpoint_blocks(block: Block,
+def _process_kpoint_blocks(block: Block, *,
                            implicit_kpoints: bool) -> KPointsList | KPointsSpec:
 
     if implicit_kpoints:
@@ -1970,15 +1973,13 @@ def _process_dynamical_matrix(block: Block) -> tuple[tuple[complex, ...], ...]:
     # Get remainder
     imag_part = [numbers[2:] for line in block if (numbers := get_numbers(line))]
 
-    accum = tuple(
+    return tuple(
         tuple(complex(float(real), float(imag)) for real, imag in zip(real_row, imag_row))
         for real_row, imag_row in zip(real_part, imag_part)
     )
 
-    return accum
 
-
-def _process_pspot_string(string: str, debug=False) -> PSPotStrInfo:
+def _process_pspot_string(string: str, *, debug=False) -> PSPotStrInfo:
     if not (match := REs.PSPOT_RE.search(string)):
         raise ValueError(f"Attempt to parse {string} as PSPot failed")
 

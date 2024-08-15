@@ -37,7 +37,7 @@ def normalise_key(string: str) -> str:
     return re.sub(r"[_\W]+", "_", string).strip("_").lower()
 
 
-def atreg_to_index(dict_in: dict[str, str] | re.Match, clear: bool = True) -> tuple[str, int]:
+def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) -> tuple[str, int]:
     """
     Transform a matched atreg value to species index tuple
     Also clear value from dictionary for easier processing
@@ -86,7 +86,7 @@ def json_safe(obj: Any) -> Any:
     return obj
 
 
-def flatten_dict(dictionary: MutableMapping[Any, Any],
+def flatten_dict(dictionary: MutableMapping[Any, Any], *,
                  parent_key: bool = False,
                  separator: str = "_") -> dict[str, Any]:
     """
@@ -121,7 +121,7 @@ def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]) -> dict[Any,
 
 
 def add_aliases(in_dict: dict[str, Any],
-                alias_dict: dict[str, str],
+                alias_dict: dict[str, str], *,
                 replace: bool = False,
                 inplace: bool = True) -> dict[str, Any]:
     """ Adds aliases of known names into dictionary, if replace is true, remove original """
