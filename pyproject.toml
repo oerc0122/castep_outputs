@@ -73,7 +73,7 @@ select = [
     "FA",  # Flake8 future
     # "FBT", # Flake8 boolean trap
     "C4",  # Flake8 comprehensions
-    # "Q",   # Flake8 Quotes
+    "Q",   # Flake8 Quotes
     # "RET", # Flake8 return
     "ARG", # Flake8 unused args
     "PTH", # Flake8 use pathlib

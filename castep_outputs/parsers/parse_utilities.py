@@ -26,7 +26,7 @@ def parse_regular_header(block: Block,
             _, _, *key, val = line.split()
             data[" ".join(key)] = int(float(val))
         elif "Unit cell vectors" in line:
-            data['unit_cell'] = [to_type(next(block).split(), float)
+            data["unit_cell"] = [to_type(next(block).split(), float)
                                  for _ in range(3)]
 
         elif match := REs.ATDAT3VEC.search(line):
@@ -39,12 +39,12 @@ def parse_regular_header(block: Block,
         elif match := re.search(f"({'|'.join(extra_opts)})", line):
             data[match.group(0)] = to_type(get_numbers(line), float)
 
-    fix_data_types(coords, {'index': int,
-                            'u': float,
-                            'v': float,
-                            'w': float,
-                            'mass': float})
-    data['coords'] = coords
+    fix_data_types(coords, {"index": int,
+                            "u": float,
+                            "v": float,
+                            "w": float,
+                            "mass": float})
+    data["coords"] = coords
     return data
 
 
@@ -63,11 +63,11 @@ def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int
             *qpt, val = line.split()
             qpt = to_type(qpt, int)
             val = to_type(val, float)
-            stack_dict(qdata, {'q': qpt, prop: val})
+            stack_dict(qdata, {"q": qpt, prop: val})
         elif isinstance(prop, Sequence):
             words = line.split()
             qpt = to_type(words[0:3], int)
             val = to_type(words[3:], float)
-            stack_dict(qdata, {'q': qpt, **dict(zip(prop, val))})
+            stack_dict(qdata, {"q": qpt, **dict(zip(prop, val))})
 
     return qdata

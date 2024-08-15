@@ -612,13 +612,13 @@ def parse_castep_file(castep_file_in: TextIO,
                     pos = to_type(match.group("x", "y", "z"), float)
                     weight = float(match["weight"])
 
-                    curr_run["initial_positions"][(spec, idx)] = {'pos': pos, 'weight': weight}
+                    curr_run["initial_positions"][(spec, idx)] = {"pos": pos, "weight": weight}
 
                 elif match := REs.MIXTURE_LINE_2_RE.search(line):
                     spec = match["spec"].strip()
                     weight = float(match["weight"])
 
-                    curr_run["initial_positions"][(spec, idx)] = {'pos': pos, 'weight': weight}
+                    curr_run["initial_positions"][(spec, idx)] = {"pos": pos, "weight": weight}
 
         elif block := Block.from_re(line, castep_file,
                                     "Fractional coordinates of atoms",
@@ -1685,7 +1685,7 @@ def _process_born(block: Block) -> dict[AtomIndex, ThreeByThreeMatrix]:
     for line in block:
         if match := REs.BORN_RE.match(line):
             val = match.groupdict()
-            label = val.pop('label')
+            label = val.pop("label")
             if label is not None:
                 val["spec"] = f"{val['spec']} [{label}]"
 
@@ -1861,7 +1861,7 @@ def _process_memory_est(block: Block) -> dict[str, MemoryEst]:
 
 
 def _process_phonon_sym_analysis(block: Block) -> PhononSymmetryReport:
-    accum: PhononSymmetryReport = {'title': '', 'mat': ()}
+    accum: PhononSymmetryReport = {"title": "", "mat": ()}
     accum["title"] = normalise_string(next(block).split(":")[1])
     next(block)
     accum["mat"] = tuple(parse_int_or_float(numbers)

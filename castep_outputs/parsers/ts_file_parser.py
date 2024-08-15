@@ -26,7 +26,7 @@ def parse_ts_file(ts_file: TextIO) -> dict[str, Any]:
         elif block := Block.from_re(line, ts_file, "(REA|PRO|TST)", r"^\s*$", eof_possible=True):
             curr = defaultdict(list)
             match = re.match(r"\s*(?P<type>REA|PRO|TST)\s*\d+\s*" +
-                             labelled_floats(('reaction_coordinate',)), line)
+                             labelled_floats(("reaction_coordinate",)), line)
             key = TS_TYPES[match["type"]]
             curr["reaction_coordinate"] = to_type(match["reaction_coordinate"], float)
 
@@ -35,12 +35,12 @@ def parse_ts_file(ts_file: TextIO) -> dict[str, Any]:
                     ion = atreg_to_index(match)
                     if ion not in curr:
                         curr[ion] = {}
-                    curr[ion][match.group('tag')] = to_type([*(match.group(d)
+                    curr[ion][match.group("tag")] = to_type([*(match.group(d)
                                                                for d in FST_D)], float)
                     add_aliases(curr[ion], TAG_ALIASES)
 
                 elif match := TAG_RE.search(blk_line):
-                    curr[match.group('tag')].append([*to_type(get_numbers(blk_line), float)])
+                    curr[match.group("tag")].append([*to_type(get_numbers(blk_line), float)])
 
             add_aliases(curr, TAG_ALIASES)
             accum[key].append(curr)

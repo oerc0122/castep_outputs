@@ -35,16 +35,16 @@ def parse_phonon_file(phonon_file: TextIO) -> dict[str, Any]:
             for line in block:
                 if "q-pt" in line:
                     _, _, posx, posy, posz, *weight = line.split()
-                    qdata = {'pos': [posx, posy, posz], 'weight': weight}
-                    fix_data_types(qdata, {'pos': float,
-                                           'weight': float})
-                    phonon_info["qpt_pos"].append(qdata['pos'])
+                    qdata = {"pos": [posx, posy, posz], "weight": weight}
+                    fix_data_types(qdata, {"pos": float,
+                                           "weight": float})
+                    phonon_info["qpt_pos"].append(qdata["pos"])
 
                 elif "Eigenvectors" not in line:
                     _, e_val, *_ = line.split()
-                    qdata = {'eval': e_val}
-                    fix_data_types(qdata, {'eval': float})
-                    evals.append(qdata['eval'])
+                    qdata = {"eval": e_val}
+                    fix_data_types(qdata, {"eval": float})
+                    evals.append(qdata["eval"])
                     if len(evals) == phonon_info["branches"]:
                         phonon_info["evals"].append(evals)
                         evals = []
@@ -56,12 +56,12 @@ def parse_phonon_file(phonon_file: TextIO) -> dict[str, Any]:
                 if "Mode" not in line:
                     _, _, *vectors = line.split()
 
-                    qdata = {'evec': vectors}
-                    fix_data_types(qdata, {'evec': float})
-                    qdata['evec'] = [complex(qdata['evec'][i],
-                                             qdata['evec'][i+1])
+                    qdata = {"evec": vectors}
+                    fix_data_types(qdata, {"evec": float})
+                    qdata["evec"] = [complex(qdata["evec"][i],
+                                             qdata["evec"][i+1])
                                      for i in range(0, len(vectors), 2)]
-                    evecs.append(qdata['evec'])
+                    evecs.append(qdata["evec"])
 
                     if len(evecs) == phonon_info["branches"]*phonon_info["ions"]:
                         phonon_info["evecs"].append(evecs)

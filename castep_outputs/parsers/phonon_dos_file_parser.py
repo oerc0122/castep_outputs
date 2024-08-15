@@ -32,17 +32,17 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> dict[str, Any]:
             qdata = defaultdict(list)
 
             def fix(qdat):
-                fix_data_types(qdat, {'qpt': float,
-                                      'pth': float,
-                                      'n': int,
-                                      'f': float,
-                                      'Grad_qf': float})
+                fix_data_types(qdat, {"qpt": float,
+                                      "pth": float,
+                                      "n": int,
+                                      "f": float,
+                                      "Grad_qf": float})
 
             for line in block:
                 if match := REs.PHONON_PHONON_RE.match(line):
                     if qdata:
                         fix(qdata)
-                        phonon_dos_info['gradients'].append(qdata)
+                        phonon_dos_info["gradients"].append(qdata)
 
                     qdata = defaultdict(list)
 
@@ -54,7 +54,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> dict[str, Any]:
 
             if qdata:
                 fix(qdata)
-                phonon_dos_info['gradients'].append(qdata)
+                phonon_dos_info["gradients"].append(qdata)
 
         elif block := Block.from_re(line, phonon_dos_file, "BEGIN DOS", "END DOS"):
 
@@ -63,7 +63,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> dict[str, Any]:
             dos = defaultdict(list)
             # First chunk is " BEGIN DOS   Freq (cm-1)  g(f)", thus need the 5th on
             species = block[0].split()[5:]
-            headers = ('freq', 'g', *species)
+            headers = ("freq", "g", *species)
             rows = re.compile(labelled_floats(headers))
 
             block.remove_bounds(1, 2)
@@ -74,6 +74,6 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> dict[str, Any]:
 
             if dos:
                 fix_data_types(dos, {key: float for key in headers})
-                phonon_dos_info['dos'].append(dos)
+                phonon_dos_info["dos"].append(dos)
 
     return phonon_dos_info

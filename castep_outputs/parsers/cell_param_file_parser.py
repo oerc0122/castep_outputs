@@ -192,8 +192,8 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
            for line in block
            if (numbers := REs.FLOAT_RAT_RE.findall(line))]
 
-    accum = [{'r': tmp[i:i+3],
-              't': tmp[i+3]}
+    accum = [{"r": tmp[i:i+3],
+              "t": tmp[i+3]}
              for i in range(0, len(tmp), 4)]
 
     return accum

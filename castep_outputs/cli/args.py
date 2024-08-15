@@ -23,7 +23,7 @@ AP = argparse.ArgumentParser(
 AP.add_argument("seedname", nargs=argparse.REMAINDER, help="Seed name for data")
 AP.add_argument("-V", "--version", action="version", version="%(prog)s v0.1")
 AP.add_argument("-L", "--log", help="Verbose output",
-                choices=('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), default="WARNING")
+                choices=("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"), default="WARNING")
 AP.add_argument("-o", "--output", help="File to write output, default: screen", default=None)
 AP.add_argument("-f", "--out-format",
                 help="Output format", choices=SUPPORTED_FORMATS, default="json")
