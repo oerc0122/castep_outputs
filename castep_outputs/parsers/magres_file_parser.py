@@ -2,14 +2,16 @@
 Parse the following castep outputs:
 .magres
 """
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Dict, TextIO
+from typing import TextIO
 
 from ..utilities.filewrapper import Block
 from ..utilities.utility import to_type
 
 
-def parse_magres_file(magres_file: TextIO) -> Dict[str, float]:
+def parse_magres_file(magres_file: TextIO) -> dict[str, float]:
     """ Parse .magres file to dict """
     # pylint: disable=too-many-branches
 

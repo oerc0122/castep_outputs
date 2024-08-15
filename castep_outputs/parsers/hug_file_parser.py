@@ -2,15 +2,17 @@
 Parse the following castep outputs:
 .hug
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Dict, List, TextIO
+from typing import TextIO
 
 from ..utilities.castep_res import labelled_floats
 from ..utilities.utility import fix_data_types, stack_dict
 
 
-def parse_hug_file(hug_file: TextIO) -> Dict[str, List[float]]:
+def parse_hug_file(hug_file: TextIO) -> dict[str, list[float]]:
     """ Parse castep .hug file """
 
     cols = ('compression', 'temperature', 'pressure', 'energy')

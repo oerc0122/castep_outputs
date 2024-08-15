@@ -2,15 +2,17 @@
 Parse the following castep outputs:
 .elastic
 """
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Dict, List, TextIO
+from typing import TextIO
 
 from ..utilities.castep_res import get_numbers
 from ..utilities.filewrapper import Block
 from ..utilities.utility import to_type
 
 
-def parse_elastic_file(elastic_file: TextIO) -> Dict[str, List[List[float]]]:
+def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
     """ Parse castep .elastic files """
     accum = defaultdict(list)
 

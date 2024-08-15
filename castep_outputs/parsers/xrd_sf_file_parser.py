@@ -1,17 +1,18 @@
 """
 Function for parsing xrd_sf files
 """
+from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import Dict, TextIO, Union
+from typing import TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
 from ..utilities.utility import stack_dict, to_type
 
 
-def parse_xrd_sf_file(xrd_sf_file: TextIO) -> Dict[str, Union[int, float]]:
+def parse_xrd_sf_file(xrd_sf_file: TextIO) -> dict[str, int | float]:
     """ Parse castep .xrd_sf file """
 
     # Get headers from first line

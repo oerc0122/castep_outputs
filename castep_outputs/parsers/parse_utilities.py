@@ -2,20 +2,21 @@
 """
 Functions generally used in parsing castep files
 """
+from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import Dict, List, Sequence, TextIO, Tuple, Union
+from collections.abc import Sequence
+from typing import TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers
 from ..utilities.filewrapper import Block
-from ..utilities.utility import (atreg_to_index, fix_data_types, stack_dict,
-                                 to_type)
+from ..utilities.utility import atreg_to_index, fix_data_types, stack_dict, to_type
 
 
 def parse_regular_header(block: Block,
-                         extra_opts: Sequence[str] = ()) -> Dict[str, Union[float, int]]:
+                         extra_opts: Sequence[str] = ()) -> dict[str, float | int]:
     """ Parse (semi-)standard castep file header block (given as iterable over lines) """
 
     data = {}
@@ -47,7 +48,7 @@ def parse_regular_header(block: Block,
     return data
 
 
-def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[Union[int, float]]]:
+def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int | float]]:
     """ Parse standard form of kpt related .*_fmt files """
 
     # Skip header
@@ -63,7 +64,7 @@ def parse_kpt_info(inp: TextIO, prop: Union[str, Tuple[str]]) -> Dict[str, List[
             qpt = to_type(qpt, int)
             val = to_type(val, float)
             stack_dict(qdata, {'q': qpt, prop: val})
-        elif isinstance(prop, tuple):
+        elif isinstance(prop, Sequence):
             words = line.split()
             qpt = to_type(words[0:3], int)
             val = to_type(words[3:], float)

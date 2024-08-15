@@ -2,9 +2,11 @@
 Parse the following castep outputs:
 .bands
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Any, Dict, TextIO
+from typing import Any, TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.filewrapper import Block
@@ -12,7 +14,7 @@ from ..utilities.utility import fix_data_types
 from .parse_utilities import parse_regular_header
 
 
-def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
+def parse_bands_file(bands_file: TextIO) -> dict[str, Any]:
     """ Parse castep .bonds file """
 
     bands_info = defaultdict(list)

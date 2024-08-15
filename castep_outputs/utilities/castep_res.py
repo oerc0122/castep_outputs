@@ -1,8 +1,10 @@
 """ Module containing all regexes """
+from __future__ import annotations
 
 import itertools
 import re
-from typing import Dict, List, Sequence, Union
+from collections.abc import Sequence
+from typing import Union
 
 from .constants import FST_D, MINIMISERS, SHELLS
 
@@ -10,12 +12,12 @@ from .constants import FST_D, MINIMISERS, SHELLS
 Pattern = Union[str, re.Pattern]
 
 
-def get_numbers(line: str) -> List[str]:
+def get_numbers(line: str) -> list[str]:
     """ Get all numbers in a string as a list """
     return NUMBER_RE.findall(line)
 
 
-def labelled_floats(labels: Sequence[str], counts: Sequence[Union[int, str, None]] = (None,),
+def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = (None,),
                     sep: str = r"\s+?", suff: str = "") -> str:
     """ Constructs a regex for extracting floats with assigned labels
     :param labels:iterable of labels to label each group
@@ -51,7 +53,7 @@ def gen_table_re(content: str, border: str = r"\s*",
     return tab_re
 
 
-def get_atom_parts(spec: str) -> Dict[str, str]:
+def get_atom_parts(spec: str) -> dict[str, str]:
     """ Get components of an atom name (species, tag, label) from a spec string """
     return {key: val.strip()
             for key, val in ATOM_NAME_GRP_RE.match(spec).groupdict().items()

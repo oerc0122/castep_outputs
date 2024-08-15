@@ -1,9 +1,11 @@
 """
 Convenient filewrapper class.
 """
+from __future__ import annotations
+
 import re
 from io import StringIO
-from typing import List, NoReturn, TextIO, Tuple, Union
+from typing import NoReturn, TextIO
 
 from .castep_res import Pattern
 
@@ -93,7 +95,7 @@ class Block:
     Emulates the properties of both a file, and sequence.
     """
     # pylint: disable=too-many-arguments
-    def __init__(self, parent: Union[TextIO, FileWrapper, "Block"]):
+    def __init__(self, parent: TextIO | FileWrapper | Block):
         if isinstance(parent, (FileWrapper, Block)):
             self._lineno = parent.lineno
         else:
@@ -101,16 +103,16 @@ class Block:
 
         self._name = parent.name if hasattr(parent, 'name') else 'unknown'
         self._i = -1
-        self._data: Tuple[str, ...] = ()
+        self._data: tuple[str, ...] = ()
 
     @classmethod
     def get_lines(
             cls,
-            in_file: Union[TextIO, FileWrapper, "Block"],
+            in_file: TextIO | FileWrapper | Block,
             n_lines: int,
             *,
             eof_possible: bool = False,
-    ) -> "Block":
+    ) -> Block:
         """
         Read the next `n_lines` from `in_file` and return the block.
 
@@ -133,7 +135,7 @@ class Block:
         """
         block = cls(in_file)
 
-        data: List[str] = []
+        data: list[str] = []
         for i, line in enumerate(in_file, 1):
             if i > n_lines:
                 break
@@ -151,13 +153,13 @@ class Block:
     def from_re(
             cls,
             init_line: str,
-            in_file: Union[TextIO, FileWrapper, "Block"],
+            in_file: TextIO | FileWrapper | Block,
             start: Pattern,
             end: Pattern,
             *,
             n_end: int = 1,
             eof_possible: bool = False,
-    ) -> "Block":
+    ) -> Block:
         """
         Check if line is the start of a block and return the block if it is.
 
@@ -197,7 +199,7 @@ class Block:
             # Return empty block. (bool -> False)
             return block
 
-        data: List[str] = []
+        data: list[str] = []
         data.append(init_line)
 
         found = 0
@@ -245,7 +247,7 @@ class Block:
         """
         return StringIO(str(self))
 
-    def aslist(self) -> List[str]:
+    def aslist(self) -> list[str]:
         """
         Return block as a list of lines.
 
@@ -288,7 +290,7 @@ class Block:
     def __len__(self) -> int:
         return len(self._data)
 
-    def __getitem__(self, key: Union[int, slice]):
+    def __getitem__(self, key: int | slice):
         return self._data[key]
 
     @property

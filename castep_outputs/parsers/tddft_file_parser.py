@@ -2,8 +2,10 @@
 Parse the following castep outputs:
 .tddft
 """
+from __future__ import annotations
+
 import re
-from typing import Dict, TextIO, Union
+from typing import TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers, labelled_floats
@@ -12,10 +14,7 @@ from ..utilities.utility import to_type
 from .parse_utilities import parse_regular_header
 
 
-def parse_tddft_file(tddft_file: TextIO) -> Dict[str, Dict[str, Union[bool,
-                                                                      str,
-                                                                      complex,
-                                                                      float]]]:
+def parse_tddft_file(tddft_file: TextIO) -> dict[str, dict[str, bool | str | complex | float]]:
     """ Parse .magres file to dict """
     tddft_info = {}
 
