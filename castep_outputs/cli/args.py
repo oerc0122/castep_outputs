@@ -16,7 +16,7 @@ AP = argparse.ArgumentParser(
     prog="castep_outputs",
     description=f"""Attempts to find all files for seedname, filtered by `inc` args (default: all).
     Explicit files can be passed using longname arguments.
-    castep_outputs can parse most human-readable castep outputs including: {', '.join(CASTEP_FILE_FORMATS)}"""
+    castep_outputs can parse most castep outputs including: {', '.join(CASTEP_FILE_FORMATS)}""",
 )
 
 AP.add_argument("seedname", nargs=argparse.REMAINDER, help="Seed name for data")
@@ -24,14 +24,17 @@ AP.add_argument("-V", "--version", action="version", version="%(prog)s v0.1")
 AP.add_argument("-L", "--log", help="Verbose output",
                 choices=('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL'), default="WARNING")
 AP.add_argument("-o", "--output", help="File to write output, default: screen", default=None)
-AP.add_argument("-f", "--out-format", help="Output format", choices=SUPPORTED_FORMATS, default="json")
+AP.add_argument("-f", "--out-format",
+                help="Output format", choices=SUPPORTED_FORMATS, default="json")
 
-AP.add_argument("-t", "--testing", action="store_true", help="Set testing mode to produce flat outputs")
+AP.add_argument("-t", "--testing",
+                action="store_true", help="Set testing mode to produce flat outputs")
 
 AP.add_argument("-A", "--inc-all", action="store_true", help="Extract all available information")
 
 for output_name in CASTEP_OUTPUT_NAMES:
-    AP.add_argument(f"--inc-{output_name}", action="store_true", help=f"Extract .{output_name} information")
+    AP.add_argument(f"--inc-{output_name}",
+                    action="store_true", help=f"Extract .{output_name} information")
 
 for output_name in CASTEP_OUTPUT_NAMES:
     AP.add_argument(f"--{output_name}", nargs="*",

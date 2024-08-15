@@ -4,6 +4,7 @@ Run main castep parser
 import io
 import logging
 import sys
+from collections.abc import Sequence
 from pathlib import Path
 from typing import Any, Callable, Dict, List, Optional, TextIO, Union
 
@@ -49,7 +50,7 @@ def parse_single(in_file: Union[str, Path, TextIO],
         data = normalise(data, {tuple: list})
 
     if testing:
-        if isinstance(data, list):
+        if isinstance(data, Sequence):
             data = [flatten_dict(run) for run in data]
         else:
             data = flatten_dict(data)
@@ -77,7 +78,7 @@ def parse_all(output: Optional[Path] = None, out_format: OutFormats = "json",
     elif isinstance(output, io.TextIOBase):
         file_dumper(data, output)
     else:
-        with open(output, 'a+', encoding='utf-8') as out_file:
+        with output.open('a+', encoding='utf-8') as out_file:
             file_dumper(data, out_file)
 
 

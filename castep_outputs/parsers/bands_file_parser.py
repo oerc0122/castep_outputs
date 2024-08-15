@@ -30,7 +30,7 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
                                        'spin_comp': int,
                                        'band': float,
                                        'band_up': float,
-                                       'band_dn': float
+                                       'band_dn': float,
                                        })
                 bands_info['bands'].append(qdata)
             _, _, *qpt, weight = line.split()
@@ -55,7 +55,7 @@ def parse_bands_file(bands_file: TextIO) -> Dict[str, Any]:
                                'spin_comp': int,
                                'band': float,
                                'band_up': float,
-                               'band_dn': float
+                               'band_dn': float,
                                })
         bands_info['bands'].append(qdata)
 

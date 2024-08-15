@@ -31,6 +31,7 @@ classifiers = [
 ruamel = ["ruamel.yaml>=0.17.22"]
 yaml = ["pyYAML>=3.13"]
 docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0"]
+lint = ["ruff"]
 
 [project.scripts]
 castep_outputs = "castep_outputs.cli.castep_outputs_main:main"
@@ -43,3 +44,56 @@ Repository="https://github.com/oerc0122/castep_outputs.git"
 
 [tool.setuptools.dynamic]
 version = {attr = "castep_outputs.__version__"}
+
+[tool.ruff]
+line-length = 100
+indent-width = 4
+target-version = "py38"
+
+# Exclude a variety of commonly ignored directories.
+extend-exclude = [
+    ".#*",
+    "__pycache__",
+    "test"
+]
+
+[tool.ruff.lint]
+# Allow unused variables when underscore-prefixed.
+select = [
+    "PL", # Pylint errors
+    "E",   # Pycodestyle
+    "W",   # Pycodestyle warnings
+    "F",   # Pyflakes
+    "B",   # Flake8 bugbear
+    "SIM", # Flake8 Simplify
+    "A",   # Flake8 builtins
+    "COM", # Flake8 commas
+    "ISC", # Flake8 implicit string concat
+    "RSE", # Flake8 raise
+    # "FA",  # Flake8 future
+    # "FBT", # Flake8 boolean trap
+    "C4",  # Flake8 comprehensions
+    # "Q",   # Flake8 Quotes
+    # "RET", # Flake8 return
+    "ARG", # Flake8 unused args
+    "PTH", # Flake8 use pathlib
+    # "I",   # Isort
+    "RUF", # Ruff specific
+    "FURB",# Refurb
+    "PERF",# Perflint
+    # "D",   # Pydocstyle
+    "UP",  # Pyupgrade
+]
+ignore = [
+    "PLR0913",  # Too many arguments
+    "PLR0912",  # Too many branches
+    "PLR0915",  # Too many statements
+    "PLW2901",  # For loop variable overwritten
+    "PLR2004",  # Magic constant value
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "numpy"
+
+[tool.isort]
+profile = "black"

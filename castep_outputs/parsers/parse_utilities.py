@@ -15,7 +15,7 @@ from ..utilities.utility import (atreg_to_index, fix_data_types, stack_dict,
 
 
 def parse_regular_header(block: Block,
-                         extra_opts: Sequence[str] = tuple()) -> Dict[str, Union[float, int]]:
+                         extra_opts: Sequence[str] = ()) -> Dict[str, Union[float, int]]:
     """ Parse (semi-)standard castep file header block (given as iterable over lines) """
 
     data = {}

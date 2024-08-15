@@ -73,7 +73,7 @@ THREEVEC_RE = labelled_floats(("val",), counts=(3,))
 SPECIES_RE = r"[A-Z][a-z]{0,2}"
 ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b(?:\s*\[[^\]]+\])?"
 ATOM_NAME_GRP_RE = re.compile(
-    rf"(?P<species>{SPECIES_RE})(?::(?P<tag>\w+))?\b(?:\s*\[(?P<label>[^\]]*)\])?"
+    rf"(?P<species>{SPECIES_RE})(?::(?P<tag>\w+))?\b(?:\s*\[(?P<label>[^\]]*)\])?",
     )
 
 
@@ -171,8 +171,6 @@ PSPOT_RE = re.compile(
     $
 """, re.VERBOSE)
 
-#
-
 # Forces block
 FORCES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Forces", r"\*+"), re.IGNORECASE)
 # Stresses block
@@ -189,11 +187,11 @@ BOND_RE = re.compile(rf"""\s*
 # Pair pot
 PAIR_POT_RES = {
     'two_body_one_spec': re.compile(
-        rf"^(?P<tag>\w+)?\s*\*\s*(?P<spec>{ATOM_NAME_RE})\s*\*\s*$"
+        rf"^(?P<tag>\w+)?\s*\*\s*(?P<spec>{ATOM_NAME_RE})\s*\*\s*$",
     ),
     'two_body_spec':  re.compile(
         rf"(?P<spec1>{ATOM_NAME_RE})\s*-\s*"
-        rf"(?P<spec2>{ATOM_NAME_RE})"
+        rf"(?P<spec2>{ATOM_NAME_RE})",
     ),
     'two_body_val': re.compile(
         rf"""
@@ -202,13 +200,13 @@ PAIR_POT_RES = {
             {labelled_floats(('params',), counts=('1,4',))}\s*
             [\w^/*]+\s* \* \s*
             <--\s*(?P<type>\w+)
-            """, re.ASCII | re.VERBOSE
+            """, re.ASCII | re.VERBOSE,
     ),
     'three_body_spec': re.compile(
         rf"""
         ^(?P<tag>\w+)?\s*\*\s*
         (?P<spec>(?:{ATOM_NAME_RE}\s*){{3}})
-        \s*\*\s*$""", re.VERBOSE
+        \s*\*\s*$""", re.VERBOSE,
     ),
     'three_body_val': re.compile(
         rf"""
@@ -217,8 +215,8 @@ PAIR_POT_RES = {
         {labelled_floats(('params',))}\s*
         [\w^/*]+\s* \* \s*
         <--\s*(?P<type>\w+)
-        """, re.VERBOSE
-    )
+        """, re.VERBOSE,
+    ),
 }
 
 # Orbital population
@@ -273,7 +271,7 @@ ATOMIC_DISP_RE = re.compile(labelled_floats(("temperature",)) + r"\s*" +
                             ATREG + r"\s*" +
                             labelled_floats(("displacement",), counts=(6,)))
 
-MINIMISERS_RE = f"(?:{'|'.join(map(lambda x: x.upper(), MINIMISERS))})"
+MINIMISERS_RE = f"(?:{'|'.join(x.upper() for x in MINIMISERS)})"
 GEOMOPT_MIN_TABLE_RE = re.compile(
     r"\s*\|\s* (?P<step>[^|]+)" +
     labelled_floats(("lambda", "fdelta", "enthalpy"), sep=r"\s*\|\s*") +
@@ -288,11 +286,11 @@ GEOMOPT_TABLE_RE = re.compile(
 # Regexp to identify Mulliken ppoulation analysis line
 POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
                      labelled_floats((*SHELLS, "total", "charge", "spin")) +
-                     "?"   # Spin is optional
+                     "?",   # Spin is optional
                      )
 
 POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
-                        labelled_floats((*SHELLS, "total"))
+                        labelled_floats((*SHELLS, "total")),
                         )
 
 # Regexp for born charges
@@ -313,7 +311,7 @@ MAGRES_RE = (
     # "(?:I|Ani)sotropic J-coupling" 3
     re.compile(rf"\s*\|\**\s*{ATREG}{labelled_floats(('fc','sd','para','dia','tot'))}\s*\|\s*"),
     # "Hyperfine Tensor" 4
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*")
+    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*"),
 )
 
 # MagRes Tasks
@@ -322,7 +320,7 @@ MAGRES_TASK = (
     "Chemical Shielding and Electric Field Gradient",
     "Electric Field Gradient",
     "(An)Isotropic J-coupling",
-    "Hyperfine"
+    "Hyperfine",
 )
 
 # Regexp to identify block in .phonon or .phonon_dos file

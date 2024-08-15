@@ -180,7 +180,8 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found warning")
 
-            curr_run["warning"].append(" ".join(map(lambda x: x.strip(), block[1:-1])))
+            block.remove_bounds(1, 1)
+            curr_run["warning"].append(" ".join(x.strip() for x in block))
 
         elif match := re.match(r"(?:\s*[^:]+:)?(\s*)warning", line, re.IGNORECASE):
 
@@ -1016,7 +1017,7 @@ def parse_castep_file(castep_file_in: TextIO,
                 continue
 
             if not (match := re.search(REs.MINIMISERS_RE, line)):
-                raise IOError("Invalid Geom block")
+                raise OSError("Invalid Geom block")
 
             typ = match.group(0)
 
@@ -1159,7 +1160,7 @@ def parse_castep_file(castep_file_in: TextIO,
         elif block := Block.from_re(line, castep_file, "Contribution ::", REs.EMPTY):
 
             if not (match := re.match("(?P<type>.* Contribution)", line)):
-                raise IOError("Invalid elastic block")
+                raise ValueError("Invalid elastic block")
 
             typ = match.group("type")
             next(block)
@@ -1335,7 +1336,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
 def _process_ps_energy(block: Block) -> Tuple[str, PSPotEnergy]:
     if not (match := REs.PS_SHELL_RE.search(next(block))):
-        raise IOError("Invalid PS Energy")
+        raise ValueError("Invalid PS Energy")
 
     key = match["spec"]
     accum: PSPotEnergy = defaultdict(list)
@@ -1596,7 +1597,7 @@ def _process_scf(block: Block) -> List[SCFReport]:
 
 def _process_forces(block: Block) -> Tuple[str, AtomPropBlock]:
     if not (ft_guess := REs.FORCES_BLOCK_RE.search(next(block))):
-        raise IOError("Invalid forces block")
+        raise ValueError("Invalid forces block")
     ftype = ft_guess.group(1) if ft_guess.group(1) else "non_descript"
     ftype = normalise_key(ftype)
 
@@ -1609,7 +1610,7 @@ def _process_forces(block: Block) -> Tuple[str, AtomPropBlock]:
 
 def _process_stresses(block: Block) -> Tuple[str, SixVector]:
     if not (ft_guess := REs.STRESSES_BLOCK_RE.search(next(block))):
-        raise IOError("Invalid stresses block")
+        raise ValueError("Invalid stresses block")
     ftype = ft_guess.group(1) if ft_guess.group(1) else "non_descript"
     ftype = normalise_key(ftype)
 
@@ -1708,7 +1709,7 @@ def _process_mulliken(block: Block) -> Dict[AtomIndex, MullikenInfo]:
                             replace=True)
                 line = next(block)
                 if not (match := REs.POPN_RE_DN.match(line)):
-                    raise IOError("Invalid mulliken down spin")
+                    raise ValueError("Invalid mulliken down spin")
                 val = match.groupdict()
 
                 add_aliases(val,
@@ -1771,7 +1772,7 @@ def _process_qdata(qdata: Dict[str, Union[str, List[str]]]) -> QData:
                     "N": int,
                     "frequency": float,
                     "intensity": float,
-                    "raman_intensity": float
+                    "raman_intensity": float,
                     })
     return cast(QData, qdata)
 
@@ -1943,7 +1944,7 @@ def _process_dynamical_matrix(block: Block) -> Tuple[Tuple[complex, ...], ...]:
 
 def _process_pspot_string(string: str, debug=False) -> PSPotStrInfo:
     if not (match := REs.PSPOT_RE.search(string)):
-        raise IOError(f"Attempt to parse {string} as PSPot failed")
+        raise ValueError(f"Attempt to parse {string} as PSPot failed")
 
     pspot = match.groupdict()
     projectors = []
@@ -1952,7 +1953,7 @@ def _process_pspot_string(string: str, debug=False) -> PSPotStrInfo:
         if match := REs.PSPOT_PROJ_RE.match(proj):
             pdict = dict(zip(REs.PSPOT_PROJ_GROUPS, match.groups()))
         else:
-            raise IOError("Invalid PSPot string")
+            raise ValueError("Invalid PSPot string")
 
         pdict["shell"] = SHELLS[int(pdict["shell"])]
 
@@ -2322,7 +2323,7 @@ def _process_elastic_properties(block: Block) -> ElasticProperties:
             accum["speed_of_sound"] = cast(ThreeByThreeMatrix,
                                            tuple(to_type(numbers, float)
                                                  for blk_line in blk
-                                                 if (numbers := get_numbers(blk_line)))
+                                                 if (numbers := get_numbers(blk_line))),
                                            )
 
     return accum
