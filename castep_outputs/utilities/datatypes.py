@@ -220,7 +220,7 @@ class PSPotTableInfo(TypedDict, total=False):
     beta: Union[float, str]
     e: float
     j: int
-    l: int
+    l: int  # noqa: E741
     norm: int
     scheme: Literal["2b", "es", "ev", "fh", "pn", "pv", "qb", "qc", "tm"]
 

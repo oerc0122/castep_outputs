@@ -63,7 +63,7 @@ PARSERS: Dict[str, Callable] = {
     "magres": parse_magres_file,
     "tddft": parse_tddft_file,
     "err": parse_err_file,
-    "phonon": parse_phonon_file
+    "phonon": parse_phonon_file,
     }
 CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(PARSERS.keys())
 CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

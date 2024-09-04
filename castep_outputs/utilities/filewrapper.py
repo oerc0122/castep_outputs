@@ -30,7 +30,7 @@ class FileWrapper:
         self._pos = self.file.tell()
         nextline = self.file.readline()
         if not nextline:
-            raise StopIteration()
+            raise StopIteration
         return nextline
 
     def rewind(self):
@@ -141,8 +141,8 @@ class Block:
         else:
             if not eof_possible:
                 if hasattr(in_file, 'name'):
-                    raise IOError(f"Unexpected end of file in {in_file.name}.")
-                raise IOError("Unexpected end of file.")
+                    raise OSError(f"Unexpected end of file in {in_file.name}.")
+                raise OSError("Unexpected end of file.")
 
         block._data = tuple(data)
         return block
@@ -210,8 +210,8 @@ class Block:
         else:
             if not eof_possible:
                 if hasattr(in_file, 'name'):
-                    raise IOError(f"Unexpected end of file in {in_file.name}.")
-                raise IOError("Unexpected end of file.")
+                    raise OSError(f"Unexpected end of file in {in_file.name}.")
+                raise OSError("Unexpected end of file.")
 
         block._data = tuple(data)
         return block
