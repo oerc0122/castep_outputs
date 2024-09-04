@@ -7,8 +7,7 @@ import argparse
 from collections.abc import Sequence
 from pathlib import Path
 
-from castep_outputs.parsers import CASTEP_FILE_FORMATS
-from castep_outputs.parsers import CASTEP_OUTPUT_NAMES
+from castep_outputs.parsers import CASTEP_FILE_FORMATS, CASTEP_OUTPUT_NAMES
 from castep_outputs.utilities.dumpers import SUPPORTED_FORMATS
 
 # pylint: disable=line-too-long

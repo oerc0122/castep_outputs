@@ -8,8 +8,7 @@ import re
 from collections import defaultdict
 from typing import Any, TextIO
 
-from ..utilities.castep_res import (ATDATTAG, TAG_RE, get_numbers,
-                                    labelled_floats)
+from ..utilities.castep_res import ATDATTAG, TAG_RE, get_numbers, labelled_floats
 from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
 from ..utilities.filewrapper import Block
 from ..utilities.utility import add_aliases, atreg_to_index, to_type

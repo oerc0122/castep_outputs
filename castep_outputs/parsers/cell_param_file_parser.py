@@ -11,8 +11,7 @@ import castep_outputs.utilities.castep_res as REs
 
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import (atreg_to_index, determine_type, log_factory,
-                                 to_type)
+from ..utilities.utility import atreg_to_index, determine_type, log_factory, to_type
 
 
 def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[str, str]]]:

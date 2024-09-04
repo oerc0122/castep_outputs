@@ -11,36 +11,69 @@ import itertools
 import re
 from collections import defaultdict
 from enum import Flag, auto
-from typing import Any, cast, Dict, List, TextIO, Union
+from typing import Any, Dict, List, TextIO, Union, cast
 
 from ..utilities import castep_res as REs
-from ..utilities.castep_res import (gen_table_re, get_numbers,
-                                    labelled_floats)
+from ..utilities.castep_res import gen_table_re, get_numbers, labelled_floats
 from ..utilities.constants import SHELLS
-from ..utilities.datatypes import (AtomIndex, AtomPropBlock, BandStructure,
-                                   BondData, CellInfo, CharTable,
-                                   ConstraintsReport, DipoleTable,
-                                   ElasticProperties, FinalConfig, GeomTable,
-                                   InitialSpin, KPointsList, KPointsSpec,
-                                   MDInfo, MemoryEst, MullikenInfo,
-                                   Occupancies, PhononSymmetryReport,
-                                   PSPotEnergy, PSPotReport, PSPotStrInfo,
-                                   QData, RamanReport, SCFReport, SixVector,
-                                   SymmetryReport, TDDFTData, Thermodynamics,
-                                   ThreeByThreeMatrix, ThreeVector,
-                                   WvfnLineMin)
+from ..utilities.datatypes import (
+    AtomIndex,
+    AtomPropBlock,
+    BandStructure,
+    BondData,
+    CellInfo,
+    CharTable,
+    ConstraintsReport,
+    DipoleTable,
+    ElasticProperties,
+    FinalConfig,
+    GeomTable,
+    InitialSpin,
+    KPointsList,
+    KPointsSpec,
+    MDInfo,
+    MemoryEst,
+    MullikenInfo,
+    Occupancies,
+    PhononSymmetryReport,
+    PSPotEnergy,
+    PSPotReport,
+    PSPotStrInfo,
+    QData,
+    RamanReport,
+    SCFReport,
+    SixVector,
+    SymmetryReport,
+    TDDFTData,
+    Thermodynamics,
+    ThreeByThreeMatrix,
+    ThreeVector,
+    WvfnLineMin,
+)
 from ..utilities.filewrapper import Block, FileWrapper
-from ..utilities.utility import (add_aliases, atreg_to_index, determine_type,
-                                 fix_data_types, log_factory, normalise_key,
-                                 normalise_string, parse_int_or_float,
-                                 stack_dict, to_type)
+from ..utilities.utility import (
+    add_aliases,
+    atreg_to_index,
+    determine_type,
+    fix_data_types,
+    log_factory,
+    normalise_key,
+    normalise_string,
+    parse_int_or_float,
+    stack_dict,
+    to_type,
+)
 from .bands_file_parser import parse_bands_file
 from .cell_param_file_parser import _parse_devel_code_block
 from .efield_file_parser import parse_efield_file
 from .elastic_file_parser import parse_elastic_file
 from .hug_file_parser import parse_hug_file
-from .parse_fmt_files import (parse_chdiff_fmt_file, parse_den_fmt_file,
-                              parse_elf_fmt_file, parse_pot_fmt_file)
+from .parse_fmt_files import (
+    parse_chdiff_fmt_file,
+    parse_den_fmt_file,
+    parse_elf_fmt_file,
+    parse_pot_fmt_file,
+)
 from .phonon_dos_file_parser import parse_phonon_dos_file
 from .xrd_sf_file_parser import parse_xrd_sf_file
 
