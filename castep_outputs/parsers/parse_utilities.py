@@ -5,14 +5,12 @@ from __future__ import annotations
 import re
 from collections import defaultdict
 from collections.abc import Sequence
-from typing import TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers
 from ..utilities.filewrapper import Block
 from ..utilities.utility import (
     atreg_to_index,
-    file_or_path,
     fix_data_types,
     stack_dict,
     to_type,
@@ -63,42 +61,3 @@ def parse_regular_header(block: Block,
                             "mass": float})
     data["coords"] = coords
     return data
-
-
-@file_or_path(mode="r")
-def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int | float]]:
-    """
-    Parse standard form of kpt related .*_fmt files.
-
-    Parameters
-    ----------
-    inp
-        File to parse.
-    prop
-        Names of properties to extract.
-
-    Returns
-    -------
-    dict[str, list[int | float]]
-        Parsed data.
-    """
-    # Skip header
-    while "END header" not in inp.readline():
-        pass
-
-    qdata = defaultdict(list)
-    for line in inp:
-        if not line.strip():
-            continue
-        if isinstance(prop, str):
-            *qpt, val = line.split()
-            qpt = to_type(qpt, int)
-            val = to_type(val, float)
-            stack_dict(qdata, {"q": qpt, prop: val})
-        elif isinstance(prop, Sequence):
-            words = line.split()
-            qpt = to_type(words[0:3], int)
-            val = to_type(words[3:], float)
-            stack_dict(qdata, {"q": qpt, **dict(zip(prop, val))})
-
-    return qdata
