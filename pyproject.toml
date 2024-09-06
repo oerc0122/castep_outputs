@@ -70,7 +70,7 @@ select = [
     "COM", # Flake8 commas
     "ISC", # Flake8 implicit string concat
     "RSE", # Flake8 raise
-    # "FA",  # Flake8 future
+    "FA",  # Flake8 future
     # "FBT", # Flake8 boolean trap
     "C4",  # Flake8 comprehensions
     # "Q",   # Flake8 Quotes

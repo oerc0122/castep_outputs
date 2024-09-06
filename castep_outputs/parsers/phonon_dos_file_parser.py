@@ -2,9 +2,11 @@
 Parse the following castep outputs:
 .phonon_dos
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Any, Dict, TextIO
+from typing import Any, TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
@@ -13,7 +15,7 @@ from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 
-def parse_phonon_dos_file(phonon_dos_file: TextIO) -> Dict[str, Any]:
+def parse_phonon_dos_file(phonon_dos_file: TextIO) -> dict[str, Any]:
     """ Parse castep .phonon_dos file """
     # pylint: disable=too-many-branches,redefined-outer-name
     logger = log_factory(phonon_dos_file)

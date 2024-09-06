@@ -1,8 +1,9 @@
 """
 List of parsers for file formats
 """
+from __future__ import annotations
 
-from typing import Callable, Dict, Tuple
+from collections.abc import Callable
 
 from .bands_file_parser import parse_bands_file
 from .castep_file_parser import parse_castep_file
@@ -43,7 +44,7 @@ __all__ = ["parse_castep_file",
            "parse_phonon_file"]
 
 
-PARSERS: Dict[str, Callable] = {
+PARSERS: dict[str, Callable] = {
     "castep": parse_castep_file,
     "cell": parse_cell_param_file,
     "param": parse_cell_param_file,
@@ -65,5 +66,5 @@ PARSERS: Dict[str, Callable] = {
     "err": parse_err_file,
     "phonon": parse_phonon_file,
     }
-CASTEP_OUTPUT_NAMES: Tuple[str, ...] = tuple(PARSERS.keys())
-CASTEP_FILE_FORMATS: Tuple[str, ...] = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)
+CASTEP_OUTPUT_NAMES: tuple[str, ...] = tuple(PARSERS.keys())
+CASTEP_FILE_FORMATS: tuple[str, ...] = tuple(f".{typ}" for typ in CASTEP_OUTPUT_NAMES)

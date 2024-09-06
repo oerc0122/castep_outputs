@@ -2,15 +2,17 @@
 Parse the following castep outputs:
 .phonon
 """
+from __future__ import annotations
+
 from collections import defaultdict
-from typing import Any, Dict, TextIO
+from typing import Any, TextIO
 
 from ..utilities.filewrapper import Block
 from ..utilities.utility import fix_data_types, log_factory
 from .parse_utilities import parse_regular_header
 
 
-def parse_phonon_file(phonon_file: TextIO) -> Dict[str, Any]:
+def parse_phonon_file(phonon_file: TextIO) -> dict[str, Any]:
     """ Parse castep .phonon file """
     # pylint: disable=too-many-locals
     logger = log_factory(phonon_file)

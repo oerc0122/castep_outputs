@@ -2,9 +2,11 @@
 Parse the following castep outputs:
 .ts
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Any, Dict, TextIO
+from typing import Any, TextIO
 
 from ..utilities.castep_res import (ATDATTAG, TAG_RE, get_numbers,
                                     labelled_floats)
@@ -13,7 +15,7 @@ from ..utilities.filewrapper import Block
 from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
-def parse_ts_file(ts_file: TextIO) -> Dict[str, Any]:
+def parse_ts_file(ts_file: TextIO) -> dict[str, Any]:
     """ Parse castep .ts files """
 
     accum = defaultdict(list)

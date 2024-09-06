@@ -1,9 +1,9 @@
-# pylint: disable=missing-class-docstring
 """
 Types produced by castep_outputs
 """
+from __future__ import annotations
 
-from typing import Dict, List, Literal, Optional, Tuple, TypedDict, Union
+from typing import Literal, TypedDict, Tuple, Dict
 
 # General types
 
@@ -80,7 +80,7 @@ class DipoleTable(TypedDict):
 # Phonon
 
 class CharTable(TypedDict):
-    chars: Tuple[Tuple[str, int], ...]
+    chars: tuple[tuple[str, int], ...]
     mul: int
     rep: str
     name: str
@@ -89,25 +89,25 @@ class CharTable(TypedDict):
 class QData(TypedDict, total=False):
     char_table: CharTable
     qpt: ThreeVector
-    n: Tuple[int, ...]
-    frequency: Tuple[float, ...]
-    intensity: Tuple[float, ...]
-    irrep: Tuple[str, ...]
-    active: Tuple[Literal["Y", "N"], ...]
-    raman_active: Tuple[Literal["Y", "N"], ...]
-    raman_intensity: Tuple[float, ...]
+    n: tuple[int, ...]
+    frequency: tuple[float, ...]
+    intensity: tuple[float, ...]
+    irrep: tuple[str, ...]
+    active: tuple[Literal["Y", "N"], ...]
+    raman_active: tuple[Literal["Y", "N"], ...]
+    raman_intensity: tuple[float, ...]
 
 
 class PhononSymmetryReport(TypedDict):
     title: str
-    mat: Tuple[Tuple[Union[int, float], ...], ...]
+    mat: tuple[tuple[int | float, ...], ...]
 
 
 class RamanReport(TypedDict, total=False):
     tensor: ThreeByThreeMatrix
     trace: float
     ii: float
-    depolarisation: Optional[float]
+    depolarisation: float | None
 
 
 # Occupancies
@@ -123,8 +123,8 @@ class Occupancies(TypedDict):
 class WvfnLineMin(TypedDict):
     init_energy: float
     init_de_dstep: float
-    steps: Tuple[float, ...]
-    gain: Tuple[float, ...]
+    steps: tuple[float, ...]
+    gain: tuple[float, ...]
 
 
 class SCFSection(TypedDict):
@@ -138,19 +138,19 @@ class SCFReport(TypedDict, total=False):
     energy_gain: float
     fermi_energy: float
     time: float
-    density_residual: Optional[float]
+    density_residual: float | None
     constraint_energy: float
     dipole_corr_energy: float
     no_bands: int
     kinetic_eigenvalue: float
-    eigenvalue: List[SCFSection]
+    eigenvalue: list[SCFSection]
 
 
 # Bonds
 
 class BondInfo(TypedDict):
     population: float
-    spin: Optional[float]
+    spin: float | None
     length: float
 
 
@@ -195,8 +195,8 @@ class PSPotStrInfo(TypedDict, total=False):
     medium: float
     fine: float
     proj: str
-    projectors: Tuple[PSPotProj, ...]
-    opt: List[str]
+    projectors: tuple[PSPotProj, ...]
+    opt: list[str]
     shell_swp: str
     shell_swp_end: str
     print: bool
@@ -217,7 +217,7 @@ class PSPotDebugInfo(TypedDict):
 
 class PSPotTableInfo(TypedDict, total=False):
     rc: float
-    beta: Union[float, str]
+    beta: float | str
     e: float
     j: int
     l: int  # noqa: E741
@@ -230,16 +230,16 @@ class PSPotReport(TypedDict, total=False):
     detail: PSPotStrInfo
     ionic_charge: float
     level_of_theory: Literal["LDA"]
-    augmentation_charge_rinner: Tuple[float, ...]
-    partial_core_correction: Tuple[float, ...]
+    augmentation_charge_rinner: tuple[float, ...]
+    partial_core_correction: tuple[float, ...]
     pseudopotential_definition: PSPotTableInfo
-    reference_electronic_structure: List[PSPotElecStruct]
+    reference_electronic_structure: list[PSPotElecStruct]
     solver: Literal["Koelling-Harmon", "Schroedinger", "ZORA", "Unknown"]
 
 
 class PSPotEnergy(TypedDict):
     pseudo_atomic_energy: float
-    charge_spilling: Tuple[float, ...]
+    charge_spilling: tuple[float, ...]
 
 
 # Symmetry & Constraints
@@ -247,15 +247,15 @@ class PSPotEnergy(TypedDict):
 class Symop(TypedDict):
     displacement: ThreeVector
     rotation: ThreeByThreeMatrix
-    symmetry_related: List[AtomIndex]
+    symmetry_related: list[AtomIndex]
 
 
 class ConstraintsReport(TypedDict, total=False):
     number_of_cell_constraints: int
     number_of_ionic_constraints: int
-    cell_constraints: Tuple[int, int, int, int, int, int]
+    cell_constraints: tuple[int, int, int, int, int, int]
     com_constrained: bool
-    ionic_constraints: Dict[AtomIndex, ThreeByThreeMatrix]
+    ionic_constraints: dict[AtomIndex, ThreeByThreeMatrix]
 
 
 class SymmetryReport(TypedDict, total=False):
@@ -263,7 +263,7 @@ class SymmetryReport(TypedDict, total=False):
     number_of_symmetry_operations: int
     point_group_of_crystal: str
     space_group_of_crystal: str
-    symop: List[Symop]
+    symop: list[Symop]
     n_primitives: int
 
 
@@ -275,13 +275,13 @@ class KPoint(TypedDict):
 
 
 class KPointsList(TypedDict):
-    points: List[KPoint]
+    points: list[KPoint]
     num_kpoints: int
 
 
 class KPointsSpec(TypedDict, total=False):
-    kpoint_mp_grid: Tuple[int, int, int]
-    kpoint_mp_offset: Tuple[float, float, float]
+    kpoint_mp_grid: tuple[int, int, int]
+    kpoint_mp_offset: tuple[float, float, float]
     num_kpoints: int
 
 
@@ -300,18 +300,18 @@ class BandStructure(TypedDict):
     ky: float
     kz: float
     kpgrp: int
-    band: Tuple[int, ...]
-    energy: Tuple[float, ...]
+    band: tuple[int, ...]
+    energy: tuple[float, ...]
 
 
 # Thermodynamics
 
 class Thermodynamics(TypedDict):
-    t: Tuple[float, ...]
-    e: Tuple[float, ...]
-    f: Tuple[float, ...]
-    s: Tuple[float, ...]
-    cv: Tuple[float, ...]
+    t: tuple[float, ...]
+    e: tuple[float, ...]
+    f: tuple[float, ...]
+    s: tuple[float, ...]
+    cv: tuple[float, ...]
     zero_point_energy: float
 
 

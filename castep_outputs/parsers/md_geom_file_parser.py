@@ -1,16 +1,17 @@
 """
 Parse castep .md or .geom files
 """
+from __future__ import annotations
 
 from collections import defaultdict
-from typing import Dict, List, TextIO
+from typing import TextIO
 
 from ..utilities.castep_res import ATDATTAG, TAG_RE, get_numbers
 from ..utilities.constants import FST_D, TAG_ALIASES
 from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
-def parse_md_geom_file(md_geom_file: TextIO) -> List[Dict[str, float]]:
+def parse_md_geom_file(md_geom_file: TextIO) -> list[dict[str, float]]:
     """ Parse standard MD and GEOM file formats """
 
     while "END header" not in md_geom_file.readline():

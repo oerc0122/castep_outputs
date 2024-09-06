@@ -1,9 +1,11 @@
 """
 Argument parser
 """
+from __future__ import annotations
+
 import argparse
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Dict, List, Sequence
 
 from castep_outputs.parsers import CASTEP_FILE_FORMATS
 from castep_outputs.parsers import CASTEP_OUTPUT_NAMES
@@ -73,7 +75,7 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
     return args
 
 
-def args_to_dict(args: argparse.Namespace) -> Dict[str, List[str]]:
+def args_to_dict(args: argparse.Namespace) -> dict[str, list[str]]:
     """ Convert args namespace to dictionary """
     out_dict = {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
     return out_dict

@@ -2,10 +2,12 @@
 Parse the following castep outputs:
 .err
 """
-from typing import Dict, List, TextIO, Union
+from __future__ import annotations
+
+from typing import TextIO
 
 
-def parse_err_file(err_file: TextIO) -> Dict[str, Union[str, List[str]]]:
+def parse_err_file(err_file: TextIO) -> dict[str, str | list[str]]:
     """ Parse .err file to dict """
     accum = {"message": "", "stack": []}
 

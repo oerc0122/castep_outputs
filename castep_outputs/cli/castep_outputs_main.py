@@ -1,12 +1,14 @@
 """
 Run main castep parser
 """
+from __future__ import annotations
+
 import io
 import logging
 import sys
-from collections.abc import Sequence
+from collections.abc import Sequence, Callable
 from pathlib import Path
-from typing import Any, Callable, Dict, List, Optional, TextIO, Union
+from typing import Any, TextIO
 
 from .args import args_to_dict, parse_args
 from ..parsers import PARSERS
@@ -15,8 +17,8 @@ from ..utilities.dumpers import get_dumpers
 from ..utilities.utility import flatten_dict, json_safe, normalise
 
 
-def parse_single(in_file: Union[str, Path, TextIO],
-                 parser: Optional[Callable[[TextIO], List[Dict[str, Any]]]] = None,
+def parse_single(in_file: str | Path | TextIO,
+                 parser: Callable[[TextIO], list[dict[str, Any]]] | None = None,
                  out_format: OutFormats = "print",
                  *, loglevel: int = logging.WARNING, testing: bool = False):
     """
@@ -58,7 +60,7 @@ def parse_single(in_file: Union[str, Path, TextIO],
     return data
 
 
-def parse_all(output: Optional[Path] = None, out_format: OutFormats = "json",
+def parse_all(output: Path | None = None, out_format: OutFormats = "json",
               *, loglevel: int = logging.WARNING, testing: bool = False, **files):
     """ Parse all files in files dict """
     file_dumper = get_dumpers(out_format)

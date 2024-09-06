@@ -1,9 +1,11 @@
 """
 Parse castep .cell and .param files
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Dict, List, TextIO, Tuple, Union
+from typing import TextIO
 
 import castep_outputs.utilities.castep_res as REs
 
@@ -13,7 +15,7 @@ from ..utilities.utility import (atreg_to_index, determine_type, log_factory,
                                  to_type)
 
 
-def parse_cell_param_file(cell_param_file: TextIO) -> List[Dict[str, Union[str, Dict[str, str]]]]:
+def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[str, str]]]:
     """ Parse .cell/.param files into dict ready to JSONise """
 
     logger = log_factory(cell_param_file)
@@ -55,7 +57,7 @@ parse_cell_file = parse_cell_param_file
 parse_param_file = parse_cell_param_file
 
 
-def _parse_devel_code_block(in_block: Block) -> Dict[str, Union[str, float, int]]:
+def _parse_devel_code_block(in_block: Block) -> dict[str, str | float | int]:
     """ Parse devel_code block to dict """
 
     in_block = str(in_block)
@@ -96,7 +98,7 @@ def _parse_devel_code_block(in_block: Block) -> Dict[str, Union[str, float, int]
     return devel_code_parsed
 
 
-def _parse_ionic_constraints(block: Block) -> Dict[AtomIndex, Tuple[float, float, float]]:
+def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, tuple[float, float, float]]:
     accum = defaultdict(list)
 
     for line in block:
@@ -124,7 +126,7 @@ def _parse_nonlinear_constraints(block: Block):
     return accum
 
 
-def _parse_positions(block: Block) -> Dict[AtomIndex, Tuple[float, float, float]]:
+def _parse_positions(block: Block) -> dict[AtomIndex, tuple[float, float, float]]:
     accum = {}
     cnt = defaultdict(lambda: 0)
 
@@ -147,7 +149,7 @@ def _parse_positions(block: Block) -> Dict[AtomIndex, Tuple[float, float, float]
     return accum
 
 
-def _parse_hubbard_u(block: Block) -> Dict[Union[str, AtomIndex], Dict[str, float]]:
+def _parse_hubbard_u(block: Block) -> dict[str | AtomIndex, dict[str, float]]:
     accum = {}
 
     for line in block:
@@ -168,7 +170,7 @@ def _parse_hubbard_u(block: Block) -> Dict[Union[str, AtomIndex], Dict[str, floa
     return accum
 
 
-def _parse_sedc(block: Block) -> Dict[str, Dict[str, float]]:
+def _parse_sedc(block: Block) -> dict[str, dict[str, float]]:
     accum = {}
     for line in block:
         if re.match(r"^\s*%endblock", line, re.IGNORECASE):
@@ -184,7 +186,7 @@ def _parse_sedc(block: Block) -> Dict[str, Dict[str, float]]:
     return accum
 
 
-def _parse_symops(block: Block) -> List[Dict[str, Union[ThreeByThreeMatrix, ThreeVector]]]:
+def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVector]]:
 
     accum = []
     tmp = [to_type(numbers, float)
@@ -198,7 +200,7 @@ def _parse_symops(block: Block) -> List[Dict[str, Union[ThreeByThreeMatrix, Thre
     return accum
 
 
-def _parse_general(block: Block) -> Dict[str, Union[str, float]]:
+def _parse_general(block: Block) -> dict[str, str | float]:
     block_data = {"data": []}
     for line in block:
         line = re.split("[#!]", line)[0]

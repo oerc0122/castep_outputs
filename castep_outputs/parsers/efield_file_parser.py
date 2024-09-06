@@ -2,9 +2,11 @@
 Parse the following castep outputs:
 .efield
 """
+from __future__ import annotations
+
 import re
 from collections import defaultdict
-from typing import Dict, TextIO, Union
+from typing import TextIO
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
@@ -14,7 +16,7 @@ from ..utilities.utility import fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 
-def parse_efield_file(efield_file: TextIO) -> Dict[str, Union[float, int]]:
+def parse_efield_file(efield_file: TextIO) -> dict[str, float | int]:
     """ Parse castep .efield file """
     # pylint: disable=too-many-branches,redefined-outer-name
 
