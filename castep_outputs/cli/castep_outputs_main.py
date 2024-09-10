@@ -43,7 +43,7 @@ def parse_single(in_file: str | Path | TextIO,
     if isinstance(in_file, io.TextIOBase):
         data = parser(in_file)
     elif isinstance(in_file, Path):
-        with in_file.open(mode='r', encoding="utf-8") as file:
+        with in_file.open(mode="r", encoding="utf-8") as file:
             data = parser(file)
 
     if out_format == "json" or testing:
@@ -80,7 +80,7 @@ def parse_all(output: Path | None = None, out_format: OutFormats = "json",
     elif isinstance(output, io.TextIOBase):
         file_dumper(data, output)
     else:
-        with output.open('a+', encoding='utf-8') as out_file:
+        with output.open("a+", encoding="utf-8") as out_file:
             file_dumper(data, out_file)
 
 

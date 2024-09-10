@@ -24,7 +24,7 @@ def json_dumper(data: Any, file: TextIO):
 
 def ruamel_dumper(data: Any, file: TextIO):
     """ Basic ruamel.yaml format dumper """
-    yaml_eng = yaml.YAML(typ='unsafe')
+    yaml_eng = yaml.YAML(typ="unsafe")
     yaml_eng.dump(data, file)
 
 

@@ -187,14 +187,14 @@ BOND_RE = re.compile(rf"""\s*
 
 # Pair pot
 PAIR_POT_RES = {
-    'two_body_one_spec': re.compile(
+    "two_body_one_spec": re.compile(
         rf"^(?P<tag>\w+)?\s*\*\s*(?P<spec>{ATOM_NAME_RE})\s*\*\s*$",
     ),
-    'two_body_spec':  re.compile(
+    "two_body_spec":  re.compile(
         rf"(?P<spec1>{ATOM_NAME_RE})\s*-\s*"
         rf"(?P<spec2>{ATOM_NAME_RE})",
     ),
-    'two_body_val': re.compile(
+    "two_body_val": re.compile(
         rf"""
             (?P<tag>\w+)?\s*\*\s*
             (?P<label>\w+)\s*
@@ -203,13 +203,13 @@ PAIR_POT_RES = {
             <--\s*(?P<type>\w+)
             """, re.ASCII | re.VERBOSE,
     ),
-    'three_body_spec': re.compile(
+    "three_body_spec": re.compile(
         rf"""
         ^(?P<tag>\w+)?\s*\*\s*
         (?P<spec>(?:{ATOM_NAME_RE}\s*){{3}})
         \s*\*\s*$""", re.VERBOSE,
     ),
-    'three_body_val': re.compile(
+    "three_body_val": re.compile(
         rf"""
         ^(?P<tag>\w+)?\s*\*\s*
         (?P<label>\w+)\s*
@@ -280,7 +280,7 @@ GEOMOPT_MIN_TABLE_RE = re.compile(
 
 GEOMOPT_TABLE_RE = re.compile(
     r"\s*\|\s* (?P<parameter>\S+)" +
-    labelled_floats(('value', 'tolerance'), sep=r"\s*\|\s*") +
+    labelled_floats(("value", "tolerance"), sep=r"\s*\|\s*") +
     r"\s*\|\s* \S+ (?#Units) \s*\|\s* (?P<converged>No|Yes) \s*\|", re.VERBOSE)
 
 
@@ -333,20 +333,20 @@ PHONON_PHONON_RE = re.compile(rf"""
     {labelled_floats(('qpt', 'pth'), counts=(3, 1))}
     """, re.VERBOSE)
 
-PROCESS_PHONON_PHONON_RE = re.compile(labelled_floats(('n', 'f', 'Grad_qf')))
+PROCESS_PHONON_PHONON_RE = re.compile(labelled_floats(("n", "f", "Grad_qf")))
 
 
 # Regexp to identify Fermi energies in .bands file
 BANDS_FERMI_RE = re.compile(r"Fermi energ(ies|y) \(in atomic units\)\s*" +
-                            labelled_floats(('a', 'b')))
+                            labelled_floats(("a", "b")))
 
 # Regexp to identify eigenvalue block in .bands file
 # BANDS_EIGENS_RE =
 # rf"K-point\s+(\d+)\s*(\s*{FNUMBER_RE})\s*({FNUMBER_RE})\s*({FNUMBER_RE})\s*({FNUMBER_RE})"
 
-DEVEL_CODE_VAL_RE = r'[A-Za-z0-9_]+[:=]\S+'
-DEVEL_CODE_BLOCK_RE = rf'([A-Za-z0-9_]+):(?:\s*{DEVEL_CODE_VAL_RE}\s*)*:end\1'
-DEVEL_CODE_BLOCK_GENERIC_RE = r'([A-Za-z0-9_]+):(?:.*):end\1'
+DEVEL_CODE_VAL_RE = r"[A-Za-z0-9_]+[:=]\S+"
+DEVEL_CODE_BLOCK_RE = rf"([A-Za-z0-9_]+):(?:\s*{DEVEL_CODE_VAL_RE}\s*)*:end\1"
+DEVEL_CODE_BLOCK_GENERIC_RE = r"([A-Za-z0-9_]+):(?:.*):end\1"
 
 PARAM_VALUE_RE = re.compile(rf"""
 ^\s*(?P<key>[a-z_]+)

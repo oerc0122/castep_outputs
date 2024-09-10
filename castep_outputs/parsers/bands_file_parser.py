@@ -27,38 +27,38 @@ def parse_bands_file(bands_file: TextIO) -> dict[str, Any]:
     for line in bands_file:
         if line.startswith("K-point"):
             if qdata:
-                fix_data_types(qdata, {'qpt': float,
-                                       'weight': float,
-                                       'spin_comp': int,
-                                       'band': float,
-                                       'band_up': float,
-                                       'band_dn': float,
+                fix_data_types(qdata, {"qpt": float,
+                                       "weight": float,
+                                       "spin_comp": int,
+                                       "band": float,
+                                       "band_up": float,
+                                       "band_dn": float,
                                        })
-                bands_info['bands'].append(qdata)
+                bands_info["bands"].append(qdata)
             _, _, *qpt, weight = line.split()
-            qdata = {'qpt': qpt, 'weight': weight, 'spin_comp': None, 'band': []}
+            qdata = {"qpt": qpt, "weight": weight, "spin_comp": None, "band": []}
 
         elif line.startswith("Spin component"):
-            qdata['spin_comp'] = line.split()[2]
-            if qdata['spin_comp'] != "1":
-                qdata['band_up'] = qdata.pop('band')
+            qdata["spin_comp"] = line.split()[2]
+            if qdata["spin_comp"] != "1":
+                qdata["band_up"] = qdata.pop("band")
                 if "band_dn" not in qdata:
                     qdata["band_dn"] = []
 
         elif re.match(rf"^\s*{REs.FNUMBER_RE}$", line.strip()):
-            if qdata['spin_comp'] != "1":
-                qdata['band_dn'].append(line)
+            if qdata["spin_comp"] != "1":
+                qdata["band_dn"].append(line)
             else:
-                qdata['band'].append(line)
+                qdata["band"].append(line)
 
     if qdata:
-        fix_data_types(qdata, {'qpt': float,
-                               'weight': float,
-                               'spin_comp': int,
-                               'band': float,
-                               'band_up': float,
-                               'band_dn': float,
+        fix_data_types(qdata, {"qpt": float,
+                               "weight": float,
+                               "spin_comp": int,
+                               "band": float,
+                               "band_up": float,
+                               "band_dn": float,
                                })
-        bands_info['bands'].append(qdata)
+        bands_info["bands"].append(qdata)
 
     return bands_info

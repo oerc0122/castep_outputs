@@ -85,7 +85,7 @@ class FileWrapper:
         str
             Name if name is known otherwise "unknown".
         """
-        return self.file.name if hasattr(self.file, 'name') else 'unknown'
+        return self.file.name if hasattr(self.file, "name") else "unknown"
 
 
 class Block:
@@ -101,7 +101,7 @@ class Block:
         else:
             self._lineno = 0
 
-        self._name = parent.name if hasattr(parent, 'name') else 'unknown'
+        self._name = parent.name if hasattr(parent, "name") else "unknown"
         self._i = -1
         self._data: tuple[str, ...] = ()
 
@@ -142,7 +142,7 @@ class Block:
             data += line
         else:
             if not eof_possible:
-                if hasattr(in_file, 'name'):
+                if hasattr(in_file, "name"):
                     raise OSError(f"Unexpected end of file in {in_file.name}.")
                 raise OSError("Unexpected end of file.")
 
@@ -211,7 +211,7 @@ class Block:
                     break
         else:
             if not eof_possible:
-                if hasattr(in_file, 'name'):
+                if hasattr(in_file, "name"):
                     raise OSError(f"Unexpected end of file in {in_file.name}.")
                 raise OSError("Unexpected end of file.")
 

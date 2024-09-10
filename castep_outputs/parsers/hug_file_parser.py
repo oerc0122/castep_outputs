@@ -15,7 +15,7 @@ from ..utilities.utility import fix_data_types, stack_dict
 def parse_hug_file(hug_file: TextIO) -> dict[str, list[float]]:
     """ Parse castep .hug file """
 
-    cols = ('compression', 'temperature', 'pressure', 'energy')
+    cols = ("compression", "temperature", "pressure", "energy")
     data = defaultdict(list)
     for line in hug_file:
         if match := re.search(labelled_floats(cols), line):

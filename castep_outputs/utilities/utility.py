@@ -18,7 +18,7 @@ import castep_outputs.utilities.castep_res as REs
 
 from .filewrapper import FileWrapper
 
-T = TypeVar('T')
+T = TypeVar("T")
 
 
 def normalise_string(string: str) -> str:
@@ -88,7 +88,7 @@ def json_safe(obj: Any) -> Any:
 
 def flatten_dict(dictionary: MutableMapping[Any, Any],
                  parent_key: bool = False,
-                 separator: str = '_') -> dict[str, Any]:
+                 separator: str = "_") -> dict[str, Any]:
     """
     Turn a nested dictionary into a flattened dictionary
 
@@ -139,7 +139,7 @@ def add_aliases(in_dict: dict[str, Any],
 def log_factory(file) -> Callable:
     """ Return logging function to add file info to logs """
 
-    if hasattr(file, 'name'):
+    if hasattr(file, "name"):
         def log_file(message, *args, level="info"):
             getattr(logging, level)(f"[{file.name}] {message}", *args)
     else:
