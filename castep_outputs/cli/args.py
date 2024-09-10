@@ -76,5 +76,4 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
 
 def args_to_dict(args: argparse.Namespace) -> dict[str, list[str]]:
     """ Convert args namespace to dictionary """
-    out_dict = {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
-    return out_dict
+    return {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}
