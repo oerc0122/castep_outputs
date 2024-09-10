@@ -1,6 +1,10 @@
 name: Ruff
 
-on: [push]
+on:
+  push:
+    paths:
+      - "castep_outputs/**"
+
 
 jobs:
   build:

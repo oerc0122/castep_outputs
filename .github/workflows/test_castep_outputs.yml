@@ -6,11 +6,15 @@ name: Python application
 on:
   push:
     branches: [ "main" ]
-  pull_request: 
+    paths:
+      - "castep_outputs/**"
+  pull_request:
     types:
       - opened
       - synchronize
       - reopened
+    paths:
+      - "castep_outputs/**"
 
 permissions:
   contents: read
