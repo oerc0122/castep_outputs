@@ -8,7 +8,6 @@ from typing import Union
 
 from .constants import FST_D, MINIMISERS, SHELLS
 
-
 Pattern = Union[str, re.Pattern]
 
 

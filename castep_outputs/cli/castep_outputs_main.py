@@ -6,15 +6,15 @@ from __future__ import annotations
 import io
 import logging
 import sys
-from collections.abc import Sequence, Callable
+from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, TextIO
 
-from .args import args_to_dict, parse_args
 from ..parsers import PARSERS
 from ..utilities.constants import OutFormats
 from ..utilities.dumpers import get_dumpers
 from ..utilities.utility import flatten_dict, json_safe, normalise
+from .args import args_to_dict, parse_args
 
 
 def parse_single(in_file: str | Path | TextIO,

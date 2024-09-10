@@ -3,7 +3,7 @@ Types produced by castep_outputs
 """
 from __future__ import annotations
 
-from typing import Literal, TypedDict, Tuple, Dict
+from typing import Dict, Literal, Tuple, TypedDict
 
 # General types
 
