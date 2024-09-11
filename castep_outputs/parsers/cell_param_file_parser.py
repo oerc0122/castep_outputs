@@ -1,6 +1,4 @@
-"""
-Parse castep .cell and .param files
-"""
+"""Parse castep .cell and .param files."""
 from __future__ import annotations
 
 import re
@@ -20,7 +18,7 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[
 
     Parameters
     ----------
-    cell_param_file : ~typing.TextIO
+    cell_param_file
         Open handle to file to parse.
 
     Returns
@@ -28,7 +26,6 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[
     list[dict[str, str | dict[str, str]]]
         Parsed info.
     """
-
     logger = log_factory(cell_param_file)
     curr = {}
 
@@ -72,8 +69,17 @@ parse_param_file = parse_cell_param_file
 def _parse_devel_code_block(in_block: Block) -> dict[str, str | float | int]:
     """
     Parse devel_code block to dict.
-    """
 
+    Parameters
+    ----------
+    in_block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[str, str | float | int]
+        Parsed info.
+    """
     in_block = str(in_block)
     in_block = " ".join(in_block.splitlines())
     matches = re.finditer(REs.DEVEL_CODE_BLOCK_GENERIC_RE, in_block, re.IGNORECASE | re.MULTILINE)
@@ -115,6 +121,16 @@ def _parse_devel_code_block(in_block: Block) -> dict[str, str | float | int]:
 def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
     """
     Parse ionic constraints to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[AtomIndex, ThreeVector]
+        Parsed info.
     """
     accum = defaultdict(list)
 
@@ -130,6 +146,16 @@ def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
 def _parse_nonlinear_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
     """
     Parse nonlinear constraints to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[AtomIndex, ThreeVector]
+        Parsed info.
     """
     accum = []
 
@@ -146,7 +172,20 @@ def _parse_nonlinear_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
     return accum
 
 
-def _parse_positions(block: Block) -> dict[AtomIndex, tuple[float, float, float]]:
+def _parse_positions(block: Block) -> dict[AtomIndex, ThreeVector]:
+    """
+    Parse positions to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[AtomIndex, ThreeVector]
+        Parsed info.
+    """
     accum = {}
     cnt = defaultdict(lambda: 0)
 
@@ -170,6 +209,19 @@ def _parse_positions(block: Block) -> dict[AtomIndex, tuple[float, float, float]
 
 
 def _parse_hubbard_u(block: Block) -> dict[str | AtomIndex, dict[str, float]]:
+    """
+    Parse Hubbard U block to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[str | AtomIndex, dict[str, float]]
+        Parsed info.
+    """
     accum = {}
 
     for line in block:
@@ -191,6 +243,19 @@ def _parse_hubbard_u(block: Block) -> dict[str | AtomIndex, dict[str, float]]:
 
 
 def _parse_sedc(block: Block) -> dict[str, dict[str, float]]:
+    """
+    Parse Semi-empirical dispersion correction block to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[str, dict[str, float]]
+        Parsed info.
+    """
     accum = {}
     for line in block:
         if re.match(r"^\s*%endblock", line, re.IGNORECASE):
@@ -207,7 +272,19 @@ def _parse_sedc(block: Block) -> dict[str, dict[str, float]]:
 
 
 def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVector]]:
+    """
+    Parse symmetry operations block to dict.
 
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    list[dict[str, ThreeByThreeMatrix | ThreeVector]]
+        Parsed info.
+    """
     tmp = [to_type(numbers, float)
            for line in block
            if (numbers := REs.FLOAT_RAT_RE.findall(line))]
@@ -218,6 +295,19 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
 
 
 def _parse_general(block: Block) -> dict[str, str | float]:
+    """
+    Parse general block to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[str, str | float]
+        Parsed info.
+    """
     block_data = {"data": []}
     for line in block:
         line = re.split("[#!]", line)[0]
@@ -243,6 +333,7 @@ def _parse_general(block: Block) -> dict[str, str | float]:
     return block_data
 
 
+#: Cell/Param subparsers.
 _PARSERS = {"devel_code": _parse_devel_code_block,
             "ionic_constraints": _parse_ionic_constraints,
             "nonlinear_constraints": _parse_nonlinear_constraints,

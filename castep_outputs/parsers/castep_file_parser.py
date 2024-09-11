@@ -1,7 +1,9 @@
 # pylint: disable=too-many-lines, too-many-branches, too-many-statements, too-many-locals
 """
-Extract results from .castep file for comparison and further processing
+Extract results from .castep file for comparison and further processing.
 
+Notes
+-----
 Port of extract_results.pl
 """
 from __future__ import annotations
@@ -79,9 +81,8 @@ from .xrd_sf_file_parser import parse_xrd_sf_file
 
 
 class Filters(Flag):
-    """
-    Enum of possible filters for CASTEP file parsing
-    """
+    """Enum of possible filters for CASTEP file parsing."""
+
     BS = auto()
     CELL = auto()
     CHEM_SHIELDING = auto()
@@ -137,7 +138,26 @@ class Filters(Flag):
 
 def parse_castep_file(castep_file_in: TextIO,
                       filters: Filters = Filters.HIGH) -> list[dict[str, Any]]:
-    """ Parse castep file into lists of dicts ready to JSONise """
+    """
+    Parse castep file into lists of dicts ready to JSONise.
+
+    Parameters
+    ----------
+    castep_file_in
+        File to parse.
+    filters
+        Parameters to parse.
+
+    Returns
+    -------
+    list[dict[str, Any]]
+        Parsed data.
+
+    Raises
+    ------
+    ValueError
+        On invalid top-level blocks.
+    """
     # pylint: disable=redefined-outer-name
 
     runs: list[dict[str, Any]] = []
@@ -1438,7 +1458,7 @@ def _process_elf(block: Block) -> list[float]:
 
 
 def _process_hirshfeld(block: Block) -> dict[AtomIndex, float]:
-    """ Process Hirshfeld block to dict of charges """
+    """Process Hirshfeld block to dict of charges."""
     return {
         atreg_to_index(match): float(match["charge"]) for line in block
         if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))
@@ -1446,7 +1466,7 @@ def _process_hirshfeld(block: Block) -> dict[AtomIndex, float]:
 
 
 def _process_thermodynamics(block: Block) -> Thermodynamics:
-    """ Process a thermodynamics block into a dict of lists """
+    """Process a thermodynamics block into a dict of lists."""
     accum: Thermodynamics = defaultdict(list)
     for line in block:
         if "Zero-point energy" in line:
@@ -1464,7 +1484,7 @@ def _process_thermodynamics(block: Block) -> Thermodynamics:
 
 
 def _process_atom_disp(block: Block) -> dict[str, dict[AtomIndex, SixVector]]:
-    """ Process a atom disp block into a dict of lists """
+    """Process a atom disp block into a dict of lists."""
     accum: dict[str, dict[AtomIndex, SixVector]] = defaultdict(dict)
     for line in block:
         if match := REs.ATOMIC_DISP_RE.match(line):
@@ -1479,7 +1499,7 @@ def _process_atom_disp(block: Block) -> dict[str, dict[AtomIndex, SixVector]]:
 def _process_3_6_matrix(
         block: Block, *, split: bool,
 ) -> tuple[ThreeByThreeMatrix, ThreeByThreeMatrix | None]:
-    """ Process a single or pair of 3x3 matrices or 3x6 matrix """
+    """Process a single or pair of 3x3 matrices or 3x6 matrix."""
     parsed = tuple(to_type(vals, float) for line in block
                    if (vals := get_numbers(line)) and len(vals) in (3, 6))
 
@@ -1494,8 +1514,7 @@ def _process_3_6_matrix(
 
 
 def _process_params(block: Block) -> dict[str, dict[str, str | tuple[Any, ...]]]:
-    """ Process a parameters block into a dict of params """
-
+    """Process a parameters block into a dict of params."""
     opt: dict[str, Any] = {}
     curr_opt: dict[str, str | tuple[Any, ...]] = {}
     curr_group = ""
@@ -1667,7 +1686,7 @@ def _process_stresses(block: Block) -> tuple[str, SixVector]:
 
 
 def _process_initial_spins(block: Block) -> dict[AtomIndex, InitialSpin]:
-    """ Process a set of initial spins into appropriate dict """
+    """Process a set of initial spins into appropriate dict."""
     accum: dict[AtomIndex, InitialSpin] = {}
     for line in block:
         if match := re.match(rf"\s*\|\s*{REs.ATREG}\s*"
@@ -1682,8 +1701,7 @@ def _process_initial_spins(block: Block) -> dict[AtomIndex, InitialSpin]:
 
 
 def _process_born(block: Block) -> dict[AtomIndex, ThreeByThreeMatrix]:
-    """ Process a Born block into a dict of charges """
-
+    """Process a Born block into a dict of charges."""
     born_accum = {}
     for line in block:
         if match := REs.BORN_RE.match(line):
@@ -1699,8 +1717,7 @@ def _process_born(block: Block) -> dict[AtomIndex, ThreeByThreeMatrix]:
 
 
 def _process_raman(block: Block) -> list[RamanReport]:
-    """ Process a Mulliken block into a list of modes """
-
+    """Process a Mulliken block into a list of modes."""
     next(block)  # Skip first captured line
     modes = []
     curr_mode: RamanReport = {}
@@ -1735,7 +1752,7 @@ def _process_raman(block: Block) -> list[RamanReport]:
 
 
 def _process_mulliken(block: Block) -> dict[AtomIndex, MullikenInfo]:
-    """ Process a mulliken block into a dict of points """
+    """Process a mulliken block into a dict of points."""
     accum = {}
 
     for line in block:
@@ -1769,7 +1786,7 @@ def _process_mulliken(block: Block) -> dict[AtomIndex, MullikenInfo]:
 
 
 def _process_band_structure(block: Block) -> list[BandStructure]:
-    """ Process a band structure into a list of kpts"""
+    """Process a band structure into a list of kpts."""
 
     def fdt(qdat):
         fix_data_types(qdat, {"spin": int,
@@ -1802,7 +1819,7 @@ def _process_band_structure(block: Block) -> list[BandStructure]:
 
 
 def _process_qdata(qdata: dict[str, str | list[str]]) -> QData:
-    """ Special parse for phonon qdata """
+    """Parse phonon qdata into components."""
     qdata = {key: val
              for key, val in qdata.items()
              if any(val) or key == "qpt"}
@@ -1818,8 +1835,7 @@ def _process_qdata(qdata: dict[str, str | list[str]]) -> QData:
 
 def _parse_magres_block(task: int, inp: Block) -> dict[str | AtomIndex,
                                                        str | dict[str, float | None]]:
-    """ Parse MagRes data tables from inp according to task """
-
+    """Parse MagRes data tables from inp according to task."""
     data: dict[str | AtomIndex, str | dict[str, float | None]] = {}
     data["task"] = REs.MAGRES_TASK[task]
     curr_re = REs.MAGRES_RE[task]

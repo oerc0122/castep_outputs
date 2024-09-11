@@ -1,6 +1,4 @@
-"""
-Function for parsing xrd_sf files
-"""
+"""Parse castep .xrd_sf files."""
 from __future__ import annotations
 
 import re
@@ -14,9 +12,8 @@ from ..utilities.utility import stack_dict, to_type
 
 
 class XRDSFFileInfo(TypedDict):
-    """
-    X-Ray Structure Factor computation.
-    """
+    """X-Ray Structure Factor computation."""
+
     #: Structure factor contribution due to the all-electron valence
     #: augmentation charge.
     f_aug: list[complex]
@@ -43,7 +40,7 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> XRDSFFileInfo:
 
     Parameters
     ----------
-    xrd_sf_file : ~typing.TextIO
+    xrd_sf_file
         Open handle to file to parse.
 
     Returns
@@ -51,7 +48,6 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> XRDSFFileInfo:
     XRDSFFileInfo
         Parsed info.
     """
-
     # Get headers from first line
     headers = xrd_sf_file.readline().split()[3:]
     # Turn Re(x) into x_re

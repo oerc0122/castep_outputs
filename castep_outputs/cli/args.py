@@ -1,6 +1,4 @@
-"""
-Module containing argument parser and processing.
-"""
+"""Module containing argument parser and processing."""
 from __future__ import annotations
 
 import argparse
@@ -53,7 +51,7 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
 
     Parameters
     ----------
-    to_parse : Sequence[str]
+    to_parse
         Arguments to handle in this call.
 
     Returns
@@ -101,7 +99,7 @@ def extract_parsables(args: argparse.Namespace) -> dict[str, list[str]]:
 
     Parameters
     ----------
-    args : argparse.Namespace
+    args
         Namespace to process.
 
     Returns

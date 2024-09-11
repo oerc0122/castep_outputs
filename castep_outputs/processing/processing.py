@@ -1,6 +1,4 @@
-"""
-Module to assist processing of parsed outputs.
-"""
+"""Module to assist processing of parsed outputs."""
 
 from typing import NamedTuple
 
@@ -8,9 +6,8 @@ from ..utilities.castep_res import get_atom_parts
 
 
 class AtomLabel(NamedTuple):
-    """
-    Standard castep atom label.
-    """
+    """Standard castep atom label."""
+
     #: Atom species.
     species: str
     #: Index into positions block.
@@ -27,7 +24,7 @@ class AtomLabel(NamedTuple):
 
         Parameters
         ----------
-        string : str
+        string
             String to parse.
 
         Returns

@@ -1,8 +1,4 @@
-"""
-Parse the following castep outputs:
-
-- .bands
-"""
+"""Parse castep .bands files."""
 from __future__ import annotations
 
 import re
@@ -17,9 +13,8 @@ from .parse_utilities import parse_regular_header
 
 
 class BandsQData(TypedDict, total=False):
-    """
-    Per k-point info of band.
-    """
+    """Per k-point info of band."""
+
     #: List of band eigenvalues.
     band: ThreeVector
     #: List of eigenvalues for up component of band.
@@ -35,9 +30,8 @@ class BandsQData(TypedDict, total=False):
 
 
 class BandsFileInfo(TypedDict, total=False):
-    """
-    Bands eigenvalue info of a bands calculation.
-    """
+    """Bands eigenvalue info of a bands calculation."""
+
     #: Bands info in file.
     bands: list[BandsQData]
 
@@ -48,7 +42,7 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
 
     Parameters
     ----------
-    bands_file : ~typing.TextIO
+    bands_file
         Open handle to file to parse.
 
     Returns
@@ -56,7 +50,6 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
     BandsFileInfo
         Parsed info.
     """
-
     bands_info: BandsFileInfo = defaultdict(list)
     qdata = {}
 

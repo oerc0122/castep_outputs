@@ -30,7 +30,7 @@ classifiers = [
 [project.optional-dependencies]
 ruamel = ["ruamel.yaml>=0.17.22"]
 yaml = ["pyYAML>=3.13"]
-docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0"]
+docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0", "sphinx-autodoc-typehints"]
 lint = ["ruff"]
 
 [project.scripts]
@@ -81,7 +81,7 @@ select = [
     "RUF", # Ruff specific
     "FURB",# Refurb
     "PERF",# Perflint
-    # "D",   # Pydocstyle
+    "D",   # Pydocstyle
     "UP",  # Pyupgrade
 ]
 ignore = [
@@ -90,6 +90,7 @@ ignore = [
     "PLR0915",  # Too many statements
     "PLW2901",  # For loop variable overwritten
     "PLR2004",  # Magic constant value
+    "D105",     # Magic method doc
 ]
 
 [tool.ruff.lint.pydocstyle]

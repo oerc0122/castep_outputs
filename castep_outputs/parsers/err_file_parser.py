@@ -1,18 +1,15 @@
-"""
-Parse the following castep outputs:
-
-- .err
-"""
+"""Parse castep .err files."""
 from __future__ import annotations
 
 from typing import TextIO, TypedDict
 
 
 class ErrFileInfo(TypedDict):
-    """
-    Error file information.
-    """
+    """Error file information."""
+
+    #: Message detailing cause of failure.
     message: str
+    #: Backtrace at point of failure.
     stack: list[str]
 
 
@@ -22,7 +19,7 @@ def parse_err_file(err_file: TextIO) -> ErrFileInfo:
 
     Parameters
     ----------
-    err_file : ~typing.TextIO
+    err_file
         Open handle to file to parse.
 
     Returns

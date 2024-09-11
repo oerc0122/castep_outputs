@@ -1,7 +1,4 @@
-"""
-Parse the following castep outputs:
-.ts
-"""
+"""Parse castep .ts files."""
 from __future__ import annotations
 
 import re
@@ -23,6 +20,7 @@ class TSStructInfo(TypedDict, total=False):
     -----
     Also contains atom index keys of {AtomIndex: dict}
     """
+
     #: Total Energy and Enthalpy of system in Ha.
     energy: tuple[float, float]
     #: Alias of :attr:`energy`.
@@ -34,9 +32,8 @@ class TSStructInfo(TypedDict, total=False):
 
 
 class TSFileInfo(TypedDict):
-    """
-    Transition state search file info.
-    """
+    """Transition state search file info."""
+
     #: Calculation is TSS confirmation.
     confirmation: bool
     #: Reagent info.
@@ -53,7 +50,7 @@ def parse_ts_file(ts_file: TextIO) -> TSFileInfo:
 
     Parameters
     ----------
-    ts_file : ~typing.TextIO
+    ts_file
         Open handle to file to parse.
 
     Returns
@@ -61,7 +58,6 @@ def parse_ts_file(ts_file: TextIO) -> TSFileInfo:
     TSFileInfo
         Parsed info.
     """
-
     accum = defaultdict(list)
 
     for line in ts_file:

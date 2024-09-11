@@ -1,7 +1,4 @@
-"""
-Parse the following castep outputs:
-.elastic
-"""
+"""Parse castep .elastic files."""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -13,7 +10,19 @@ from ..utilities.utility import to_type
 
 
 def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
-    """ Parse castep .elastic files """
+    """
+    Parse castep .elastic files.
+
+    Parameters
+    ----------
+    elastic_file
+        Open handle to file to parse.
+
+    Returns
+    -------
+    dict[str, list[list[float]]]
+        Parsed info.
+    """
     accum = defaultdict(list)
 
     for line in elastic_file:

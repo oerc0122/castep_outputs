@@ -1,8 +1,4 @@
-"""
-Parse the following castep outputs:
-
-- .tddft
-"""
+"""Parse castep .tddft files."""
 from __future__ import annotations
 
 import re
@@ -20,9 +16,8 @@ TDDFTOverlap = Dict[Union[Tuple[int, int], Literal["total"]], float]
 
 
 class TDDFTSpectroData(TypedDict):
-    """
-    Spectroscopic data for single excitation.
-    """
+    """Spectroscopic data for single excitation."""
+
     #: Excitation character.
     characterisation: Literal["Singlet", "Doublet", "unknown"]
     #: Whether excitation is converged.
@@ -34,9 +29,8 @@ class TDDFTSpectroData(TypedDict):
 
 
 class TDDFTFileInfo(StandardHeader, total=False):
-    """
-    TDDFT state occupation info.
-    """
+    """TDDFT state occupation info."""
+
     #: Band overlap for excitations.
     overlap: list[TDDFTOverlap]
     #: Spectroscopic data of excitations.
@@ -49,7 +43,7 @@ def parse_tddft_file(tddft_file: TextIO) -> TDDFTFileInfo:
 
     Parameters
     ----------
-    tddft_file : ~typing.TextIO
+    tddft_file
         Open handle to file to parse.
 
     Returns

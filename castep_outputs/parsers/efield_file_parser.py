@@ -1,7 +1,4 @@
-"""
-Parse the following castep outputs:
-.efield
-"""
+"""Parse castep .efield files."""
 from __future__ import annotations
 
 import re
@@ -17,7 +14,19 @@ from .parse_utilities import parse_regular_header
 
 
 def parse_efield_file(efield_file: TextIO) -> dict[str, float | int]:
-    """ Parse castep .efield file """
+    """
+    Parse castep .efield files.
+
+    Parameters
+    ----------
+    efield_file
+        Open handle to file to parse.
+
+    Returns
+    -------
+    dict[str, float | int]
+        Parsed info.
+    """
     # pylint: disable=too-many-branches,redefined-outer-name
 
     efield_info = defaultdict(list)

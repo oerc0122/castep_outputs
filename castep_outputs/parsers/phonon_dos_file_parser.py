@@ -1,8 +1,4 @@
-"""
-Parse the following castep outputs:
-
-- .phonon_dos.
-"""
+"""Parse castep .phonon_dos files."""
 from __future__ import annotations
 
 import re
@@ -18,9 +14,8 @@ from .parse_utilities import parse_regular_header
 
 
 class GradientInfo(TypedDict, total=False):
-    """
-    Info on phonon DOS gradients.
-    """
+    """Info on phonon DOS gradients."""
+
     #: :math:`q`-point weight.
     pth: list[float]
     #: :math:`q`-point.
@@ -42,6 +37,7 @@ class DOSInfo(TypedDict, total=False):
     Also includes per-species contributions whose keys are
     the species.
     """
+
     #: Frequencies.
     freq: list[float]
     #: Density out to Frequncy.
@@ -49,9 +45,8 @@ class DOSInfo(TypedDict, total=False):
 
 
 class PhononDosFileInfo(StandardHeader, total=False):
-    """
-    Phonon Density of states info.
-    """
+    """Phonon Density of states info."""
+
     #: Number of ions in system.
     ions: int
     #: Number of species in system.
@@ -70,7 +65,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> PhononDosFileInfo:
 
     Parameters
     ----------
-    phonon_dos_file : ~typing.TextIO
+    phonon_dos_file
         Open handle to file to parse.
 
     Returns

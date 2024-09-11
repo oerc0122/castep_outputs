@@ -1,4 +1,4 @@
-""" Module containing all regexes """
+"""Module containing all regexes."""
 from __future__ import annotations
 
 import itertools
@@ -18,7 +18,7 @@ def get_numbers(line: str) -> list[str]:
 
     Parameters
     ----------
-    line : str
+    line
         String to search for valid numbers.
 
     Returns
@@ -41,17 +41,17 @@ def get_numbers(line: str) -> list[str]:
 def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = (None,),
                     sep: str = r"\s+?", suffix: str = "") -> str:
     """
-    Constructs a regex for extracting floats with assigned labels.
+    Construct a regex for extracting floats with assigned labels.
 
     Parameters
     ----------
-    labels : ~collections.abc.Sequence[str]
+    labels
         Iterable of labels to label each group.
-    counts : ~collections.abc.Sequence[int | str | None]
+    counts
         Iterable of counts to group into each label (count must not exceed that of labels).
-    sep : str
+    sep
         Separator between floats.
-    suffix : str
+    suffix
         Suffix following each float.
 
     Returns
@@ -91,19 +91,19 @@ def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = 
 def gen_table_re(content: str, border: str = r"\s*",
                  *, pre: str = "", post: str = "", whole_line: bool = True) -> str:
     r"""
-    Constructs a regex for matching table headers with given borders.
+    Construct a regex for matching table headers with given borders.
 
     Parameters
     ----------
-    content : str
+    content
         RegEx capturing the content of the table.
-    border : str
+    border
         RegEx capturing the characters the make up the border.
-    pre : str
+    pre
         RegEx matching content outside and before the table.
-    post : str
+    post
         RegEx matching content outside and after the table.
-    whole_line : bool
+    whole_line
         Whether the RegExes are an exact match for the whole line.
 
     Returns
@@ -149,7 +149,7 @@ def get_atom_parts(spec: str) -> dict[str, str]:
 
     Parameters
     ----------
-    spec : str
+    spec
         String to split up.
 
     Returns
