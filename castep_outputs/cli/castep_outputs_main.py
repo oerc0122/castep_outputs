@@ -1,5 +1,5 @@
 """
-Run main castep parser
+Main castep parser access routines.
 """
 from __future__ import annotations
 
@@ -14,17 +14,43 @@ from ..parsers import PARSERS
 from ..utilities.constants import OutFormats
 from ..utilities.dumpers import get_dumpers
 from ..utilities.utility import flatten_dict, json_safe, normalise
-from .args import args_to_dict, parse_args
+from .args import extract_parsables, parse_args
 
 
 def parse_single(in_file: str | Path | TextIO,
                  parser: Callable[[TextIO], list[dict[str, Any]]] | None = None,
                  out_format: OutFormats = "print",
-                 *, loglevel: int = logging.WARNING, testing: bool = False):
+                 *,
+                 loglevel: int = logging.WARNING,
+                 testing: bool = False) -> list[dict]:
     """
-    Parse a file using the given parser and post-process according to options
-    """
+    Parse a file using the given parser and post-process according to options.
 
+    Parameters
+    ----------
+    in_file : str or Path or TextIO
+        Input file to parse.
+    parser : Parser, optional
+        Castep parser to use. If `None` will be determined from extension.
+    out_format : OutFormats, optional
+        Format to dump as.
+    loglevel : int, optional
+        Logging level.
+    testing : bool, optional
+        Whether used for test suite (disable processing fragile properties).
+
+    Returns
+    -------
+    dict
+        Parsed data.
+
+    Raises
+    ------
+    KeyError
+        If invalid `parser` provided.
+    AssertionError
+        Parser loading error.
+    """
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
 
     if isinstance(in_file, str):
@@ -60,9 +86,30 @@ def parse_single(in_file: str | Path | TextIO,
     return data
 
 
-def parse_all(output: Path | None = None, out_format: OutFormats = "json",
-              *, loglevel: int = logging.WARNING, testing: bool = False, **files):
-    """ Parse all files in files dict """
+def parse_all(
+        output: str | Path | TextIO | None = None,
+        out_format: OutFormats = "json",
+        *,
+        loglevel: int = logging.WARNING,
+        testing: bool = False,
+        **files,
+) -> None:
+    """
+    Parse all files in files dict.
+
+    Parameters
+    ----------
+    output : str or Path or TextIO
+        Filepath or handle to dump output to.
+    out_format : OutFormats
+        Format to dump as.
+    loglevel : int, optional
+        Logging level.
+    testing : bool, optional
+        Whether used for test suite (disable processing fragile properties).
+    **files : dict[str, Sequence[Path]]
+        Dictionary of {parser needed: Sequence of paths to parse}.
+    """
     file_dumper = get_dumpers(out_format)
 
     data = {}
@@ -85,9 +132,11 @@ def parse_all(output: Path | None = None, out_format: OutFormats = "json",
 
 
 def main():
-    """ Run the main program from command line """
+    """
+    Run the main program from command line.
+    """
     args = parse_args()
-    dict_args = args_to_dict(args)
+    dict_args = extract_parsables(args)
 
     parse_all(output=args.output,
               loglevel=getattr(logging, args.log.upper()),

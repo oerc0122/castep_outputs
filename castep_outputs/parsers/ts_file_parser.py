@@ -6,16 +6,61 @@ from __future__ import annotations
 
 import re
 from collections import defaultdict
-from typing import Any, TextIO
+from typing import TextIO, TypedDict
 
 from ..utilities.castep_res import ATDATTAG, TAG_RE, get_numbers, labelled_floats
 from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
+from ..utilities.datatypes import ThreeByThreeMatrix
 from ..utilities.filewrapper import Block
 from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
-def parse_ts_file(ts_file: TextIO) -> dict[str, Any]:
-    """ Parse castep .ts files """
+class TSStructInfo(TypedDict, total=False):
+    """
+    Structure info of the intermediate states of a TSS.
+
+    Notes
+    -----
+    Also contains atom index keys of {AtomIndex: dict}
+    """
+    #: Total Energy and Enthalpy of system in Ha.
+    energy: tuple[float, float]
+    #: Alias of :attr:`energy`.
+    E: tuple[float, float]
+    #: Cell vectors of system in Bohr.
+    lattice_vectors: ThreeByThreeMatrix
+    #: Alias of :attr:`lattice_vectors`.
+    h: ThreeByThreeMatrix
+
+
+class TSFileInfo(TypedDict):
+    """
+    Transition state search file info.
+    """
+    #: Calculation is TSS confirmation.
+    confirmation: bool
+    #: Reagent info.
+    reagent: TSStructInfo
+    #: Product info.
+    product: TSStructInfo
+    #: Test info.
+    test: TSStructInfo
+
+
+def parse_ts_file(ts_file: TextIO) -> TSFileInfo:
+    """
+    Parse castep .ts file.
+
+    Parameters
+    ----------
+    ts_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    TSFileInfo
+        Parsed info.
+    """
 
     accum = defaultdict(list)
 

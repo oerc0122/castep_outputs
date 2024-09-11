@@ -1,21 +1,62 @@
 """
 Parse the following castep outputs:
-.tddft
+
+- .tddft
 """
 from __future__ import annotations
 
 import re
-from typing import TextIO
+from typing import Dict, Literal, TextIO, Tuple, TypedDict, Union
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers, labelled_floats
+from ..utilities.datatypes import ComplexThreeVector, StandardHeader
 from ..utilities.filewrapper import Block
 from ..utilities.utility import to_type
 from .parse_utilities import parse_regular_header
 
+#: Overlap type
+TDDFTOverlap = Dict[Union[Tuple[int, int], Literal["total"]], float]
 
-def parse_tddft_file(tddft_file: TextIO) -> dict[str, dict[str, bool | str | complex | float]]:
-    """ Parse .magres file to dict """
+
+class TDDFTSpectroData(TypedDict):
+    """
+    Spectroscopic data for single excitation.
+    """
+    #: Excitation character.
+    characterisation: Literal["Singlet", "Doublet", "unknown"]
+    #: Whether excitation is converged.
+    converged: bool
+    #: Dipole vectors.
+    dipoles: ComplexThreeVector
+    #: Energy of excitation.
+    energy: float
+
+
+class TDDFTFileInfo(StandardHeader, total=False):
+    """
+    TDDFT state occupation info.
+    """
+    #: Band overlap for excitations.
+    overlap: list[TDDFTOverlap]
+    #: Spectroscopic data of excitations.
+    spectroscopic_data: list[TDDFTSpectroData]
+
+
+def parse_tddft_file(tddft_file: TextIO) -> TDDFTFileInfo:
+    """
+    Parse castep .tddft file.
+
+    Parameters
+    ----------
+    tddft_file : ~typing.TextIO
+        Open handle to file to parse.
+
+    Returns
+    -------
+    TDDFTFileInfo
+        Parsed info.
+    """
     tddft_info = {}
 
     for line in tddft_file:
@@ -54,7 +95,7 @@ def parse_tddft_file(tddft_file: TextIO) -> dict[str, dict[str, bool | str | com
                     match["converged"] = match["converged"] == "Yes"
                     match["energy"] = float(match["energy"])
 
-                    dip = to_type(get_numbers(match["dipoles"]), float)
+                    dip = list(to_type(get_numbers(match["dipoles"]), float))
                     dip = [complex(real, imag) for real, imag in zip(dip[0::2], dip[1::2])]
                     match["dipoles"] = dip
                     tddft_info["spectroscopic_data"].append(match)

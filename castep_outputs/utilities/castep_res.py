@@ -8,38 +8,129 @@ from typing import Union
 
 from .constants import FST_D, MINIMISERS, SHELLS
 
+#: Valid input where patterns are wanted.
 Pattern = Union[str, re.Pattern]
 
 
 def get_numbers(line: str) -> list[str]:
-    """ Get all numbers in a string as a list """
+    """
+    Get all numbers in a string as a list.
+
+    Parameters
+    ----------
+    line : str
+        String to search for valid numbers.
+
+    Returns
+    -------
+    list[str]
+        All numbers found in `line`.
+
+    Examples
+    --------
+    >>> get_numbers("Hello 13, my name is 3.142")
+    ['13', '3.142']
+
+    See Also
+    --------
+    NUMBER_RE : RegEx matching numbers.
+    """
     return NUMBER_RE.findall(line)
 
 
 def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = (None,),
-                    sep: str = r"\s+?", suff: str = "") -> str:
-    """ Constructs a regex for extracting floats with assigned labels
-    :param labels:iterable of labels to label each group
-    :param counts:iterable of counts to group into each label (count must not exceed that of labels)
-    :param sep:separator between floats
+                    sep: str = r"\s+?", suffix: str = "") -> str:
     """
-    if suff and any(cnt for cnt in counts):
+    Constructs a regex for extracting floats with assigned labels.
+
+    Parameters
+    ----------
+    labels : ~collections.abc.Sequence[str]
+        Iterable of labels to label each group.
+    counts : ~collections.abc.Sequence[int | str | None]
+        Iterable of counts to group into each label (count must not exceed that of labels).
+    sep : str
+        Separator between floats.
+    suffix : str
+        Suffix following each float.
+
+    Returns
+    -------
+    str
+        Regular expression to match floats with given labels.
+
+    Raises
+    ------
+    NotImplementedError
+        If `suffix` and `counts` provided.
+
+    Examples
+    --------
+    .. code-block:: python
+
+       # Capture 3 space-separated floats with labels "x", "y", "z"
+       labelled_floats(("x", "y", "z"))
+       # Capture 2 colon-separated floats with labels "u", "v"
+       labelled_floats(("u", "v"), sep=":")
+       # Capture 3 space-separated floats under the label "val"
+       labelled_floats(("val",), counts=(3,))
+    """
+    if suffix and any(cnt for cnt in counts):
         raise NotImplementedError("Suffix and counts not currently supported")
 
     outstr = ""
     for label, cnt in itertools.zip_longest(labels, counts):
         if cnt:
-            outstr += f"(?:(?P<{label}>(?:{sep}{NUMBER_RE.pattern}{suff}){{{cnt}}}))"
+            outstr += f"(?:(?P<{label}>(?:{sep}{NUMBER_RE.pattern}{suffix}){{{cnt}}}))"
         else:
-            outstr += f"(?:{sep}(?P<{label}>{NUMBER_RE.pattern}){suff})"
+            outstr += f"(?:{sep}(?P<{label}>{NUMBER_RE.pattern}){suffix})"
 
     return outstr
 
 
 def gen_table_re(content: str, border: str = r"\s*",
-                 *, pre: str = "", post: str = "", whole_line: bool = True):
-    """ Constructs a regex for matching table headers with given borders """
+                 *, pre: str = "", post: str = "", whole_line: bool = True) -> str:
+    r"""
+    Constructs a regex for matching table headers with given borders.
 
+    Parameters
+    ----------
+    content : str
+        RegEx capturing the content of the table.
+    border : str
+        RegEx capturing the characters the make up the border.
+    pre : str
+        RegEx matching content outside and before the table.
+    post : str
+        RegEx matching content outside and after the table.
+    whole_line : bool
+        Whether the RegExes are an exact match for the whole line.
+
+    Returns
+    -------
+    str
+        RegEx pattern to match line(s).
+
+    Examples
+    --------
+    RegEx for a line of "?"s
+
+    .. code-block:: python
+
+       # No content, with any number of questionmarks.
+       gen_table_re("", r"\?+")
+
+    RegEx for a separator line in a table which resembles:
+
+    .. code-block::
+
+       +-----------------------------------+
+
+    .. code-block:: python
+
+       gen_table_re("-+", "\+")
+
+    """
     tab_re = (rf"\s*{border}\s*{content}\s*{border}\s*"
               if content else
               rf"\s*{border}\s*")
@@ -53,7 +144,30 @@ def gen_table_re(content: str, border: str = r"\s*",
 
 
 def get_atom_parts(spec: str) -> dict[str, str]:
-    """ Get components of an atom name (species, tag, label) from a spec string """
+    """
+    Get components of an atom name (species, tag, label) from a spec string.
+
+    Parameters
+    ----------
+    spec : str
+        String to split up.
+
+    Returns
+    -------
+    dict[str, str]
+        Dictionary detailing separate parts of atom name.
+
+    Examples
+    --------
+    >>> get_atom_parts("Ar")
+    {'species': 'Ar'}
+    >>> get_atom_parts("Ar:tag")
+    {'species': 'Ar', 'tag': 'tag'}
+    >>> get_atom_parts("Ar [label]")
+    {'species': 'Ar', 'label': 'label'}
+    >>> get_atom_parts("Ar:tag[label]")
+    {'species': 'Ar', 'tag': 'tag', 'label': 'label'}
+    """
     return {key: val.strip()
             for key, val in ATOM_NAME_GRP_RE.match(spec).groupdict().items()
             if val}
@@ -61,37 +175,93 @@ def get_atom_parts(spec: str) -> dict[str, str]:
 
 # --- RegExes
 # Regexps to recognise numbers
+
+#: Floating point number.
+#:
+#: :meta hide-value:
 FNUMBER_RE = r"(?:[+-]?(?:\d*\.\d+|\d+\.\d*))"
+
+#: Integer number.
+#:
+#: :meta hide-value:
 INTNUMBER_RE = r"(?:[+-]?(?<!\.)\d+(?!\.))"
+
+#: Float or int with exponent.
+#:
+#: :meta hide-value:
 EXPNUMBER_RE = rf"(?:(?:{FNUMBER_RE}|{INTNUMBER_RE})[Ee][+-]?\d{{1,3}})"
+
+#: Exponent or bare floating point.
+#:
+#: :meta hide-value:
 EXPFNUMBER_RE = f"(?:{EXPNUMBER_RE}|{FNUMBER_RE})"
+
+#: Integer ratio.
+#:
+#: :meta hide-value:
 RATIONAL_RE = rf"\b{INTNUMBER_RE}/{INTNUMBER_RE}\b"
+
+#: Generalised number.
+#:
+#: :meta hide-value:
 NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
+
+#: Floating point, integer or ratio.
+#:
+#: :meta hide-value:
 FLOAT_RAT_RE = re.compile(rf"(?:{RATIONAL_RE}|{EXPFNUMBER_RE}|{INTNUMBER_RE})")
+
+#: Three vector.
+#:
+#: :meta hide-value:
 THREEVEC_RE = labelled_floats(("val",), counts=(3,))
 
 # Regexp to identify extended chemical species
+#: Element name.
+#:
+#: :meta hide-value:
 SPECIES_RE = r"[A-Z][a-z]{0,2}"
+#: CASTEP atom name with optional tag and label.
+#:
+#: :meta hide-value:
 ATOM_NAME_RE = rf"\b{SPECIES_RE}(?::\w+)?\b(?:\s*\[[^\]]+\])?"
+#: Labelled CASTEP atom name.
+#:
+#: :meta hide-value:
 ATOM_NAME_GRP_RE = re.compile(
     rf"(?P<species>{SPECIES_RE})(?::(?P<tag>\w+))?\b(?:\s*\[(?P<label>[^\]]*)\])?",
     )
 
 
 # Unless we have *VERY* exotic electron shells
+
+#: RegEx for atomic shell labels. E.g. 4d4.
+#:
+#: :meta hide-value:
 SHELL_RE = rf"\d[{''.join(SHELLS)}]\d{{0,2}}"
 
+#: RegEx for CASTEP table tags as in e.g. .md/.geom.
+#:
+#: :meta hide-value:
 TAG_RE = re.compile(r"<--\s*(?P<tag>\w+)")
 
+#: Empty line RegEx
+#:
+#: :meta hide-value:
 EMPTY = r"^\s*$"
 
-# Atom regexp
+#: CASTEP Atom RegEx with optional index.
+#:
+#: :meta hide-value:
 ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
 
 
 # Atom reference with 3-vector
+#: CASTEP atom followed by 3D vector.
+#:
+#: :meta hide-value:
 ATDAT3VEC = re.compile(ATREG + labelled_floats(FST_D))
-FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suff=r"(?:\s*\([^)]+\))?"))
+FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suffix=r"(?:\s*\([^)]+\))?"))
 ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 
 # Labelled positions
