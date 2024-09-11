@@ -30,7 +30,7 @@ class BandsQData(TypedDict, total=False):
     qpt: ThreeVector
     #: Current spin component.
     spin_comp: int
-    #: K point weight
+    #: K point weight.
     weight: float
 
 

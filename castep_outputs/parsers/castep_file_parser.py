@@ -1855,7 +1855,7 @@ def _process_memory_est(block: Block) -> dict[str, MemoryEst]:
 
     for line in block:
         if match := re.match(r"\s*\|([A-Za-z ]+)" +
-                             labelled_floats(("memory", "disk"), suff=" MB"), line):
+                             labelled_floats(("memory", "disk"), suffix=" MB"), line):
             key, memory, disk = match.groups()
             accum[normalise_key(key)] = {"memory": float(memory),
                                          "disk": float(disk)}

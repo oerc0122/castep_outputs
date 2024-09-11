@@ -1,5 +1,5 @@
 """
-Argument parser.
+Module containing argument parser and processing.
 """
 from __future__ import annotations
 
@@ -13,6 +13,7 @@ from castep_outputs.utilities.dumpers import SUPPORTED_FORMATS
 # pylint: disable=line-too-long
 
 
+#: Main argument parser for castep outputs.
 ARG_PARSER = argparse.ArgumentParser(
     prog="castep_outputs",
     description=f"""Attempts to find all files for seedname, filtered by `inc` args (default: all).
@@ -94,18 +95,18 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
     return args
 
 
-def args_to_dict(args: argparse.Namespace) -> dict[str, list[str]]:
+def extract_parsables(args: argparse.Namespace) -> dict[str, list[str]]:
     """
-    Convert args ``Namespace`` to dictionary.
+    Extract the files to parse from the ``Namespace``.
 
     Parameters
     ----------
     args : argparse.Namespace
-        Namespace to convert.
+        Namespace to process.
 
     Returns
     -------
     dict[str, list[str]]
-        Converted namespace.
+        Files to parse.
     """
     return {typ: getattr(args, typ) for typ in CASTEP_OUTPUT_NAMES}

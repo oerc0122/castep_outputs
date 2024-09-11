@@ -247,7 +247,7 @@ def flatten_dict(dictionary: MutableMapping[Any, Any],
     return dict(items)
 
 
-def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]):
+def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]) -> None:
     """
     Append items in `in_dict` to the keys in `out_dict`.
 

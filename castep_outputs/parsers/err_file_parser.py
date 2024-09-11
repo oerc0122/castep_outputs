@@ -18,11 +18,11 @@ class ErrFileInfo(TypedDict):
 
 def parse_err_file(err_file: TextIO) -> ErrFileInfo:
     """
-    Parse castep .cell and param files.
+    Parse castep .err files.
 
     Parameters
     ----------
-    cell_param_file : ~typing.TextIO
+    err_file : ~typing.TextIO
         Open handle to file to parse.
 
     Returns

@@ -18,7 +18,7 @@ except ImportError:
         _YAML_TYPE = None
 
 
-#: Dumping function protocol
+#: Dumping function protocol.
 Dumper = Callable[[Any, TextIO], None]
 
 
@@ -101,7 +101,7 @@ def get_dumpers(dump_fmt: str) -> Dumper:
     Parameters
     ----------
     dump_fmt : str
-        Formats python can dump to.
+        Formats to dump to.
 
     Returns
     -------
@@ -114,6 +114,11 @@ def get_dumpers(dump_fmt: str) -> Dumper:
         Invalid `dump_fmt` provided.
     ImportError
         No valid YAML dumper and `yaml` requested.
+
+    See Also
+    --------
+    SUPPORTED_FORMATS
+        Acceptable values for `dump_fmt`.
     """
     if dump_fmt not in SUPPORTED_FORMATS:
         raise ValueError(f"Cannot output in {dump_fmt} format. "
@@ -127,7 +132,7 @@ def get_dumpers(dump_fmt: str) -> Dumper:
 
     return SUPPORTED_FORMATS[dump_fmt]
 
-
+#: Currently supported dumpers.
 SUPPORTED_FORMATS: dict[str, Dumper] = {"json": json_dumper,
                                         "ruamel": ruamel_dumper,
                                         "yaml": yaml_dumper,

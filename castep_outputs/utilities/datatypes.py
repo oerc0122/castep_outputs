@@ -350,12 +350,21 @@ class PSPotProj(TypedDict):
     #: - ``H`` - an norm-conserving GIPAW Gamma projector.
     #: - ``P`` - Dummy: do not make a projector.
     #: - ``LG`` - Make Gammas for local channel (not done by default).
+    #:
+    #: An unlabelled projector will be `None`
     type: Literal["U", "UU", "N", "L", "G", "H", "P", "LG", "LL", "GG", "LGG", None]
 
 
 class PSPotStrInfo(TypedDict, total=False):
     """
     Information about pseudopotential string.
+
+    Notes
+    -----
+    Further info on PSPot strings:
+
+    - https://castep-docs.github.io/castep-docs/documentation/Pseudopotentials/otfg_string/
+    - https://www.tcm.phy.cam.ac.uk/castep/otfg.pdf
     """
     #: 0, 1, 2 for s, p, d respectively.
     local_channel: int
@@ -377,9 +386,7 @@ class PSPotStrInfo(TypedDict, total=False):
     projectors: tuple[PSPotProj, ...]
     #: Extra options.
     opt: list[str]
-    #: Swap particular orbitals.
     shell_swp: str
-    #: ?
     shell_swp_end: str
     #: Print detailed debug information of PSpot.
     print: bool
@@ -400,6 +407,9 @@ class PSPotElecStruct(TypedDict):
 
 
 class PSPotDebugInfo(TypedDict):
+    """
+    Debugging information from pseudopotential information.
+    """
     #: Eigenvalue of :attr:`nl`
     eigenvalue: float
     #: Nonlocal orbital number.
@@ -409,6 +419,9 @@ class PSPotDebugInfo(TypedDict):
 
 
 class PSPotTableInfo(TypedDict, total=False):
+    """
+    Information from the PS pot table summary.
+    """
     #: Orbital cutoff.
     rc: float
     #: The projector name.
@@ -438,6 +451,9 @@ class PSPotTableInfo(TypedDict, total=False):
 
 
 class PSPotReport(TypedDict, total=False):
+    """
+    PS pot report from table summary.
+    """
     #: Chemical element being calculated.
     element: str
     #: Full breakdown of PSPot string.
@@ -459,6 +475,9 @@ class PSPotReport(TypedDict, total=False):
 
 
 class PSPotEnergy(TypedDict):
+    """
+    PS pot energy minimisation summary.
+    """
     #: Electronic energy of atom.
     pseudo_atomic_energy: float
     #: Spin spilling from pure state.

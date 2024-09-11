@@ -39,7 +39,7 @@ def get_numbers(line: str) -> list[str]:
 
 
 def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = (None,),
-                    sep: str = r"\s+?", suff: str = "") -> str:
+                    sep: str = r"\s+?", suffix: str = "") -> str:
     """
     Constructs a regex for extracting floats with assigned labels.
 
@@ -51,7 +51,7 @@ def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = 
         Iterable of counts to group into each label (count must not exceed that of labels).
     sep : str
         Separator between floats.
-    suff : str
+    suffix : str
         Suffix following each float.
 
     Returns
@@ -75,21 +75,21 @@ def labelled_floats(labels: Sequence[str], counts: Sequence[int | str | None] = 
        # Capture 3 space-separated floats under the label "val"
        labelled_floats(("val",), counts=(3,))
     """
-    if suff and any(cnt for cnt in counts):
+    if suffix and any(cnt for cnt in counts):
         raise NotImplementedError("Suffix and counts not currently supported")
 
     outstr = ""
     for label, cnt in itertools.zip_longest(labels, counts):
         if cnt:
-            outstr += f"(?:(?P<{label}>(?:{sep}{NUMBER_RE.pattern}{suff}){{{cnt}}}))"
+            outstr += f"(?:(?P<{label}>(?:{sep}{NUMBER_RE.pattern}{suffix}){{{cnt}}}))"
         else:
-            outstr += f"(?:{sep}(?P<{label}>{NUMBER_RE.pattern}){suff})"
+            outstr += f"(?:{sep}(?P<{label}>{NUMBER_RE.pattern}){suffix})"
 
     return outstr
 
 
 def gen_table_re(content: str, border: str = r"\s*",
-                 *, pre: str = "", post: str = "", whole_line: bool = True):
+                 *, pre: str = "", post: str = "", whole_line: bool = True) -> str:
     r"""
     Constructs a regex for matching table headers with given borders.
 
@@ -105,6 +105,11 @@ def gen_table_re(content: str, border: str = r"\s*",
         RegEx matching content outside and after the table.
     whole_line : bool
         Whether the RegExes are an exact match for the whole line.
+
+    Returns
+    -------
+    str
+        RegEx pattern to match line(s).
 
     Examples
     --------
@@ -170,34 +175,42 @@ def get_atom_parts(spec: str) -> dict[str, str]:
 
 # --- RegExes
 # Regexps to recognise numbers
+
 #: Floating point number.
 #:
 #: :meta hide-value:
 FNUMBER_RE = r"(?:[+-]?(?:\d*\.\d+|\d+\.\d*))"
+
 #: Integer number.
 #:
 #: :meta hide-value:
 INTNUMBER_RE = r"(?:[+-]?(?<!\.)\d+(?!\.))"
+
 #: Float or int with exponent.
 #:
 #: :meta hide-value:
 EXPNUMBER_RE = rf"(?:(?:{FNUMBER_RE}|{INTNUMBER_RE})[Ee][+-]?\d{{1,3}})"
+
 #: Exponent or bare floating point.
 #:
 #: :meta hide-value:
 EXPFNUMBER_RE = f"(?:{EXPNUMBER_RE}|{FNUMBER_RE})"
+
 #: Integer ratio.
 #:
 #: :meta hide-value:
 RATIONAL_RE = rf"\b{INTNUMBER_RE}/{INTNUMBER_RE}\b"
+
 #: Generalised number.
 #:
 #: :meta hide-value:
 NUMBER_RE = re.compile(rf"(?:{EXPNUMBER_RE}|{FNUMBER_RE}|{INTNUMBER_RE})")
+
 #: Floating point, integer or ratio.
 #:
 #: :meta hide-value:
 FLOAT_RAT_RE = re.compile(rf"(?:{RATIONAL_RE}|{EXPFNUMBER_RE}|{INTNUMBER_RE})")
+
 #: Three vector.
 #:
 #: :meta hide-value:
@@ -221,6 +234,7 @@ ATOM_NAME_GRP_RE = re.compile(
 
 
 # Unless we have *VERY* exotic electron shells
+
 #: RegEx for atomic shell labels. E.g. 4d4.
 #:
 #: :meta hide-value:
@@ -247,7 +261,7 @@ ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
 #:
 #: :meta hide-value:
 ATDAT3VEC = re.compile(ATREG + labelled_floats(FST_D))
-FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suff=r"(?:\s*\([^)]+\))?"))
+FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suffix=r"(?:\s*\([^)]+\))?"))
 ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
 
 # Labelled positions

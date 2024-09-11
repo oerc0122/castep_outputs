@@ -22,14 +22,14 @@ def parse_regular_header(block: Block,
 
     Parameters
     ----------
-    block : TextIO
+    block : Block
         Block to parse.
     extra_opts : Sequence[str]
         Extra regexes to match (stored as floats).
 
     Returns
     -------
-    Dict[str, Union[float, int]]
+    dict[str, float | int]
         Parsed header block.
     """
     data = {}
@@ -67,7 +67,7 @@ def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int
 
     Parameters
     ----------
-    inp : TextIO
+    inp : ~typing.TextIO
         File to parse.
     prop : str or Sequence[str]
         Names of properties to extract.
