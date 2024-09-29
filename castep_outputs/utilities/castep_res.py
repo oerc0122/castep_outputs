@@ -250,6 +250,11 @@ TAG_RE = re.compile(r"<--\s*(?P<tag>\w+)")
 #: :meta hide-value:
 EMPTY = r"^\s*$"
 
+#: Comment line RegEx
+#:
+#: :meta hide-value:
+COMMENT_LINE_RE = re.compile(r"^\s*#")
+
 #: CASTEP Atom RegEx with optional index.
 #:
 #: :meta hide-value:

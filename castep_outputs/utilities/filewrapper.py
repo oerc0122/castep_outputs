@@ -4,10 +4,11 @@ Convenient filewrapper class.
 from __future__ import annotations
 
 import re
+from itertools import filterfalse
 from io import StringIO
 from typing import NoReturn, TextIO
 
-from .castep_res import Pattern
+from .castep_res import Pattern, COMMENT_LINE_RE
 
 
 class FileWrapper:
@@ -203,7 +204,7 @@ class Block:
         data.append(init_line)
 
         found = 0
-        for line in in_file:
+        for line in filterfalse(COMMENT_LINE_RE.match,in_file):
             data.append(line)
             if re.search(end, line):
                 found += 1
