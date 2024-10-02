@@ -11,7 +11,7 @@ import castep_outputs.utilities.castep_res as REs
 
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import atreg_to_index, determine_type, log_factory, to_type
+from ..utilities.utility import atreg_to_index, determine_type, log_factory, strip_comments, to_type
 
 
 def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[str, str]]]:
@@ -42,6 +42,7 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[dict[str, str | dict[
 
             block_title = next(block).split()[1].lower()
 
+            block = strip_comments(block, remove_inline=True)
             logger("Found block %s", block_title)
 
             curr[block_title] = _PARSERS.get(block_title, _parse_general)(block)

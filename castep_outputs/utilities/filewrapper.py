@@ -4,6 +4,7 @@ Convenient filewrapper class.
 from __future__ import annotations
 
 import re
+from collections.abc import Sequence
 from io import StringIO
 from typing import NoReturn, TextIO
 
@@ -95,7 +96,7 @@ class Block:
     Emulates the properties of both a file, and sequence.
     """
     # pylint: disable=too-many-arguments
-    def __init__(self, parent: TextIO | FileWrapper | Block):
+    def __init__(self, parent: TextIO | FileWrapper | Block | None):
         if isinstance(parent, (FileWrapper, Block)):
             self._lineno = parent.lineno
         else:
@@ -215,6 +216,31 @@ class Block:
                     raise OSError(f"Unexpected end of file in {in_file.name}.")
                 raise OSError("Unexpected end of file.")
 
+        block._data = tuple(data)
+        return block
+
+    @classmethod
+    def from_iterable(
+            cls,
+            data: Sequence[str],
+            parent: TextIO | FileWrapper | Block | None = None):
+        r"""
+        Construct a Block from an iterable containing strings.
+
+        Parameters
+        ----------
+        data
+            Data to read into block.
+
+        Examples
+        --------
+        >>> x = Block.from_iterable(("Hello", "There"))
+        >>> type(x).__name__
+        'Block'
+        >>> str(x)
+        'Hello\nThere'
+        """
+        block = cls(parent)
         block._data = tuple(data)
         return block
 

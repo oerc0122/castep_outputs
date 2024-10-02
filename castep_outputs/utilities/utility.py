@@ -10,12 +10,14 @@ import functools
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable, Iterable, MutableMapping
+from collections.abc import Callable, Iterable, Iterator, MutableMapping
 from copy import copy
-from typing import Any, TypeVar
+from itertools import filterfalse
+from typing import Any, TextIO, TypeVar
 
 import castep_outputs.utilities.castep_res as REs
 
+from ..utilities.filewrapper import Block
 from .filewrapper import FileWrapper
 
 T = TypeVar("T")
@@ -548,3 +550,160 @@ def fix_data_types(in_dict: MutableMapping, type_dict: dict[str, type]):
     for key, typ in type_dict.items():
         if key in in_dict:
             in_dict[key] = to_type(in_dict[key], typ)
+
+
+def _strip_inline_comments(
+        data: TextIO | FileWrapper | Block,
+        *,
+        comment_char: set[str],
+) -> Iterator[str]:
+    r"""
+    Strip all comments from provided data.
+
+    Parameters
+    ----------
+    data
+        Data to strip comments from.
+    comment_char
+        Characters to interpret as comments.
+
+    Yields
+    ------
+    str
+        Data with line-initial comments stripped.
+
+    Notes
+    -----
+    Also strips trailing, but not leading whitespace to clean up comment blocks.
+
+    Also strips empty lines.
+
+    Examples
+    --------
+    >>> from io import StringIO
+    >>> inp = StringIO('''
+    ... Hello
+    ... # Initial line comment
+    ... End of line # comment
+    ... ''')
+    >>> '|'.join(_strip_inline_comments(inp, comment_char={"#",}))
+    'Hello|End of line'
+    """
+    comment_re = re.compile(f"({'|'.join(comment_char)})")
+
+    for line in data:
+        line = comment_re.split(line)[0].rstrip()
+        if not line:
+            continue
+
+        yield line
+
+def _strip_initial_comments(
+        data: TextIO | FileWrapper | Block,
+        *,
+        comment_char: set[str],
+) -> Iterator[str]:
+    r"""
+    Strip line-initial comments from provided data.
+
+    Parameters
+    ----------
+    data
+        Data to strip comments from.
+    comment_char
+        Characters to interpret as comments.
+
+    Yields
+    ------
+    str
+        Data with line-initial comments stripped.
+
+    Notes
+    -----
+    Also strips trailing, but not leading whitespace to clean up comment blocks.
+
+    Also strips empty lines.
+
+    Examples
+    --------
+    >>> from io import StringIO
+    >>> inp = StringIO('''
+    ... Hello
+    ... # Initial line comment
+    ... End of line # comment
+    ... ''')
+    >>> '|'.join(_strip_initial_comments(inp, comment_char={"#",}))
+    'Hello|End of line # comment'
+    """
+    comment_re = re.compile(rf"^\s*({'|'.join(comment_char)})")
+    data = filterfalse(comment_re.match, data)
+    data = map(str.rstrip, data)
+    data = filter(None, data)
+    yield from data
+
+def strip_comments(
+        data: TextIO | FileWrapper | Block,
+        *,
+        comment_char: str | set[str] = "#!",
+        remove_inline: bool = False) -> Block:
+    r"""
+    Strip comments from data.
+
+    Parameters
+    ----------
+    data
+        Data to strip comments from.
+    remove_inline
+        Whether to remove inline comments or just line initial.
+    comment_char
+        Character sets to read as comments and remove.
+
+        .. note::
+
+            If the chars are passed as a string, it is assumed that
+            each character is a comment character.
+
+            To match a multicharacter comment you **must** pass this
+            as a set or sequence of strings.
+
+    Returns
+    -------
+    Block
+        Block of data without comments.
+
+    Notes
+    -----
+    Also strips trailing, but not leading whitespace to clean up comment blocks.
+
+    Also strips empty lines.
+
+    Examples
+    --------
+    >>> from io import StringIO
+    >>> inp = StringIO('''
+    ... Hello
+    ... # Initial line comment
+    ... End of line # comment
+    ... // C-style
+    ... ''')
+    >>> x = strip_comments(inp, remove_inline=False)
+    >>> type(x).__name__
+    'Block'
+    >>> '|'.join(x)
+    'Hello|End of line # comment|// C-style'
+    >>> _ = inp.seek(0)
+    >>> x = strip_comments(inp, remove_inline=True)
+    >>> '|'.join(x)
+    'Hello|End of line|// C-style'
+    >>> _ = inp.seek(0)
+    >>> x = strip_comments(inp, comment_char={"//", "#"})
+    >>> '|'.join(x)
+    'Hello|End of line # comment'
+    """
+    if not isinstance(comment_char, set):
+        comment_char = set(comment_char)
+
+    strip_function = _strip_inline_comments if remove_inline else _strip_initial_comments
+    stripped_comments = strip_function(data, comment_char=comment_char)
+
+    return Block.from_iterable(stripped_comments, parent=data)
