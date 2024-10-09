@@ -1,6 +1,4 @@
-"""
-List of parsers for file formats.
-"""
+"""List of parsers for file formats."""
 from __future__ import annotations
 
 from collections.abc import Callable

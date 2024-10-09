@@ -1,6 +1,4 @@
-"""
-Parse castep .md or .geom files
-"""
+"""Parse castep .md or .geom files."""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -13,9 +11,8 @@ from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
 class MDAtomProps(TypedDict):
-    """
-    Atom properties on MD and GeomOpt.
-    """
+    """Atom properties on MD and GeomOpt."""
+
     #: Force on atom in Ha/Bohr.
     force: ThreeVector
     #: Position of atom in Bohr.
@@ -36,8 +33,9 @@ class MDGeomTimestepInfo(TypedDict, total=False):
 
     Notes
     -----
-    Also contains
+    Also contains :any:`AtomIndex` keys to per-atom information.
     """
+
     #: Elapsed MD Time.
     time: float
     #: Current energies: total, potential, kinetic.
@@ -75,7 +73,7 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
 
     Parameters
     ----------
-    md_geom_file : ~typing.TextIO
+    md_geom_file
         Open handle to file to parse.
 
     Returns
@@ -83,7 +81,6 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     list[MDGeomTimestepInfo]
         Step-by-step Parsed info.
     """
-
     while "END header" not in md_geom_file.readline():
         pass
 

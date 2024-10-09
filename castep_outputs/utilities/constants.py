@@ -1,6 +1,4 @@
-"""
-Module for constants used in castep_outputs.
-"""
+"""Module for constants used in castep_outputs."""
 
 from typing import Literal
 

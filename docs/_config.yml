@@ -38,6 +38,7 @@ sphinx:
   - 'sphinx.ext.viewcode'
   - 'sphinx.ext.doctest'
   - 'sphinxarg.ext'
+  - 'sphinx_autodoc_typehints'
   config:
     add_module_names: True
     html_theme: "sphinx_book_theme"
@@ -48,7 +49,7 @@ sphinx:
     autodoc_default_options:
       members: True
       inherited-members: False
-      private-members: True
+      private-members: False
       show-inheritance: True
     autodoc_type_aliases:
       AtomIndex: castep_outputs.utilities.datatypes.AtomIndex

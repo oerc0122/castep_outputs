@@ -1,7 +1,5 @@
 # pylint: disable=too-many-lines, too-many-branches, too-many-statements
-"""
-Functions generally used in parsing castep files
-"""
+"""Functions generally used in parsing castep files."""
 from __future__ import annotations
 
 import re
@@ -22,9 +20,9 @@ def parse_regular_header(block: Block,
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
-    extra_opts : Sequence[str]
+    extra_opts
         Extra regexes to match (stored as floats).
 
     Returns
@@ -67,9 +65,9 @@ def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int
 
     Parameters
     ----------
-    inp : ~typing.TextIO
+    inp
         File to parse.
-    prop : str or Sequence[str]
+    prop
         Names of properties to extract.
 
     Returns
@@ -77,7 +75,6 @@ def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int
     dict[str, list[int | float]]
         Parsed data.
     """
-
     # Skip header
     while "END header" not in inp.readline():
         pass

@@ -1,6 +1,4 @@
-"""
-Module containing dumpers for formats
-"""
+"""Module containing dumpers for formats."""
 from __future__ import annotations
 
 import json
@@ -24,7 +22,7 @@ Dumper = Callable[[Any, TextIO], None]
 
 def json_dumper(data: Any, file: TextIO):
     """
-    Basic JSON format dumper.
+    JSON format dumper.
 
     Parameters
     ----------
@@ -38,7 +36,7 @@ def json_dumper(data: Any, file: TextIO):
 
 def ruamel_dumper(data: Any, file: TextIO):
     """
-    Basic ruamel.yaml format dumper.
+    ruamel.yaml format dumper.
 
     Parameters
     ----------
@@ -47,14 +45,13 @@ def ruamel_dumper(data: Any, file: TextIO):
     file
         File to dump to.
     """
-
     yaml_eng = yaml.YAML(typ="unsafe")
     yaml_eng.dump(data, file)
 
 
 def yaml_dumper(data: Any, file: TextIO):
     """
-    Basic yaml format dumper.
+    yaml format dumper.
 
     Parameters
     ----------
@@ -100,7 +97,7 @@ def get_dumpers(dump_fmt: str) -> Dumper:
 
     Parameters
     ----------
-    dump_fmt : str
+    dump_fmt
         Formats to dump to.
 
     Returns

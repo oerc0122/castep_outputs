@@ -1,6 +1,4 @@
-"""
-Main castep parser access routines.
-"""
+"""Main castep parser access routines."""
 from __future__ import annotations
 
 import io
@@ -28,15 +26,15 @@ def parse_single(in_file: str | Path | TextIO,
 
     Parameters
     ----------
-    in_file : str or Path or TextIO
+    in_file
         Input file to parse.
-    parser : Parser, optional
+    parser
         Castep parser to use. If `None` will be determined from extension.
-    out_format : OutFormats, optional
+    out_format
         Format to dump as.
-    loglevel : int, optional
+    loglevel
         Logging level.
-    testing : bool, optional
+    testing
         Whether used for test suite (disable processing fragile properties).
 
     Returns
@@ -99,15 +97,15 @@ def parse_all(
 
     Parameters
     ----------
-    output : str or Path or TextIO
+    output
         Filepath or handle to dump output to.
-    out_format : OutFormats
+    out_format
         Format to dump as.
-    loglevel : int, optional
+    loglevel
         Logging level.
-    testing : bool, optional
+    testing
         Whether used for test suite (disable processing fragile properties).
-    **files : dict[str, Sequence[Path]]
+    **files
         Dictionary of {parser needed: Sequence of paths to parse}.
     """
     file_dumper = get_dumpers(out_format)
@@ -132,9 +130,7 @@ def parse_all(
 
 
 def main():
-    """
-    Run the main program from command line.
-    """
+    """Run the main program from command line."""
     args = parse_args()
     dict_args = extract_parsables(args)
 

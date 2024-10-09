@@ -1,6 +1,4 @@
-"""
-Convenient filewrapper class.
-"""
+"""Convenient filewrapper class."""
 from __future__ import annotations
 
 import re
@@ -17,9 +15,10 @@ class FileWrapper:
 
     Parameters
     ----------
-    file : ~typing.TextIO
+    file
         File to wrap and control.
     """
+
     def __init__(self, file: TextIO):
         self._file = file
         self._pos = 0
@@ -95,6 +94,7 @@ class Block:
 
     Emulates the properties of both a file, and sequence.
     """
+
     # pylint: disable=too-many-arguments
     def __init__(self, parent: TextIO | FileWrapper | Block | None):
         if isinstance(parent, (FileWrapper, Block)):
@@ -119,9 +119,9 @@ class Block:
 
         Parameters
         ----------
-        in_file : ~typing.TextIO | FileWrapper | Block
+        in_file
             File to read data from.
-        n_lines : int
+        n_lines
             Number of lines to read.
 
         Returns
@@ -166,17 +166,17 @@ class Block:
 
         Parameters
         ----------
-        init_line : str
+        init_line
             Initial line which may start the block.
-        in_file : ~typing.TextIO | FileWrapper | Block
+        in_file
             File handle to read data from.
-        start : Pattern
+        start
             RegEx matched against `init_line` to see if is start of block.
-        end : Pattern
+        end
             RegEx to verify if block has ended.
-        n_end : int
+        n_end
             Number of times `end` must match before block is returned.
-        eof_possible : bool
+        eof_possible
             Whether it is possible block is ended by EOF.
 
         Returns
@@ -193,7 +193,6 @@ class Block:
         IOError
             If EOF reached and ``not eof_possible``.
         """
-
         block = cls(in_file)
 
         if not re.search(start, init_line):
@@ -253,9 +252,9 @@ class Block:
 
         Parameters
         ----------
-        fore : int
+        fore
             Whether to strip leading line from data.
-        back : int
+        back
             Whether to strip trailing line from data.
         """
         self._lineno += fore

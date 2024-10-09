@@ -1,6 +1,4 @@
-"""
-Types produced by castep_outputs.
-"""
+"""Types produced by castep_outputs."""
 from __future__ import annotations
 
 from collections.abc import Callable
@@ -27,9 +25,8 @@ AtomPropBlock = Dict[AtomIndex, ThreeVector]
 
 
 class CellInfo(TypedDict):
-    """
-    Information from cell block data.
-    """
+    """Information from cell block data."""
+
     #: Cell side lengths in Ang.
     lattice_parameters: ThreeVector
     #: Cell lattice angles in Degrees.
@@ -49,9 +46,8 @@ class CellInfo(TypedDict):
 # Initial Spins
 
 class InitialSpin(TypedDict):
-    """
-    Initial spins as read from cell file.
-    """
+    """Initial spins as read from cell file."""
+
     #: Spin as spin quantum number.
     spin: float
     #: Magnetic moment in Bohr magnetons.
@@ -63,9 +59,8 @@ class InitialSpin(TypedDict):
 # Elastic
 
 class ElasticProperties(TypedDict):
-    """
-    Elastic properties as measured from elastic calculation.
-    """
+    """Elastic properties as measured from elastic calculation."""
+
     #: Young's Modulus in GPa.
     young_s_modulus: ThreeVector
     #: Poisson Ratios.
@@ -85,9 +80,8 @@ class ElasticProperties(TypedDict):
 # Geometry
 
 class FinalConfig(TypedDict):
-    """
-    Final configuration following optimisation.
-    """
+    """Final configuration following optimisation."""
+
     #: Cell info block denoting final state.
     cell: CellInfo
     #: Positions of atoms in cell in Ang.
@@ -99,9 +93,8 @@ class FinalConfig(TypedDict):
 
 
 class GeomTableElem(TypedDict):
-    """
-    Element of mid-run geom opt status.
-    """
+    """Element of mid-run geom opt status."""
+
     #: Whether component has converted.
     converged: bool
     #: Current tolerance limit.
@@ -111,9 +104,8 @@ class GeomTableElem(TypedDict):
 
 
 class GeomTable(TypedDict):
-    """
-    Mid-run geom opt status table.
-    """
+    """Mid-run geom opt status table."""
+
     #: Strain on system in GPa.
     smax: GeomTableElem
     #: Energy/ion in eV.
@@ -127,9 +119,8 @@ class GeomTable(TypedDict):
 # Dipole
 
 class DipoleTable(TypedDict):
-    """
-    Molecular dipole status.
-    """
+    """Molecular dipole status."""
+
     #: Weighted average position of electronic charge in system in Ang.
     centre_electronic: ThreeVector
     #: Weighted average position of positive ionic charge in system in Ang.
@@ -147,9 +138,8 @@ class DipoleTable(TypedDict):
 
 
 class CharTable(TypedDict):
-    """
-    Character table from group theory analysis of eigenvectors.
-    """
+    """Character table from group theory analysis of eigenvectors."""
+
     #: List of symmetry operations for each point.
     chars: tuple[tuple[str, int], ...]
     #: Multiplolarity.
@@ -161,9 +151,8 @@ class CharTable(TypedDict):
 
 
 class QData(TypedDict, total=False):
-    """
-    Phonon Q-Point data.
-    """
+    """Phonon Q-Point data."""
+
     #: Group theory analysis at Q-point.
     char_table: CharTable
     #: Q-Point in 1/Ang.
@@ -185,9 +174,8 @@ class QData(TypedDict, total=False):
 
 
 class PhononSymmetryReport(TypedDict):
-    """
-    Symmetry analysis report for phonon calculations.
-    """
+    """Symmetry analysis report for phonon calculations."""
+
     #: Class/type of analysis.
     title: str
     #: Matrix of symmetry operations.
@@ -195,9 +183,8 @@ class PhononSymmetryReport(TypedDict):
 
 
 class RamanReport(TypedDict, total=False):
-    """
-    Raman susceptibility report.
-    """
+    """Raman susceptibility report."""
+
     #: Raman susceptibility.
     tensor: ThreeByThreeMatrix
     #: Trace of susceptibility.
@@ -212,9 +199,8 @@ class RamanReport(TypedDict, total=False):
 # Occupancies
 
 class Occupancies(TypedDict):
-    """
-    SCF Band occupancies report.
-    """
+    """SCF Band occupancies report."""
+
     #: Band index.
     band: int
     #: Total eigenvalue.
@@ -226,9 +212,8 @@ class Occupancies(TypedDict):
 # SCF
 
 class WvfnLineMin(TypedDict):
-    """
-    Wavefunction minimisation report.
-    """
+    """Wavefunction minimisation report."""
+
     #: Energy before minimisation.
     init_energy: float
     #: Estimated gradient.
@@ -240,9 +225,8 @@ class WvfnLineMin(TypedDict):
 
 
 class SCFSection(TypedDict):
-    """
-    SCF step component.
-    """
+    """SCF step component."""
+
     #: Initial energy in eV.
     initial: float
     #: Final energy in eV.
@@ -252,9 +236,8 @@ class SCFSection(TypedDict):
 
 
 class SCFReport(TypedDict, total=False):
-    """
-    Full SCF report summary.
-    """
+    """Full SCF report summary."""
+
     #: System energy in eV.
     energy: float
     #: Energy difference in step.
@@ -280,9 +263,8 @@ class SCFReport(TypedDict, total=False):
 # Bonds
 
 class BondInfo(TypedDict):
-    """
-    Single-bond information from final bonding report.
-    """
+    """Single-bond information from final bonding report."""
+
     #: Electronic population of bond in fundamental charge.
     population: float
     #: Total spin in bond.
@@ -305,6 +287,7 @@ class MullikenInfo(TypedDict, total=False):
     `total`, `s`, `p`, `d` and `f` also have spin-separated
     components (`up` and `down`) e.g. `up_total`, `down_s`.
     """
+
     #: Whether orbitals are split by spins.
     spin_sep: bool
     #: Total charge in fundamental charge.
@@ -332,9 +315,8 @@ class MullikenInfo(TypedDict, total=False):
 # PSPot
 
 class PSPotProj(TypedDict):
-    """
-    Pseudopotential projector information.
-    """
+    """Pseudopotential projector information."""
+
     #: Electronic orbital.
     orbital: int
     #: Electronic shell state.
@@ -366,6 +348,7 @@ class PSPotStrInfo(TypedDict, total=False):
     - https://castep-docs.github.io/castep-docs/documentation/Pseudopotentials/otfg_string/
     - https://www.tcm.phy.cam.ac.uk/castep/otfg.pdf
     """
+
     #: 0, 1, 2 for s, p, d respectively.
     local_channel: int
     #: Pseudisation radius for augmentation functions (:math:`\beta`) in Bohr.
@@ -395,9 +378,8 @@ class PSPotStrInfo(TypedDict, total=False):
 
 
 class PSPotElecStruct(TypedDict):
-    """
-    Reference electronic structure detail.
-    """
+    """Reference electronic structure detail."""
+
     #: Energy of orbital.
     energy: float
     #: Electronic occupancy of shell.
@@ -407,9 +389,8 @@ class PSPotElecStruct(TypedDict):
 
 
 class PSPotDebugInfo(TypedDict):
-    """
-    Debugging information from pseudopotential information.
-    """
+    """Debugging information from pseudopotential information."""
+
     #: Eigenvalue of :attr:`nl`
     eigenvalue: float
     #: Nonlocal orbital number.
@@ -419,9 +400,8 @@ class PSPotDebugInfo(TypedDict):
 
 
 class PSPotTableInfo(TypedDict, total=False):
-    """
-    Information from the PS pot table summary.
-    """
+    """Information from the PS pot table summary."""
+
     #: Orbital cutoff.
     rc: float
     #: The projector name.
@@ -451,9 +431,8 @@ class PSPotTableInfo(TypedDict, total=False):
 
 
 class PSPotReport(TypedDict, total=False):
-    """
-    PS pot report from table summary.
-    """
+    """PS pot report from table summary."""
+
     #: Chemical element being calculated.
     element: str
     #: Full breakdown of PSPot string.
@@ -475,9 +454,8 @@ class PSPotReport(TypedDict, total=False):
 
 
 class PSPotEnergy(TypedDict):
-    """
-    PS pot energy minimisation summary.
-    """
+    """PS pot energy minimisation summary."""
+
     #: Electronic energy of atom.
     pseudo_atomic_energy: float
     #: Spin spilling from pure state.
@@ -487,9 +465,8 @@ class PSPotEnergy(TypedDict):
 # Symmetry & Constraints
 
 class Symop(TypedDict):
-    """
-    Symmetry operation definition.
-    """
+    """Symmetry operation definition."""
+
     #: Displacement vector for symop.
     displacement: ThreeVector
     #: Rotational transformation for symop.
@@ -499,9 +476,8 @@ class Symop(TypedDict):
 
 
 class ConstraintsReport(TypedDict, total=False):
-    """
-    Constraints block information.
-    """
+    """Constraints block information."""
+
     #: Number of constraints on cell vectors.
     number_of_cell_constraints: int
     #: Number of constraints on ions.
@@ -517,9 +493,8 @@ class ConstraintsReport(TypedDict, total=False):
 
 
 class SymmetryReport(TypedDict, total=False):
-    """
-    Symmetry block information.
-    """
+    """Symmetry block information."""
+
     #: Largest deviation from ideal symmetry in Ang.
     maximum_deviation_from_symmetry: str
     #: Number of symmetry operations.
@@ -537,9 +512,8 @@ class SymmetryReport(TypedDict, total=False):
 # KPoints
 
 class KPoint(TypedDict):
-    """
-    Single :math:`k`-point definition.
-    """
+    """Single :math:`k`-point definition."""
+
     #: :math:`k`-point position.
     qpt: ThreeVector
     #: :math:`k`-point weighting.
@@ -547,9 +521,8 @@ class KPoint(TypedDict):
 
 
 class KPointsList(TypedDict):
-    """
-    :math:`k`-points list specification.
-    """
+    """:math:`k`-points list specification."""
+
     #: List of :math:`k`-points.
     points: list[KPoint]
     #: Number of :math:`k`-points.
@@ -557,9 +530,8 @@ class KPointsList(TypedDict):
 
 
 class KPointsSpec(TypedDict, total=False):
-    """
-    :math:`k`-point grid specification.
-    """
+    """:math:`k`-point grid specification."""
+
     #: Monkhurst-Pack Grid.
     kpoint_mp_grid: tuple[int, int, int]
     #: Monkhurst-Pack offset in 1/Ang.
@@ -571,9 +543,8 @@ class KPointsSpec(TypedDict, total=False):
 # Memory Report
 
 class MemoryEst(TypedDict):
-    """
-    Memory estimate.
-    """
+    """Memory estimate."""
+
     #: Estimated RAM usage in MiB.
     memory: float
     #: Estimated disk usage in MiB.
@@ -583,9 +554,8 @@ class MemoryEst(TypedDict):
 # Band Structure
 
 class BandStructure(TypedDict):
-    """
-    Band structure table information.
-    """
+    """Band structure table information."""
+
     #: Band spin.
     spin: int
     #: :math:`k`-point x coordinate.
@@ -614,6 +584,7 @@ class Thermodynamics(TypedDict):
     https://www.tcm.phy.cam.ac.uk/castep/documentation/WebHelp/content/modules/castep/thcastepthermo.htm
     for more info.
     """
+
     #: Temperature in K.
     t: tuple[float, ...]
     #: Temperature dependence of energy in eV.
@@ -631,9 +602,8 @@ class Thermodynamics(TypedDict):
 # MD
 
 class MDInfo(TypedDict, total=False):
-    """
-    Per-step MD information block.
-    """
+    """Per-step MD information block."""
+
     #: Current MD time passed in s.
     time: float
     #: Hamiltonian energy in eV.
@@ -655,9 +625,8 @@ class MDInfo(TypedDict, total=False):
 # TDDFT
 
 class TDDFTData(TypedDict):
-    """
-    Time-dependent DFT information.
-    """
+    """Time-dependent DFT information."""
+
     #: State energy in eV.
     energy: float
     #: Estimated error.
@@ -670,9 +639,8 @@ class TDDFTData(TypedDict):
 
 
 class HeaderAtomInfo(TypedDict):
-    """
-    Atom info from header.
-    """
+    """Atom info from header."""
+
     #: Atom indices.
     index: tuple[int, ...]
     #: Atom species.
@@ -690,6 +658,7 @@ class HeaderAtomInfo(TypedDict):
 class StandardHeader(TypedDict):
     """
     Standard header from CASTEP outputs.
+
     Includes:
 
     - phonon
@@ -698,6 +667,7 @@ class StandardHeader(TypedDict):
     - tddft
     - bands
     """
+
     #: System box.
     unit_cell: ThreeByThreeMatrix
     #: Atomic info.

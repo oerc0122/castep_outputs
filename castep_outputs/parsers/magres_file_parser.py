@@ -1,8 +1,4 @@
-"""
-Parse the following castep outputs:
-
-- .magres
-"""
+"""Parse castep .magres files."""
 from __future__ import annotations
 
 from collections import defaultdict
@@ -14,9 +10,8 @@ from ..utilities.utility import to_type
 
 
 class UnitsInfo(TypedDict):
-    """
-    Information on magres units.
-    """
+    """Information on magres units."""
+
     #: Position units.
     atom: str
     #: Lattice length units.
@@ -26,9 +21,8 @@ class UnitsInfo(TypedDict):
 
 
 class MagresInfo(TypedDict):
-    """
-    NMR Magnetic reponse information.
-    """
+    """NMR Magnetic reponse information."""
+
     #: Atom coordinates
     atoms: dict[AtomIndex, ThreeVector]
     calc_code: Literal["CASTEP"]
@@ -56,7 +50,7 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
 
     Parameters
     ----------
-    magres_file : ~typing.TextIO
+    magres_file
         Open handle to file to parse.
 
     Returns

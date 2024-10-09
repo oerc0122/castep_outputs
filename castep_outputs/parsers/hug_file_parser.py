@@ -1,8 +1,4 @@
-"""
-Parse the following castep outputs:
-
-- .hug
-"""
+"""Parse castep .hug files."""
 from __future__ import annotations
 
 import re
@@ -14,9 +10,8 @@ from ..utilities.utility import fix_data_types, stack_dict
 
 
 class HugFileInfo(TypedDict):
-    """
-    Hugoniot information.
-    """
+    """Hugoniot information."""
+
     #: Percentage change in lattice parameters.
     compression: tuple[float, ...]
     #: Temperature at given compression.
@@ -33,7 +28,7 @@ def parse_hug_file(hug_file: TextIO) -> HugFileInfo:
 
     Parameters
     ----------
-    hug_file : ~typing.TextIO
+    hug_file
         Open handle to file to parse.
 
     Returns
@@ -41,7 +36,6 @@ def parse_hug_file(hug_file: TextIO) -> HugFileInfo:
     HugFileInfo
         Parsed info.
     """
-
     cols = ("compression", "temperature", "pressure", "energy")
     data = defaultdict(list)
     for line in hug_file:

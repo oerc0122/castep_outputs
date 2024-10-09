@@ -1,6 +1,4 @@
-"""
-Utility functions for parsing castep outputs.
-"""
+"""Utility functions for parsing castep outputs."""
 
 from __future__ import annotations
 
@@ -34,7 +32,7 @@ def normalise_string(string: str) -> str:
 
     Parameters
     ----------
-    string : str
+    string
         String to process.
 
     Returns
@@ -62,7 +60,7 @@ def normalise_key(string: str) -> str:
 
     Parameters
     ----------
-    string : str
+    string
         String to process.
 
     Returns
@@ -90,9 +88,9 @@ def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) ->
 
     Parameters
     ----------
-    dict_in : Union[Dict[str, str], re.Match]
+    dict_in
         Atreg to process.
-    clear : bool
+    clear
         Whether to remove from incoming dictionary.
 
     Returns
@@ -135,9 +133,9 @@ def normalise(obj: Any, mapping: dict[type, type | Callable]) -> Any:
 
     Parameters
     ----------
-    obj : Any
+    obj
         Object to normalise.
-    mapping : Dict[type, Union[type, Callable]]
+    mapping
         Mapping of `type` to a callable transformation
         including class constructors.
 
@@ -168,7 +166,7 @@ def json_safe(obj: Any) -> Any:
 
     Parameters
     ----------
-    obj : Any
+    obj
         Incoming datatype.
 
     Returns
@@ -211,12 +209,11 @@ def flatten_dict(dictionary: MutableMapping[Any, Any],
 
     Parameters
     ----------
-
-    dictionary : ~typing.MutableMapping[Any, Any]
+    dictionary
         The dictionary to flatten.
-    parent_key : str
+    parent_key
         The string to prepend to dictionary's keys.
-    separator : str
+    separator
         The string used to separate flattened keys.
 
     Returns
@@ -235,7 +232,6 @@ def flatten_dict(dictionary: MutableMapping[Any, Any],
     ...               "goodbye": {"nest": "birds", "child": "moon"}})
     {'hello_0': 'is', 'hello_1': 'me', 'goodbye_nest': 'birds', 'goodbye_child': 'moon'}
     """
-
     items: list[tuple[Any, Any]] = []
     for key, value in dictionary.items():
         new_key = str(parent_key) + separator + key if parent_key else key
@@ -255,9 +251,9 @@ def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]) -> None:
 
     Parameters
     ----------
-    out_dict : dict[Any, list]
+    out_dict
         Dict to append to.
-    in_dict : dict[Any, list]
+    in_dict
         Dict to append from.
     """
     for key, val in in_dict.items():
@@ -275,18 +271,18 @@ def add_aliases(in_dict: dict[str, Any],
 
     Parameters
     ----------
-    in_dict : Dict[str, Any]
+    in_dict
         Dictionary of data to alias.
-    alias_dict : Dict[str, str]
+    alias_dict
         Mapping of from->to for keys in `in_dict`.
-    replace : bool
+    replace
         Whether to remove the `from` key from `in_dict`.
-    inplace : bool
+    inplace
         Whether to return a copy or overwrite `in_dict`.
 
     Returns
     -------
-    Dict[str, Any]
+    dict[str, Any]
         `in_dict` with keys substituted.
 
     Examples
@@ -357,7 +353,7 @@ def determine_type(data: str) -> type:
 
     Parameters
     ----------
-    data : str
+    data
         String to process.
 
     Returns
@@ -401,7 +397,7 @@ def parse_int_or_float(numbers: Iterable[str]) -> int | float:
 
     Parameters
     ----------
-    numbers : Iterable[str]
+    numbers
         Sequence of numbers to parse.
 
     Returns
@@ -428,7 +424,7 @@ def _parse_float_or_rational(val: str) -> float:
 
     Parameters
     ----------
-    val : str
+    val
         Value to parse.
 
     Returns
@@ -456,7 +452,7 @@ def _parse_logical(val: str) -> bool:
 
     Parameters
     ----------
-    val : str
+    val
         String to parse.
 
     Returns
@@ -519,15 +515,15 @@ def _(data_in, typ: type[T]) -> tuple[T, ...]:
     return tuple(parser(x) for x in data_in)
 
 
-def fix_data_types(in_dict: MutableMapping, type_dict: dict[str, type]):
+def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]):
     """
-    Appliy correct types to elements of `in_dict` by mapping given in `type_dict`.
+    Apply correct types to elements of `in_dict` by mapping given in `type_dict`.
 
     Parameters
     ----------
-    in_dict : dict[str, ~typing.Any]
+    in_dict
         Dictionary of {key: values} to convert.
-    type_dict : dict[str, type]
+    type_dict
         Mapping of keys to types the keys should be converted to.
 
     See Also
