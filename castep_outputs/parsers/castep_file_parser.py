@@ -43,6 +43,7 @@ from ..utilities.datatypes import (
     PSPotStrInfo,
     QData,
     RamanReport,
+    SCFDebugInfo,
     SCFReport,
     SixVector,
     SymmetryReport,
@@ -1599,12 +1600,16 @@ def _process_unit_cell(block: Block) -> CellInfo:
 def _process_scf(block: Block) -> list[SCFReport]:
     scf = []
     curr: SCFReport = {}
+    debug_info: SCFDebugInfo = {}
     for line in block:
         if match := REs.SCF_LOOP_RE.match(line):
             if curr:
                 scf.append(curr)
 
             curr = match.groupdict()
+            if debug_info:  # Debug info refers to next cycle
+                curr["debug_info"] = debug_info
+            debug_info = {}
             fix_data_types(curr, {"energy": float,
                                   "energy_gain": float,
                                   "fermi_energy": float,
@@ -1622,14 +1627,16 @@ def _process_scf(block: Block) -> list[SCFReport]:
         elif "Correcting PBC dipole-dipole" in line:
             curr["dipole_corr_energy"] = to_type(get_numbers(line)[0], float)
 
+        # Debug info
+
         elif "no. bands" in line:
-            curr["no_bands"] = to_type(get_numbers(line)[0], int)
+            debug_info["no_bands"] = to_type(get_numbers(line)[0], int)
 
         elif "Kinetic eigenvalue" in line:
-            if "kinetic_eigenvalue" not in curr:
-                curr["eigenvalue"] = []
+            debug_info.setdefault("kinetic_eigenvalue", [])
+            debug_info.setdefault("eigenvalue", [])
 
-            curr["kinetic_eigenvalue"] = to_type(get_numbers(line)[1], float)
+            debug_info["kinetic_eigenvalue"].append(to_type(get_numbers(line)[1], float))
             eig = []
 
         elif re.match(r"eigenvalue\s*\d+\s*init=", line):
@@ -1639,13 +1646,20 @@ def _process_scf(block: Block) -> list[SCFReport]:
                         "change": float(numbers[3])})
 
         elif "Checking convergence criteria" in line:
-            curr["eigenvalue"].append(eig)
+            debug_info["eigenvalue"].append(eig)
             eig = []
 
-        elif match := re.match(r"[+(]?(?P<key>[()0-9A-Za-z -]+)="
+        elif match := re.match(r"[+(]?(?P<key>[()0-9A-Za-z -]+)=?"
                                rf"\s*{labelled_floats(('val',))} eV\)?", line):
+            debug_info.setdefault("contributions", {})
             key, val = normalise_key(match["key"]), float(match["val"])
-            curr[key] = val
+
+            fix_keys = {"apolar_corr_to_eigenvalue_sum": "apolar_correction",
+                        "hubbard_u_correction_to_eigenvalu": "hubbard_u_correction",
+                        "xc_correction_to_eigenvalue_sum": "xc_correction"}
+            key = fix_keys.get(key, key)
+
+            debug_info["contributions"][key] = val
 
     if curr:
         scf.append(curr)
