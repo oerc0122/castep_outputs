@@ -235,6 +235,52 @@ class SCFSection(TypedDict):
     change: float
 
 
+class SCFContrib(TypedDict, total=False):
+    """Contributions making up total SCF state."""
+
+    #: Correction for apolarity.
+    apolar_correction: float
+    #: Correction for electronic entropy (TS).
+    electronic_entropy_term_ts: float
+    #: Ewald contribution.
+    ewald_energy_const: float
+    #: XC energy.
+    exchange_correlation_energy: float
+    #: Fermi energy.
+    fermi_energy: float
+    #: Hartree energy.
+    hartree_energy: float
+    #: Hubbard U component.
+    hubbard_u_correction: float
+    #: Kinetic contribution.
+    kinetic_energy: float
+    #: PSPot contribution.
+    local_pseudopotential_energy: float
+    #: Non coulombic energy constraint.
+    non_coulombic_energy_const: float
+    #: NLXC contribution.
+    non_local_energy: float
+    #: Potential energy total.
+    potential_energy_total: float
+    #: Free energy.
+    total_free_energy_e_ts: float
+    #: Correction to XC energy.
+    xc_correction: float
+
+
+class SCFDebugInfo(TypedDict, total=False):
+    """SCF full verbosity output summary."""
+
+    #: Number of bands in calculation.
+    no_bands: int
+    #: Eigenvalue with kinetic contribution.
+    kinetic_eigenvalue: list[float]
+    #: SCF iterative solution.
+    eigenvalue: list[SCFSection]
+    #: Contributions making up total state.
+    contributions: SCFContrib
+
+
 class SCFReport(TypedDict, total=False):
     """Full SCF report summary."""
 
@@ -248,7 +294,7 @@ class SCFReport(TypedDict, total=False):
     time: float
     #: Density mixing residual.
     density_residual: float | None
-    #: Energy in constraint (if constrained)
+    #: Energy in constraint (if constrained).
     constraint_energy: float
     #: Total energy difference due to dipole correction.
     dipole_corr_energy: float
@@ -258,6 +304,8 @@ class SCFReport(TypedDict, total=False):
     kinetic_eigenvalue: float
     #: Eigenvalue breakdown of minimisation.
     eigenvalue: list[SCFSection]
+    #: SCF Debug information at high verbosity.
+    debug_info: SCFDebugInfo
 
 
 # Bonds
