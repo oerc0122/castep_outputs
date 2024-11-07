@@ -82,8 +82,8 @@ using the ``PyYAML`` engine if available and the ``RUAMEL`` engine if not.
 As a module
 -----------
 
-``import``\ ing ``castep_outputs`` directly puts all of the parsers directly
-into your local namespace.
+``import``\ ing ``castep_outputs`` exposes all of the parsers at the
+top-level.
 
 The simplest method to use ``castep_outputs`` in a tool is to use the
 ``parse_single`` method which attempts to determine the parser from the file
@@ -91,21 +91,22 @@ extension.
 
 ::
 
-   import castep_outputs
+   from castep_outputs import parse_single
 
    my_dict = parse_single('my_file.castep')
 
-If you need a specific parser rather than by extension it is possible to pass
-them as the second argument, or call them directly.
+If you need a specific parser rather than determining it by extension
+it is possible to pass them as the second argument, or call them
+directly.
 
 ::
 
-   import castep_outputs
+   import castep_outputs as co
 
-   my_dict = parse_single('my_file', parse_castep_file)
+   my_dict = co.parse_single('my_file', co.parse_castep_file)
 
    with open('my_file', 'r', encoding='utf-8') as inp:
-       my_dict = parse_castep_file(inp)
+       my_dict = co.parse_castep_file(inp)
 
 It is recommended that you use ``parse_single`` as it uses special file-handling
 to give better diagnostics if it fails. It is possible to enable more detailed
@@ -114,8 +115,8 @@ logging via the `logging
 
 ::
 
-   import castep_outputs
    import logging
+   from castep_outputs import parse_single
 
    my_dict = parse_single('my_file', loglevel=logging.INFO)
 
@@ -147,6 +148,8 @@ The available parsing functions are:
 
 Which return processed ``list``\ s of ``dict``\ s of data ready for use
 in other applications.
+
+See `Documentation <https://oerc0122.github.io/castep_outputs/intro.html>`_ for full layout.
 
 Full usage
 ----------
