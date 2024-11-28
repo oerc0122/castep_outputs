@@ -114,7 +114,7 @@ class Block:
             *,
             eof_possible: bool = False,
     ) -> Block:
-        """
+        r"""
         Read the next `n_lines` from `in_file` and return the block.
 
         Parameters
@@ -133,6 +133,16 @@ class Block:
         ------
         IOError
             If EOF reached and ``not eof_possible``.
+
+        Examples
+        --------
+        >>> from io import StringIO
+        >>> x = StringIO('Hello\nThere\nFriend')
+        >>> block = Block.get_lines(x, 2)
+        >>> type(block).__name__
+        'Block'
+        >>> block.aslist()
+        ['Hello\n', 'There\n']
         """
         block = cls(in_file)
 
@@ -140,7 +150,7 @@ class Block:
         for i, line in enumerate(in_file, 1):
             if i > n_lines:
                 break
-            data += line
+            data.append(line)
         else:
             if not eof_possible:
                 if hasattr(in_file, "name"):

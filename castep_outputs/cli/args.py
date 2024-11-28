@@ -61,7 +61,7 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
 
     Examples
     --------
-    >>> parse_args()
+    parse_args()
     """
     args = ARG_PARSER.parse_args()
 
