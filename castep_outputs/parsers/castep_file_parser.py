@@ -977,7 +977,6 @@ def parse_castep_file(castep_file_in: TextIO,
                         replace=True)
 
             # Put memory estimate to top level
-            # TODO: Check if memory estimate can appear multiple times
             if "memory_estimate" in data:
                 curr_run["memory_estimate"] = data.pop("memory_estimate")
 
