@@ -24,26 +24,28 @@ from .tddft_file_parser import parse_tddft_file
 from .ts_file_parser import parse_ts_file
 from .xrd_sf_file_parser import parse_xrd_sf_file
 
-__all__ = ["parse_castep_file",
-           "parse_cell_param_file",
-           "parse_cell_param_file",
-           "parse_md_geom_file",
-           "parse_md_geom_file",
-           "parse_bands_file",
-           "parse_hug_file",
-           "parse_phonon_dos_file",
-           "parse_efield_file",
-           "parse_xrd_sf_file",
-           "parse_elf_fmt_file",
-           "parse_chdiff_fmt_file",
-           "parse_pot_fmt_file",
-           "parse_den_fmt_file",
-           "parse_elastic_file",
-           "parse_ts_file",
-           "parse_magres_file",
-           "parse_tddft_file",
-           "parse_err_file",
-           "parse_phonon_file"]
+__all__ = [
+    "parse_bands_file",
+    "parse_castep_file",
+    "parse_cell_param_file",
+    "parse_cell_param_file",
+    "parse_chdiff_fmt_file",
+    "parse_den_fmt_file",
+    "parse_efield_file",
+    "parse_elastic_file",
+    "parse_elf_fmt_file",
+    "parse_err_file",
+    "parse_hug_file",
+    "parse_magres_file",
+    "parse_md_geom_file",
+    "parse_md_geom_file",
+    "parse_phonon_dos_file",
+    "parse_phonon_file",
+    "parse_pot_fmt_file",
+    "parse_tddft_file",
+    "parse_ts_file",
+    "parse_xrd_sf_file",
+]
 
 
 #: Dictionary of available parsers.

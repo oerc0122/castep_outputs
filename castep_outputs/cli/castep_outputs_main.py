@@ -125,6 +125,7 @@ def parse_all(
     elif isinstance(output, io.TextIOBase):
         file_dumper(data, output)
     else:
+        output = Path(output)
         with output.open("a+", encoding="utf-8") as out_file:
             file_dumper(data, out_file)
 
