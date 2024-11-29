@@ -8,7 +8,7 @@ import functools
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Iterator, MutableMapping
+from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
 from copy import copy
 from itertools import filterfalse
 from typing import Any, TextIO, TypeVar
@@ -703,3 +703,29 @@ def strip_comments(
     stripped_comments = strip_function(data, comment_char=comment_char)
 
     return Block.from_iterable(stripped_comments, parent=data)
+
+
+def get_only(seq: Sequence[T]) -> T:
+    """
+    Get the only element of a Sequence ensuring uniqueness.
+
+    Parameters
+    ----------
+    seq
+        Sequence of one element.
+
+    Returns
+    -------
+    Any
+        The sole element of the sequence.
+
+    Raises
+    ------
+    ValueError
+        Value is not alone.
+    """
+    val, *rest = seq
+    if rest:
+        raise ValueError(f"Multiple elements in sequence (remainder={', '.join(rest)}).")
+
+    return val

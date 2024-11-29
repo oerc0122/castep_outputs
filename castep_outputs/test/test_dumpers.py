@@ -85,6 +85,12 @@ class test_dumper(unittest.TestCase):
     def test_castep_yaml(self):
         self._test_dump(_TEST_FOLDER / "test.castep", "castep", "yaml")
 
+    def test_md_castep_json(self):
+        self._test_dump(_TEST_FOLDER / "pp-md.castep", "castep", "json", _TEST_FOLDER / "pp-md.json")
+
+    def test_md_castep_json(self):
+        self._test_dump(_TEST_FOLDER / "pp-md.castep", "castep", "yaml", _TEST_FOLDER / "pp-md.yaml")
+
     def test_bands_json(self):
         self._test_dump(_TEST_FOLDER / "test.bands", "bands", "json")
 

@@ -59,6 +59,7 @@ from ..utilities.utility import (
     atreg_to_index,
     determine_type,
     fix_data_types,
+    get_only,
     log_factory,
     normalise_key,
     normalise_string,
@@ -458,7 +459,7 @@ def parse_castep_file(castep_file_in: TextIO,
             block = Block.from_re(line, castep_file,
                                   "",
                                   "^-+ <-- SCF", n_end=ncut*3)
-            data = parse_castep_file(block, Filters.HIGH | Filters.SCF)[0]
+            data = get_only(parse_castep_file(block, Filters.HIGH | Filters.SCF))
 
             scf = data.pop("scf")
             curr_run["bsc_energies"] = data.pop("energies")
@@ -960,21 +961,29 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["elf"] = _process_elf(block)
 
         # MD Block
-        elif block := Block.from_re(line, castep_file,
+        elif ((block := Block.from_re(line, castep_file,  # Capture general MD step
                                     "Starting MD iteration",
-                                    "finished MD iteration"):
+                                     "finished MD iteration")) or
+              (block := Block.from_re(line, castep_file,  # Capture 0th iteration
+                                     "Starting MD",
+                                     gen_table_re("", "=+")))):
 
             if Filters.MD not in to_parse:
                 continue
 
-            logger("Found MD Block (step %d)", len(curr_run["md"])+1)
+            logger("Found MD Block (step %d)", len(curr_run["md"]))
 
             # Avoid infinite recursion
             next(block)
-            data = parse_castep_file(block)[0]
+            data = get_only(parse_castep_file(block))
             add_aliases(data, {"initial_positions": "positions",
                                "initial_cell": "cell"},
                         replace=True)
+
+            # Put memory estimate to top level
+            if "memory_estimate" in data:
+                curr_run["memory_estimate"] = data.pop("memory_estimate")
+
             curr_run["md"].append(data)
 
         elif block := Block.from_re(line, castep_file,
@@ -1025,7 +1034,7 @@ def parse_castep_file(castep_file_in: TextIO,
             logger("Found geom block (iteration %d)", len(curr_run["geom_opt"]["iterations"])+1)
             # Avoid infinite recursion
             next(block)
-            data = parse_castep_file(block)[0]
+            data = get_only(parse_castep_file(block))
 
             add_aliases(data, {"initial_positions": "positions",
                                "initial_cell": "cell"},
