@@ -123,7 +123,7 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
         pass
     md_geom_file.readline()
     steps = []
-    while str(block := Block.from_re("", md_geom_file, "", "^$", eof_possible=True)).strip():
+    while block := Block.from_re("", md_geom_file, "", "^$", eof_possible=True):
         steps.append(parse_md_geom_frame(block))
 
     return steps
