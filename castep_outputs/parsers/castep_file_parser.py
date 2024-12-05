@@ -1432,7 +1432,7 @@ def _process_atreg_block(block: Block) -> AtomPropBlock:
     return {
         atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
         for line in block
-        if (match := REs.ATDAT3VEC.search(line))
+        if (match := REs.ATOMIC_DATA_3VEC.search(line))
     }
 
 
@@ -1471,7 +1471,7 @@ def _process_hirshfeld(block: Block) -> dict[AtomIndex, float]:
     """Process Hirshfeld block to dict of charges."""
     return {
         atreg_to_index(match): float(match["charge"]) for line in block
-        if (match := re.match(rf"\s+{REs.ATREG}\s+(?P<charge>{REs.FNUMBER_RE})", line))
+        if (match := re.match(rf"\s+{REs.ATOM_RE}\s+(?P<charge>{REs.FNUMBER_RE})", line))
     }
 
 
@@ -1684,7 +1684,7 @@ def _process_forces(block: Block) -> tuple[str, AtomPropBlock]:
 
     accum = {atreg_to_index(match): to_type(match.group("x", "y", "z"), float)
              for line in block
-             if (match := REs.FORCES_ATDAT.search(line))}
+             if (match := REs.ATOMIC_DATA_FORCE.search(line))}
 
     return ftype, accum
 
@@ -1712,7 +1712,7 @@ def _process_initial_spins(block: Block) -> dict[AtomIndex, InitialSpin]:
     """Process a set of initial spins into appropriate dict."""
     accum: dict[AtomIndex, InitialSpin] = {}
     for line in block:
-        if match := re.match(rf"\s*\|\s*{REs.ATREG}\s*"
+        if match := re.match(rf"\s*\|\s*{REs.ATOM_RE}\s*"
                              rf"{labelled_floats(('spin', 'magmom'))}\s*"
                              r"(?P<fix>[TF])\s*\|", line):
             val = match.groupdict()
@@ -1987,7 +1987,7 @@ def _process_symmetry(block: Block) -> tuple[SymmetryReport, ConstraintsReport]:
 
         elif cons_block := Block.from_re(line, block, r"constraints\.{5}", r"\s*x+\.{4}\s*"):
             con["ionic_constraints"] = defaultdict(list)
-            for match in re.finditer(rf"{REs.ATREG}\s*[xyz]\s*" +
+            for match in re.finditer(rf"{REs.ATOM_RE}\s*[xyz]\s*" +
                                      labelled_floats(("pos",), counts=(3,)),
                                      str(cons_block)):
                 val = match.groupdict()

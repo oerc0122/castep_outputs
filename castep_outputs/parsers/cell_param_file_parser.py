@@ -166,7 +166,7 @@ def _parse_nonlinear_constraints(block: Block) -> dict[AtomIndex, ThreeVector]:
         key, line = line.split(maxsplit=1)
         cons = {"key": key,
                 "atoms": {atreg_to_index(match): to_type(match.group("x", "y", "z"), int)
-                          for match in REs.ATDAT3VEC.finditer(line)}}
+                          for match in REs.ATOMIC_DATA_3VEC.finditer(line)}}
         accum.append(cons)
 
     return accum

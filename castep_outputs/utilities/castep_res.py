@@ -253,19 +253,19 @@ EMPTY = r"^\s*$"
 #: CASTEP Atom RegEx with optional index.
 #:
 #: :meta hide-value:
-ATREG = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
+ATOM_RE = rf"(?P<spec>{ATOM_NAME_RE})\s+(?P<index>\d+)"
 
 
 # Atom reference with 3-vector
 #: CASTEP atom followed by 3D vector.
 #:
 #: :meta hide-value:
-ATDAT3VEC = re.compile(ATREG + labelled_floats(FST_D))
-FORCES_ATDAT = re.compile(ATREG + labelled_floats(FST_D, suffix=r"(?:\s*\([^)]+\))?"))
-ATDATTAG = re.compile(rf"\s*{ATDAT3VEC.pattern}\s*{TAG_RE.pattern}")
+ATOMIC_DATA_3VEC = re.compile(ATOM_RE + labelled_floats(FST_D))
+ATOMIC_DATA_FORCE = re.compile(ATOM_RE + labelled_floats(FST_D, suffix=r"(?:\s*\([^)]+\))?"))
+ATOMIC_DATA_TAG = re.compile(rf"\s*{ATOMIC_DATA_3VEC.pattern}\s*{TAG_RE.pattern}")
 
 # Labelled positions
-LABELLED_POS_RE = re.compile(ATDAT3VEC.pattern + r"\s{5}(?P<label>\S{0,8})")
+LABELLED_POS_RE = re.compile(ATOMIC_DATA_3VEC.pattern + r"\s{5}(?P<label>\S{0,8})")
 
 # VCA atoms
 MIXTURE_LINE_1_RE = re.compile(rf"""
@@ -391,7 +391,7 @@ PAIR_POT_RES = {
 }
 
 # Orbital population
-ORBITAL_POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<orb>[SPDF][xyz]?)"
+ORBITAL_POPN_RE = re.compile(rf"\s*{ATOM_RE}\s*(?P<orb>[SPDF][xyz]?)"
                              rf"\s*{labelled_floats(('charge',))}")
 
 # Regexp to identify phonon block in .castep file
@@ -439,7 +439,7 @@ BS_RE = re.compile(
 
 THERMODYNAMICS_DATA_RE = re.compile(labelled_floats(("t", "e", "f", "s", "cv")))
 ATOMIC_DISP_RE = re.compile(labelled_floats(("temperature",)) + r"\s*" +
-                            ATREG + r"\s*" +
+                            ATOM_RE + r"\s*" +
                             labelled_floats(("displacement",), counts=(6,)))
 
 MINIMISERS_RE = f"(?:{'|'.join(x.upper() for x in MINIMISERS)})"
@@ -455,7 +455,7 @@ GEOMOPT_TABLE_RE = re.compile(
 
 
 # Regexp to identify Mulliken ppoulation analysis line
-POPN_RE = re.compile(rf"\s*{ATREG}\s*(?P<spin_sep>up:)?" +
+POPN_RE = re.compile(rf"\s*{ATOM_RE}\s*(?P<spin_sep>up:)?" +
                      labelled_floats((*SHELLS, "total", "charge", "spin")) +
                      "?",   # Spin is optional
                      )
@@ -465,24 +465,24 @@ POPN_RE_DN = re.compile(r"\s+\d+\s*dn:" +
                         )
 
 # Regexp for born charges
-BORN_RE = re.compile(rf"\s+{ATREG}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})(?:\s*ID=(?P<label>\S+))?")
+BORN_RE = re.compile(rf"\s+{ATOM_RE}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})(?:\s*ID=(?P<label>\S+))?")
 
 # MagRes REs
 MAGRES_RE = (
     # "Chemical Shielding Tensor" 0
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso','aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "Chemical Shielding and Electric Field Gradient Tensor" 1
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso','aniso'))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso','aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)"
                rf"{labelled_floats(('cq', 'eta'))}\s*\|\s*"),
     # "Electric Field Gradient Tensor" 2
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('cq',))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('cq',))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "(?:I|Ani)sotropic J-coupling" 3
-    re.compile(rf"\s*\|\**\s*{ATREG}{labelled_floats(('fc','sd','para','dia','tot'))}\s*\|\s*"),
+    re.compile(rf"\s*\|\**\s*{ATOM_RE}{labelled_floats(('fc','sd','para','dia','tot'))}\s*\|\s*"),
     # "Hyperfine Tensor" 4
-    re.compile(rf"\s*\|\s*{ATREG}{labelled_floats(('iso',))}\s*\|\s*"),
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso',))}\s*\|\s*"),
 )
 
 # MagRes Tasks
@@ -526,7 +526,7 @@ PARAM_VALUE_RE = re.compile(rf"""
 \s*$
 """, re.IGNORECASE | re.VERBOSE)
 
-IONIC_CONSTRAINTS_RE = re.compile(rf"^\s*\d\s+{ATREG}{THREEVEC_RE}")
+IONIC_CONSTRAINTS_RE = re.compile(rf"^\s*\d\s+{ATOM_RE}{THREEVEC_RE}")
 POSITIONS_LINE_RE = re.compile(rf"^\s*(?P<spec>{SPECIES_RE})"
                                rf"(?P<pos>(?:\s+{FLOAT_RAT_RE.pattern}){{3}})")
 POSITIONS_SPIN_RE = re.compile(rf"(?:spin|magmom)\s*[= :\t]\s*(?P<spin>{FLOAT_RAT_RE.pattern})",
