@@ -40,7 +40,7 @@ def parse_regular_header(block: Block,
             data["unit_cell"] = [to_type(next(block).split(), float)
                                  for _ in range(3)]
 
-        elif match := REs.ATDAT3VEC.search(line):
+        elif match := REs.ATOMIC_DATA_3VEC.search(line):
             ind = atreg_to_index(match)
             coords[ind] = to_type(match.group("x", "y", "z"), float)
 

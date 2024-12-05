@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TextIO, TypedDict
 
-from ..utilities.castep_res import ATDATTAG, TAG_RE, get_numbers
+from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers
 from ..utilities.constants import FST_D, TAG_ALIASES
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.utility import add_aliases, atreg_to_index, to_type
@@ -99,7 +99,7 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
         elif not TAG_RE.search(line):  # Timestep
             curr["time"] = to_type(get_numbers(line)[0], float)
 
-        elif match := ATDATTAG.match(line):
+        elif match := ATOMIC_DATA_TAG.match(line):
             ion = atreg_to_index(match)
             if ion not in curr["ions"]:
                 curr["ions"][ion] = {}

@@ -5,7 +5,7 @@ import re
 from collections import defaultdict
 from typing import TextIO, TypedDict
 
-from ..utilities.castep_res import ATDATTAG, TAG_RE, get_numbers, labelled_floats
+from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers, labelled_floats
 from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
 from ..utilities.datatypes import ThreeByThreeMatrix
 from ..utilities.filewrapper import Block
@@ -72,7 +72,7 @@ def parse_ts_file(ts_file: TextIO) -> TSFileInfo:
             curr["reaction_coordinate"] = to_type(match["reaction_coordinate"], float)
 
             for blk_line in block:
-                if match := ATDATTAG.search(blk_line):
+                if match := ATOMIC_DATA_TAG.search(blk_line):
                     ion = atreg_to_index(match)
                     if ion not in curr:
                         curr[ion] = {}
