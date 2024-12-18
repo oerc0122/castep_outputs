@@ -162,11 +162,11 @@ class QData(TypedDict, total=False):
     #: Frequencies
     frequency: tuple[float, ...]
     #: IR Intensities.
-    intensity: tuple[float, ...]
+    ir_intensity: tuple[float, ...]
     #: Irreducible representation.
     irrep: tuple[str, ...]
     #: IR Active.
-    active: tuple[Literal["Y", "N"], ...]
+    ir_active: tuple[Literal["Y", "N"], ...]
     #: Raman active.
     raman_active: tuple[Literal["Y", "N"], ...]
     #: Raman intensities.
@@ -194,7 +194,6 @@ class RamanReport(TypedDict, total=False):
     ii: float
     #: Depolarisation ratio in 0.5 A/amu.
     depolarisation: float | None
-
 
 # Occupancies
 
@@ -682,8 +681,7 @@ class TDDFTData(TypedDict):
     #: Whether state is: Spurious, Single, Doublet, etc.
     type: str
 
-
-# Files
+# Other Files
 
 
 class HeaderAtomInfo(TypedDict):
