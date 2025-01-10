@@ -36,7 +36,7 @@ def json_dumper(data: Any, file: TextIO):
 
 def ruamel_dumper(data: Any, file: TextIO):
     """
-    ruamel.yaml format dumper.
+    YAML (ruamel.yaml) format dumper.
 
     Parameters
     ----------
@@ -51,7 +51,7 @@ def ruamel_dumper(data: Any, file: TextIO):
 
 def yaml_dumper(data: Any, file: TextIO):
     """
-    yaml format dumper.
+    YAML (pyyaml) format dumper.
 
     Parameters
     ----------

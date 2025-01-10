@@ -7,6 +7,7 @@ from typing import TextIO, TypedDict
 from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers
 from ..utilities.constants import FST_D, TAG_ALIASES
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
+from ..utilities.filewrapper import Block
 from ..utilities.utility import add_aliases, atreg_to_index, to_type
 
 
@@ -67,6 +68,43 @@ class MDGeomTimestepInfo(TypedDict, total=False):
     S: ThreeByThreeMatrix
 
 
+def parse_md_geom_frame(block: Block) -> MDGeomTimestepInfo:
+    """
+    Parse a single frame of a .md/.geom file.
+
+    Parameters
+    ----------
+    block
+        Block containing frame of data.
+
+    Returns
+    -------
+    MDGeomTimestepInfo
+        Parsed frame of data.
+    """
+    curr: MDGeomTimestepInfo = defaultdict(list)
+    curr["ions"] = {}
+
+    for line in block:
+        if not line.strip():
+            pass
+        elif not TAG_RE.search(line):  # Timestep
+            curr["time"] = to_type(get_numbers(line)[0], float)
+
+        elif match := ATOMIC_DATA_TAG.match(line):
+            ion = atreg_to_index(match)
+            curr["ions"].setdefault(ion, {})
+            curr["ions"][ion][match.group("tag")] = to_type([match.group(d) for d in FST_D], float)
+
+        elif match := TAG_RE.search(line):
+            curr[match.group("tag")].append([*to_type(get_numbers(line), float)])
+
+    add_aliases(curr, TAG_ALIASES)
+    for ion in curr["ions"].values():
+        add_aliases(ion, TAG_ALIASES)
+
+    return curr
+
 def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     """
     Parse standard .md and .geom files.
@@ -83,30 +121,10 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     """
     while "END header" not in md_geom_file.readline():
         pass
-
+    md_geom_file.readline()
     steps = []
-    curr: MDGeomTimestepInfo = defaultdict(list)
-    curr["ions"] = {}
-    for line in md_geom_file:
-        if not line.strip():  # Next step
-            if curr and curr["ions"]:
-                add_aliases(curr, TAG_ALIASES)
-                for ion in curr["ions"].values():
-                    add_aliases(ion, TAG_ALIASES)
-                steps.append(curr)
-            curr = defaultdict(list)
-            curr["ions"] = {}
-        elif not TAG_RE.search(line):  # Timestep
-            curr["time"] = to_type(get_numbers(line)[0], float)
-
-        elif match := ATOMIC_DATA_TAG.match(line):
-            ion = atreg_to_index(match)
-            if ion not in curr["ions"]:
-                curr["ions"][ion] = {}
-            curr["ions"][ion][match.group("tag")] = to_type([match.group(d) for d in FST_D], float)
-
-        elif match := TAG_RE.search(line):
-            curr[match.group("tag")].append([*to_type(get_numbers(line), float)])
+    while block := Block.from_re("", md_geom_file, "", "^$", eof_possible=True):
+        steps.append(parse_md_geom_frame(block))
 
     return steps
 

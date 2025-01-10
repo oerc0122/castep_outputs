@@ -308,7 +308,7 @@ class Block:
         self._i -= 1
 
     def __bool__(self):
-        return bool(self._data)
+        return any(map(str.strip, self._data))
 
     def __str__(self):
         return "\n".join(self._data)
