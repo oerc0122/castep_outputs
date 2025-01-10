@@ -1,7 +1,7 @@
 """Module to parse miscellaneous castep files."""
 
 __author__ = "Jacob Wilkins"
-__version__ = "0.1.7"
+__version__ = "0.1.8"
 
 # pylint: disable=unused-import
 
