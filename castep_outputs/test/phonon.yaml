@@ -6,11 +6,12 @@ coords:
   u: [0.0, 0.25]
   v: [0.0, 0.25]
   w: [0.0, 0.25]
-evals:
-- [-0.040146, -0.040146, -0.029897, 1130.614141, 1130.614141, 1319.725988]
-- [70.265361, 70.265361, 101.606262, 1129.079205, 1129.079205, 1341.615777]
-evecs:
-- - [!!python/complex -0.659935909332, !!python/complex -0.0074059874, !!python/complex -0.0]
+ions: 2
+qpts:
+- dir: [0.027778, 0.027778, 0.0]
+  eigenvalues: [-0.040146, -0.040146, -0.029897, 1130.614141, 1130.614141, 1319.725988]
+  eigenvectors:
+  - [!!python/complex -0.659935909332, !!python/complex -0.0074059874, !!python/complex -0.0]
   - [!!python/complex -0.751238092619, !!python/complex -0.00843060632, !!python/complex 0.0]
   - [!!python/complex -0.0074059874, !!python/complex 0.659935909332, !!python/complex -0.0]
   - [!!python/complex -0.00843060632, !!python/complex 0.751238092619, !!python/complex -0.0]
@@ -22,7 +23,12 @@ evecs:
   - [!!python/complex 0.061833526763, !!python/complex 0.657074476786, !!python/complex 0.0]
   - [!!python/complex -0.0, !!python/complex -0.0, !!python/complex 0.7512773291]
   - [!!python/complex 0.0, !!python/complex -0.0, !!python/complex -0.659986647425]
-- - [!!python/complex 0.308252867058-0.024418382545j, !!python/complex -0.579655262033+0.065771765342j,
+  ir_intensity: [0.0, 0.0, 0.0, 12.05931, 12.05931, 12.0593101]
+  qpt: [0.0, 0.0, 0.0]
+  weight: 0.0277777778
+- eigenvalues: [70.265361, 70.265361, 101.606262, 1129.079205, 1129.079205, 1341.615777]
+  eigenvectors:
+  - [!!python/complex 0.308252867058-0.024418382545j, !!python/complex -0.579655262033+0.065771765342j,
     !!python/complex -0.0]
   - [!!python/complex 0.35187791127+0.009719314604j, !!python/complex -0.663298241031+0.013441672321j,
     !!python/complex -0.0]
@@ -42,10 +48,8 @@ evecs:
     !!python/complex 0.0]
   - [!!python/complex 0.0, !!python/complex -0.0, !!python/complex -0.731068529303+0.063960208575j]
   - [!!python/complex -0.0, !!python/complex 0.0, !!python/complex 0.679299563655]
-ions: 2
-qpt_pos:
-- [0.0, 0.0, 0.0]
-- [0.027778, 0.027778, 0.0]
+  qpt: [0.027778, 0.027778, 0.0]
+  weight: 0.0277777778
 unit_cell:
 - [0.0, 1.767767, 1.767767]
 - [1.767767, 0.0, 1.767767]

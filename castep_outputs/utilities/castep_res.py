@@ -409,8 +409,8 @@ PROCESS_PHONON_RE = re.compile(
     (?P<N>\d+)\s+
     (?P<frequency>{FNUMBER_RE})\s*
     (?P<irrep>[a-zA-V])?\s*
-    (?P<intensity>{FNUMBER_RE})?\s*
-    (?P<active>[YN])?\s*
+    (?P<ir_intensity>{FNUMBER_RE})?\s*
+    (?P<ir_active>[YN])?\s*
     (?P<raman_intensity>{FNUMBER_RE})?\s*
     (?P<raman_active>[YN])?\s*\+""", re.VERBOSE)
 
