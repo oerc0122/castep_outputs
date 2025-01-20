@@ -202,7 +202,8 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["time_started"] = normalise_string(line.split(":", 1)[1])
 
         # Finalisation
-        elif block := Block.from_re(line, castep_file, "Initialisation time", "Peak Memory Use"):
+        elif block := Block.from_re(line, castep_file, "Initialisation time", REs.EMPTY,
+                                    eof_possible=True):
 
             if Filters.SYS_INFO not in to_parse:
                 continue

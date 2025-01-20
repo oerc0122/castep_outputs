@@ -88,8 +88,14 @@ class test_dumper(unittest.TestCase):
     def test_md_castep_json(self):
         self._test_dump(_TEST_FOLDER / "pp-md.castep", "castep", "json", _TEST_FOLDER / "pp-md.json")
 
-    def test_md_castep_json(self):
+    def test_md_castep_yaml(self):
         self._test_dump(_TEST_FOLDER / "pp-md.castep", "castep", "yaml", _TEST_FOLDER / "pp-md.yaml")
+
+    def test_md_castep2_json(self):
+        self._test_dump(_TEST_FOLDER / "si8-md.castep", "castep", "json", _TEST_FOLDER / "si8-md.json")
+
+    def test_md_castep2_yaml(self):
+        self._test_dump(_TEST_FOLDER / "si8-md.castep", "castep", "yaml", _TEST_FOLDER / "si8-md.yaml")
 
     def test_bands_json(self):
         self._test_dump(_TEST_FOLDER / "test.bands", "bands", "json")
@@ -179,7 +185,7 @@ class test_dumper(unittest.TestCase):
         self._test_dump(_TEST_FOLDER / "test.phonon", "phonon", "json")
 
     def test_phonon_yaml(self):
-        self._test_dump(_TEST_FOLDER / "test.phonon", "phonon", "yaml") 
+        self._test_dump(_TEST_FOLDER / "test.phonon", "phonon", "yaml")
 
 if __name__ == '__main__':
     unittest.main()
