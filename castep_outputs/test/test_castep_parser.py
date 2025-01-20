@@ -2712,6 +2712,7 @@ Final energy =  -2293.681052478     eV
 
   1 Bond       2.360 Satisfied   4 ( 0 0 0)  5 ( 0 0-1)
   2 Angle     109.47 Satisfied   2 ( 1 0 0)  5 ( 0 0 0)  3 ( 0 0 0)
+  3 Torsion    3.141 99999.999   2 ( 1 0 0)  5 ( 0 0 0)  3 ( 0 0 0)  4 ( 0 0 0)
 
 
 Message: Generating delocalized internals
@@ -2726,10 +2727,39 @@ Total number of primitive internals:        208
 
 Message: Generation of delocalized internals is successful
         """)
-        self.skipTest("Not implemented yet")
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'delocalised_internal':
+                                     {'constraint_mapping': {1: 15,
+                                                             2: 43},
+                                      'num_angles': 48,
+                                      'num_bonds': 16,
+                                      'num_dihedrals': 144,
+                                      'num_internals': 208},
+                                     'internal_constraints': [
+                                         {'constraints': {4: (0, 0, 0),
+                                                          5: (0, 0, -1)},
+                                          'current': 2.36,
+                                          'satisfied': True,
+                                          'target': None,
+                                          'type': 'Bond'},
+                                         {'constraints': {2: (1, 0, 0),
+                                                          3: (0, 0, 0),
+                                                          5: (0, 0, 0)},
+                                          'current': 109.47,
+                                          'satisfied': True,
+                                          'target': None,
+                                          'type': 'Angle'},
+                                         {'constraints': {2: (1, 0, 0),
+                                                          3: (0, 0, 0),
+                                                          4: (0, 0, 0),
+                                                          5: (0, 0, 0)},
+                                          'current': 99999.999,
+                                          'satisfied': False,
+                                          'target': 3.141,
+                                          'type': 'Torsion'},
+                                     ]
+                                     })
 
     def test_get_deloc_step(self):
         test_text = io.StringIO("""
@@ -2740,18 +2770,13 @@ Message: Generation of delocalized internals is successful
  There are :     24  degrees of freedom
  There are :     67  primitive internals
 
-
-  INTERNAL CONSTRAINTS
- #  Type     Target    Actual           Definition
-
-  1 Bond       2.360 Satisfied   4 ( 0 0 0)  5 ( 0 0-1)
-  2 Angle     109.47 Satisfied   3 ( 0 0 0)  5 ( 0 0 0)  2 ( 1 0 0)
-
         """)
-        self.skipTest("Not implemented yet")
+
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {})
+
+        self.assertEqual(test_dict, {'delocalised_internal': {'active_space_size': 19,
+                                                              'num_dof': 24,
+                                                              'num_primitive_internals': 67}})
 
     def test_get_tss_structure(self):
         test_text = io.StringIO("""
