@@ -237,11 +237,11 @@
       },
       "devel_code": {
         "pp": {
-          "LJ": true,
-          "LJ_EPS_Ar": 120.0,
-          "LJ_SIG_Ar": 0.3405
+          "lj": true,
+          "lj_eps_ar": 120.0,
+          "lj_sig_ar": 0.3405
         },
-        "PP": true
+        "_pp": true
       },
       "molecular dynamics": {
         "ensemble": "NVE",

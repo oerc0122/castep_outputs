@@ -460,8 +460,8 @@
       density-mixing scheme: Broyden
       max. length of mixing history: 20
     devel_code:
-      PP: true
-      pp: {LJ: true, LJ_EPS_Ar: 120.0, LJ_SIG_Ar: 0.3405}
+      _pp: true
+      pp: {lj: true, lj_eps_ar: 120.0, lj_sig_ar: 0.3405}
     electronic: {net charge of system: 0.0, number of bands: 480, number of electrons: 2.0}
     electronic minimization:
       Fermi energy convergence tolerance: [2.721e-14, eV]
