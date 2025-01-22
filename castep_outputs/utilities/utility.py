@@ -19,7 +19,7 @@ from ..utilities.filewrapper import Block
 from .filewrapper import FileWrapper
 
 T = TypeVar("T")
-
+NORMALISE_RE = re.compile(r"[_\W]+")
 
 def normalise_string(string: str) -> str:
     """
@@ -77,7 +77,7 @@ def normalise_key(string: str) -> str:
     >>> normalise_key("I<3;;semi-colons;;!!!")
     'i_3_semi_colons'
     """
-    return re.sub(r"[_\W]+", "_", string).strip("_").lower()
+    return NORMALISE_RE.sub("_", string).strip("_").lower()
 
 
 def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) -> tuple[str, int]:
