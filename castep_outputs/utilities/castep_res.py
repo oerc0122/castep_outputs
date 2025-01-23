@@ -267,6 +267,9 @@ ATOMIC_DATA_TAG = re.compile(rf"\s*{ATOMIC_DATA_3VEC.pattern}\s*{TAG_RE.pattern}
 # Labelled positions
 LABELLED_POS_RE = re.compile(ATOMIC_DATA_3VEC.pattern + r"\s{5}(?P<label>\S{0,8})")
 
+# Colon separated key-val
+COLON_SEP_RE = re.compile(r"\b(?P<key>\S+)\s*:\s*(?P<val>\S+)\b")
+
 # VCA atoms
 MIXTURE_LINE_1_RE = re.compile(rf"""
 (?P<index>\d+)\s+

@@ -19,7 +19,7 @@ class test_cell_parser(unittest.TestCase):
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'lattice_abc': {'data': [(8.978, 5.74, 9.969),
+        self.assertEqual(test_dict, {"lattice_abc": {"data": [(8.978, 5.74, 9.969),
                                                               (90.0, 90.0, 90.0)]}})
 
     def test_parse_lattice_cart(self):
@@ -34,10 +34,10 @@ ang    # angstrom units
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'lattice_cart': {'data': [(6.3145, 0.0, 0.0),
+        self.assertEqual(test_dict, {"lattice_cart": {"data": [(6.3145, 0.0, 0.0),
                                                                (0.0, 6.3145, 0.0),
                                                                (0.0, 0.0, 6.3145)],
-                                                      'units': 'ang'}})
+                                                      "units": "ang"}})
 
     def test_parse_mixture(self):
         test_text = io.StringIO("""
@@ -53,24 +53,27 @@ ang    # angstrom units
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'positions_frac': {('Al', 1): {'mixed': 1,
-                                                                    'pos': (0.25, 0.5, 0.0),
-                                                                    'ratio': 0.666667},
-                                                        ('Al', 2): {'mixed': 2,
-                                                                    'pos': (-0.25, -0.5, 0.0),
-                                                                    'ratio': 0.666667},
-                                                        ('Al', 3): {'mixed': 3,
-                                                                    'pos': (0.25, 0.0, 0.5),
-                                                                    'ratio': 0.666667},
-                                                        ('Si', 1): {'mixed': 1,
-                                                                    'pos': (0.25, 0.5, 0.0),
-                                                                    'ratio': 0.333333},
-                                                        ('Si', 2): {'mixed': 2,
-                                                                    'pos': (-0.25, -0.5, 0.0),
-                                                                    'ratio': 0.333333},
-                                                        ('Si', 3): {'mixed': 3,
-                                                                    'pos': (0.25, 0.0, 0.5),
-                                                                    'ratio': 0.333333}}})
+        self.assertEqual(test_dict, {"positions_frac": {
+            ("Al", 1): {"mix_index": 1,
+                        "pos": (0.25, 0.5, 0.0),
+                        "weight": 0.666667},
+            ("Al", 2): {"mix_index": 2,
+                        "pos": (-0.25, -0.5, 0.0),
+                        "weight": 0.666667},
+            ("Al", 3): {"mix_index": 3,
+                        "pos": (0.25, 0.0, 0.5),
+                        "weight": 0.666667},
+            ("Si", 1): {"mix_index": 1,
+                        "pos": (0.25, 0.5, 0.0),
+                        "weight": 0.333333},
+            ("Si", 2): {"mix_index": 2,
+                        "pos": (-0.25, -0.5, 0.0),
+                        "weight": 0.333333},
+            ("Si", 3): {"mix_index": 3,
+                        "pos": (0.25, 0.0, 0.5),
+                        "weight": 0.333333}},
+                                     },
+                         )
 
     def test_parse_spin_magmom(self):
         test_text = io.StringIO("""
@@ -84,10 +87,13 @@ ang    # angstrom units
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'positions_frac': {('Fe', 1): {'pos': (0.0, 0.0, 0.0)},
-                                                        ('Fe', 2): {'pos': (0.5, 0.5, 0.0), 'spin': 0.5},
-                                                        ('Fe', 3): {'pos': (0.5, 0.0, 0.5), 'spin': -2.0},
-                                                        ('Fe', 4): {'pos': (0.0, 0.5, 0.5), 'spin': 4.0}}})
+        self.assertEqual(test_dict, {"positions_frac": {("Fe", 1): {"pos": (0.0, 0.0, 0.0)},
+                                                        ("Fe", 2): {"pos": (0.5, 0.5, 0.0),
+                                                                    "spin": 0.5},
+                                                        ("Fe", 3): {"pos": (0.5, 0.0, 0.5),
+                                                                    "spin": -2.0},
+                                                        ("Fe", 4): {"pos": (0.0, 0.5, 0.5),
+                                                                    "spin": 4.0}}})
 
     def test_parse_position_abs(self):
         test_text = io.StringIO("""
@@ -100,9 +106,31 @@ ang    # angstrom units
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'positions_abs': {('Al', 1): {'pos': (5.711, 2.347, 5.023)},
-                                                       ('Al', 2): {'pos': (1.0, 1/2, 1/3)},
-                                                       ('O', 1): {'pos': (6.245, -2.347, 3.044)}}})
+        self.assertEqual(test_dict, {"positions_abs": {("Al", 1): {"pos": (5.711, 2.347, 5.023),
+                                                                   "units": "Ang"},
+                                                       ("Al", 2): {"pos": (1.0, 1/2, 1/3),
+                                                                   "units": "Ang"},
+                                                       ("O", 1): {"pos": (6.245, -2.347, 3.044),
+                                                                  "units": "Ang"}}})
+
+    def test_parse_position_abs_units(self):
+        test_text = io.StringIO("""
+%BLOCK POSITIONS_ABS
+Furlongs
+    O     6.2450000000   -2.3470000000    3.0440000000
+    Al    5.7110000000    2.3470000000    5.0230000000
+    Al    1    1/2  1/3
+%ENDBLOCK POSITIONS_ABS
+    """)
+
+        test_dict = parse_cell_param_file(test_text)[0]
+
+        self.assertEqual(test_dict, {"positions_abs": {("Al", 1): {"pos": (5.711, 2.347, 5.023),
+                                                                   "units": "Furlongs"},
+                                                       ("Al", 2): {"pos": (1.0, 1/2, 1/3),
+                                                                   "units": "Furlongs"},
+                                                       ("O", 1): {"pos": (6.245, -2.347, 3.044),
+                                                                  "units": "Furlongs"}}})
 
     def test_parse_cell_constraints(self):
         test_text = io.StringIO("""
@@ -114,7 +142,7 @@ ang    # angstrom units
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'cell_constraints': {'data': [(1.0, 2.0, 3.0),
+        self.assertEqual(test_dict, {"cell_constraints": {"data": [(1.0, 2.0, 3.0),
                                                                    (0.0, 0.0, 0.0)]}})
 
     def test_parse_ionic_constraints(self):
@@ -129,10 +157,10 @@ ang    # angstrom units
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'ionic_constraints': {('W', 1): [(1.0, 0.0, 0.0),
+        self.assertEqual(test_dict, {"ionic_constraints": {("W", 1): [(1.0, 0.0, 0.0),
                                                                       (0.0, 1.0, 0.0),
                                                                       (0.0, 0.0, 1.0)],
-                                                           ('W', 2): [(1.0, 0.0, 0.0)]}})
+                                                           ("W", 2): [(1.0, 0.0, 0.0)]}})
 
     def test_parse_nonlinear_constraints(self):
         test_text = io.StringIO("""
@@ -145,20 +173,20 @@ distance       H  4  0  0  0       O  2  0  1  0
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'nonlinear_constraints': [{'key': 'distance',
-                                                                'atoms': {('H', 4): (0, 0, 0),
-                                                                          ('O', 2): (0, 1, 0)},
+        self.assertEqual(test_dict, {"nonlinear_constraints": [{"key": "distance",
+                                                                "atoms": {("H", 4): (0, 0, 0),
+                                                                          ("O", 2): (0, 1, 0)},
                                                                 },
-                                                               {'key': 'bend',
-                                                                'atoms': {('C', 1): (1, 0, 1),
-                                                                          ('H', 2): (0, 0, 0),
-                                                                          ('H', 5): (0, 0, 0)},
+                                                               {"key": "bend",
+                                                                "atoms": {("C", 1): (1, 0, 1),
+                                                                          ("H", 2): (0, 0, 0),
+                                                                          ("H", 5): (0, 0, 0)},
                                                                 },
-                                                               {'key': 'torsion',
-                                                                'atoms': {('H', 1): (0, 0, 1),
-                                                                          ('H', 3): (1, 0, 0),
-                                                                          ('H', 6): (0, 0, 0),
-                                                                          ('H', 9): (1, 1, 0)},
+                                                               {"key": "torsion",
+                                                                "atoms": {("H", 1): (0, 0, 1),
+                                                                          ("H", 3): (1, 0, 0),
+                                                                          ("H", 6): (0, 0, 0),
+                                                                          ("H", 9): (1, 1, 0)},
                                                                 }]})
 
     def test_parse_external_pressure(self):
@@ -174,10 +202,10 @@ GPa
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'external_pressure': {'data': [(5.0, 0.0, 0.0),
+        self.assertEqual(test_dict, {"external_pressure": {"data": [(5.0, 0.0, 0.0),
                                                                     (5.0, 0.0),
                                                                     (5.0,)],
-                                                           'units': 'GPa'}})
+                                                           "units": "GPa"}})
 
     def test_parse_weighted_kpoints(self):
         test_text = io.StringIO("""
@@ -190,7 +218,7 @@ GPa
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'supercell_kpoint_list': {'data': [(0.0, 0.0, 0.0, 0.08),
+        self.assertEqual(test_dict, {"supercell_kpoint_list": {"data": [(0.0, 0.0, 0.0, 0.08),
                                                                         (0.0, 0.0833333333, 0.0, 0.04),
                                                                         (0.0, 0.1666666667, 0.0, 0.04)]}})
 
@@ -205,7 +233,7 @@ GPa
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'phonon_supercell_matrix': {'data': [(2.0, 2.0, 0.0),
+        self.assertEqual(test_dict, {"phonon_supercell_matrix": {"data": [(2.0, 2.0, 0.0),
                                                                           (0.0, 2.0, 2.0),
                                                                           (2.0, 0.0, 2.0)]}})
 
@@ -227,14 +255,14 @@ GPa
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'symmetry_ops': [{'r': [(-1.0, 0.0, 0.0),
+        self.assertEqual(test_dict, {"symmetry_ops": [{"r": [(-1.0, 0.0, 0.0),
                                                              (0.0, -1.0, 0.0),
                                                              (0.0, 0.0, 1.0)],
-                                                       't': (0.5, 0.0, 0.5)},
-                                                      {'r': [(1.0, 0.0, 0.0),
+                                                       "t": (0.5, 0.0, 0.5)},
+                                                      {"r": [(1.0, 0.0, 0.0),
                                                              (0.0, 1.0, 0.0),
                                                              (0.0, 0.0, 1.0)],
-                                                       't': (0.5, 0.0, 0.5)}]})
+                                                       "t": (0.5, 0.0, 0.5)}]})
 
 
     def test_parse_quantisation_axis(self):
@@ -244,7 +272,7 @@ QUANTIZATION_AXIS : 1 1 -1
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'quantization_axis': (1, 1, -1)})
+        self.assertEqual(test_dict, {"quantization_axis": (1, 1, -1)})
 
     def test_parse_external_efield(self):
         test_text = io.StringIO("""
@@ -256,8 +284,8 @@ HARTREE/BOHR/E
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'external_efield': {'data': [(0.0, 1.0, 0.1)],
-                                                         'units': 'HARTREE/BOHR/E'}})
+        self.assertEqual(test_dict, {"external_efield": {"data": [(0.0, 1.0, 0.1)],
+                                                         "units": "HARTREE/BOHR/E"}})
 
     def test_parse_ionic_velocities(self):
         test_text = io.StringIO("""
@@ -272,11 +300,11 @@ ang/ps
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'ionic_velocities': {'data': [(1.0, 2.0, 1.0),
+        self.assertEqual(test_dict, {"ionic_velocities": {"data": [(1.0, 2.0, 1.0),
                                                                    (2.0, 3.0, 3.0),
                                                                    (-2.0, -3.0, -3.0),
                                                                    (-1.0, -2.0, -1.0)],
-                                                          'units': 'ang/ps'}})
+                                                          "units": "ang/ps"}})
 
     def test_parse_kpoint_path(self):
         test_text = io.StringIO("""
@@ -289,7 +317,7 @@ ang/ps
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'bs_kpoint_path': {'data': [(0.3333333333, 0.375, 0.3333333333),
+        self.assertEqual(test_dict, {"bs_kpoint_path": {"data": [(0.3333333333, 0.375, 0.3333333333),
                                                                  (0.3333333333, 0.375, 0.0),
                                                                  (0.3333333333333333, 0.125, 0.3333333333333333),
                                                                  ]}})
@@ -302,7 +330,7 @@ BS_KPOINT_PATH_SPACING : 0.125
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {"kpoint_mp_spacing": (0.25, '1/Ang'),
+        self.assertEqual(test_dict, {"kpoint_mp_spacing": (0.25, "1/Ang"),
                                      "bs_kpoint_path_spacing": 0.125})
 
     def test_parse_fix(self):
@@ -315,10 +343,10 @@ FIX_VOL TRUE
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'fix_all_cell': False,
-                                     'fix_all_ions': True,
-                                     'fix_com': False,
-                                     'fix_vol': True})
+        self.assertEqual(test_dict, {"fix_all_cell": False,
+                                     "fix_all_ions": True,
+                                     "fix_com": False,
+                                     "fix_vol": True})
 
     def test_parse_lcao(self):
         test_text = io.StringIO("""
@@ -331,9 +359,9 @@ FIX_VOL TRUE
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'species_lcao_states': {'data': {'Al': 2,
-                                                                      'O': 1,
-                                                                      'Ti:tag': 3}}})
+        self.assertEqual(test_dict, {"species_lcao_states": {"data": {"Al": 2,
+                                                                      "O": 1,
+                                                                      "Ti:tag": 3}}})
 
     def test_get_species_mass(self):
         test_text = io.StringIO("""
@@ -347,10 +375,10 @@ FIX_VOL TRUE
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'species_mass': {'data': {'Al': 26.982000351,
-                                                               'Cs': 132.9049987793,
-                                                               'O': 15.9989995956,
-                                                               'Ti:Tag': 47.9000015259}}})
+        self.assertEqual(test_dict, {"species_mass": {"data": {"Al": 26.982000351,
+                                                               "Cs": 132.9049987793,
+                                                               "O": 15.9989995956,
+                                                               "Ti:Tag": 47.9000015259}}})
 
     def test_parse_sedc_params(self):
         test_text = io.StringIO("""
@@ -362,12 +390,12 @@ Ti:Tag C6:1.0 R0:3.6404 alpha:-0.6668
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'sedc_custom_params': {'H': {'C6': 0.0,
-                                                                  'R0': 1.6404,
-                                                                  'alpha': 0.6668},
-                                                            'Ti:Tag': {'C6': 1.0,
-                                                                       'R0': 3.6404,
-                                                                       'alpha': -0.6668}}})
+        self.assertEqual(test_dict, {"sedc_custom_params": {"H": {"C6": 0.0,
+                                                                  "R0": 1.6404,
+                                                                  "alpha": 0.6668},
+                                                            "Ti:Tag": {"C6": 1.0,
+                                                                       "R0": 3.6404,
+                                                                       "alpha": -0.6668}}})
 
     def test_parse_hubbard_u(self):
         test_text = io.StringIO("""
@@ -381,10 +409,10 @@ Ti:Tag C6:1.0 R0:3.6404 alpha:-0.6668
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'hubbard_u': {'units': 'eV',
-                                                   'Ni': {'d': 2.4},
-                                                   ('Sm', 1): {'f': 6.1},
-                                                   ('U', 2): {'d': 1.2, 'f': 2.1}}})
+        self.assertEqual(test_dict, {"hubbard_u": {"units": "eV",
+                                                   "Ni": {"d": 2.4},
+                                                   ("Sm", 1): {"f": 6.1},
+                                                   ("U", 2): {"d": 1.2, "f": 2.1}}})
 
 
 class test_param_parser(unittest.TestCase):
@@ -398,11 +426,11 @@ NLXC_PPD_SIZE_Z  -2
         """)
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'backup_interval': 3600,
-                                     'nlxc_ppd_size_x': 4,
-                                     'nlxc_ppd_size_y': 2,
-                                     'nlxc_ppd_size_z': -2.0,
-                                     'run_time': 360})
+        self.assertEqual(test_dict, {"backup_interval": 3600,
+                                     "nlxc_ppd_size_x": 4,
+                                     "nlxc_ppd_size_y": 2,
+                                     "nlxc_ppd_size_z": -2.0,
+                                     "run_time": 360})
 
     def test_bool_params(self):
         test_text = io.StringIO("""
@@ -413,10 +441,10 @@ CALCULATE_HIRSHFELD : False
         """)
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'calculate_densdiff': True,
-                                     'calculate_elf': False,
-                                     'calculate_hirshfeld': False,
-                                     'calculate_stress': True})
+        self.assertEqual(test_dict, {"calculate_densdiff": True,
+                                     "calculate_elf": False,
+                                     "calculate_hirshfeld": False,
+                                     "calculate_stress": True})
 
     def test_string_params(self):
         test_text = io.StringIO("""
@@ -429,12 +457,12 @@ File_param aa.bbb
 """)
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'charge_unit': 'e',
-                                     'checkpoint': 'test.check',
-                                     'continuation': 'DEFAULT',
-                                     'file_param': 'aa.bbb',
-                                     'pspot_beta_phi_type': 'REAL',
-                                     'smearing_scheme': 'ColdSmearing'})
+        self.assertEqual(test_dict, {"charge_unit": "e",
+                                     "checkpoint": "test.check",
+                                     "continuation": "DEFAULT",
+                                     "file_param": "aa.bbb",
+                                     "pspot_beta_phi_type": "REAL",
+                                     "smearing_scheme": "ColdSmearing"})
 
     def test_vector_params(self):
         test_text = io.StringIO("""
@@ -442,7 +470,7 @@ kpoints_mp_grid : 10 10 10
         """)
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'kpoints_mp_grid': (10, 10, 10)})
+        self.assertEqual(test_dict, {"kpoints_mp_grid": (10, 10, 10)})
 
     def test_physical_params(self):
         test_text = io.StringIO("""
@@ -453,9 +481,9 @@ MIX_METRIC_Q : 20.0
 
         test_dict = parse_cell_param_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'geom_energy_tol': (5e-05, 'eV'),
-                                     'geom_modulus_est': (125.4, 'GPa'),
-                                     'mix_metric_q': 20.0})
+        self.assertEqual(test_dict, {"geom_energy_tol": (5e-05, "eV"),
+                                     "geom_modulus_est": (125.4, "GPa"),
+                                     "mix_metric_q": 20.0})
 
     def test_devel_code(self):
         test_text = io.StringIO("""
@@ -469,12 +497,12 @@ PP: test_par=1 :ENDPP
 %endblock devel_code
         """)
         test_dict = parse_cell_param_file(test_text)[0]
-        self.assertEqual(test_dict, {'devel_code': {'pp': {'test_par': 1},
-                                                    'bool_value': False,
-                                                    'true_val': True,
-                                                    'float_number': 15.12,
-                                                    'int_value': 31,
-                                                    'string_value': 'Hello'}})
+        self.assertEqual(test_dict, {"devel_code": {"pp": {"test_par": 1},
+                                                    "bool_value": False,
+                                                    "true_val": True,
+                                                    "float_number": 15.12,
+                                                    "int_value": 31,
+                                                    "string_value": "Hello"}})
 
 
 if __name__ == "__main__":

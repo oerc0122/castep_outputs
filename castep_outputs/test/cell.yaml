@@ -7,8 +7,10 @@
     units: ang
   positions_frac:
     ? !!python/tuple [Mn, 1]
-    : pos: [0.061, 0.061, 0.061]
+    : mix_index: 1
+      pos: [0.061, 0.061, 0.061]
       spin: 2.5
+      weight: 0.666667
     ? !!python/tuple [Mn, 2]
     : pos: [0.811, 0.311, 0.189]
       spin: 2.5

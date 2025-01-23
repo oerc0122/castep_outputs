@@ -2,13 +2,18 @@
 from __future__ import annotations
 
 from collections.abc import Callable
-from typing import Dict, Literal, Tuple, TypedDict
+from typing import Dict, List, Literal, Tuple, TypedDict, TypeVar, Union
+
+T = TypeVar("T")
 
 #: Parser protocol
 ParserFunction = Callable  # [[TextIO], Dict[str, Any]] limited by 3.8
 
-
 # General types
+
+# Python 3.8 doesn't support concrete Sequence
+# MaybeSequence = Union[Sequence[T], T]
+MaybeSequence = Union[T, List[T], Tuple[T, ...]]
 
 #: CASTEP atom keys.
 AtomIndex = Tuple[str, int]
