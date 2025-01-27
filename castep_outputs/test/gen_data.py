@@ -5,7 +5,7 @@ from castep_outputs.cli.castep_outputs_main import parse_all
 
 for type_ in ('castep', 'bands', 'cell', 'param', 'elastic', 'md', 'ts', 'efield',
               'den_fmt', 'chdiff_fmt', 'pot_fmt', 'elf_fmt', 'xrd_sf', 'phonon_dos',
-              'magres', 'efield', 'tddft', 'err', ('pp-md', 'castep')):
+              'magres', 'efield', 'tddft', 'err', ('pp-md', 'castep'), ('si8-md', 'castep')):
     for fmt in ('json', 'yaml'):
         print(type_, fmt)
         if isinstance(type_, tuple):

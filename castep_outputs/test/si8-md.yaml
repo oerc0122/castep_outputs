@@ -1,0 +1,364 @@
+- bonds:
+    ? !!python/tuple
+    - !!python/tuple [Si, 1]
+    - !!python/tuple [Si, 5]
+    : {length: 2.32191, population: 0.68}
+    ? !!python/tuple
+    - !!python/tuple [Si, 1]
+    - !!python/tuple [Si, 6]
+    : {length: 2.33717, population: 0.89}
+    ? !!python/tuple
+    - !!python/tuple [Si, 1]
+    - !!python/tuple [Si, 7]
+    : {length: 2.3115, population: 0.78}
+    ? !!python/tuple
+    - !!python/tuple [Si, 1]
+    - !!python/tuple [Si, 8]
+    : {length: 2.39175, population: 0.63}
+    ? !!python/tuple
+    - !!python/tuple [Si, 2]
+    - !!python/tuple [Si, 5]
+    : {length: 2.26159, population: 0.69}
+    ? !!python/tuple
+    - !!python/tuple [Si, 2]
+    - !!python/tuple [Si, 6]
+    : {length: 2.37747, population: 0.75}
+    ? !!python/tuple
+    - !!python/tuple [Si, 2]
+    - !!python/tuple [Si, 7]
+    : {length: 2.34919, population: 0.89}
+    ? !!python/tuple
+    - !!python/tuple [Si, 2]
+    - !!python/tuple [Si, 8]
+    : {length: 2.363, population: 0.67}
+    ? !!python/tuple
+    - !!python/tuple [Si, 3]
+    - !!python/tuple [Si, 5]
+    : {length: 2.35569, population: 0.9}
+    ? !!python/tuple
+    - !!python/tuple [Si, 3]
+    - !!python/tuple [Si, 6]
+    : {length: 2.41398, population: 0.66}
+    ? !!python/tuple
+    - !!python/tuple [Si, 3]
+    - !!python/tuple [Si, 7]
+    : {length: 2.28683, population: 0.68}
+    ? !!python/tuple
+    - !!python/tuple [Si, 3]
+    - !!python/tuple [Si, 8]
+    : {length: 2.38791, population: 0.74}
+    ? !!python/tuple
+    - !!python/tuple [Si, 4]
+    - !!python/tuple [Si, 5]
+    : {length: 2.39454, population: 0.74}
+    ? !!python/tuple
+    - !!python/tuple [Si, 4]
+    - !!python/tuple [Si, 6]
+    : {length: 2.38733, population: 0.63}
+    ? !!python/tuple
+    - !!python/tuple [Si, 4]
+    - !!python/tuple [Si, 7]
+    : {length: 2.36835, population: 0.67}
+    ? !!python/tuple
+    - !!python/tuple [Si, 4]
+    - !!python/tuple [Si, 8]
+    : {length: 2.32623, population: 0.91}
+  build_info: {comms: serial, compiler: 'GNU Fortran 12.3.0; Optimisation: debug',
+    fft_lib: fftw3 version fftw-3.3.10, fundamental_constants_values: CODATA 2018,
+    mathlibs: openblas (LAPACK version 3.11.0), summary: 'Compiled for darwin_arm64_gfortran10
+      on Wed, 13 Mar 2024 11:32:29 +0000 from code version ceb2eb58b+ param_defaults
+      Wed Mar 13 11:30:47 2024 +0000'}
+  calculation_time: 7.21
+  constraints:
+    cell_constraints: [1, 2, 3, 4, 5, 6]
+    com_constrained: false
+    number_of_cell_constraints: 0
+  energies:
+    est_0K: [-855.4608365051]
+    final_energy: [-855.4591072479]
+    free_energy: [-855.4625657623]
+  finalisation_time: 0.01
+  forces:
+    non_descript:
+    - ? !!python/tuple [Si, 1]
+      : [-0.23835, -0.17814, 0.50989]
+      ? !!python/tuple [Si, 2]
+      : [0.58819, 0.37709, -1.06926]
+      ? !!python/tuple [Si, 3]
+      : [0.23612, 0.51275, -1.05668]
+      ? !!python/tuple [Si, 4]
+      : [-0.14847, -0.37664, -0.14938]
+      ? !!python/tuple [Si, 5]
+      : [-0.99917, -0.13169, 0.68959]
+      ? !!python/tuple [Si, 6]
+      : [0.45715, 0.03899, 0.39131]
+      ? !!python/tuple [Si, 7]
+      : [0.07212, -0.67592, 0.43107]
+      ? !!python/tuple [Si, 8]
+      : [0.03241, 0.43357, 0.25346]
+  initial_cell:
+    cell_angles: [90.0, 90.0, 90.0]
+    density_amu: 1.403372
+    density_g: 2.330353
+    lattice_parameters: [5.43, 5.43, 5.43]
+    real_lattice:
+    - [5.43, 0.0, 0.0]
+    - [0.0, 5.43, 0.0]
+    - [0.0, 0.0, 5.43]
+    recip_lattice:
+    - [1.157124366, 0.0, 0.0]
+    - [0.0, 1.157124366, 0.0]
+    - [0.0, 0.0, 1.157124366]
+    volume: 160.103007
+  initial_positions:
+    ? !!python/tuple [Si, 1]
+    : [0.0, 0.0, 0.0]
+    ? !!python/tuple [Si, 2]
+    : [0.0, 0.5, 0.515]
+    ? !!python/tuple [Si, 3]
+    : [0.5, 0.0, 0.51]
+    ? !!python/tuple [Si, 4]
+    : [0.5, 0.5, 0.0]
+    ? !!python/tuple [Si, 5]
+    : [0.76, 0.25, 0.75]
+    ? !!python/tuple [Si, 6]
+    : [0.24, 0.25, 0.25]
+    ? !!python/tuple [Si, 7]
+    : [0.25, 0.76, 0.75]
+    ? !!python/tuple [Si, 8]
+    : [0.75, 0.74, 0.25]
+  initial_velocities:
+    ? !!python/tuple [Si, 1]
+    : [3.60123, 0.98642, 2.77447]
+    ? !!python/tuple [Si, 2]
+    : [1.85523, 3.24536, 6.70727]
+    ? !!python/tuple [Si, 3]
+    : [5.86792, 2.40481, 1.76858]
+    ? !!python/tuple [Si, 4]
+    : [2.74028, 7.44091, 1.57618]
+    ? !!python/tuple [Si, 5]
+    : [5.6376, 3.1408, 2.72166]
+    ? !!python/tuple [Si, 6]
+    : [5.07594, 4.98002, 3.71388]
+    ? !!python/tuple [Si, 7]
+    : [5.86585, 7.01653, 3.44768]
+    ? !!python/tuple [Si, 8]
+    : [2.25861, 2.84257, 7.8215]
+  initialisation_time: 0.2
+  k-points: {num_kpoints: 4}
+  md:
+  - forces:
+      non_descript:
+      - ? !!python/tuple [Si, 1]
+        : [-0.24389, -0.3304, 0.32266]
+        ? !!python/tuple [Si, 2]
+        : [0.37938, 0.32234, -0.98537]
+        ? !!python/tuple [Si, 3]
+        : [0.31339, 0.33998, -1.16053]
+        ? !!python/tuple [Si, 4]
+        : [-0.26757, -0.2355, -0.24179]
+        ? !!python/tuple [Si, 5]
+        : [-0.84894, -0.08906, 0.55013]
+        ? !!python/tuple [Si, 6]
+        : [0.58371, 0.05747, 0.50584]
+        ? !!python/tuple [Si, 7]
+        : [0.15466, -0.58612, 0.53901]
+        ? !!python/tuple [Si, 8]
+        : [-0.07074, 0.52128, 0.47006]
+    hamilt_energy: -854.774727
+    kinetic_energy: 0.687839
+    potential_energy: -855.462566
+    temperature: 665.170006
+    time: 0.0
+    total_energy: -854.774727
+  - energies:
+      est_0K: [-855.4598047728]
+      final_energy: [-855.4580817435]
+      free_energy: [-855.4615278021]
+    forces:
+      non_descript:
+      - ? !!python/tuple [Si, 1]
+        : [-0.24274, -0.25648, 0.41849]
+        ? !!python/tuple [Si, 2]
+        : [0.49283, 0.35704, -1.0414]
+        ? !!python/tuple [Si, 3]
+        : [0.28272, 0.43177, -1.12617]
+        ? !!python/tuple [Si, 4]
+        : [-0.21026, -0.30763, -0.20287]
+        ? !!python/tuple [Si, 5]
+        : [-0.93618, -0.11575, 0.63027]
+        ? !!python/tuple [Si, 6]
+        : [0.52233, 0.04843, 0.45677]
+        ? !!python/tuple [Si, 7]
+        : [0.11063, -0.64049, 0.49368]
+        ? !!python/tuple [Si, 8]
+        : [-0.01933, 0.48311, 0.37123]
+    hamilt_energy: -854.776303
+    kinetic_energy: 0.685225
+    positions:
+      ? !!python/tuple [Si, 1]
+      : [0.001296, 0.000322, 0.001063]
+      ? !!python/tuple [Si, 2]
+      : [0.000731, 0.501236, 0.517346]
+      ? !!python/tuple [Si, 3]
+      : [0.502201, 0.000929, 0.510505]
+      ? !!python/tuple [Si, 4]
+      : [0.500975, 0.502711, 0.00055]
+      ? !!python/tuple [Si, 5]
+      : [0.761969, 0.251146, 0.751072]
+      ? !!python/tuple [Si, 6]
+      : [0.241943, 0.251842, 0.251432]
+      ? !!python/tuple [Si, 7]
+      : [0.25218, 0.76251, 0.751338]
+      ? !!python/tuple [Si, 8]
+      : [0.750823, 0.741113, 0.25294]
+    potential_energy: -855.461528
+    temperature: 662.642132
+    time: 0.002
+    total_energy: -854.776303
+  - energies:
+      est_0K: [-855.4642379895]
+      final_energy: [-855.4625931309]
+      free_energy: [-855.4658828481]
+    forces:
+      non_descript:
+      - ? !!python/tuple [Si, 1]
+        : [-0.23835, -0.17814, 0.50989]
+        ? !!python/tuple [Si, 2]
+        : [0.58819, 0.37709, -1.06926]
+        ? !!python/tuple [Si, 3]
+        : [0.23612, 0.51275, -1.05668]
+        ? !!python/tuple [Si, 4]
+        : [-0.14847, -0.37664, -0.14938]
+        ? !!python/tuple [Si, 5]
+        : [-0.99917, -0.13169, 0.68959]
+        ? !!python/tuple [Si, 6]
+        : [0.45715, 0.03899, 0.39131]
+        ? !!python/tuple [Si, 7]
+        : [0.07212, -0.67592, 0.43107]
+        ? !!python/tuple [Si, 8]
+        : [0.03241, 0.43357, 0.25346]
+    hamilt_energy: -854.779383
+    kinetic_energy: 0.6865
+    positions:
+      ? !!python/tuple [Si, 1]
+      : [0.00253, 0.000578, 0.002231]
+      ? !!python/tuple [Si, 2]
+      : [0.001587, 0.502563, 0.519428]
+      ? !!python/tuple [Si, 3]
+      : [0.504473, 0.001967, 0.510724]
+      ? !!python/tuple [Si, 4]
+      : [0.501898, 0.505344, 0.001049]
+      ? !!python/tuple [Si, 5]
+      : [0.763701, 0.252262, 0.752304]
+      ? !!python/tuple [Si, 6]
+      : [0.244019, 0.253695, 0.252979]
+      ? !!python/tuple [Si, 7]
+      : [0.254388, 0.764858, 0.752801]
+      ? !!python/tuple [Si, 8]
+      : [0.751641, 0.742348, 0.255975]
+    potential_energy: -855.465883
+    temperature: 663.874783
+    time: 0.004
+    total_energy: -854.779383
+  memory_estimate:
+  - model_and_support_data: {disk: 0.0, memory: 22.9}
+    molecular_dynamics_requirements: {disk: 0.0, memory: 11.7}
+  mulliken_popn:
+    ? !!python/tuple [Si, 1]
+    : {charge: -0.007, d: 0.0, f: 0.0, p: 2.652, s: 1.355, spin: null, spin_sep: false,
+      total: 4.007}
+    ? !!python/tuple [Si, 2]
+    : {charge: -0.001, d: 0.0, f: 0.0, p: 2.645, s: 1.356, spin: null, spin_sep: false,
+      total: 4.001}
+    ? !!python/tuple [Si, 3]
+    : {charge: 0.006, d: 0.0, f: 0.0, p: 2.63, s: 1.364, spin: null, spin_sep: false,
+      total: 3.994}
+    ? !!python/tuple [Si, 4]
+    : {charge: 0.002, d: 0.0, f: 0.0, p: 2.631, s: 1.367, spin: null, spin_sep: false,
+      total: 3.998}
+    ? !!python/tuple [Si, 5]
+    : {charge: -0.004, d: 0.0, f: 0.0, p: 2.652, s: 1.352, spin: null, spin_sep: false,
+      total: 4.004}
+    ? !!python/tuple [Si, 6]
+    : {charge: 0.004, d: 0.0, f: 0.0, p: 2.622, s: 1.374, spin: null, spin_sep: false,
+      total: 3.996}
+    ? !!python/tuple [Si, 7]
+    : {charge: 0.003, d: 0.0, f: 0.0, p: 2.647, s: 1.35, spin: null, spin_sep: false,
+      total: 3.997}
+    ? !!python/tuple [Si, 8]
+    : {charge: -0.004, d: 0.0, f: 0.0, p: 2.636, s: 1.368, spin: null, spin_sep: false,
+      total: 4.004}
+  options:
+    basis set:
+      basis set accuracy: FINE
+      finite basis set correction: none
+      plane wave basis set cut-off: [150.0, eV]
+      size of fine gmax: [10.9805, 1/A]
+      size of standard grid: 1.75
+    density mixing: {charge density mixing amplitude: 0.2, density-mixing scheme: Pulay,
+      max. length of mixing history: 20}
+    electronic: {net charge of system: 0.0, number of bands: 40, number of electrons: 32.0}
+    electronic minimization:
+      Fermi energy convergence tolerance: [2.721e-14, eV]
+      Method: Treating system as metallic with density mixing treatment of electrons,
+      and number of CG steps: 4
+      and number of SD steps: 1
+      convergence tolerance window: [3, cycles]
+      eigen-energy convergence tolerance: [1e-06, eV]
+      max force / atom convergence tol.: ignored
+      max. number of SCF cycles: 100
+      number of fixed-spin iterations: 10
+      periodic dipole correction: NONE
+      smearing scheme: Gaussian
+      smearing width: [0.25, eV]
+      total energy / atom convergence tol.: [1e-05, eV]
+    exchange-correlation: {DFT+D Semi-empirical dispersion correction: off, relativistic treatment: Koelling-Harmon,
+      using functional: Perdew-Zunger Local Density Approximation}
+    general: {Hirshfeld analysis: off, checkpoint writing: both castep_bin and check
+        files, data distribution: optimal for this architecture, deltaSCF calculation: off,
+      density difference calculation: off, electron localisation func (ELF) calculation: off,
+      memory usage estimate: on, molecular orbital projected DOS: off, optimization strategy: maximize
+        speed(+++), output verbosity: normal (1), polarisation (Berry phase) analysis: off,
+      random number generator seed: 314159, stress calculation: off, timing information: on,
+      type of calculation: molecular dynamics, wavefunctions paging: none, write BibTeX reference list: on,
+      write OTFG pseudopotential files: on, write bands file: on, write checkpoint data to: Si8-md-NVE.check,
+      write electrostatic potential file: on, write extra output files: on, write final density to formatted file: off,
+      write final potential to formatted file: off}
+    molecular dynamics:
+      MD SCF convergence tolerance window: [3, cycles]
+      MD SCF eigenenergies tolerance: [1e-06, eV]
+      MD SCF energy / atom convergence tol.: [1e-05, eV]
+      ab initio properties sampled every: [0, MD, steps]
+      backup results every: [1800, seconds]
+      enhanced equilibration method: NONE
+      ensemble: NVE
+      number of MD steps: 2
+      path integral MD: OFF
+      temperature: [1800.0, K]
+      time step: [0.002, ps]
+      write MD trajectory file: on
+    output_units: {IR intensity: (D/A)**2/amu, charge: e, dipole: D, efield: eV/A/e,
+      efield chi2: pm/V, energy: eV, entropy: J/mol/K, force: eV/A, force constant: eV/A**2,
+      frequency: cm-1, inv_length: 1/A, length: A, mass: amu, pressure: GPa, spin: hbar/2,
+      time: ps, velocity: A/ps, volume: A**3}
+    population analysis:
+      Population analysis output: summary only
+      Population analysis with cutoff: [3.0, A]
+    pseudopotential: {<beta|phi> representation: reciprocal space, pseudopotential representation: reciprocal
+        space, spin-orbit coupling: off}
+  species_properties:
+    Si:
+      charge_spilling: [0.011200000000000002]
+      electric_quadrupole_moment: 1.0
+      mass: 28.0855
+      pseudo_atomic_energy: -101.0726
+      pseudopot: Si_00PBE.usp
+  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
+    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '1: P1, P 1'}
+  target_stress:
+  - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  time_started: Wed, 13 Mar 2024 21:18:26 +0000
+  title: ''
+  total_time: 7.41
+  warning: [WARNING - MD ensemble=NVE so fixing cell parameters]
