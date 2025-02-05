@@ -305,7 +305,7 @@ def _process_magres_old_block(
 
 
 def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: str):
-    """Generic function to process tensors from magres_old blocks."""
+    """Process tensors from magres_old blocks."""
     tensors = REs.MAGRES_OLD_RE[f"{tensor_type}_tensor"].findall(atom_data)
     if not tensors:
         return
@@ -324,7 +324,11 @@ def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: 
     for tensor in tensors:
         data["magres"][tensor_type][index] = _list_to_threebythree(tensor[1:])
 
-def _process_jcoupling_tensors(atom_data: str, index: AtomIndex, perturbing_index: AtomIndex, data: dict):
+def _process_jcoupling_tensors(
+        atom_data: str,
+        index: AtomIndex,
+        perturbing_index: AtomIndex,
+        data: dict):
     """Process J-coupling tensors from magres_old blocks."""
     jc_tensors = REs.MAGRES_OLD_RE["isc_tensor"].findall(atom_data)
     if not jc_tensors:
@@ -357,8 +361,8 @@ def _get_jcoupling_tag(tensor_type: str) -> str:
 
     try:
         return TENSOR_TAG_LOOKUP[tensor_type]
-    except KeyError:
-        raise ValueError(f"Unknown J-coupling tensor type: {tensor_type}")
+    except KeyError as err:
+        raise ValueError(f"Unknown J-coupling tensor type: {tensor_type}") from err
 
 
 def _list_to_threebythree(lst: list[float] | list[str]) -> ThreeByThreeMatrix:
