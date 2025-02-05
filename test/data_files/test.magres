@@ -23,7 +23,7 @@ atom H       H   1          0.0000000000000000E+00          0.0000000000000000E+
 [magres]
 units ms ppm
 ms H    1          1.5935205760550641E+01         -2.9465207825065915E-02         -2.9465208436315116E-02         -2.9465209603394566E-02          1.5935205760174004E+01         -2.9465210306093507E-02         -2.9465207935827645E-02         -2.9465208297740641E-02          1.5935205759657912E+01
-ms H11111 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
+ms H210000 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
 isc_fc H    1 H    1 1.0 2.0 3.0 4.0 5.0 6.0 7.0 8.0 9.0
 [/magres]
 [magres_old]
@@ -49,4 +49,237 @@ H        1 Isotropic:       15.9352 (ppm)
 H        1 Anisotropy:      -0.0884 (ppm)
 H        1 Asymmetry:        0.0000
 
+==========================================================================
+  Using the following values of the electric quadrupole moment            
+  H      Isotope   2             Q =    0.0029 Barn
+  O      Isotope  17             Q =   -0.0256 Barn
+  Mg     Isotope  25             Q =    0.1994 Barn
+  Si     No EFG isotope defined. Q =    1.0000 Barn
+==========================================================================
+ 
+============
+Atom: C        1
+============
+C        1 Coordinates      4.847    4.351    3.941   A
+
+TOTAL tensor
+
+              -0.0109     -0.0164     -0.0074
+              -0.0164      0.0063      0.0276
+              -0.0074      0.0276      0.0046
+
+C        1 Eigenvalue  V_xx      -0.0131      
+C        1 Eigenvector V_xx      -0.7976      0.1568     -0.5824
+C        1 Eigenvalue  V_yy      -0.0258      
+C        1 Eigenvector V_yy       0.5078      0.6956     -0.5082
+C        1 Eigenvalue  V_zz       0.0389      
+C        1 Eigenvector V_zz      -0.3254      0.7011      0.6345
+
+C        1 Cq:        0.3041 (MHz)
+C        1 Eta:       0.3289
+
+==========================
+ Perturbing Atom: H    1
+==========================
+H    1 Coordinates      3.981    4.178    3.295   A
+
+ J-coupling Fermi Contact
+
+             -58.4571     -0.3687      0.8006
+              -0.3687    -59.0960      0.4428
+               0.8006      0.4428    -57.3537
+
+H    1 Isotropic:      -58.3023    10^19kg m^-2 s^-2 A^-2
+
+H    1 Eigenvalue  sigma_xx     -56.9093
+H    1 Eigenvector sigma_xx       0.4365      0.1073      0.8933
+H    1 Eigenvalue  sigma_yy     -58.4560
+H    1 Eigenvector sigma_yy       0.7328     -0.6185     -0.2838
+H    1 Eigenvalue  sigma_zz     -59.5415
+H    1 Eigenvector sigma_zz       0.5220      0.7785     -0.3486
+
+H    1 Anisotropy:      -1.8589
+
+   J-coupling Spin Dipole
+
+              -2.0003      0.0393      0.1689
+               0.0480     -2.2303      0.0367
+               0.1641      0.0282     -2.1084
+
+H    1 Isotropic:       -2.1130    10^19kg m^-2 s^-2 A^-2
+
+H    1 Eigenvalue  sigma_xx      -1.8710
+H    1 Eigenvector sigma_xx       0.7997      0.1496      0.5815
+H    1 Eigenvalue  sigma_yy      -2.2293
+H    1 Eigenvector sigma_yy      -0.5946      0.0623      0.8016
+H    1 Eigenvalue  sigma_zz      -2.2386
+H    1 Eigenvector sigma_zz      -0.0837      0.9868     -0.1388
+
+H    1 Anisotropy:      -0.1884
+
+  J-coupling Paramagnetic
+
+              -0.7709      0.1267      0.4276
+               0.1272     -1.2972      0.0936
+               0.4276      0.0935     -1.0017
+
+H    1 Isotropic:       -1.0233    10^19kg m^-2 s^-2 A^-2
+
+H    1 Eigenvalue  sigma_xx      -0.4152
+H    1 Eigenvector sigma_xx       0.7818      0.1760      0.5981
+H    1 Eigenvalue  sigma_yy      -1.3238
+H    1 Eigenvector sigma_yy       0.1668      0.8654     -0.4726
+H    1 Eigenvalue  sigma_zz      -1.3307
+H    1 Eigenvector sigma_zz      -0.6008      0.4692      0.6472
+
+H    1 Anisotropy:      -0.4612
+
+   J-coupling Diamagnetic
+
+              27.5777     -3.0495      1.5289
+              -3.1084     28.2482      2.0820
+               1.5686      2.0870     33.8743
+
+H    1 Isotropic:       29.9001    10^19kg m^-2 s^-2 A^-2
+
+H    1 Eigenvalue  sigma_xx      24.1473
+H    1 Eigenvector sigma_xx       0.7070      0.6600     -0.2540
+H    1 Eigenvalue  sigma_yy      30.9429
+H    1 Eigenvector sigma_yy       0.7010     -0.7015      0.1285
+H    1 Eigenvalue  sigma_zz      34.6099
+H    1 Eigenvector sigma_zz       0.0934      0.2689      0.9586
+
+H    1 Anisotropy:       7.0648
+
+         J-coupling Total
+
+             -33.6506     -3.2523      2.9260
+              -3.3019    -34.3754      2.6551
+               2.9608      2.6516    -26.5894
+
+H    1 Isotropic:      -31.5384    10^19kg m^-2 s^-2 A^-2
+
+H    1 Eigenvalue  sigma_xx     -25.2674
+H    1 Eigenvector sigma_xx       0.2617      0.1820      0.9478
+H    1 Eigenvalue  sigma_yy     -30.7433
+H    1 Eigenvector sigma_yy       0.7170     -0.6941     -0.0647
+H    1 Eigenvalue  sigma_zz     -38.6046
+H    1 Eigenvector sigma_zz       0.6462      0.6965     -0.3121
+
+H    1 Anisotropy:     -10.5992
+
+============
+Atom: H    2
+============
+H    2 Coordinates      5.033    3.430    4.505   A
+
+ J-coupling Fermi Contact
+
+              -0.3145      0.1078      0.1351
+               0.1078     -0.3614      0.0123
+               0.1351      0.0123     -0.4068
+
+H    2 Isotropic:       -0.3609    10^19kg m^-2 s^-2 A^-2
+
+H    2 Eigenvalue  sigma_xx      -0.1690
+H    2 Eigenvector sigma_xx      -0.7630     -0.4569     -0.4572
+H    2 Eigenvalue  sigma_yy      -0.3894
+H    2 Eigenvector sigma_yy       0.1465     -0.8112      0.5661
+H    2 Eigenvalue  sigma_zz      -0.5243
+H    2 Eigenvector sigma_zz       0.6296     -0.3650     -0.6859
+
+H    2 Anisotropy:      -0.2451
+
+   J-coupling Spin Dipole
+
+              -0.0884      0.1109      0.0623
+               0.0590      0.2601     -0.1527
+               0.0859     -0.1138     -0.1081
+
+H    2 Isotropic:        0.0212    10^19kg m^-2 s^-2 A^-2
+
+H    2 Eigenvalue  sigma_xx      -0.0247
+H    2 Eigenvector sigma_xx       0.7868      0.0530      0.6149
+H    2 Eigenvalue  sigma_yy      -0.2237
+H    2 Eigenvector sigma_yy       0.5986     -0.3087     -0.7392
+H    2 Eigenvalue  sigma_zz       0.3121
+H    2 Eigenvector sigma_zz       0.1506      0.9497     -0.2746
+
+H    2 Anisotropy:       0.4363
+
+  J-coupling Paramagnetic
+
+               0.1748      0.0256     -0.1343
+               0.3876      0.3380      0.3267
+              -0.2755      0.0280      0.0720
+
+H    2 Isotropic:        0.1949    10^19kg m^-2 s^-2 A^-2
+
+H    2 Eigenvalue  sigma_xx      -0.2173
+H    2 Eigenvector sigma_xx      -0.5864      0.4362     -0.6825
+H    2 Eigenvalue  sigma_yy       0.3197
+H    2 Eigenvector sigma_yy      -0.6416      0.2642      0.7201
+H    2 Eigenvalue  sigma_zz       0.4825
+H    2 Eigenvector sigma_zz      -0.4944     -0.8602     -0.1249
+
+H    2 Anisotropy:       0.4313
+
+   J-coupling Diamagnetic
+
+              -0.1862     -0.0928      0.2619
+              -0.3612     -0.3063     -0.3741
+               0.3408     -0.1331     -0.0404
+
+H    2 Isotropic:       -0.1776    10^19kg m^-2 s^-2 A^-2
+
+H    2 Eigenvalue  sigma_xx       0.3680
+H    2 Eigenvector sigma_xx      -0.5618      0.4502     -0.6941
+H    2 Eigenvalue  sigma_yy      -0.4173
+H    2 Eigenvector sigma_yy      -0.6573      0.2665      0.7049
+H    2 Eigenvalue  sigma_zz      -0.4836
+H    2 Eigenvector sigma_zz      -0.5023     -0.8522     -0.1462
+
+H    2 Anisotropy:      -0.4590
+
+         J-coupling Total
+
+              -0.4143      0.1515      0.3251
+               0.1933     -0.0696     -0.1878
+               0.2864     -0.2066     -0.4832
+
+H    2 Isotropic:       -0.3224    10^19kg m^-2 s^-2 A^-2
+
+H    2 Eigenvalue  sigma_xx       0.0189
+H    2 Eigenvector sigma_xx       0.2006      0.9473     -0.2499
+H    2 Eigenvalue  sigma_yy      -0.1411
+H    2 Eigenvector sigma_yy      -0.7500     -0.0156     -0.6613
+H    2 Eigenvalue  sigma_zz      -0.8449
+H    2 Eigenvector sigma_zz      -0.6303      0.3201      0.7073
+
+H    2 Anisotropy:      -0.7838
+
+==========================================================================
+  Using the following values of the magnetogyric ratio                    
+  H      Isotope   1             GAMMA =  2.6752E+08 rad T-1 s-1
+==========================================================================
+
+============
+Atom: H        1
+============
+H        1 Coordinates      0.000    0.000    0.000   A
+
+TOTAL tensor
+
+           -1226.9372      1.2937      1.2937
+               1.2937  -1226.9372      1.2937
+               1.2937      1.2937  -1226.9372
+
+H        1 Eigenvalue  A_xx   -1224.3497      
+H        1 Eigenvector A_xx       0.5774      0.5774      0.5774
+H        1 Eigenvalue  A_yy   -1228.2309      
+H        1 Eigenvector A_yy       0.8152     -0.4477     -0.3674
+H        1 Eigenvalue  A_zz   -1228.2309      
+H        1 Eigenvector A_zz      -0.0464     -0.6828      0.7291
+
+H        1 Iso:    -1226.9372 (MHz)
 [/magres_old]
