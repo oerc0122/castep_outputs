@@ -497,6 +497,28 @@ MAGRES_TASK = (
     "Hyperfine",
 )
 
+MAGRES_OLD_RE = {
+    # Atom lines
+    "atom": re.compile(
+        r"[=]+[\r\n]+( Perturbing Atom|Atom): ([A-Za-z\:0-9]+)\s+([0-9]+)[\r\n]+[=]+[\r\n]+([^=]+)[\r\n]+",
+        re.M | re.S),
+    # Coordinates
+    "coords": re.compile(
+        r"([A-Za-z\:0-9]+)\s+([0-9]+)\s+Coordinates\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+A[\r\n]+"),
+    # Magnetic shielding tensor
+    "ms_tensor": re.compile(
+        r"\s{0,}(.*?) Shielding Tensor[\r\n]+\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+"),
+    # Spin-Spin coupling tensor
+    "isc_tensor": re.compile(
+        r"\s{0,}J-coupling (.*?)[\r\n]+\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\n\r]+\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\r\n]+\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+"),
+    # Electric field gradient tensor
+    "efg_tensor": re.compile(
+        r"\s{0,}(.*?) tensor[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+V_xx\s+[-0-9\.]+"),
+    # Hyperfine tensor
+    "hf_tensor": re.compile(
+        r"\s{0,}(.*?) tensor[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+A_xx\s+[-0-9\.]+"),
+}
+
 # Regexp to identify block in .phonon or .phonon_dos file
 FRACCOORDS_RE = re.compile(rf"\s*(?P<index>{INTNUMBER_RE}){labelled_floats(('u', 'v', 'w'))}"
                            rf"\s*(?P<spec>{SPECIES_RE}){labelled_floats(('mass',))}")
