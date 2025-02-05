@@ -6,7 +6,6 @@ from collections import defaultdict
 from typing import Literal, TextIO, TypedDict
 
 import castep_outputs.utilities.castep_res as REs
-from castep_outputs.utilities.castep_res import get_numbers
 from castep_outputs.utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from castep_outputs.utilities.filewrapper import Block
 from castep_outputs.utilities.type_conv import determine_type, to_type
@@ -15,6 +14,32 @@ from castep_outputs.utilities.utility import (
     file_or_path,
     normalise_key,
 )
+
+MAGRES_ALIASES = {
+    "ms": "magnetic_shielding",
+    "efg": "electric_field_gradient",
+    "efg_local": "local_electric_field_gradient",
+    "efg_nonlocal": "nonlocal_electric_field_gradient",
+    "isc_fc": "j_coupling_fc",
+    "isc_orbital_p": "j_coupling_orbital_p",
+    "isc_orbital_d": "j_coupling_orbital_d",
+    "isc_spin": "j_coupling_spin",
+    "isc": "j_coupling_k_total",
+    "hf": "hyperfine",
+}
+
+MAGRES_DEFAULT_UNITS = {
+    "atom": "Angstrom",
+    "lattice": "Angstrom",
+    "ms": "ppm",
+    "efg": "au",
+    "isc": "10^19.T^2.J^-1",
+    "isc_fc": "10^19.T^2.J^-1",
+    "isc_spin": "10^19.T^2.J^-1",
+    "isc_orbital_p": "10^19.T^2.J^-1",
+    "isc_orbital_d": "10^19.T^2.J^-1",
+    "hf": "au",
+}
 
 
 class AtomsInfo(TypedDict):
@@ -37,19 +62,22 @@ class AtomsInfo(TypedDict):
 class UnitsInfo(TypedDict):
     """Information on magres units."""
 
-    #: Position units.
-    atom: str
-    #: Lattice length units.
-    lattice: str
-    #: Magnetic reponse units.
-    ms: str
+    atom: str  #: Position units.
+    lattice: str  #: Lattice length units.
+    ms: str  #: Magnetic response units.
+    efg: str  #: Electric field gradient units.
+    isc: str  #: J-coupling units.
+    isc_fc: str  #: Fermi contact J-coupling units.
+    isc_spin: str  #: Spin dipole J-coupling units.
+    isc_orbital_p: str  #: Orbital paramagnetic J-coupling units.
+    isc_orbital_d: str  #: Orbital diamagnetic J-coupling units.
+    hyperfine: str  #: Hyperfine coupling units.
 
 
 class MagresInfo(TypedDict):
-    """NMR Magnetic reponse information."""
+    """NMR Magnetic response information."""
 
-    #: Atom coordinates
-    atoms: dict[AtomIndex, ThreeVector]
+    atoms: dict[AtomIndex, ThreeVector]  #: Atom coordinates.
     calc_code: Literal["CASTEP"]
     calc_code_hgversion: str
     calc_code_platform: str
@@ -74,7 +102,7 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
 
     Parameters
     ----------
-    magres_file
+    magres_file : TextIO
         Open handle to file to parse.
 
     Returns
@@ -99,7 +127,8 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
                 accum["magres"] = _process_magres_block(block, version)
             elif block_name == "magres_old":
                 (accum["total_shielding"], accum["atom_info"]) = _process_magres_old_block(
-                    block, accum,
+                    block,
+                    accum,
                 )
 
     return accum
@@ -168,7 +197,9 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
     Parameters
     ----------
     block
-        Block to process
+        Block to process.
+    version
+        CASTEP version number.
 
     Returns
     -------
@@ -176,7 +207,6 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
         Processed data.
     """
     accum = defaultdict(dict)
-
     munge_fix = 3 if version < 22 else 5
 
     for line in block:
@@ -195,6 +225,7 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
 
         elif words[0].startswith("isc"):  # ISC props explicitly have spaces!
             key, speca, inda, specb, indb, *val = words
+            accum[key][((speca, int(inda)), (specb, int(indb)))] = _list_to_threebythree(val)
 
             accum[key][(speca, int(inda)), (specb, int(indb))] = to_type(val, float)
 
@@ -230,16 +261,19 @@ def _process_magres_old_block(
 
     Returns
     -------
-    ThreeByThreeMatrix
-        Total shielding tensor.
-    dict[AtomIndex, AtomsInfo]
-        Processed atomic data.
+    :
+        Processed data.
     """
-    atom_info = {atreg: defaultdict(list) for atreg in accum["atoms"]["coords"]}
-    for atreg, pos in accum["atoms"]["coords"].items():
-        atom_info[atreg]["coords"] = pos
+    data = {"atoms": {"units": {}, "coords": {}}, "magres": {"units": {}}}
+    data["atoms"]["units"]["atom"] = "Angstrom"
 
-    total_shielding = None
+    found_atoms = set()
+    coords = REs.MAGRES_OLD_RE["coords"].findall(str(block))
+    for label, i, x, y, z in coords:
+        index = (label, int(i))
+        if index not in found_atoms:
+            data["atoms"]["coords"][index] = (float(x), float(y), float(z))
+            found_atoms.add(index)
 
     for line in block:
         if sub_blk := Block.from_re(line, block, "TOTAL Shielding Tensor", REs.EMPTY, n_end=2):
@@ -260,4 +294,90 @@ def _process_magres_old_block(
             elif ":" in key:
                 atom_info[atreg][normalise_key(key)] = float(val[0])
 
-    return total_shielding, atom_info
+    # The magres_old blocks have data in these atom blocks
+    for atom in atoms:
+        index = atom[1], int(atom[2])
+        _process_tensors(atom[3], index, data, "ms")
+        _process_tensors(atom[3], index, data, "efg")
+        _process_tensors(atom[3], index, data, "hf")
+        _process_jcoupling_tensors(atom[3], index, perturbing_index, data)
+
+    return data
+
+
+def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: str):
+    """Generic function to process tensors from magres_old blocks."""
+    tensors = REs.MAGRES_OLD_RE[f"{tensor_type}_tensor"].findall(atom_data)
+    if not tensors:
+        return
+
+    # Add default units from MAGRES_DEFAULT_UNITS if not present
+    if tensor_type not in data["magres"]["units"]:
+        data["magres"]["units"][tensor_type] = MAGRES_DEFAULT_UNITS.get(tensor_type, "")
+
+    # Ensure tensor dictionary exists
+    if tensor_type not in data["magres"]:
+        data["magres"][tensor_type] = {}
+
+    # Store tensors
+    for tensor in tensors:
+        data["magres"][tensor_type][index] = _list_to_threebythree(tensor[1:])
+
+
+def _process_jcoupling_tensors(
+    atom_data: str, index: AtomIndex, perturbing_index: AtomIndex, data: dict
+):
+    """Process J-coupling tensors from magres_old blocks."""
+    jc_tensors = REs.MAGRES_OLD_RE["isc_tensor"].findall(atom_data)
+    if not jc_tensors:
+        return
+
+    for tensor in jc_tensors:
+        tag = _get_jcoupling_tag(tensor[0])
+        if tag not in data["magres"]:
+            data["magres"][tag] = {}
+        data["magres"][tag][perturbing_index, index] = _list_to_threebythree(tensor[1:])
+
+    # For any isc tensor tags, add the units if not present
+    for tag in ("isc", "isc_fc", "isc_spin", "isc_orbital_p", "isc_orbital_d"):
+        if tag in data["magres"] and tag not in data["magres"]["units"]:
+            data["magres"]["units"][tag] = MAGRES_DEFAULT_UNITS.get(tag, "")
+
+
+def _get_jcoupling_tag(tensor_type: str) -> str:
+    """Get the J-coupling tag based on tensor type.
+
+    These are the tags used in the magres_old blocks.
+    """
+    TENSOR_TAG_LOOKUP = {
+        "Fermi Contact": "isc_fc",
+        "Spin Dipole": "isc_spin",
+        "Diamagnetic": "isc_orbital_d",
+        "Paramagnetic": "isc_orbital_p",
+        "Total": "isc",
+    }
+
+    try:
+        return TENSOR_TAG_LOOKUP[tensor_type]
+    except KeyError:
+        raise ValueError(f"Unknown J-coupling tensor type: {tensor_type}")
+
+
+def _list_to_threebythree(lst: list[float] | list[str]) -> ThreeByThreeMatrix:
+    """List of 9 floats to 3x3 matrix.
+
+    Order is:
+    ::
+
+        [a, b, c,
+         d, e, f,
+         g, h, i]
+    """
+    # Convert to floats if necessary
+    lst = [float(i) for i in lst]
+
+    return (
+        (lst[0], lst[1], lst[2]),
+        (lst[3], lst[4], lst[5]),
+        (lst[6], lst[7], lst[8]),
+    )
