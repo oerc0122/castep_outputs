@@ -91,17 +91,28 @@ class MagresInfo(TypedDict):
     lattice: tuple[float, float, float,
                    float, float, float,
                    float, float, float]
-    ms: dict[AtomIndex, list[float]]  #: Magnetic shielding tensor.
-    efg: dict[AtomIndex, list[float]]  #: Electric field gradient tensor.
-    efg_local: dict[AtomIndex, list[float]]  #: Local electric field gradient tensor.
-    efg_nonlocal: dict[AtomIndex, list[float]]  #: Non-local electric field gradient tensor.
-    isc: dict[tuple[AtomIndex, AtomIndex], list[float]]  #: J-coupling tensor.
-    isc_fc: dict[tuple[AtomIndex, AtomIndex], list[float]]  #: Fermi contact J-coupling tensor.
-    isc_spin: dict[tuple[AtomIndex, AtomIndex], list[float]]  #: Spin dipole J-coupling tensor.
-    isc_orbital_p: dict[tuple[AtomIndex, AtomIndex], list[float]]  #: Orbital paramagnetic J-coupling tensor.
-    isc_orbital_d: dict[tuple[AtomIndex, AtomIndex], list[float]]  #: Orbital diamagnetic J-coupling tensor.
-    hyperfine: dict[AtomIndex, list[float]]  #: Hyperfine coupling tensor.
-    units: UnitsInfo  #: Units information.
+    # Magnetic shielding tensor.
+    ms: dict[AtomIndex, list[float]]
+    # Electric field gradient tensor.
+    efg: dict[AtomIndex, list[float]]
+    # Local electric field gradient tensor.
+    efg_local: dict[AtomIndex, list[float]]
+    # Non-local electric field gradient tensor.
+    efg_nonlocal: dict[AtomIndex, list[float]]
+    # J-coupling tensor.
+    isc: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    # Fermi contact J-coupling tensor.
+    isc_fc: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    # Spin dipole J-coupling tensor.
+    isc_spin: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    # Orbital paramagnetic J-coupling tensor.
+    isc_orbital_p: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    # Orbital diamagnetic J-coupling tensor.
+    isc_orbital_d: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    # Hyperfine coupling tensor.
+    hyperfine: dict[AtomIndex, list[float]]
+    # Units information.
+    units: UnitsInfo
 
 
 @file_or_path(mode="r")
@@ -283,7 +294,7 @@ def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatri
 
 
 def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: str):
-    """Generic function to process tensors from magres_old blocks."""
+    """Process tensors from magres_old blocks."""
     tensors = REs.MAGRES_OLD_RE[f"{tensor_type}_tensor"].findall(atom_data)
     if not tensors:
         return
@@ -302,7 +313,11 @@ def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: 
     for tensor in tensors:
         data["magres"][tensor_type][index] = _list_to_threebythree(tensor[1:])
 
-def _process_jcoupling_tensors(atom_data: str, index: AtomIndex, perturbing_index: AtomIndex, data: dict):
+def _process_jcoupling_tensors(
+        atom_data: str,
+        index: AtomIndex,
+        perturbing_index: AtomIndex,
+        data: dict):
     """Process J-coupling tensors from magres_old blocks."""
     jc_tensors = REs.MAGRES_OLD_RE["isc_tensor"].findall(atom_data)
     if not jc_tensors:
@@ -335,8 +350,8 @@ def _get_jcoupling_tag(tensor_type: str) -> str:
 
     try:
         return TENSOR_TAG_LOOKUP[tensor_type]
-    except KeyError:
-        raise ValueError(f"Unknown J-coupling tensor type: {tensor_type}")
+    except KeyError as err:
+        raise ValueError(f"Unknown J-coupling tensor type: {tensor_type}") from err
 
 
 def _list_to_threebythree(lst: list[float] | list[str]) -> ThreeByThreeMatrix:

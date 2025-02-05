@@ -500,23 +500,45 @@ MAGRES_TASK = (
 MAGRES_OLD_RE = {
     # Atom lines
     "atom": re.compile(
-        r"[=]+[\r\n]+( Perturbing Atom|Atom): ([A-Za-z\:0-9]+)\s+([0-9]+)[\r\n]+[=]+[\r\n]+([^=]+)[\r\n]+",
-        re.M | re.S),
+        r"[=]+[\r\n]+( Perturbing Atom|Atom): ([A-Za-z\:0-9]+)\s+"
+        r"([0-9]+)[\r\n]+[=]+[\r\n]+([^=]+)[\r\n]+",
+        re.MULTILINE | re.DOTALL,
+    ),
     # Coordinates
     "coords": re.compile(
-        r"([A-Za-z\:0-9]+)\s+([0-9]+)\s+Coordinates\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+A[\r\n]+"),
+        r"([A-Za-z\:0-9]+)\s+([0-9]+)\s+Coordinates\s+"
+        r"([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+A[\r\n]+",
+    ),
     # Magnetic shielding tensor
     "ms_tensor": re.compile(
-        r"\s{0,}(.*?) Shielding Tensor[\r\n]+\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+"),
+        r"\s{0,}(.*?) Shielding Tensor[\r\n]+"
+        r"\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+"
+        r"\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+"
+        r"\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+",
+    ),
     # Spin-Spin coupling tensor
     "isc_tensor": re.compile(
-        r"\s{0,}J-coupling (.*?)[\r\n]+\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\n\r]+\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\r\n]+\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+"),
+        r"\s{0,}J-coupling (.*?)[\r\n]+"
+        r"\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\n\r]+"
+        r"\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\r\n]+"
+        r"\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+",
+    ),
     # Electric field gradient tensor
     "efg_tensor": re.compile(
-        r"\s{0,}(.*?) tensor[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+V_xx\s+[-0-9\.]+"),
+        r"\s{0,}(.*?) tensor[\r\n]+"
+        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        r"\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+V_xx\s+[-0-9\.]+",
+    ),
     # Hyperfine tensor
     "hf_tensor": re.compile(
-        r"\s{0,}(.*?) tensor[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+A_xx\s+[-0-9\.]+"),
+        r"\s{0,}(.*?) tensor[\r\n]+"
+        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        r"\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+A_xx\s+[-0-9\.]+",
+    ),
 }
 
 # Regexp to identify block in .phonon or .phonon_dos file
