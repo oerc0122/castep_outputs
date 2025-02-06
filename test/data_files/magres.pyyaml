@@ -1,42 +1,16 @@
 !!python/object/apply:collections.defaultdict
 args:
-- &id003 !!python/name:builtins.dict ''
+- &id001 !!python/name:builtins.dict ''
 dictitems:
-  atom_info:
-    ? &id001 !!python/tuple
-    - H
-    - 1
-    : !!python/object/apply:collections.defaultdict
-      args:
-      - !!python/name:builtins.list ''
-      dictitems:
-        anisotropy: -0.0884
-        asymmetry: 0.0
-        coords: &id002 !!python/tuple
-        - 0.0
-        - 0.0
-        - 0.0
-        eigvenvalue:
-        - 15.9647
-        - 15.9647
-        - 15.8763
-        eigvenvector:
-        - !!python/tuple
-          - 0.3571
-          - -0.8144
-          - 0.4573
-        - !!python/tuple
-          - 0.7343
-          - -0.0579
-          - -0.6764
-        - !!python/tuple
-          - -0.5774
-          - -0.5774
-          - -0.5774
-        isotropic: 15.9352
   atoms:
     coords:
-      *id001: *id002
+      ? !!python/tuple
+      - H
+      - 1
+      : !!python/tuple
+      - 0.0
+      - 0.0
+      - 0.0
     lattice: !!python/tuple
     - 3.7042404783592575
     - 0.0
@@ -63,9 +37,9 @@ dictitems:
     xcfunctional: PBE
   magres: !!python/object/apply:collections.defaultdict
     args:
-    - *id003
+    - *id001
     dictitems:
-      isc_fc: &id004
+      isc_fc: &id002
         ? !!python/tuple
         - !!python/tuple
           - H
@@ -74,56 +48,310 @@ dictitems:
           - H
           - 1
         : !!python/tuple
-        - 1.0
-        - 2.0
-        - 3.0
-        - 4.0
-        - 5.0
-        - 6.0
-        - 7.0
-        - 8.0
-        - 9.0
-      j_coupling_fc: *id004
-      magnetic_resonance_shielding: &id005
+        - !!python/tuple
+          - 1.0
+          - 2.0
+          - 3.0
+        - !!python/tuple
+          - 4.0
+          - 5.0
+          - 6.0
+        - !!python/tuple
+          - 7.0
+          - 8.0
+          - 9.0
+      j_coupling_fc: *id002
+      magnetic_shielding: &id003
         ? !!python/tuple
         - H
         - 1
         : !!python/tuple
-        - 15.935205760550641
-        - -0.029465207825065915
-        - -0.029465208436315116
-        - -0.029465209603394566
-        - 15.935205760174004
-        - -0.029465210306093507
-        - -0.029465207935827645
-        - -0.02946520829774064
-        - 15.935205759657912
+        - !!python/tuple
+          - 15.935205760550641
+          - -0.029465207825065915
+          - -0.029465208436315116
+        - !!python/tuple
+          - -0.029465209603394566
+          - 15.935205760174004
+          - -0.029465210306093507
+        - !!python/tuple
+          - -0.029465207935827645
+          - -0.02946520829774064
+          - 15.935205759657912
         ? !!python/tuple
-        - H
-        - 11111
+        - H2
+        - 10000
         : !!python/tuple
-        - 1.0
-        - 2.0
-        - 3.0
-        - 4.0
-        - 5.0
-        - 6.0
-        - 7.0
-        - 8.0
-        - 9.0
-      ms: *id005
+        - !!python/tuple
+          - 1.0
+          - 2.0
+          - 3.0
+        - !!python/tuple
+          - 4.0
+          - 5.0
+          - 6.0
+        - !!python/tuple
+          - 7.0
+          - 8.0
+          - 9.0
+      ms: *id003
       units:
         ms: ppm
-  total_shielding:
-  - !!python/tuple
-    - 15.9352
-    - -0.0295
-    - -0.0295
-  - !!python/tuple
-    - -0.0295
-    - 15.9352
-    - -0.0295
-  - !!python/tuple
-    - -0.0295
-    - -0.0295
-    - 15.9352
+  magres_old:
+    atoms:
+      coords:
+        ? !!python/tuple
+        - C
+        - 1
+        : !!python/tuple
+        - 4.847
+        - 4.351
+        - 3.941
+        ? !!python/tuple
+        - H
+        - 1
+        : !!python/tuple
+        - 0.0
+        - 0.0
+        - 0.0
+        ? !!python/tuple
+        - H
+        - 2
+        : !!python/tuple
+        - 5.033
+        - 3.43
+        - 4.505
+      units:
+        atom: Angstrom
+    magres:
+      efg:
+        ? !!python/tuple
+        - C
+        - 1
+        : !!python/tuple
+        - !!python/tuple
+          - -0.0109
+          - -0.0164
+          - -0.0074
+        - !!python/tuple
+          - -0.0164
+          - 0.0063
+          - 0.0276
+        - !!python/tuple
+          - -0.0074
+          - 0.0276
+          - 0.0046
+      hf:
+        ? !!python/tuple
+        - H
+        - 1
+        : !!python/tuple
+        - !!python/tuple
+          - -1226.9372
+          - 1.2937
+          - 1.2937
+        - !!python/tuple
+          - 1.2937
+          - -1226.9372
+          - 1.2937
+        - !!python/tuple
+          - 1.2937
+          - 1.2937
+          - -1226.9372
+      isc:
+        ? !!python/tuple
+        - &id004 !!python/tuple
+          - H
+          - 1
+        - &id005 !!python/tuple
+          - H
+          - 1
+        : !!python/tuple
+        - !!python/tuple
+          - -33.6506
+          - -3.2523
+          - 2.926
+        - !!python/tuple
+          - -3.3019
+          - -34.3754
+          - 2.6551
+        - !!python/tuple
+          - 2.9608
+          - 2.6516
+          - -26.5894
+        ? !!python/tuple
+        - *id004
+        - &id006 !!python/tuple
+          - H
+          - 2
+        : !!python/tuple
+        - !!python/tuple
+          - -0.4143
+          - 0.1515
+          - 0.3251
+        - !!python/tuple
+          - 0.1933
+          - -0.0696
+          - -0.1878
+        - !!python/tuple
+          - 0.2864
+          - -0.2066
+          - -0.4832
+      isc_fc:
+        ? !!python/tuple
+        - *id004
+        - *id005
+        : !!python/tuple
+        - !!python/tuple
+          - -58.4571
+          - -0.3687
+          - 0.8006
+        - !!python/tuple
+          - -0.3687
+          - -59.096
+          - 0.4428
+        - !!python/tuple
+          - 0.8006
+          - 0.4428
+          - -57.3537
+        ? !!python/tuple
+        - *id004
+        - *id006
+        : !!python/tuple
+        - !!python/tuple
+          - -0.3145
+          - 0.1078
+          - 0.1351
+        - !!python/tuple
+          - 0.1078
+          - -0.3614
+          - 0.0123
+        - !!python/tuple
+          - 0.1351
+          - 0.0123
+          - -0.4068
+      isc_orbital_d:
+        ? !!python/tuple
+        - *id004
+        - *id005
+        : !!python/tuple
+        - !!python/tuple
+          - 27.5777
+          - -3.0495
+          - 1.5289
+        - !!python/tuple
+          - -3.1084
+          - 28.2482
+          - 2.082
+        - !!python/tuple
+          - 1.5686
+          - 2.087
+          - 33.8743
+        ? !!python/tuple
+        - *id004
+        - *id006
+        : !!python/tuple
+        - !!python/tuple
+          - -0.1862
+          - -0.0928
+          - 0.2619
+        - !!python/tuple
+          - -0.3612
+          - -0.3063
+          - -0.3741
+        - !!python/tuple
+          - 0.3408
+          - -0.1331
+          - -0.0404
+      isc_orbital_p:
+        ? !!python/tuple
+        - *id004
+        - *id005
+        : !!python/tuple
+        - !!python/tuple
+          - -0.7709
+          - 0.1267
+          - 0.4276
+        - !!python/tuple
+          - 0.1272
+          - -1.2972
+          - 0.0936
+        - !!python/tuple
+          - 0.4276
+          - 0.0935
+          - -1.0017
+        ? !!python/tuple
+        - *id004
+        - *id006
+        : !!python/tuple
+        - !!python/tuple
+          - 0.1748
+          - 0.0256
+          - -0.1343
+        - !!python/tuple
+          - 0.3876
+          - 0.338
+          - 0.3267
+        - !!python/tuple
+          - -0.2755
+          - 0.028
+          - 0.072
+      isc_spin:
+        ? !!python/tuple
+        - *id004
+        - *id005
+        : !!python/tuple
+        - !!python/tuple
+          - -2.0003
+          - 0.0393
+          - 0.1689
+        - !!python/tuple
+          - 0.048
+          - -2.2303
+          - 0.0367
+        - !!python/tuple
+          - 0.1641
+          - 0.0282
+          - -2.1084
+        ? !!python/tuple
+        - *id004
+        - *id006
+        : !!python/tuple
+        - !!python/tuple
+          - -0.0884
+          - 0.1109
+          - 0.0623
+        - !!python/tuple
+          - 0.059
+          - 0.2601
+          - -0.1527
+        - !!python/tuple
+          - 0.0859
+          - -0.1138
+          - -0.1081
+      ms:
+        ? !!python/tuple
+        - H
+        - 1
+        : !!python/tuple
+        - !!python/tuple
+          - 15.9352
+          - -0.0295
+          - -0.0295
+        - !!python/tuple
+          - -0.0295
+          - 15.9352
+          - -0.0295
+        - !!python/tuple
+          - -0.0295
+          - -0.0295
+          - 15.9352
+      units:
+        efg: au
+        hf: au
+        isc: 10^19.T^2.J^-1
+        isc_fc: 10^19.T^2.J^-1
+        isc_orbital_d: 10^19.T^2.J^-1
+        isc_orbital_p: 10^19.T^2.J^-1
+        isc_spin: 10^19.T^2.J^-1
+        ms: ppm
