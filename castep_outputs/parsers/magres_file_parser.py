@@ -10,6 +10,7 @@ from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
 from ..utilities.utility import (
     add_aliases,
+    atreg_to_index,
     determine_type,
     file_or_path,
     to_type,
@@ -75,8 +76,8 @@ class UnitsInfo(TypedDict):
 
 class MagresInfo(TypedDict):
     """NMR Magnetic response information."""
-
-    atoms: dict[AtomIndex, ThreeVector]  #: Atom coordinates.
+    #: Ion (atom) coordinates.
+    ions: dict[AtomIndex, ThreeVector]
     calc_code: Literal["CASTEP"]
     calc_code_hgversion: str
     calc_code_platform: str
@@ -91,27 +92,27 @@ class MagresInfo(TypedDict):
     lattice: tuple[float, float, float,
                    float, float, float,
                    float, float, float]
-    # Magnetic shielding tensor.
+    #: Magnetic shielding tensor.
     ms: dict[AtomIndex, list[float]]
-    # Electric field gradient tensor.
+    #: Electric field gradient tensor.
     efg: dict[AtomIndex, list[float]]
-    # Local electric field gradient tensor.
+    #: Local electric field gradient tensor.
     efg_local: dict[AtomIndex, list[float]]
-    # Non-local electric field gradient tensor.
+    #: Non-local electric field gradient tensor.
     efg_nonlocal: dict[AtomIndex, list[float]]
-    # J-coupling tensor.
+    #: J-coupling tensor.
     isc: dict[tuple[AtomIndex, AtomIndex], list[float]]
-    # Fermi contact J-coupling tensor.
+    #: Fermi contact J-coupling tensor.
     isc_fc: dict[tuple[AtomIndex, AtomIndex], list[float]]
-    # Spin dipole J-coupling tensor.
+    #: Spin dipole J-coupling tensor.
     isc_spin: dict[tuple[AtomIndex, AtomIndex], list[float]]
-    # Orbital paramagnetic J-coupling tensor.
+    #: Orbital paramagnetic J-coupling tensor.
     isc_orbital_p: dict[tuple[AtomIndex, AtomIndex], list[float]]
-    # Orbital diamagnetic J-coupling tensor.
+    #: Orbital diamagnetic J-coupling tensor.
     isc_orbital_d: dict[tuple[AtomIndex, AtomIndex], list[float]]
-    # Hyperfine coupling tensor.
+    #: Hyperfine coupling tensor.
     hyperfine: dict[AtomIndex, list[float]]
-    # Units information.
+    #: Units information.
     units: UnitsInfo
 
 
@@ -268,27 +269,27 @@ def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatri
     data["atoms"]["units"]["atom"] = "Angstrom"
 
     found_atoms = set()
-    coords = REs.MAGRES_OLD_RE["coords"].findall(str(block))
-    for label, i, x, y, z in coords:
-        index = (label, int(i))
+    coords_matches = REs.MAGRES_OLD_RE["coords"].finditer(str(block))
+    for match in coords_matches:
+        index = atreg_to_index(match)
         if index not in found_atoms:
-            data["atoms"]["coords"][index] = (float(x), float(y), float(z))
+            data["atoms"]["coords"][index] = to_type(match['val'].split(), float)
             found_atoms.add(index)
 
     perturbing_index = None
-    atoms = REs.MAGRES_OLD_RE["atom"].findall(str(block))
-    for atom in atoms:
-        index = atom[1].split(":")[0], int(atom[2])
-        if atom[0] == " Perturbing Atom":
-            perturbing_index = index
+    for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
+        if match.groups()[0] == " Perturbing Atom":
+            perturbing_index = atreg_to_index(match)
+            break
 
     # The magres_old blocks have data in these atom blocks
-    for atom in atoms:
-        index = atom[1], int(atom[2])
-        _process_tensors(atom[3], index, data, "ms" )
-        _process_tensors(atom[3], index, data, "efg")
-        _process_tensors(atom[3], index, data, "hf")
-        _process_jcoupling_tensors(atom[3], index, perturbing_index, data)
+    for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
+        index = atreg_to_index(match)
+        sub_blk = match.groups()[3]
+        _process_tensors(sub_blk, index, data, "ms" )
+        _process_tensors(sub_blk, index, data, "efg")
+        _process_tensors(sub_blk, index, data, "hf")
+        _process_jcoupling_tensors(sub_blk, index, perturbing_index, data)
 
     return data
 
@@ -325,8 +326,7 @@ def _process_jcoupling_tensors(
 
     for tensor in jc_tensors:
         tag = _get_jcoupling_tag(tensor[0])
-        if tag not in data["magres"]:
-            data["magres"][tag] = {}
+        data["magres"].setdefault(tag, {})
         data["magres"][tag][perturbing_index, index] = _list_to_threebythree(tensor[1:])
 
     # For any isc tensor tags, add the units if not present
@@ -365,7 +365,7 @@ def _list_to_threebythree(lst: list[float] | list[str]) -> ThreeByThreeMatrix:
          g, h, i]
     """
     # Convert to floats if necessary
-    lst = [float(i) for i in lst]
+    lst = to_type(lst, float)
 
     return (
         (lst[0], lst[1], lst[2]),
