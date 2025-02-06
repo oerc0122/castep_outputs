@@ -516,12 +516,12 @@ MAGRES_OLD_RE = {
     ),
     # Magnetic shielding tensor
     "ms_tensor": re.compile(
-        rf"\s*(.*?) Shielding Tensor[\r\n]+{TENSOR_RE}"
+        rf"\s*(.*?) Shielding Tensor[\r\n]+{TENSOR_RE}",
     ),
     # Spin-Spin coupling tensor
     "isc_tensor": re.compile(
         r"\s{0,}J-coupling (.*?)[\r\n]+"
-        rf"{TENSOR_RE}"
+        rf"{TENSOR_RE}",
     ),
     # Electric field gradient tensor
     "efg_tensor": re.compile(
