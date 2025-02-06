@@ -497,46 +497,42 @@ MAGRES_TASK = (
     "Hyperfine",
 )
 
+TENSOR_RE = (rf"{labelled_floats(('xx', 'xy', 'xz'))}[\n\r]+"
+             rf"{labelled_floats(('yx', 'yy', 'yz'))}[\n\r]+"
+             rf"{labelled_floats(('zx', 'zy', 'zz'))}")
+
 MAGRES_OLD_RE = {
     # Atom lines
     "atom": re.compile(
-        r"[=]+[\r\n]+( Perturbing Atom|Atom): ([A-Za-z\:0-9]+)\s+"
-        r"([0-9]+)[\r\n]+[=]+[\r\n]+([^=]+)[\r\n]+",
+        r"=+\s+"
+        rf"( Perturbing Atom|Atom): {ATOM_RE}[\r\n]+"
+        r"=+[\r\n]+"
+        r"([^=]+)\s+",
         re.MULTILINE | re.DOTALL,
     ),
     # Coordinates
     "coords": re.compile(
-        r"([A-Za-z\:0-9]+)\s+([0-9]+)\s+Coordinates\s+"
-        r"([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+A[\r\n]+",
+        rf"{ATOM_RE}\s+Coordinates\s+{THREEVEC_RE}\s+A",
     ),
     # Magnetic shielding tensor
     "ms_tensor": re.compile(
-        r"\s{0,}(.*?) Shielding Tensor[\r\n]+"
-        r"\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+"
-        r"\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)[\n\r]+"
-        r"\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+([0-9\.\-]+)\s+",
+        rf"\s*(.*?) Shielding Tensor[\r\n]+{TENSOR_RE}"
     ),
     # Spin-Spin coupling tensor
     "isc_tensor": re.compile(
         r"\s{0,}J-coupling (.*?)[\r\n]+"
-        r"\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\n\r]+"
-        r"\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)[\r\n]+"
-        r"\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+([0-9eE\.\-]+)\s+",
+        rf"{TENSOR_RE}"
     ),
     # Electric field gradient tensor
     "efg_tensor": re.compile(
         r"\s{0,}(.*?) tensor[\r\n]+"
-        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
-        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
-        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        rf"{TENSOR_RE}"
         r"\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+V_xx\s+[-0-9\.]+",
     ),
     # Hyperfine tensor
     "hf_tensor": re.compile(
         r"\s{0,}(.*?) tensor[\r\n]+"
-        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
-        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
-        r"\s+([-0-9\.]+)\s+([-0-9\.]+)\s+([-0-9\.]+)[\r\n]+"
+        rf"{TENSOR_RE}"
         r"\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+A_xx\s+[-0-9\.]+",
     ),
 }
