@@ -1,0 +1,1221 @@
+- !!python/object/apply:collections.defaultdict
+  args:
+  - &id001 !!python/name:builtins.list ''
+  dictitems:
+    build_info:
+      comms: Open MPI v4.1.4
+      compiler: 'GNU Fortran 12.2.1; Optimisation: FAST'
+      fft_lib: fftw3 version fftw-3.3.10-sse2-avx
+      fundamental_constants_values: CODATA 2018
+      mathlibs: blas (LAPACK version 3.11.0)
+      summary: Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 from code version 2c6c6d262
+        update-jenkins Fri Apr 14 15:13:22 2023 +0100
+    constraints:
+      cell_constraints: !!python/tuple
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      com_constrained: true
+      number_of_cell_constraints: 0
+      number_of_ionic_constraints: 3
+    initial_cell: !!python/object/apply:collections.defaultdict
+      args:
+      - *id001
+      dictitems:
+        cell_angles:
+        - 90.0
+        - 90.0
+        - 90.0
+        density_amu: 4.364016
+        density_g: 7.246619
+        lattice_parameters:
+        - 6.3145
+        - 6.3145
+        - 6.3145
+        real_lattice:
+        - !!python/tuple
+          - 6.3145
+          - 0.0
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 6.3145
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 0.0
+          - 6.3145
+        recip_lattice:
+        - !!python/tuple
+          - 0.995040828
+          - 0.0
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 0.995040828
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 0.0
+          - 0.995040828
+        volume: 251.777492
+    initial_positions:
+      ? !!python/tuple
+      - Mn
+      - 1
+      : !!python/tuple
+      - 0.061
+      - 0.061
+      - 0.061
+      ? !!python/tuple
+      - Mn
+      - 2
+      : !!python/tuple
+      - 0.811
+      - 0.311
+      - 0.189
+      ? !!python/tuple
+      - Mn
+      - 3
+      : !!python/tuple
+      - 0.939
+      - 0.561
+      - 0.439
+      ? !!python/tuple
+      - Mn
+      - 4
+      : !!python/tuple
+      - 0.439
+      - 0.939
+      - 0.561
+      ? !!python/tuple
+      - Mn
+      - 5
+      : !!python/tuple
+      - 0.561
+      - 0.439
+      - 0.939
+      ? !!python/tuple
+      - Mn
+      - 6
+      : !!python/tuple
+      - 0.311
+      - 0.189
+      - 0.811
+      ? !!python/tuple
+      - Mn
+      - 7
+      : !!python/tuple
+      - 0.689
+      - 0.689
+      - 0.689
+      ? !!python/tuple
+      - Mn
+      - 8
+      : !!python/tuple
+      - 0.189
+      - 0.811
+      - 0.311
+      ? !!python/tuple
+      - Mn
+      - 9
+      : !!python/tuple
+      - 0.125
+      - 0.206
+      - 0.456
+      ? !!python/tuple
+      - Mn
+      - 10
+      : !!python/tuple
+      - 0.875
+      - 0.706
+      - 0.044
+      ? !!python/tuple
+      - Mn
+      - 11
+      : !!python/tuple
+      - 0.544
+      - 0.625
+      - 0.294
+      ? !!python/tuple
+      - Mn
+      - 12
+      : !!python/tuple
+      - 0.294
+      - 0.544
+      - 0.625
+      ? !!python/tuple
+      - Mn
+      - 13
+      : !!python/tuple
+      - 0.456
+      - 0.125
+      - 0.206
+      ? !!python/tuple
+      - Mn
+      - 14
+      : !!python/tuple
+      - 0.206
+      - 0.456
+      - 0.125
+      ? !!python/tuple
+      - Mn
+      - 15
+      : !!python/tuple
+      - 0.625
+      - 0.294
+      - 0.544
+      ? !!python/tuple
+      - Mn
+      - 16
+      : !!python/tuple
+      - 0.794
+      - 0.956
+      - 0.375
+      ? !!python/tuple
+      - Mn
+      - 17
+      : !!python/tuple
+      - 0.375
+      - 0.794
+      - 0.956
+      ? !!python/tuple
+      - Mn
+      - 18
+      : !!python/tuple
+      - 0.044
+      - 0.875
+      - 0.706
+      ? !!python/tuple
+      - Mn
+      - 19
+      : !!python/tuple
+      - 0.956
+      - 0.375
+      - 0.794
+      ? !!python/tuple
+      - Mn
+      - 20
+      : !!python/tuple
+      - 0.706
+      - 0.044
+      - 0.875
+    initial_spins:
+      ? !!python/tuple
+      - Mn
+      - 1
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 2
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 3
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 4
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 5
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 6
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 7
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 8
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 9
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 10
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 11
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 12
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 13
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 14
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 15
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 16
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 17
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 18
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 19
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 20
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+    k-points:
+      kpoint_mp_grid: !!python/tuple
+      - 4
+      - 4
+      - 4
+      kpoint_mp_offset: !!python/tuple
+      - 0.0
+      - 0.0
+      - 0.0
+      num_kpoints: 32
+    memory_estimate:
+    - blas_internal_memory_storage:
+        disk: 0.0
+        memory: 0.0
+      electronic_energy_minimisation_requirements:
+        disk: 0.0
+        memory: 15189.3
+      force_calculation_requirements:
+        disk: 0.0
+        memory: 9.8
+      model_and_support_data:
+        disk: 0.0
+        memory: 3776.4
+    options:
+      basis set:
+        finite basis set correction: none
+        plane wave basis set cut-off: !!python/tuple
+        - 500.0
+        - eV
+        size of fine gmax: !!python/tuple
+        - 20.0476
+        - 1/A
+        size of standard grid: 1.75
+      electronic:
+        electron temperature: !!python/tuple
+        - 0.0
+        - K
+        net charge of system: 0.0
+        number of bands: 420
+        number of electrons: 300.0
+      electronic minimization:
+        Fermi energy convergence tolerance: !!python/tuple
+        - 2.721e-14
+        - eV
+        Method: Treating system as metallic with ensemble DFT treatment of electrons,
+        and number of CG steps: 4
+        and number of SD steps: 1
+        convergence tolerance window: !!python/tuple
+        - 3
+        - cycles
+        max force / atom convergence tol.: ignored
+        max. number of SCF cycles: 50
+        number of fixed-spin iterations: 10
+        number of occupancy cycles: 6
+        periodic dipole correction: NONE
+        smearing scheme: Gaussian
+        smearing width: !!python/tuple
+        - 0.2
+        - eV
+        total energy / atom convergence tol.: !!python/tuple
+        - 0.001
+        - eV
+      exchange-correlation:
+        DFT+D Semi-empirical dispersion correction: 'off'
+        relativistic treatment: Koelling-Harmon
+        using functional: Local Density Approximation
+      general:
+        Hirshfeld analysis: 'off'
+        checkpoint writing: both castep_bin and check files
+        data distribution: optimal for this architecture
+        deltaSCF calculation: 'off'
+        density difference calculation: 'off'
+        electron localisation func (ELF) calculation: 'off'
+        memory usage estimate: 'on'
+        molecular orbital projected DOS: 'off'
+        optimization strategy: maximize speed(+++)
+        output verbosity: normal (1)
+        polarisation (Berry phase) analysis: 'off'
+        random number generator seed: 115718445
+        stress calculation: 'off'
+        timing information: 'on'
+        type of calculation: single point energy
+        wavefunctions paging: none
+        write BibTeX reference list: 'off'
+        write OTFG pseudopotential files: 'on'
+        write bands file: 'on'
+        write checkpoint data to: beta-mn.check
+        write electrostatic potential file: 'on'
+        write extra output files: 'on'
+        write final density to formatted file: 'off'
+        write final potential to formatted file: 'off'
+      output_units:
+        IR intensity: (D/A)**2/amu
+        charge: e
+        dipole: D
+        efield: eV/A/e
+        efield chi2: pm/V
+        energy: eV
+        entropy: J/mol/K
+        force: eV/A
+        force constant: eV/A**2
+        frequency: cm-1
+        inv_length: 1/A
+        length: A
+        mass: amu
+        pressure: GPa
+        spin: hbar/2
+        time: ps
+        velocity: A/ps
+        volume: A**3
+      pseudopotential:
+        <beta|phi> representation: reciprocal space
+        pseudopotential representation: reciprocal space
+        spin-orbit coupling: 'on'
+    pspot_detail:
+    - augmentation_charge_rinner: !!python/tuple
+      - 0.6
+      element: Mn
+      ionic_charge: 15.0
+      level_of_theory: LDA
+      partial_core_correction: !!python/tuple
+      - 0.6
+      pseudopotential_definition:
+      - Rc: 1.803
+        beta: 1
+        e: -3.132
+        j: 1
+        l: 0
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 2
+        e: -0.194
+        j: 1
+        l: 0
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 3
+        e: 0.25
+        j: 1
+        l: 0
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 4
+        e: -2.001
+        j: 3
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 5
+        e: -2.001
+        j: 1
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 6
+        e: 0.25
+        j: 3
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 7
+        e: 0.25
+        j: 1
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 8
+        e: -0.258
+        j: 5
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 9
+        e: -0.258
+        j: 3
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 10
+        e: 0.25
+        j: 5
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 11
+        e: 0.25
+        j: 3
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: loc
+        e: 0.0
+        j: 0
+        l: 3
+        norm: 0
+        scheme: pn
+      reference_electronic_structure:
+      - energy: -3.132
+        occupation: 2.0
+        orb: 3s1/2
+      - energy: -2.001
+        occupation: 2.0
+        orb: 3p1/2
+      - energy: -2.001
+        occupation: 2.0
+        orb: 3p1/2
+      - energy: -0.258
+        occupation: 2.0
+        orb: 3d3/2
+      - energy: -0.258
+        occupation: 2.0
+        orb: 3d3/2
+      - energy: -0.194
+        occupation: 2.0
+        orb: 4s1/2
+      solver: Koelling-Harmon
+    species_properties: !!python/object/apply:collections.defaultdict
+      args:
+      - &id002 !!python/name:builtins.dict ''
+      dictitems:
+        Mn:
+          electric_quadrupole_moment: 0.33
+          mass: 54.93805
+          pseudo_atomic_energy: -2901.7207
+          pseudopot:
+            beta_radius: 1.8
+            coarse: 12.0
+            core_radius: 1.8
+            fine: 16.0
+            local_channel: 3
+            medium: 14.0
+            opt:
+            - qc=7
+            print: false
+            proj: 30U:40:31:32
+            projectors: !!python/tuple
+            - orbital: 3
+              shell: s
+              type: U
+            - orbital: 4
+              shell: s
+              type: null
+            - orbital: 3
+              shell: p
+              type: null
+            - orbital: 3
+              shell: d
+              type: null
+            r_inner: 0.6
+            string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
+    symmetries:
+      maximum_deviation_from_symmetry: 0.00000 ANG
+      number_of_symmetry_operations: 1
+      point_group_of_crystal: '1: C1, 1, 1'
+      space_group_of_crystal: '213: P4_132, P 4bd 2ab 3'
+    target_stress:
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+    time_started: Tue, 30 May 2023 11:57:18 +0100
+    title: ''
+    warning:
+    - 'Warning in parameters_read: presetting of magnetic moments on atoms cannot
+      be guaranteed when metals_method /= density mixing'
+- !!python/object/apply:collections.defaultdict
+  args:
+  - *id001
+  dictitems:
+    build_info:
+      comms: Open MPI v4.1.4
+      compiler: 'GNU Fortran 12.2.1; Optimisation: FAST'
+      fft_lib: fftw3 version fftw-3.3.10-sse2-avx
+      fundamental_constants_values: CODATA 2018
+      mathlibs: blas (LAPACK version 3.11.0)
+      summary: Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 from code version 2c6c6d262
+        update-jenkins Fri Apr 14 15:13:22 2023 +0100
+    constraints:
+      cell_constraints: !!python/tuple
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      com_constrained: true
+      number_of_cell_constraints: 0
+      number_of_ionic_constraints: 3
+    initial_cell: !!python/object/apply:collections.defaultdict
+      args:
+      - *id001
+      dictitems:
+        cell_angles:
+        - 90.0
+        - 90.0
+        - 90.0
+        density_amu: 4.364016
+        density_g: 7.246619
+        lattice_parameters:
+        - 6.3145
+        - 6.3145
+        - 6.3145
+        real_lattice:
+        - !!python/tuple
+          - 6.3145
+          - 0.0
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 6.3145
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 0.0
+          - 6.3145
+        recip_lattice:
+        - !!python/tuple
+          - 0.995040828
+          - 0.0
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 0.995040828
+          - 0.0
+        - !!python/tuple
+          - 0.0
+          - 0.0
+          - 0.995040828
+        volume: 251.777492
+    initial_positions:
+      ? !!python/tuple
+      - Mn
+      - 1
+      : !!python/tuple
+      - 0.061
+      - 0.061
+      - 0.061
+      ? !!python/tuple
+      - Mn
+      - 2
+      : !!python/tuple
+      - 0.811
+      - 0.311
+      - 0.189
+      ? !!python/tuple
+      - Mn
+      - 3
+      : !!python/tuple
+      - 0.939
+      - 0.561
+      - 0.439
+      ? !!python/tuple
+      - Mn
+      - 4
+      : !!python/tuple
+      - 0.439
+      - 0.939
+      - 0.561
+      ? !!python/tuple
+      - Mn
+      - 5
+      : !!python/tuple
+      - 0.561
+      - 0.439
+      - 0.939
+      ? !!python/tuple
+      - Mn
+      - 6
+      : !!python/tuple
+      - 0.311
+      - 0.189
+      - 0.811
+      ? !!python/tuple
+      - Mn
+      - 7
+      : !!python/tuple
+      - 0.689
+      - 0.689
+      - 0.689
+      ? !!python/tuple
+      - Mn
+      - 8
+      : !!python/tuple
+      - 0.189
+      - 0.811
+      - 0.311
+      ? !!python/tuple
+      - Mn
+      - 9
+      : !!python/tuple
+      - 0.125
+      - 0.206
+      - 0.456
+      ? !!python/tuple
+      - Mn
+      - 10
+      : !!python/tuple
+      - 0.875
+      - 0.706
+      - 0.044
+      ? !!python/tuple
+      - Mn
+      - 11
+      : !!python/tuple
+      - 0.544
+      - 0.625
+      - 0.294
+      ? !!python/tuple
+      - Mn
+      - 12
+      : !!python/tuple
+      - 0.294
+      - 0.544
+      - 0.625
+      ? !!python/tuple
+      - Mn
+      - 13
+      : !!python/tuple
+      - 0.456
+      - 0.125
+      - 0.206
+      ? !!python/tuple
+      - Mn
+      - 14
+      : !!python/tuple
+      - 0.206
+      - 0.456
+      - 0.125
+      ? !!python/tuple
+      - Mn
+      - 15
+      : !!python/tuple
+      - 0.625
+      - 0.294
+      - 0.544
+      ? !!python/tuple
+      - Mn
+      - 16
+      : !!python/tuple
+      - 0.794
+      - 0.956
+      - 0.375
+      ? !!python/tuple
+      - Mn
+      - 17
+      : !!python/tuple
+      - 0.375
+      - 0.794
+      - 0.956
+      ? !!python/tuple
+      - Mn
+      - 18
+      : !!python/tuple
+      - 0.044
+      - 0.875
+      - 0.706
+      ? !!python/tuple
+      - Mn
+      - 19
+      : !!python/tuple
+      - 0.956
+      - 0.375
+      - 0.794
+      ? !!python/tuple
+      - Mn
+      - 20
+      : !!python/tuple
+      - 0.706
+      - 0.044
+      - 0.875
+    initial_spins:
+      ? !!python/tuple
+      - Mn
+      - 1
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 2
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 3
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 4
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 5
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 6
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 7
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 8
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 9
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 10
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 11
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 12
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 13
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 14
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 15
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 16
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 17
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 18
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 19
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+      ? !!python/tuple
+      - Mn
+      - 20
+      : fix: false
+        magmom: 2.5
+        spin: 0.166667
+    k-points:
+      kpoint_mp_grid: !!python/tuple
+      - 4
+      - 4
+      - 4
+      kpoint_mp_offset: !!python/tuple
+      - 0.0
+      - 0.0
+      - 0.0
+      num_kpoints: 32
+    memory_estimate:
+    - blas_internal_memory_storage:
+        disk: 0.0
+        memory: 0.0
+      electronic_energy_minimisation_requirements:
+        disk: 0.0
+        memory: 6100.6
+      force_calculation_requirements:
+        disk: 0.0
+        memory: 9.8
+      model_and_support_data:
+        disk: 0.0
+        memory: 3780.5
+    options:
+      basis set:
+        finite basis set correction: none
+        largest prime factor in FFT: 5
+        plane wave basis set cut-off: !!python/tuple
+        - 500.0
+        - eV
+        size of fine gmax: !!python/tuple
+        - 20.0476
+        - 1/A
+        size of standard grid: 1.75
+      density mixing:
+        charge density mixing amplitude: 0.8
+        charge density mixing g-vector: !!python/tuple
+        - 1.5
+        - 1/A
+        cut-off energy for mixing: !!python/tuple
+        - 500.0
+        - eV
+        density-mixing scheme: Broyden
+        max. length of mixing history: 20
+        spin density mixing amplitude: 0.5
+        spin density mixing g-vector: !!python/tuple
+        - 1.5
+        - 1/A
+      devel_code:
+        improve_wvfn: 'off'
+      electronic:
+        net charge of system: 0.0
+        number of bands: 420
+        number of electrons: 300.0
+      electronic minimization:
+        Fermi energy convergence tolerance: !!python/tuple
+        - 2.721e-14
+        - eV
+        Method: Treating system as metallic with density mixing treatment of electrons,
+        and number of CG steps: 4
+        and number of SD steps: 1
+        convergence tolerance window: !!python/tuple
+        - 3
+        - cycles
+        eigen-energy convergence tolerance: !!python/tuple
+        - 1.0e-06
+        - eV
+        max force / atom convergence tol.: ignored
+        max. number of SCF cycles: 50
+        number of fixed-spin iterations: 10
+        periodic dipole correction: NONE
+        smearing scheme: Gaussian
+        smearing width: !!python/tuple
+        - 0.2
+        - eV
+        total energy / atom convergence tol.: !!python/tuple
+        - 0.001
+        - eV
+      exchange-correlation:
+        DFT+D Semi-empirical dispersion correction: 'off'
+        relativistic treatment: Koelling-Harmon
+        using functional: Local Density Approximation
+      general:
+        Hirshfeld analysis: 'off'
+        checkpoint writing: both castep_bin and check files
+        data distribution: optimal for this architecture
+        deltaSCF calculation: 'off'
+        density difference calculation: 'off'
+        electron localisation func (ELF) calculation: 'off'
+        memory usage estimate: 'on'
+        molecular orbital projected DOS: 'off'
+        optimization strategy: maximize speed(+++)
+        output verbosity: normal (1)
+        polarisation (Berry phase) analysis: 'off'
+        random number generator seed: 194517207
+        stress calculation: 'off'
+        timing information: 'on'
+        type of calculation: single point energy
+        wavefunctions paging: none
+        write BibTeX reference list: 'off'
+        write OTFG pseudopotential files: 'on'
+        write bands file: 'on'
+        write checkpoint data to: beta-mn.check
+        write electrostatic potential file: 'on'
+        write extra output files: 'on'
+        write final density to formatted file: 'off'
+        write final potential to formatted file: 'off'
+      output_units:
+        IR intensity: (D/A)**2/amu
+        charge: e
+        dipole: D
+        efield: eV/A/e
+        efield chi2: pm/V
+        energy: eV
+        entropy: J/mol/K
+        force: eV/A
+        force constant: eV/A**2
+        frequency: cm-1
+        inv_length: 1/A
+        length: A
+        mass: amu
+        pressure: GPa
+        spin: hbar/2
+        time: ps
+        velocity: A/ps
+        volume: A**3
+      pseudopotential:
+        <beta|phi> representation: reciprocal space
+        pseudopotential representation: reciprocal space
+        spin-orbit coupling: 'on'
+    pspot_detail:
+    - augmentation_charge_rinner: !!python/tuple
+      - 0.6
+      element: Mn
+      ionic_charge: 15.0
+      level_of_theory: LDA
+      partial_core_correction: !!python/tuple
+      - 0.6
+      pseudopotential_definition:
+      - Rc: 1.803
+        beta: 1
+        e: -3.132
+        j: 1
+        l: 0
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 2
+        e: -0.194
+        j: 1
+        l: 0
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 3
+        e: 0.25
+        j: 1
+        l: 0
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 4
+        e: -2.001
+        j: 3
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 5
+        e: -2.001
+        j: 1
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 6
+        e: 0.25
+        j: 3
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 7
+        e: 0.25
+        j: 1
+        l: 1
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 8
+        e: -0.258
+        j: 5
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 9
+        e: -0.258
+        j: 3
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 10
+        e: 0.25
+        j: 5
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: 11
+        e: 0.25
+        j: 3
+        l: 2
+        norm: 0
+        scheme: qc
+      - Rc: 1.803
+        beta: loc
+        e: 0.0
+        j: 0
+        l: 3
+        norm: 0
+        scheme: pn
+      reference_electronic_structure:
+      - energy: -3.132
+        occupation: 2.0
+        orb: 3s1/2
+      - energy: -2.001
+        occupation: 2.0
+        orb: 3p1/2
+      - energy: -2.001
+        occupation: 2.0
+        orb: 3p1/2
+      - energy: -0.258
+        occupation: 2.0
+        orb: 3d3/2
+      - energy: -0.258
+        occupation: 2.0
+        orb: 3d3/2
+      - energy: -0.194
+        occupation: 2.0
+        orb: 4s1/2
+      solver: Koelling-Harmon
+    species_properties: !!python/object/apply:collections.defaultdict
+      args:
+      - *id002
+      dictitems:
+        Mn:
+          electric_quadrupole_moment: 0.33
+          mass: 54.93805
+          pseudo_atomic_energy: -2901.7207
+          pseudopot:
+            beta_radius: 1.8
+            coarse: 12.0
+            core_radius: 1.8
+            fine: 16.0
+            local_channel: 3
+            medium: 14.0
+            opt:
+            - qc=7
+            print: false
+            proj: 30U:40:31:32
+            projectors: !!python/tuple
+            - orbital: 3
+              shell: s
+              type: U
+            - orbital: 4
+              shell: s
+              type: null
+            - orbital: 3
+              shell: p
+              type: null
+            - orbital: 3
+              shell: d
+              type: null
+            r_inner: 0.6
+            string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
+    symmetries:
+      maximum_deviation_from_symmetry: 0.00000 ANG
+      number_of_symmetry_operations: 1
+      point_group_of_crystal: '1: C1, 1, 1'
+      space_group_of_crystal: '213: P4_132, P 4bd 2ab 3'
+    target_stress:
+    - - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+      - 0.0
+    time_started: Fri, 14 Jul 2023 19:45:17 +0100
+    title: ''

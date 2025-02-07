@@ -1,0 +1,192 @@
+!!python/object/apply:collections.defaultdict
+args:
+- &id001 !!python/name:builtins.list ''
+dictitems:
+  confirmation: true
+  product:
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      reaction_coordinate: 1.0
+      E: &id006
+      - - -1.17704626
+        - -1.17704626
+      h: &id007
+      - - 7.5589045
+        - 0.0
+        - 0.0
+      - - 4.6284941e-16
+        - 7.5589045
+        - 0.0
+      - - 4.6284941e-16
+        - 4.6284941e-16
+        - 7.5589045
+      ? !!python/tuple
+      - H
+      - 1
+      : F: &id002 !!python/tuple
+        - -1.21832917e-16
+        - 1.93967281e-08
+        - -0.000149130718
+        R: &id003 !!python/tuple
+        - 0.0
+        - 0.0
+        - 0.0
+        force: *id002
+        position: *id003
+      ? !!python/tuple
+      - H
+      - 2
+      : F: &id004 !!python/tuple
+        - 1.21832917e-16
+        - -1.93967281e-08
+        - 0.000149130718
+        R: &id005 !!python/tuple
+        - 4.26335158e-32
+        - 4.26335158e-32
+        - 6.08227251
+        force: *id004
+        position: *id005
+      energy: *id006
+      lattice_vectors: *id007
+  reagent:
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      reaction_coordinate: 0.0
+      E: &id012
+      - - -1.1770463
+        - -1.1770463
+      h: &id013
+      - - 7.5589045
+        - 0.0
+        - 0.0
+      - - 4.6284941e-16
+        - 7.5589045
+        - 0.0
+      - - 4.6284941e-16
+        - 4.6284941e-16
+        - 7.5589045
+      ? !!python/tuple
+      - H
+      - 1
+      : F: &id008 !!python/tuple
+        - 2.07523076e-09
+        - -1.64603211e-09
+        - 8.76088055e-06
+        R: &id009 !!python/tuple
+        - 0.0
+        - 0.0
+        - 0.0
+        force: *id008
+        position: *id009
+      ? !!python/tuple
+      - H
+      - 2
+      : F: &id010 !!python/tuple
+        - -2.07523076e-09
+        - 1.64603211e-09
+        - -8.76088055e-06
+        R: &id011 !!python/tuple
+        - 2.37401203e-32
+        - 1.14141686e-32
+        - 1.47614067
+        force: *id010
+        position: *id011
+      energy: *id012
+      lattice_vectors: *id013
+  test:
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      reaction_coordinate: 0.114825715
+      E: &id018
+      - - -1.15493594
+        - -1.15493594
+      h: &id019
+      - - 7.5589045
+        - 0.0
+        - 0.0
+      - - 4.6284941e-16
+        - 7.5589045
+        - 0.0
+      - - 4.6284941e-16
+        - 4.6284941e-16
+        - 7.5589045
+      ? !!python/tuple
+      - H
+      - 1
+      : F: &id014 !!python/tuple
+        - 1.63557906e-12
+        - 0.00138249019
+        - 0.061983292
+        R: &id015 !!python/tuple
+        - 0.0
+        - 0.0
+        - 0.0
+        force: *id014
+        position: *id015
+      ? !!python/tuple
+      - H
+      - 2
+      : F: &id016 !!python/tuple
+        - -1.63557906e-12
+        - -0.00138249019
+        - -0.061983292
+        R: &id017 !!python/tuple
+        - 2.37401203e-32
+        - 0.0472431531
+        - 2.00472541
+        force: *id016
+        position: *id017
+      energy: *id018
+      lattice_vectors: *id019
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      reaction_coordinate: 0.229651429
+      E: &id024
+      - - -1.12203721
+        - -1.12203721
+      h: &id025
+      - - 7.5589045
+        - 0.0
+        - 0.0
+      - - 4.6284941e-16
+        - 7.5589045
+        - 0.0
+      - - 4.6284941e-16
+        - 4.6284941e-16
+        - 7.5589045
+      ? !!python/tuple
+      - H
+      - 1
+      : F: &id020 !!python/tuple
+        - 1.9978569e-13
+        - 0.00242523289
+        - 0.0581166316
+        R: &id021 !!python/tuple
+        - 0.0
+        - 0.0
+        - 0.0
+        force: *id020
+        position: *id021
+      ? !!python/tuple
+      - H
+      - 2
+      : F: &id022 !!python/tuple
+        - -1.9978569e-13
+        - -0.00242523289
+        - -0.0581166316
+        R: &id023 !!python/tuple
+        - 2.37401203e-32
+        - 0.0944863063
+        - 2.53331015
+        force: *id022
+        position: *id023
+      energy: *id024
+      lattice_vectors: *id025

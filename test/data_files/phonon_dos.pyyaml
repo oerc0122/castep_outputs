@@ -1,0 +1,143 @@
+!!python/object/apply:collections.defaultdict
+args:
+- &id001 !!python/name:builtins.list ''
+dictitems:
+  ? ''
+  : !!python/tuple []
+  bins in DOS: 2001
+  branches: 6
+  coords: !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      index: !!python/tuple
+      - 1
+      - 2
+      mass: !!python/tuple
+      - 28.0855
+      - 28.0855
+      spec:
+      - Si
+      - Si
+      u: !!python/tuple
+      - 0.0
+      - 0.25
+      v: !!python/tuple
+      - 0.0
+      - 0.25
+      w: !!python/tuple
+      - 0.0
+      - 0.25
+  dos:
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      Si: !!python/tuple
+      - 1.2e-05
+      - 0.001076
+      - 2.0e-06
+      - 2.0e-06
+      - 3.0e-06
+      - 4.0e-06
+      - 5.0e-06
+      - 7.0e-06
+      - 1.0e-05
+      freq: !!python/tuple
+      - -1.0
+      - 0.0
+      - 1.0
+      - 2.0
+      - 3.0
+      - 4.0
+      - 5.0
+      - 6.0
+      - 7.0
+      g: !!python/tuple
+      - 1.2e-05
+      - 0.001076
+      - 2.0e-06
+      - 2.0e-06
+      - 3.0e-06
+      - 4.0e-06
+      - 5.0e-06
+      - 7.0e-06
+      - 1.0e-05
+  gradients:
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      Grad_qf: !!python/tuple
+      - 28.1761865
+      - 29.7242877
+      - 247.6645174
+      - 216.1850754
+      - 16.9110335
+      - 16.9110335
+      f: !!python/tuple
+      - 129.731327
+      - 129.731327
+      - 394.687403
+      - 430.352037
+      - 461.804174
+      - 461.804174
+      n: !!python/tuple
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      pth: !!python/tuple
+      - 0.0017777778
+      qpt: !!python/tuple
+      - -0.466667
+      - -0.466667
+      - 0.0
+  - !!python/object/apply:collections.defaultdict
+    args:
+    - *id001
+    dictitems:
+      Grad_qf: !!python/tuple
+      - 67.6551599
+      - 196.300147
+      - 278.5662343
+      - 228.1683264
+      - 35.8510899
+      - 12.8051507
+      f: !!python/tuple
+      - 115.102302
+      - 125.32759
+      - 358.827476
+      - 428.205891
+      - 498.984864
+      - 501.880342
+      n: !!python/tuple
+      - 1
+      - 2
+      - 3
+      - 4
+      - 5
+      - 6
+      pth: !!python/tuple
+      - 0.0071111111
+      qpt: !!python/tuple
+      - -0.466667
+      - -0.4
+      - -0.466667
+  ions: 2
+  species: 1
+  unit_cell:
+  - !!python/tuple
+    - 2.695464
+    - 2.695464
+    - 0.0
+  - !!python/tuple
+    - 2.695464
+    - 0.0
+    - 2.695464
+  - !!python/tuple
+    - 0.0
+    - 2.695464
+    - 2.695464
