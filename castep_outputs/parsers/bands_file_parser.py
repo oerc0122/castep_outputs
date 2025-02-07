@@ -2,13 +2,12 @@
 from __future__ import annotations
 
 import re
-from collections import defaultdict
-from typing import TextIO, TypedDict
+from typing import List, Literal, TextIO, TypedDict
 
 from ..utilities import castep_res as REs
 from ..utilities.datatypes import ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import fix_data_types
+from ..utilities.utility import to_type
 from .parse_utilities import parse_regular_header
 
 
@@ -29,11 +28,15 @@ class BandsQData(TypedDict, total=False):
     weight: float
 
 
-class BandsFileInfo(TypedDict, total=False):
-    """Bands eigenvalue info of a bands calculation."""
-
-    #: Bands info in file.
-    bands: list[BandsQData]
+BandsFileInfo = TypedDict("BandsFileInfo", {
+    "eigenvalues": int,
+    "electrons": int,
+    "k-points": int,
+    "spin components": int,
+    "Fermi Energy": float,
+    "coords": dict,
+    "bands": List[BandsQData],
+    })
 
 
 def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
@@ -50,8 +53,10 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
     BandsFileInfo
         Parsed info.
     """
-    bands_info: BandsFileInfo = defaultdict(list)
-    qdata = {}
+    bands_info: BandsFileInfo = {"bands": []}
+    qdata: BandsQData = {}
+    accum: list[str] = []
+    current: Literal["band", "band_up", "band_dn"] = "band"
 
     block = Block.from_re("", bands_file, "", REs.THREEVEC_RE, n_end=3)
     data = parse_regular_header(block, ("Fermi energy",))
@@ -60,38 +65,28 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
     for line in bands_file:
         if line.startswith("K-point"):
             if qdata:
-                fix_data_types(qdata, {"qpt": float,
-                                       "weight": float,
-                                       "spin_comp": int,
-                                       "band": float,
-                                       "band_up": float,
-                                       "band_dn": float,
-                                       })
+                qdata[current] = to_type(accum, float)
+                qdata["spin_comp"] = "band_dn" in qdata
                 bands_info["bands"].append(qdata)
+                accum = []
+                current = "band"
             _, _, *qpt, weight = line.split()
-            qdata = {"qpt": qpt, "weight": weight, "spin_comp": None, "band": []}
+            qdata = {"qpt": to_type(qpt, float), "weight": float(weight)}
 
         elif line.startswith("Spin component"):
-            qdata["spin_comp"] = line.split()[2]
-            if qdata["spin_comp"] != "1":
-                qdata["band_up"] = qdata.pop("band")
-                if "band_dn" not in qdata:
-                    qdata["band_dn"] = []
+            spin_comp = int(line.split()[2])
+            if spin_comp != 1:
+                qdata["band_up"] = to_type(accum, float)
+                accum = []
+                current = "band_dn"
 
         elif re.match(rf"^\s*{REs.FNUMBER_RE}$", line.strip()):
-            if qdata["spin_comp"] != "1":
-                qdata["band_dn"].append(line)
-            else:
-                qdata["band"].append(line)
+            accum.append(line.strip())
+
 
     if qdata:
-        fix_data_types(qdata, {"qpt": float,
-                               "weight": float,
-                               "spin_comp": int,
-                               "band": float,
-                               "band_up": float,
-                               "band_dn": float,
-                               })
+        qdata[current] = to_type(accum, float)
+        qdata["spin_comp"] = "band_dn" in qdata
         bands_info["bands"].append(qdata)
 
     return bands_info
