@@ -1,0 +1,61 @@
+!!python/object/apply:collections.defaultdict
+args:
+- !!python/name:builtins.list ''
+dictitems:
+  f_aug:
+  - !!python/complex '-0.345904'
+  - !!python/complex '-0.082065+0.082062j'
+  - !!python/complex '0.083348'
+  - !!python/complex '0.097536+0.097538j'
+  - !!python/complex '9.6e-05j'
+  f_core:
+  - !!python/complex '80.0'
+  - !!python/complex '37.403844-37.403844j'
+  - !!python/complex '67.142129'
+  - !!python/complex '31.529195+31.529195j'
+  - !!python/complex '0.0'
+  f_iam:
+  - !!python/complex '112.0'
+  - !!python/complex '41.764535-41.764535j'
+  - !!python/complex '67.563382'
+  - !!python/complex '31.251385+31.251385j'
+  - !!python/complex '-0.0'
+  f_paw:
+  - !!python/complex '112.0'
+  - !!python/complex '42.458193-42.458196j'
+  - !!python/complex '67.113321'
+  - !!python/complex '30.740547+30.740549j'
+  - !!python/complex '-1.373422j'
+  f_pp:
+  - !!python/complex '112.0'
+  - !!python/complex '42.447674-42.447678j'
+  - !!python/complex '67.016383'
+  - !!python/complex '30.667432+30.667434j'
+  - !!python/complex '-2e-06-1.397311j'
+  f_soft:
+  - !!python/complex '32.345904'
+  - !!python/complex '5.136414-5.136414j'
+  - !!python/complex '-0.112156'
+  - !!python/complex '-0.886185-0.886185j'
+  - !!python/complex '-1.373518j'
+  qvec:
+  - !!python/tuple
+    - 0
+    - 0
+    - 0
+  - !!python/tuple
+    - 1
+    - 1
+    - 1
+  - !!python/tuple
+    - 2
+    - 2
+    - 0
+  - !!python/tuple
+    - 3
+    - 1
+    - 1
+  - !!python/tuple
+    - 2
+    - 2
+    - 2

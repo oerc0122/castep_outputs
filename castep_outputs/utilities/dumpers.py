@@ -3,17 +3,18 @@ from __future__ import annotations
 
 import json
 import pprint
+from contextlib import suppress
 from typing import Any, Callable, TextIO
 
-try:
-    from ruamel import yaml
+_YAML_TYPE = None
+
+with suppress(ImportError):
+    import yaml
+    _YAML_TYPE = "pyyaml"
+
+with suppress(ImportError):
+    from ruamel import yaml as ruamel
     _YAML_TYPE = "ruamel"
-except ImportError:
-    try:
-        import yaml
-        _YAML_TYPE = "yaml"
-    except ImportError:
-        _YAML_TYPE = None
 
 
 #: Dumping function protocol.
@@ -45,11 +46,11 @@ def ruamel_dumper(data: Any, file: TextIO):
     file
         File to dump to.
     """
-    yaml_eng = yaml.YAML(typ="unsafe")
+    yaml_eng = ruamel.YAML(typ="unsafe")
     yaml_eng.dump(data, file)
 
 
-def yaml_dumper(data: Any, file: TextIO):
+def pyyaml_dumper(data: Any, file: TextIO):
     """
     YAML (pyyaml) format dumper.
 
@@ -117,21 +118,21 @@ def get_dumpers(dump_fmt: str) -> Dumper:
     SUPPORTED_FORMATS
         Acceptable values for `dump_fmt`.
     """
-    if dump_fmt not in SUPPORTED_FORMATS:
-        raise ValueError(f"Cannot output in {dump_fmt} format. "
-                         f"Valid keys are: {', '.join(SUPPORTED_FORMATS.keys())}")
-
     if dump_fmt == "yaml":
         if _YAML_TYPE is None:
             raise ImportError("Couldn't find valid yaml dumper (ruamel.yaml / yaml)"
                               "please install and try again.")
         dump_fmt = _YAML_TYPE
 
+    if dump_fmt not in SUPPORTED_FORMATS:
+        raise ValueError(f"Cannot output in {dump_fmt} format. "
+                         f"Valid keys are: {', '.join(SUPPORTED_FORMATS.keys())}")
+
     return SUPPORTED_FORMATS[dump_fmt]
 
 #: Currently supported dumpers.
 SUPPORTED_FORMATS: dict[str, Dumper] = {"json": json_dumper,
                                         "ruamel": ruamel_dumper,
-                                        "yaml": yaml_dumper,
+                                        "pyyaml": pyyaml_dumper,
                                         "pprint": pprint_dumper,
                                         "print": print_dumper}

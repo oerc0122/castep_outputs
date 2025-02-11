@@ -1,0 +1,20 @@
+- cut_off_energy: !!python/tuple
+  - 500
+  - eV
+  devel_code:
+    float_number: 15.12
+    improve_wvfn: false
+    number: 31
+    pp:
+      test_par: 1
+  elec_energy_tol: !!python/tuple
+  - 0.001
+  - eV
+  max_scf_cycles: 50
+  metals_method: dm
+  mix_spin_amp: 0.5
+  opt_strategy: speed
+  spin_treatment: vector
+  task: singlepoint
+  write_bib: false
+  xc_functional: lda

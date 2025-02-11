@@ -1,0 +1,309 @@
+coords: !!python/object/apply:collections.defaultdict
+  args:
+  - !!python/name:builtins.list ''
+  dictitems:
+    ? !!python/tuple
+    - B
+    - 1
+    : !!python/tuple
+    - 0.375
+    - 0.375
+    - 0.375
+    ? !!python/tuple
+    - N
+    - 2
+    : !!python/tuple
+    - 0.625
+    - 0.625
+    - 0.625
+overlap:
+- ? !!python/tuple
+  - 3
+  - 6
+  : 0.497606
+  ? !!python/tuple
+  - 3
+  - 7
+  : 0.002308
+  ? !!python/tuple
+  - 4
+  - 6
+  : 0.002307
+  ? !!python/tuple
+  - 4
+  - 7
+  : 0.497591
+  total: 0.996985
+- ? !!python/tuple
+  - 2
+  - 6
+  : 0.494925
+  ? !!python/tuple
+  - 2
+  - 7
+  : 0.003908
+  ? !!python/tuple
+  - 3
+  - 5
+  : 0.012166
+  ? !!python/tuple
+  - 4
+  - 5
+  : 0.488863
+  total: 0.999931
+- ? !!python/tuple
+  - 2
+  - 6
+  : 0.003907
+  ? !!python/tuple
+  - 2
+  - 7
+  : 0.494894
+  ? !!python/tuple
+  - 3
+  - 5
+  : 0.488844
+  ? !!python/tuple
+  - 4
+  - 5
+  : 0.012162
+  total: 0.99993
+- ? !!python/tuple
+  - 2
+  - 6
+  : 0.055707
+  ? !!python/tuple
+  - 2
+  - 7
+  : 0.104554
+  ? !!python/tuple
+  - 3
+  - 5
+  : 0.097408
+  ? !!python/tuple
+  - 3
+  - 6
+  : 0.155035
+  ? !!python/tuple
+  - 3
+  - 7
+  : 0.169678
+  ? !!python/tuple
+  - 3
+  - 8
+  : 0.022879
+  ? !!python/tuple
+  - 4
+  - 5
+  : 0.061031
+  ? !!python/tuple
+  - 4
+  - 6
+  : 0.164557
+  ? !!python/tuple
+  - 4
+  - 7
+  : 0.153354
+  ? !!python/tuple
+  - 4
+  - 8
+  : 0.013906
+  total: 0.999524
+- ? !!python/tuple
+  - 2
+  - 6
+  : 0.104116
+  ? !!python/tuple
+  - 2
+  - 7
+  : 0.055983
+  ? !!python/tuple
+  - 3
+  - 5
+  : 0.059369
+  ? !!python/tuple
+  - 3
+  - 6
+  : 0.166594
+  ? !!python/tuple
+  - 3
+  - 7
+  : 0.147638
+  ? !!python/tuple
+  - 3
+  - 8
+  : 0.013905
+  ? !!python/tuple
+  - 4
+  - 5
+  : 0.100521
+  ? !!python/tuple
+  - 4
+  - 6
+  : 0.161928
+  ? !!python/tuple
+  - 4
+  - 7
+  : 0.164886
+  ? !!python/tuple
+  - 4
+  - 8
+  : 0.022856
+  total: 0.999524
+- ? !!python/tuple
+  - 2
+  - 5
+  : 0.640383
+  ? !!python/tuple
+  - 2
+  - 8
+  : 0.036762
+  ? !!python/tuple
+  - 3
+  - 7
+  : 0.165081
+  ? !!python/tuple
+  - 4
+  - 6
+  : 0.153948
+  ? !!python/tuple
+  - 4
+  - 7
+  : 0.001227
+  total: 0.999524
+- ? !!python/tuple
+  - 2
+  - 6
+  : 0.003469
+  ? !!python/tuple
+  - 2
+  - 7
+  : 0.330419
+  ? !!python/tuple
+  - 3
+  - 5
+  : 0.32718
+  ? !!python/tuple
+  - 3
+  - 6
+  : 0.020226
+  ? !!python/tuple
+  - 3
+  - 7
+  : 0.143415
+  ? !!python/tuple
+  - 4
+  - 5
+  : 0.008318
+  ? !!python/tuple
+  - 4
+  - 6
+  : 0.14553
+  ? !!python/tuple
+  - 4
+  - 7
+  : 0.020683
+  total: 0.999601
+- ? !!python/tuple
+  - 2
+  - 6
+  : 0.331049
+  ? !!python/tuple
+  - 2
+  - 7
+  : 0.003453
+  ? !!python/tuple
+  - 3
+  - 5
+  : 0.008344
+  ? !!python/tuple
+  - 3
+  - 6
+  : 0.14531
+  ? !!python/tuple
+  - 3
+  - 7
+  : 0.020424
+  ? !!python/tuple
+  - 4
+  - 5
+  : 0.322143
+  ? !!python/tuple
+  - 4
+  - 6
+  : 0.020828
+  ? !!python/tuple
+  - 4
+  - 7
+  : 0.147693
+  total: 0.999601
+spectroscopic_data:
+- characterisation: Singlet
+  converged: true
+  dipoles:
+  - !!python/complex '-8.179530612134611e-06-3.4564089336344694e-05j'
+  - !!python/complex '3.25096889667309e-05+1.2934755562188371e-06j'
+  - !!python/complex '-1.3437677409466886e-05-5.608994827821512e-06j'
+  energy: 6.547397159419611
+- characterisation: Singlet
+  converged: true
+  dipoles:
+  - !!python/complex '-0.00021968719137211573+0.000703396268646933j'
+  - !!python/complex '0.0010286546711327392-0.003145486561534027j'
+  - !!python/complex '-0.0005420867476635359+0.0015415051960497653j'
+  energy: 6.547793189561084
+- characterisation: Singlet
+  converged: true
+  dipoles:
+  - !!python/complex '0.0010381162436738922+0.0032752571451736268j'
+  - !!python/complex '-5.845221659528388e-05+1.0536872954158838e-05j'
+  - !!python/complex '-0.0003524331520133872-0.0015030041786209258j'
+  energy: 6.547795924562237
+- characterisation: Singlet
+  converged: true
+  dipoles:
+  - !!python/complex '-2.1810910146322535-1.9091179444076365j'
+  - !!python/complex '0.8343352123180454-1.7962216514560714j'
+  - !!python/complex '0.3933928028905636+1.7828535226058095j'
+  energy: 6.968267036214261
+- characterisation: Singlet
+  converged: true
+  dipoles:
+  - !!python/complex '-1.5662744900840448+1.720538362042841j'
+  - !!python/complex '2.8924977420656792+0.2668115257324621j'
+  - !!python/complex '-0.9522991394713182-0.9484522171494347j'
+  energy: 6.9682671623558505
+- characterisation: Singlet
+  converged: true
+  dipoles:
+  - !!python/complex '0.9144436916715346+1.0029634036985597j'
+  - !!python/complex '1.285082669634803+1.2827320593679135j'
+  - !!python/complex '2.1774767906530905+2.403087028402732j'
+  energy: 6.968719145561165
+- characterisation: unknown
+  converged: false
+  dipoles:
+  - !!python/complex '-0.0037375143373481468-0.0014199767934261615j'
+  - !!python/complex '4.03357910996327e-05-0.0003219505403130041j'
+  - !!python/complex '0.001591127004320958+0.0008289722200021388j'
+  energy: 7.239627593753294
+- characterisation: unknown
+  converged: false
+  dipoles:
+  - !!python/complex '-0.0003572167286192175-0.0007815374407116604j'
+  - !!python/complex '7.744600226171003e-05+0.0038407175453285536j'
+  - !!python/complex '0.0001568479451349511-0.001977824615405299j'
+  energy: 7.239637016536607
+unit_cell:
+- !!python/tuple
+  - 2.087121
+  - 0.737909
+  - 1.278096
+- !!python/tuple
+  - 0.0
+  - 2.213726
+  - 1.278096
+- !!python/tuple
+  - 0.0
+  - 0.0
+  - 2.556191
