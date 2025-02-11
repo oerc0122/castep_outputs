@@ -40,3 +40,7 @@ def test_filter_none():
     with _TEST_FILE.open("r", encoding="utf-8") as file:
         data = parse_castep_file(file, filters=Filters.NONE)
     assert not data
+
+
+if __name__ == "__main__":
+    pytest.main()

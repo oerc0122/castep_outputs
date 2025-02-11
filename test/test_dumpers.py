@@ -75,7 +75,7 @@ def test_dump(file, typ, ref, out_format):
     comp_dict = normalise(comp_dict, {dict: _to_complex})
     assert comp_dict == ref_dict
 
-    # Check contents identical
+    # Check parse_single (i.e. wrapper) gives same result as specific loader
     comp_dict = parse_single(file, out_format=out_format)
     comp_dict = normalise(comp_dict, {dict: _to_complex})
 
