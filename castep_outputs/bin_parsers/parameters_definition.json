@@ -1,0 +1,2589 @@
+{
+    "top_level": {
+        "found_ground_state_wvfn": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "found_ground_state_den": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "total_energy": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "fermi_energy": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "total_nbands": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "nspins": {
+            "version": "2.2",
+            "dtype": "int"
+        }
+    },
+
+    "parameters_dump": {
+
+        "general": {
+            "seedname": {
+                "dtype": "str",
+                "version": "2.2"
+            },
+            "comment": {
+                "dtype": "str",
+                "version": "2.2"
+            },
+            "iprint": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "continuation": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "reuse": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "checkpoint": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "task": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "calculate_stress": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "run_time": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "num_backup_iter": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "print_clock": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "length_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "mass_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "time_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "charge_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "energy_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "force_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "velocity_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "pressure_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "inv_length_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "frequency_unit": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "page_wvfns": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "rand_seed": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "data_distribution": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "opt_strategy": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "backup_interval": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "force_constant_unit": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "volume_unit": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "opt_strategy_bias": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "calculate_densdiff": {
+                "version": "3.1",
+                "dtype": "bool"
+            },
+            "num_farms_requested": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "num_proc_in_smp": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "num_proc_in_smp_fine": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "message_size": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "requested_seed": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "ir_intensity_unit": {
+                "version": "4.0",
+                "dtype": "str"
+            },
+            "print_memory_usage": {
+                "version": "4.1",
+                "dtype": "bool"
+            },
+            "write_formatted_potential": {
+                "version": "4.1",
+                "dtype": "bool"
+            },
+            "write_formatted_density": {
+                "version": "4.1",
+                "dtype": "bool"
+            },
+            "dipole_unit": {
+                "version": "4.1",
+                "dtype": "str"
+            },
+            "efield_unit": {
+                "version": "4.1",
+                "dtype": "str"
+            },
+            "calc_molecular_dipole": {
+                "version": "4.1",
+                "dtype": "bool"
+            },
+            "write_orbitals": {
+                "version": "4.2",
+                "dtype": "bool"
+            },
+            "calculate_elf": {
+                "version": "4.3",
+                "dtype": "bool"
+            },
+            "write_formatted_elf": {
+                "version": "4.3",
+                "dtype": "bool"
+            },
+            "cml_output": {
+                "version": "4.3",
+                "dtype": "bool"
+            },
+            "cml_filename": {
+                "version": "4.3",
+                "dtype": "str"
+            },
+            "calculate_hirshfeld": {
+                "version": "5.0",
+                "dtype": "bool"
+            },
+            "entropy_unit": {
+                "version": "5.5",
+                "dtype": "str"
+            },
+            "write_cif_structure": {
+                "version": "5.5",
+                "dtype": "bool"
+            },
+            "write_cell_structure": {
+                "version": "5.5",
+                "dtype": "bool"
+            },
+            "write_bib": {
+                "version": "6.0",
+                "dtype": "bool"
+            },
+            "write_checkpoint": {
+                "version": "8.0",
+                "dtype": "str"
+            },
+            "spin_unit": {
+                "version": "8.0",
+                "dtype": "str"
+            },
+            "write_otfg": {
+                "version": "9.0",
+                "dtype": "bool"
+            },
+            "write_cst_esp": {
+                "version": "17.0",
+                "dtype": "bool"
+            },
+            "write_bands": {
+                "version": "17.0",
+                "dtype": "bool"
+            },
+            "write_geom": {
+                "version": "17.0",
+                "dtype": "bool"
+            },
+            "verbosity": {
+                "version": "18.0",
+                "dtype": "str"
+            },
+            "write_none": {
+                "version": "18.0",
+                "dtype": "bool"
+            },
+            "write_md": {
+                "version": "18.0",
+                "dtype": "bool"
+            },
+            "bfield_unit": {
+                "version": "19.0",
+                "dtype": "str"
+            },
+            "efield_chi2_unit": {
+                "version": "20.1",
+                "dtype": "str"
+            },
+            "calculate_polarisation": {
+                "version": "21.1",
+                "dtype": "bool"
+            }
+        },
+
+        "xc": {
+            "xc_functional_old": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "xc_vxc_deriv_epsilon": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "nlxc_page_ex_pot": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "nlxc_ppd_integral": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "nlxc_ppd_size_x": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "nlxc_ppd_size_y": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "nlxc_ppd_size_z": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "nlxc_impose_trs": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "nlxc_exchange_reflect_kpts": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "nlxc_k_scrn_den_function": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "nlxc_k_scrn_averaging_scheme": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "nlxc_re_est_k_scrn": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "nlxc_calc_full_ex_pot": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "nlxc_div_corr_on": {
+                "version": "4.0",
+                "dtype": "bool"
+            },
+            "nlxc_div_corr_S_width": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "nlxc_div_corr_tol": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "nlxc_div_corr_npts_step": {
+                "version": "4.0",
+                "dtype": "int"
+            },
+            "sedc_apply": {
+                "version": "5.0",
+                "dtype": "bool"
+            },
+            "sedc_scheme": {
+                "version": "5.0",
+                "dtype": "str"
+            },
+            "nlxc_exchange_screening": {
+                "version": "5.0",
+                "dtype": "float"
+            },
+            "nlxc_exchange_fraction": {
+                "version": "6.1",
+                "dtype": "float"
+            },
+            "sedc_sr_TS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_d_TS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_s6_G06": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_d_G06": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_lambda_OBS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_n_OBS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_sr_JCHS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_s6_JCHS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "sedc_d_JCHS": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "relativistic_treatment": {
+                "version": "8.0",
+                "dtype": "str"
+            },
+            "xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "sedc_a1_XDM": {
+                "version": "21.0",
+                "dtype": "float"
+            },
+            "sedc_a2_XDM": {
+                "version": "21.0",
+                "dtype": "float"
+            },
+            "sedc_sc_XDM": {
+                "version": "21.0",
+                "dtype": "float"
+            },
+            "sedc_c9_XDM": {
+                "version": "21.0",
+                "dtype": "bool"
+            },
+            "xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            },
+            "nlxc_method": {
+                "version": "25.1",
+                "dtype": "str"
+            }
+        },
+
+        "pspot": {
+            "pspot_nonlocal_type": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "pspot_beta_phi_type": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "spin_orbit_coupling": {
+                "version": "9.0",
+                "dtype": "bool"
+            },
+            "spinors_spin_polarized": {
+                "version": "18.0",
+                "dtype": "bool"
+            }
+        },
+
+        "basis": {
+            "basis_precision": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "cut_off_energy": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "grid_scale": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "fine_gmax": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "finite_basis_corr": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "basis_de_dloge": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "finite_basis_npoints": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "finite_basis_spacing": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "fixed_npw": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "fine_grid_scale": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "fft_max_prime_factor": {
+                "version": "4.4",
+                "dtype": "int"
+            }
+        },
+
+        "electronic": {
+            "nelectrons_old": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "nup_old": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "ndown_old": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "nspins": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "nbands": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "elec_temp": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "spin_old": {
+                "version": "3.2",
+                "dtype": "int"
+            },
+            "charge_old": {
+                "version": "3.2",
+                "dtype": "int"
+            },
+            "spin_polarized": {
+                "version": "3.2",
+                "dtype": "bool"
+            },
+            "electronic_minimizer": {
+                "version": "3.2",
+                "dtype": "str"
+            },
+            "nelectrons": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "nup": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "ndown": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "spin": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "charge": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "spin_treatment": {
+                "version": "9.0",
+                "dtype": "str"
+            }
+        },
+
+        "elec_min": {
+            "max_SD_steps": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "max_CG_steps": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "max_DIIS_steps": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "metals_method": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "elec_energy_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "elec_eigenvalue_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "elec_convergence_win": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "max_SCF_cycles": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "spin_fix": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "fix_occupancy": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "smearing_scheme": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "smearing_width": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "efermi_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "num_occ_cycles": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "elec_dump_file": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "num_dump_cycles": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "elec_restore_file": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "elec_force_tol": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "dipole_correction": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "dipole_dir": {
+                "version": "6.1",
+                "dtype": "str"
+            }
+        },
+
+        "dm": {
+            "mixing_scheme": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "mix_history_length": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "mix_charge_amp": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "mix_charge_gmax": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "mix_spin_amp": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "mix_spin_gmax": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "mix_cut_off_energy": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "mix_metric_q": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "mix_ked_charge_amp": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "mix_ked_charge_gmax": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "mix_ked_spin_amp": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "mix_ked_spin_gmax": {
+                "version": "20.1",
+                "dtype": "float"
+            }
+        },
+
+        "popn": {
+            "popn_calculate": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "popn_bond_cutoff": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "pdos_calculate_weights": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "popn_write": {
+                "version": "18.0",
+                "dtype": "str"
+            }
+        },
+
+        "bs": {
+            "bs_max_iter": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "bs_max_CG_steps": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "bs_nbands": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "bs_eigenvalue_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "bs_xc_functional_old": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "bs_re_est_k_scrn": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "bs_write_eigenvalues": {
+                "version": "4.4",
+                "dtype": "bool"
+            },
+            "bs_xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "bs_xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "bs_xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            }
+        },
+
+        "geom": {
+            "geom_method": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "geom_max_iter": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "geom_energy_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "geom_force_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "geom_disp_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "geom_stress_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "geom_convergence_win": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "geom_modulus_est": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "geom_frequency_est": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "geom_spin_fix": {
+                "version": "4.0",
+                "dtype": "int"
+            },
+            "geom_linmin_tol": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "geom_use_linmin": {
+                "version": "5.5",
+                "dtype": "bool"
+            },
+            "geom_lbfgs_max_updates": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "geom_tpsd_init_stepsize": {
+                "version": "6.1",
+                "dtype": "float"
+            },
+            "geom_tpsd_iterchange": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "geom_preconditioner": {
+                "version": "19.1",
+                "dtype": "str"
+            },
+            "geom_precon_scale_cell": {
+                "version": "19.1",
+                "dtype": "bool"
+            },
+            "geom_precon_exp_c_stab": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_precon_exp_A": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_precon_exp_r_NN": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_precon_exp_r_cut": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_precon_exp_mu": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_precon_ff_c_stab": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_precon_ff_r_cut": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "geom_run_time": {
+                "version": "25.1",
+                "dtype": "int"
+            }
+        },
+
+        "md": {
+            "md_num_iter": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "md_delta_t": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "md_ensemble": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "md_temperature": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "md_thermostat": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "md_ion_t_a": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "md_ion_t_b": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "md_extrap": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "md_extrap_fit": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "md_damping_scheme": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "md_damping_reset": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "md_opt_damped_delta_t": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "md_elec_energy_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "md_elec_eigenvalue_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "md_elec_convergence_win": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "md_barostat": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "md_ion_t": {
+                "version": "3.0",
+                "dtype": "float"
+            },
+            "md_cell_t": {
+                "version": "3.0",
+                "dtype": "float"
+            },
+            "md_nhc_length": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "md_use_pathint": {
+                "version": "3.1",
+                "dtype": "bool"
+            },
+            "md_num_beads": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "md_pathint_staging": {
+                "version": "4.0",
+                "dtype": "bool"
+            },
+            "md_pathint_num_stages": {
+                "version": "4.0",
+                "dtype": "int"
+            },
+            "md_sample_iter": {
+                "version": "4.0",
+                "dtype": "int"
+            },
+            "md_eqm_method": {
+                "version": "4.1",
+                "dtype": "str"
+            },
+            "md_eqm_ion_t": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "md_eqm_cell_t": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "md_eqm_t": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "md_elec_force_tol": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "md_pathint_init": {
+                "version": "5.5",
+                "dtype": "str"
+            },
+            "md_use_plumed": {
+                "version": "6.0",
+                "dtype": "bool"
+            },
+            "md_xlbomd": {
+                "version": "8.0",
+                "dtype": "bool"
+            },
+            "md_xlbomd_history": {
+                "version": "8.0",
+                "dtype": "int"
+            },
+            "md_hug_method": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "md_hug_t": {
+                "version": "9.0",
+                "dtype": "float"
+            },
+            "md_hug_compression": {
+                "version": "9.0",
+                "dtype": "float"
+            },
+            "md_hug_dir": {
+                "version": "17.0",
+                "dtype": "str"
+            },
+            "md_cell_damp_ringing": {
+                "version": "21.1",
+                "dtype": "bool"
+            }
+        },
+
+        "optics": {
+            "optics_nbands": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "optics_xc_functional_old": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "optics_xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "optics_xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "optics_xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            }
+        },
+
+        "tssearch": {
+            "tssearch_method": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "tssearch_lstqst_protocol": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "tssearch_qst_max_iter": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "tssearch_CG_max_iter": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "tssearch_force_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "tssearch_disp_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "tssearch_max_path_points": {
+                "version": "7.0",
+                "dtype": "int"
+            },
+            "tssearch_energy_tol": {
+                "version": "7.0",
+                "dtype": "float"
+            },
+            "tssearch_NEB_spring_constant": {
+                "version": "21.1",
+                "dtype": "float"
+            },
+            "tssearch_NEB_tangent_mode": {
+                "version": "21.1",
+                "dtype": "str"
+            },
+            "tssearch_NEB_method": {
+                "version": "21.1",
+                "dtype": "str"
+            },
+            "tssearch_NEB_max_iter": {
+                "version": "21.1",
+                "dtype": "int"
+            },
+            "tssearch_NEB_climbing": {
+                "version": "21.1",
+                "dtype": "bool"
+            },
+            "tssearch_NEB_normed": {
+                "version": "21.1",
+                "dtype": "bool"
+            }
+        },
+
+        "phonon": {
+            "phonon_const_basis": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "phonon_energy_tol": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+            "phonon_max_CG_steps": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "phonon_max_cycles": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "phonon_convergence_win": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "phonon_preconditioner": {
+                "version": "2.2",
+                "dtype": "str"
+            },
+            "phonon_use_kpoint_symmetry": {
+                "version": "2.2",
+                "dtype": "bool"
+            },
+            "phonon_dos_spacing": {
+                "version": "3.0",
+                "dtype": "float"
+            },
+            "phonon_finite_disp": {
+                "version": "3.0",
+                "dtype": "float"
+            },
+            "phonon_method_old": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "phonon_calc_lo_to_splitting": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "phonon_sum_rule": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "calculate_born_charges": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "born_charge_sum_rule": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "phonon_calculate_dos": {
+                "version": "3.1",
+                "dtype": "bool"
+            },
+            "phonon_dos_limit": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "phonon_force_constant_cutoff": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "phonon_fine_method": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "phonon_method": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "phonon_force_constant_cut_scale": {
+                "version": "4.4",
+                "dtype": "float"
+            },
+            "phonon_sum_rule_method": {
+                "version": "4.4",
+                "dtype": "str"
+            },
+            "calculate_raman": {
+                "version": "4.4",
+                "dtype": "bool"
+            },
+            "phonon_fine_cutoff_method": {
+                "version": "5.0",
+                "dtype": "str"
+            },
+            "phonon_dfpt_method": {
+                "version": "6.0",
+                "dtype": "str"
+            },
+            "raman_range_low": {
+                "version": "6.0",
+                "dtype": "float"
+            },
+            "raman_range_high": {
+                "version": "6.0",
+                "dtype": "float"
+            },
+            "phonon_write_force_constants": {
+                "version": "6.0",
+                "dtype": "bool"
+            },
+            "phonon_write_dynamical": {
+                "version": "6.0",
+                "dtype": "bool"
+            },
+            "raman_method": {
+                "version": "17.2",
+                "dtype": "str"
+            },
+            "raman_sum_rule": {
+                "version": "25.1",
+                "dtype": "bool"
+            }
+        },
+
+        "efield": {
+            "efield_max_CG_steps": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "efield_max_cycles": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "efield_convergence_win": {
+                "version": "3.0",
+                "dtype": "int"
+            },
+            "efield_energy_tol": {
+                "version": "3.0",
+                "dtype": "float"
+            },
+            "efield_calc_ion_permittivity": {
+                "version": "3.0",
+                "dtype": "bool"
+            },
+            "efield_ignore_molec_modes": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "excited_state_scissors": {
+                "version": "3.0",
+                "dtype": "float"
+            },
+            "efield_freq_spacing": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "efield_oscillator_Q": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "efield_dfpt_method": {
+                "version": "6.0",
+                "dtype": "str"
+            },
+            "efield_calculate_nonlinear": {
+                "version": "21.0",
+                "dtype": "str"
+            }
+        },
+
+        "thermodynamics": {
+            "thermo_calculate_helmholtz": {
+                "version": "3.1",
+                "dtype": "bool"
+            },
+            "thermo_t_start": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "thermo_t_stop": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "thermo_t_npoints": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "thermo_t_spacing": {
+                "version": "3.2",
+                "dtype": "float"
+            }
+        },
+
+        "wannier": {
+            "wannier_spread_type": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "wannier_spread_tol_resta": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "wannier_spread_tol_vanderbilt": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "wannier_occ_tol": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "wannier_min_algor": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "wannier_max_SD_steps": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "wannier_SD_step": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "wannier_ion_moments": {
+                "version": "3.1",
+                "dtype": "bool"
+            },
+            "wannier_ion_rmax": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "wannier_ion_cut": {
+                "version": "3.1",
+                "dtype": "bool"
+            },
+            "wannier_ion_cut_fraction": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "wannier_spread_tol": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "wannier_print_cube": {
+                "version": "4.0",
+                "dtype": "int"
+            },
+            "wannier_ion_cut_tol": {
+                "version": "4.0",
+                "dtype": "float"
+            },
+            "wannier_restart": {
+                "version": "4.0",
+                "dtype": "str"
+            },
+            "wannier_ion_cmoments": {
+                "version": "4.0",
+                "dtype": "bool"
+            }
+        },
+
+        "magres": {
+            "magres_task": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "magres_method": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "magres_max_CG_steps": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "dfpt_convergence_win": {
+                "version": "3.1",
+                "dtype": "int"
+            },
+            "dfpt_eigenvalue_tol": {
+                "version": "3.1",
+                "dtype": "float"
+            },
+            "magres_xc_functional_old": {
+                "version": "3.1",
+                "dtype": "str"
+            },
+            "magres_max_sc_cycles": {
+                "version": "4.3",
+                "dtype": "int"
+            },
+            "magres_jcoupling_task": {
+                "version": "4.3",
+                "dtype": "str"
+            },
+            "magres_write_response": {
+                "version": "4.3",
+                "dtype": "bool"
+            },
+            "magres_xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "magres_xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "magres_xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            },
+            "dfpt_residual_norm": {
+                "version": "25.1",
+                "dtype": "float"
+            }
+        },
+
+        "elnes": {
+            "elnes_nbands": {
+                "version": "4.4",
+                "dtype": "int"
+            },
+            "elnes_xc_functional_old": {
+                "version": "4.4",
+                "dtype": "str"
+            },
+            "elnes_eigenvalue_tol": {
+                "version": "4.4",
+                "dtype": "float"
+            },
+            "elnes_xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "elnes_xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "elnes_xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            }
+        },
+
+        "spectral": {
+            "spectral_theory": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "spectral_task": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "spectral_max_iter": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "spectral_max_steps_per_iter": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "spectral_nbands": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "spectral_eigenvalue_tol": {
+                "version": "6.1",
+                "dtype": "float"
+            },
+            "spectral_xc_functional_old": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "spectral_re_est_k_scrn": {
+                "version": "6.1",
+                "dtype": "bool"
+            },
+            "spectral_write_eigenvalues": {
+                "version": "6.1",
+                "dtype": "bool"
+            },
+            "spectral_xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "spectral_xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "spectral_restart": {
+                "version": "24.1",
+                "dtype": "bool"
+            },
+            "spectral_xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            }
+        },
+
+        "nonscf": {
+            "nonscf_eigenvalue_tol": {
+                "version": "25.1",
+                "dtype": "float"
+            },
+            "nonscf_residual_norm": {
+                "version": "25.1",
+                "dtype": "float"
+            },
+            "nonscf_max_iter": {
+                "version": "25.1",
+                "dtype": "int"
+            },
+            "nonscf_max_steps_per_iter": {
+                "version": "25.1",
+                "dtype": "int"
+            }
+        },
+
+        "tddft": {
+            "tddft_on": {
+                "version": "6.1",
+                "dtype": "bool"
+            },
+            "tddft_num_states": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "tddft_selected_state": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "tddft_eigenvalue_tol": {
+                "version": "6.1",
+                "dtype": "float"
+            },
+            "tddft_convergence_win": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "tddft_max_iter": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "tddft_nextra_states": {
+                "version": "6.1",
+                "dtype": "int"
+            },
+            "tddft_xc_functional_old": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "tddft_method": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "tddft_eigenvalue_method": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "tddft_approximation": {
+                "version": "6.1",
+                "dtype": "str"
+            },
+            "tddft_xc_definition_size": {
+                "version": "9.0",
+                "dtype": "int"
+            },
+            "tddft_xc_definition": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "tddft_position_method": {
+                "version": "9.0",
+                "dtype": "str"
+            },
+            "tddft_xc_functional": {
+                "version": "25.1",
+                "dtype": "str"
+            }
+        },
+
+        "ga": {
+            "ga_pop_size": {
+                "version": "4.1",
+                "dtype": "int"
+            },
+            "ga_max_gens": {
+                "version": "4.1",
+                "dtype": "int"
+            },
+            "ga_mutate_rate": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "ga_mutate_amp": {
+                "version": "4.1",
+                "dtype": "float"
+            },
+            "ga_fixed_N": {
+                "version": "4.1",
+                "dtype": "bool"
+            },
+            "ga_bulk_slice": {
+                "version": "4.1",
+                "dtype": "bool"
+            },
+            "ga_spin_mutate_rate": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "ga_spin_mutate_amp": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "ga_run_time": {
+                "version": "25.1",
+                "dtype": "int"
+            }
+        },
+
+        "solvent": {
+            "boundary_type": {
+                "version": "19.1",
+                "dtype": "str"
+            },
+            "use_smeared_ions": {
+                "version": "19.1",
+                "dtype": "bool"
+            },
+            "mg_fd_order": {
+                "version": "19.1",
+                "dtype": "int"
+            },
+            "mg_padding": {
+                "version": "19.1",
+                "dtype": "int"
+            },
+            "dielec_emb_cavity_type": {
+                "version": "19.1",
+                "dtype": "str"
+            },
+            "dielec_emb_func_method": {
+                "version": "19.1",
+                "dtype": "str"
+            },
+            "dielec_emb_param_set": {
+                "version": "19.1",
+                "dtype": "str"
+            },
+            "dielec_emb_bulk_permittivity": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "write_formatted_dielec_perm": {
+                "version": "19.1",
+                "dtype": "bool"
+            },
+            "implicit_solvent_apolar_term": {
+                "version": "19.1",
+                "dtype": "bool"
+            },
+            "implicit_solvent_surface_tension": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "implicit_solvent_apolar_factor": {
+                "version": "19.1",
+                "dtype": "float"
+            },
+            "implicit_solvent_rescale_apolar": {
+                "version": "19.1",
+                "dtype": "bool"
+            }
+        },
+
+        "deltascf": {
+            "calculate_modos": {
+                "version": "20.1",
+                "dtype": "bool"
+            },
+            "modos_checkpoint": {
+                "version": "20.1",
+                "dtype": "str"
+            },
+            "modos_states_size": {
+                "version": "20.1",
+                "dtype": "int"
+            },
+            "modos_states": {
+                "version": "20.1",
+                "dtype": "str"
+            },
+            "calculate_deltascf": {
+                "version": "20.1",
+                "dtype": "bool"
+            },
+            "deltascf_checkpoint": {
+                "version": "20.1",
+                "dtype": "str"
+            },
+            "deltascf_mode": {
+                "version": "20.1",
+                "dtype": "int"
+            },
+            "deltascf_dftu_checkpoint": {
+                "version": "20.1",
+                "dtype": "str"
+            },
+            "deltascf_overlap_cutoff": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "deltascf_excite": {
+                "version": "20.1",
+                "dtype": "bool"
+            },
+            "deltascf_smearing": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "deltascf_net_spin_1": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "deltascf_net_spin_2": {
+                "version": "20.1",
+                "dtype": "float"
+            },
+            "deltascf_constraints_size": {
+                "version": "20.1",
+                "dtype": "int"
+            },
+            "deltascf_constraints": {
+                "version": "20.1",
+                "dtype": "str"
+            }
+        },
+
+        "elastic": {
+            "elastic_method": {
+                "version": "25.1",
+                "dtype": "str"
+            },
+            "elastic_dfpt_method": {
+                "version": "25.1",
+                "dtype": "str"
+            },
+            "elastic_ignore_molec_modes": {
+                "version": "25.1",
+                "dtype": "str"
+            },
+            "elastic_max_CG_steps": {
+                "version": "25.1",
+                "dtype": "int"
+            },
+            "elastic_max_cycles": {
+                "version": "25.1",
+                "dtype": "int"
+            },
+            "elastic_convergence_win": {
+                "version": "25.1",
+                "dtype": "int"
+            },
+            "elastic_energy_tol": {
+                "version": "25.1",
+                "dtype": "float"
+            },
+            "elastic_finite_strain": {
+                "version": "25.1",
+                "dtype": "float"
+            },
+            "internal_strain_force_response": {
+                "version": "25.1",
+                "dtype": "bool"
+            },
+            "internal_strain_sum_rule": {
+                "version": "25.1",
+                "dtype": "bool"
+            },
+            "elastic_calc_deformation_pot": {
+                "version": "25.1",
+                "dtype": "bool"
+            },
+            "elastic_calc_elastic_ion_corr": {
+                "version": "25.1",
+                "dtype": "bool"
+            },
+            "elastic_calc_piezo": {
+                "version": "25.1",
+                "dtype": "bool"
+            },
+            "elastic_calc_piezo_ion_corr": {
+                "version": "25.1",
+                "dtype": "bool"
+            }
+        },
+
+        "sockets": {
+            "socket_host": {
+                "version": "22.1",
+                "dtype": "str"
+            },
+            "socket_port": {
+                "version": "22.1",
+                "dtype": "int"
+            }
+        },
+
+        "devel": {
+            "devel_code": {
+                "version": "3.0",
+                "dtype": "str"
+            },
+            "devel_block_size": {
+                "version": "8.0",
+                "dtype": "int"
+            },
+            "devel_block": {
+                "version": "8.0",
+                "dtype": "str"
+            }
+        }
+    },
+
+    "unit_cell_old": {
+        "real_lattice": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "recip_lattice": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "volume": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_ions": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "max_ions_in_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_ions_in_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ionic_positions": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "ionic_velocities": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "ionic_charge": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "atom_move": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "species_mass": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "species_symbol": {
+            "version": "2.2",
+            "dtype": "str"
+        },
+        "species_pot": {
+            "version": "2.2",
+            "dtype": "str"
+        },
+        "species_lcao_states": {
+            "version": "2.2",
+            "dtype": "int"
+        }
+    },
+
+    "unit_cell": {
+        "real_lattice": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "recip_lattice": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "volume": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_ions": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "max_ions_in_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_ions_in_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ionic_positions": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "ionic_velocities": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "ionic_charge": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ionic_charge_real": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "atom_move": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "species_mass": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "species_symbol": {
+            "version": "2.2",
+            "dtype": "str"
+        },
+        "species_pot": {
+            "version": "2.2",
+            "dtype": "str"
+        },
+        "species_lcao_states": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ion_pack_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ion_pack_index": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ionic_label": {
+            "version": "2.2",
+            "dtype": "str"
+        },
+        "initial_magnetic_moment": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "atom_fix_spin": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "initial_magnetisation_dir": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "initial_nc_density": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "num_cells_in_supercell": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "supercell_matrix": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "supercell_cell_index": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "supercell_ion_index": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "supercell_origins": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_mixture_atoms": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "mixture_weight": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "list_mixture_atoms_size": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "list_mixture_atoms": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "atom_init_magmom": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "atom_init_spin": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "indx_mixture_atoms": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "species_spin_isotope": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "species_gamma": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "species_efg_isotope": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "species_q": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "hubbard_u": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "hubbard_alpha": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "chemical_potential": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "sedc_custom_params": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "cell_version_number": {
+            "version": "2.2",
+            "dtype": "float"
+        }
+    },
+
+    "cell_global": {
+        "nkpts": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_symmetry_operations": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "symmetry_operations": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "symmetry_disps": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "symmetry_equiv_atoms": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_crystal_symmetry_operations": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "crystal_symmetry_operations": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "crystal_symmetry_disps": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "crystal_symmetry_equiv_atoms": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "cell_symmetry_ion_constraints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_ionic_constraints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ionic_constraints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_cell_constraints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "cell_constraints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "external_pressure": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "external_efield": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "external_bfield": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_bs_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "bs_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "bs_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_spectral_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "spectral_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "spectral_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_phonon_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "phonon_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_phonon_gamma_directions": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "phonon_gamma_directions": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_phonon_fine_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "phonon_fine_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_fine_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_scf_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "scf_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "scf_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_magres_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "magres_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "magres_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_elnes_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "elnes_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "elnes_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_ep_kpoint_pairs": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ep_kpoint_pairs": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "cell_symmorphic": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "fix_com": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "fix_all_ions": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "fix_all_cell": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "fix_vol": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "symmetry_generate": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "symmetry_tol": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_optics_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "optics_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "optics_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "optics_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "optics_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "optics_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "optics_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "quantisation_axis": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_supercell_matrix": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "num_supercell_kpoints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "supercell_kpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "supercell_kpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "jcoupling_species": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "jcoupling_site": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "scf_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "scf_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "scf_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "scf_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "bs_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "bs_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "bs_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "bs_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "spectral_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "spectral_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "spectral_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "spectral_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "phonon_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_fine_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "phonon_fine_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_fine_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "phonon_fine_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "magres_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "magres_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "magres_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "magres_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "elnes_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "elnes_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "elnes_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "elnes_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "supercell_kpoint_mp_grid": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "supercell_kpoint_mp_offset": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "supercell_kpoint_mp_spacing": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "supercell_kpoint_mp_density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "num_nonlinear_constraints": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "nonlinear_constraints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "nqpts": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "qpoints": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "qpoint_weights": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "qpoint_conjg": {
+            "version": "2.2",
+            "dtype": "bool"
+        },
+        "nq_to_scf_global_nk": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "q_from_scf_k_sym_op": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "density": {
+            "version": "2.2",
+            "dtype": "float"
+        },
+        "devel_code": {
+            "version": "2.2",
+            "dtype": "str"
+        }
+    },
+
+    "wave": {
+        "datatype": {
+            "version": "2.2",
+            "dtype": "str"
+        },
+        "ngx": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ngy": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "ngz": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "n_coeffs": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "n_spinor": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "n_bands": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "n_kpts": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+        "n_spins": {
+            "version": "2.2",
+            "dtype": "int"
+        },
+
+        "data_nspins_nkpts" : {
+            "kpoints_on_node": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "waves_at_kp": {
+                "version": "2.2",
+                "dtype": "int"
+            },
+            "grid_coord": {
+                "version": "2.2",
+                "dtype": "float"
+            },
+
+            "data_nbands_nspinor": {
+                "coeffs": {
+                    "version": "2.2",
+                    "dtype": "float"
+                }
+            }
+        }
+    }
+}
