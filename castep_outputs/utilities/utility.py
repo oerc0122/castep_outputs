@@ -10,7 +10,9 @@ import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
 from copy import copy
+from functools import partial
 from itertools import filterfalse
+from struct import unpack
 from typing import Any, TextIO, TypeVar
 
 import castep_outputs.utilities.castep_res as REs
@@ -478,8 +480,30 @@ def _parse_logical(val: str) -> bool:
     return val.title() in ("T", "True", "1")
 
 
+def _parse_float_bytes(val: bytes):
+    ans = unpack(f">{len(val)//8}d", val)
+    return ans if len(ans) != 1 else ans[0]
+
+def _parse_int_bytes(val: bytes):
+    ans = unpack(f">{len(val)//4}i", val)
+    return ans if len(ans) != 1 else ans[0]
+
+def _parse_bool_bytes(val: bytes):
+    ans = bool(unpack(f">{len(val)//4}i", val))
+    return ans if len(ans) != 1 else ans[0]
+
+def _parse_complex_bytes(val: bytes):
+    tmp = unpack(f">{len(val)//8}d", val)
+    ans = tuple(map(complex, tmp[::2], tmp[1::2]))
+    return ans if len(ans) != 1 else ans[0]
+
 _TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational,
                                        bool: _parse_logical}
+_BYTE_PARSERS: dict[type, Callable] = {complex: _parse_complex_bytes,
+                                       float: _parse_float_bytes,
+                                       bool: _parse_bool_bytes,
+                                       int: _parse_int_bytes,
+                                       str: partial(str, encoding="ascii")}
 
 
 @functools.singledispatch
@@ -511,8 +535,15 @@ def _(data_in: str, typ: type[T]) -> T:
 @to_type.register(tuple)
 @to_type.register(list)
 def _(data_in, typ: type[T]) -> tuple[T, ...]:
-    parser: Callable[[str], T] = _TYPE_PARSERS.get(typ, typ)
+    parse_dict = _BYTE_PARSERS if data_in and isinstance(data_in[0], bytes) else _TYPE_PARSERS
+    parser: Callable[[str], T] = parse_dict.get(typ, typ)
     return tuple(parser(x) for x in data_in)
+
+
+@to_type.register(bytes)
+def _(data_in, typ: type[T]) -> T | tuple[T, ...]:
+    parser: Callable[[bytes], T] = _BYTE_PARSERS.get(typ, typ)
+    return parser(data_in)
 
 
 def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]):
