@@ -537,3 +537,9 @@ POSITIONS_SPIN_RE = re.compile(rf"(?:spin|magmom)\s*[= :\t]\s*(?P<spin>{FLOAT_RA
 POSITIONS_MIXTURE_RE = re.compile(rf"mixture[= :\t]\(\s*{labelled_floats(('mix', 'ratio'))}\)",
                                   re.IGNORECASE)
 SPEC_PROP_RE = re.compile(rf"\s*{ATOM_NAME_RE}\s+(?P<val>.*)")
+
+# Berry Phase Polarisation
+POL_HEADER_RE = re.compile(r"^\s*(?P<key>[\w\s]+)\s*\((?P<unit>[^)]+)\)")
+POL_TABLE_RE = re.compile(r"\s*(?P<key>Ionic|Elec|Total)[^:]+:"
+                          rf"{labelled_floats(('a', 'b', 'c'))}\s*"
+                          r"\((?P<unit>[^)]+)\)")
