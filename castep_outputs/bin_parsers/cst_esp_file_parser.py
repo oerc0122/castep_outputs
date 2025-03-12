@@ -3,7 +3,7 @@ from __future__ import annotations
 
 from typing import BinaryIO, TypedDict
 
-from ..utilities.utility import to_type
+from ..utilities.utility import file_or_path, to_type
 from .fortran_bin_parser import binary_file_reader
 
 
@@ -20,6 +20,7 @@ class ESPData(TypedDict):
     mgga: tuple[tuple[tuple[complex, ...]]]
 
 
+@file_or_path(mode="rb")
 def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     """Parse castep `cst_esp` files.
 

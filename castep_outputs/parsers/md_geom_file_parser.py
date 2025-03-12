@@ -8,7 +8,7 @@ from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers
 from ..utilities.constants import FST_D, TAG_ALIASES
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import add_aliases, atreg_to_index, to_type
+from ..utilities.utility import add_aliases, atreg_to_index, file_or_path, to_type
 
 
 class MDAtomProps(TypedDict):
@@ -105,6 +105,7 @@ def parse_md_geom_frame(block: Block) -> MDGeomTimestepInfo:
 
     return curr
 
+@file_or_path(mode="r")
 def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     """
     Parse standard .md and .geom files.

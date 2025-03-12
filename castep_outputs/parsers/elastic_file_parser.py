@@ -6,9 +6,10 @@ from typing import TextIO
 
 from ..utilities.castep_res import get_numbers
 from ..utilities.filewrapper import Block
-from ..utilities.utility import to_type
+from ..utilities.utility import file_or_path, to_type
 
 
+@file_or_path(mode="r")
 def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
     """
     Parse castep .elastic files.

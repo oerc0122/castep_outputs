@@ -8,7 +8,7 @@ from typing import TextIO, TypedDict
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
 from ..utilities.datatypes import ThreeVector
-from ..utilities.utility import stack_dict, to_type
+from ..utilities.utility import file_or_path, stack_dict, to_type
 
 
 class XRDSFFileInfo(TypedDict):
@@ -34,6 +34,7 @@ class XRDSFFileInfo(TypedDict):
     qvec: list[ThreeVector]
 
 
+@file_or_path(mode="r")
 def parse_xrd_sf_file(xrd_sf_file: TextIO) -> XRDSFFileInfo:
     """
     Parse castep .xrd_sf file.

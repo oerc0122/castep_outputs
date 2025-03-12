@@ -61,6 +61,7 @@ from ..utilities.utility import (
     add_aliases,
     atreg_to_index,
     determine_type,
+    file_or_path,
     fix_data_types,
     get_only,
     log_factory,
@@ -141,6 +142,7 @@ class Filters(Flag):
                THERMODYNAMICS | TSS)
 
 
+@file_or_path(mode="r")
 def parse_castep_file(castep_file_in: TextIO,
                       filters: Filters = Filters.HIGH) -> list[dict[str, Any]]:
     """

@@ -68,19 +68,7 @@ def parse_single(in_file: str | Path | TextIO,
 
     assert parser is not None
 
-    if parser in PARSERS.values():
-        if isinstance(in_file, io.TextIOBase):
-            data = parser(in_file)
-        elif isinstance(in_file, Path):
-            with in_file.open(mode="r", encoding="utf-8") as file:
-                data = parser(file)
-    elif parser in BIN_PARSERS.values():
-        if isinstance(in_file, io.IOBase):
-            data = parser(in_file)
-        elif isinstance(in_file, Path):
-            with in_file.open(mode="rb") as file:
-                data = parser(file)
-
+    data = parser(in_file)
 
     if out_format == "json" or testing:
         data = normalise(data, {dict: json_safe, complex: json_safe})

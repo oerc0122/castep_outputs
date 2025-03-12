@@ -7,7 +7,7 @@ from typing import List, Literal, TextIO, TypedDict
 from ..utilities import castep_res as REs
 from ..utilities.datatypes import ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import to_type
+from ..utilities.utility import file_or_path, to_type
 from .parse_utilities import parse_regular_header
 
 
@@ -39,6 +39,7 @@ BandsFileInfo = TypedDict("BandsFileInfo", {
     })
 
 
+@file_or_path(mode="r")
 def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
     """
     Parse castep .bands file.

@@ -14,7 +14,7 @@ from functools import partial, singledispatch, wraps
 from itertools import filterfalse
 from pathlib import Path
 from struct import unpack
-from typing import Any, TextIO, TypeVar, Union
+from typing import Any, Literal, TextIO, TypeVar
 
 import castep_outputs.utilities.castep_res as REs
 
@@ -854,23 +854,24 @@ def get_only(seq: Sequence[T]) -> T:
 
     return val
 
-def file_or_path(func: Callable, mode="r", **open_kwargs):
+def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs):
     """Decorate to allow a parser to accept either a path or open file.
 
     Parameters
     ----------
-    func : Callable
-        Function to wrap.
-    mode : FIXME: Add type.
-        Open mode if passed a :class`~pathlib.Path` or :class:`str`.
+    mode : Literal["r", "rb"]
+        Open mode if passed a :class:`~pathlib.Path` or :class:`str`.
     """
-    @wraps(func)
-    def wrapped(file: str | Path, *args, **kwargs):
-        file = Path(file)
-        with file.open(mode, **open_kwargs) as in_file:
-            return func(in_file, *args, **kwargs)
+    def inner(func):
+        @wraps(func)
+        def wrapped(file: str | Path, *args, **kwargs):
+            file = Path(file)
+            with file.open(mode, **open_kwargs) as in_file:
+                return func(in_file, *args, **kwargs)
 
-    func = singledispatch(func)
-    func.register(str, wrapped)
-    func.register(Path, wrapped)
-    return func
+        func = singledispatch(func)
+        func.register(str, wrapped)
+        func.register(Path, wrapped)
+        return func
+
+    return inner

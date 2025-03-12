@@ -6,7 +6,7 @@ from collections import defaultdict
 from typing import TextIO, TypedDict
 
 from ..utilities.castep_res import labelled_floats
-from ..utilities.utility import fix_data_types, stack_dict
+from ..utilities.utility import file_or_path, fix_data_types, stack_dict
 
 
 class HugFileInfo(TypedDict):
@@ -22,6 +22,7 @@ class HugFileInfo(TypedDict):
     energy: tuple[float, ...]
 
 
+@file_or_path(mode="r")
 def parse_hug_file(hug_file: TextIO) -> HugFileInfo:
     """
     Parse castep .hug file.

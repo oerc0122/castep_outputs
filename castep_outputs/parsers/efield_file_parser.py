@@ -9,10 +9,11 @@ from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
 from ..utilities.constants import SND_D
 from ..utilities.filewrapper import Block
-from ..utilities.utility import fix_data_types, log_factory, stack_dict
+from ..utilities.utility import file_or_path, fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 
+@file_or_path(mode="r")
 def parse_efield_file(efield_file: TextIO) -> dict[str, float | int]:
     """
     Parse castep .efield files.
