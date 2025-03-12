@@ -14,7 +14,7 @@ bands:
   - -0.375
   spin_comp: false
   weight: 0.03125
-- band_dn: !!python/tuple
+- band_down: !!python/tuple
   - 2.56369745
   - 2.56331049
   - 2.56254

@@ -19,7 +19,7 @@ class BandsQData(TypedDict, total=False):
     #: List of eigenvalues for up component of band.
     band_up: ThreeVector
     #: List of eigenvalues for down component of band.
-    band_dn: ThreeVector
+    band_down: ThreeVector
     #: Position in space.
     qpt: ThreeVector
     #: Current spin component.
@@ -56,7 +56,7 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
     bands_info: BandsFileInfo = {"bands": []}
     qdata: BandsQData = {}
     accum: list[str] = []
-    current: Literal["band", "band_up", "band_dn"] = "band"
+    current: Literal["band", "band_up", "band_down"] = "band"
 
     block = Block.from_re("", bands_file, "", REs.THREEVEC_RE, n_end=3)
     data = parse_regular_header(block, ("Fermi energy",))
@@ -66,7 +66,7 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
         if line.startswith("K-point"):
             if qdata:
                 qdata[current] = to_type(accum, float)
-                qdata["spin_comp"] = "band_dn" in qdata
+                qdata["spin_comp"] = "band_down" in qdata
                 bands_info["bands"].append(qdata)
                 accum = []
                 current = "band"
@@ -78,7 +78,7 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
             if spin_comp != 1:
                 qdata["band_up"] = to_type(accum, float)
                 accum = []
-                current = "band_dn"
+                current = "band_down"
 
         elif re.match(rf"^\s*{REs.FNUMBER_RE}$", line.strip()):
             accum.append(line.strip())
@@ -86,7 +86,7 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
 
     if qdata:
         qdata[current] = to_type(accum, float)
-        qdata["spin_comp"] = "band_dn" in qdata
+        qdata["spin_comp"] = "band_down" in qdata
         bands_info["bands"].append(qdata)
 
     return bands_info
