@@ -1,9 +1,33 @@
 """Tools for dumping Fortran unformatted file."""
+from __future__ import annotations
+
 import struct
+from collections.abc import Sequence
 from functools import singledispatch
 from io import BytesIO
-from typing import Any
+from typing import Any, TypeVar
 
+import pytest
+
+T = TypeVar("T")
+
+def _get_type(elem: T | Sequence[T]) -> type[T]:
+    if isinstance(elem, Sequence):
+        val = next(iter(elem), None)
+        return int if val is None else type(val)
+    return type(elem)
+
+@pytest.fixture
+def fake_file(request):
+    return to_unformat_file(*request.param)
+
+@pytest.fixture
+def data_types(request):
+    return tuple(map(_get_type, request.param))
+
+@pytest.fixture
+def raw_data(request):
+    return request.param
 
 @singledispatch
 def fort_unformat(inp) -> bytes:

@@ -10,10 +10,11 @@ import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
 from copy import copy
-from functools import partial
+from functools import partial, singledispatch, wraps
 from itertools import filterfalse
+from pathlib import Path
 from struct import unpack
-from typing import Any, TextIO, TypeVar
+from typing import Any, TextIO, TypeVar, Union
 
 import castep_outputs.utilities.castep_res as REs
 
@@ -480,19 +481,111 @@ def _parse_logical(val: str) -> bool:
     return val.title() in ("T", "True", "1")
 
 
-def _parse_float_bytes(val: bytes):
+def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
+    r"""Parse (big-endian) bytes to float.
+
+    Parameters
+    ----------
+    val : bytes
+        Values to parse.
+
+    Returns
+    -------
+    float | Sequence[float]
+        Parsed value or list of values.
+
+    Examples
+    --------
+    >>> one = b"?\xf0\x00\x00\x00\x00\x00\x00"
+    >>> zero = b"\x00\x00\x00\x00\x00\x00\x00\x00"
+    >>> _parse_float_bytes(zero)
+    0.0
+    >>> _parse_float_bytes(one)
+    1.0
+    >>> _parse_float_bytes(one*3)
+    (1.0, 1.0, 1.0)
+    """
     ans = unpack(f">{len(val)//8}d", val)
     return ans if len(ans) != 1 else ans[0]
 
-def _parse_int_bytes(val: bytes):
+def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
+    r"""Parse (big-endian) bytes to int.
+
+    Parameters
+    ----------
+    val : bytes
+        Values to parse.
+
+    Returns
+    -------
+    int | Sequence[int]
+        Parsed value or list of values.
+
+    Examples
+    --------
+    >>> one = b"\x00\x00\x00\x01"
+    >>> zero = b"\x00\x00\x00\x00"
+    >>> _parse_int_bytes(zero)
+    0
+    >>> _parse_int_bytes(one)
+    1
+    >>> _parse_int_bytes(one*3)
+    (1, 1, 1)
+    """
     ans = unpack(f">{len(val)//4}i", val)
     return ans if len(ans) != 1 else ans[0]
 
-def _parse_bool_bytes(val: bytes):
-    ans = bool(unpack(f">{len(val)//4}i", val))
+def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
+    r"""Parse (big-endian) bytes to bool.
+
+    Parameters
+    ----------
+    val : bytes
+        Values to parse.
+
+    Returns
+    -------
+    bool | Sequence[bool]
+        Parsed value or list of values.
+
+    Examples
+    --------
+    >>> one = b"\x00\x00\x00\x01"
+    >>> zero = b"\x00\x00\x00\x00"
+    >>> _parse_bool_bytes(zero)
+    False
+    >>> _parse_bool_bytes(one)
+    True
+    >>> _parse_bool_bytes(one*3)
+    (True, True, True)
+    """
+    ans = tuple(map(bool, unpack(f">{len(val)//4}i", val)))
     return ans if len(ans) != 1 else ans[0]
 
-def _parse_complex_bytes(val: bytes):
+def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
+    r"""Parse (big-endian) bytes to complex.
+
+    Parameters
+    ----------
+    val : bytes
+        Values to parse.
+
+    Returns
+    -------
+    complex | Sequence[complex]
+        Parsed value or list of values.
+
+    Examples
+    --------
+    >>> one = b"?\xf0\x00\x00\x00\x00\x00\x00"
+    >>> zero = b"\x00\x00\x00\x00\x00\x00\x00\x00"
+    >>> _parse_complex_bytes(zero + one)
+    1j
+    >>> _parse_complex_bytes(one + zero)
+    (1+0j)
+    >>> _parse_complex_bytes((one+one)*3)
+    ((1+1j), (1+1j), (1+1j))
+    """
     tmp = unpack(f">{len(val)//8}d", val)
     ans = tuple(map(complex, tmp[::2], tmp[1::2]))
     return ans if len(ans) != 1 else ans[0]
@@ -760,3 +853,24 @@ def get_only(seq: Sequence[T]) -> T:
         raise ValueError(f"Multiple elements in sequence (remainder={', '.join(rest)}).")
 
     return val
+
+def file_or_path(func: Callable, mode="r", **open_kwargs):
+    """Decorate to allow a parser to accept either a path or open file.
+
+    Parameters
+    ----------
+    func : Callable
+        Function to wrap.
+    mode : FIXME: Add type.
+        Open mode if passed a :class`~pathlib.Path` or :class:`str`.
+    """
+    @wraps(func)
+    def wrapped(file: str | Path, *args, **kwargs):
+        file = Path(file)
+        with file.open(mode, **open_kwargs) as in_file:
+            return func(in_file, *args, **kwargs)
+
+    func = singledispatch(func)
+    func.register(str, wrapped)
+    func.register(Path, wrapped)
+    return func
