@@ -505,8 +505,8 @@ def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
     >>> _parse_float_bytes(one*3)
     (1.0, 1.0, 1.0)
     """
-    ans = unpack(f">{len(val)//8}d", val)
-    return ans if len(ans) != 1 else ans[0]
+    result = unpack(f">{len(val)//8}d", val)
+    return result if len(result) != 1 else result[0]
 
 def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
     r"""Parse (big-endian) bytes to int.
@@ -532,8 +532,8 @@ def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
     >>> _parse_int_bytes(one*3)
     (1, 1, 1)
     """
-    ans = unpack(f">{len(val)//4}i", val)
-    return ans if len(ans) != 1 else ans[0]
+    result = unpack(f">{len(val)//4}i", val)
+    return result if len(result) != 1 else result[0]
 
 def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
     r"""Parse (big-endian) bytes to bool.
@@ -559,8 +559,8 @@ def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
     >>> _parse_bool_bytes(one*3)
     (True, True, True)
     """
-    ans = tuple(map(bool, unpack(f">{len(val)//4}i", val)))
-    return ans if len(ans) != 1 else ans[0]
+    result = tuple(map(bool, unpack(f">{len(val)//4}i", val)))
+    return result if len(result) != 1 else result[0]
 
 def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
     r"""Parse (big-endian) bytes to complex.
@@ -587,8 +587,8 @@ def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
     ((1+1j), (1+1j), (1+1j))
     """
     tmp = unpack(f">{len(val)//8}d", val)
-    ans = tuple(map(complex, tmp[::2], tmp[1::2]))
-    return ans if len(ans) != 1 else ans[0]
+    result = tuple(map(complex, tmp[::2], tmp[1::2]))
+    return result if len(result) != 1 else result[0]
 
 _TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational,
                                        bool: _parse_logical}

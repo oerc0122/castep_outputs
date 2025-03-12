@@ -17,6 +17,11 @@ def binary_file_reader(file: BinaryIO) -> FortranBinaryReader:
     bytes
         Binary data record from Fortran file.
 
+    Receives
+    --------
+    int | bool
+        Skip/rewind amount (``True`` == ``-1``).
+
     Notes
     -----
     Each "record" is:

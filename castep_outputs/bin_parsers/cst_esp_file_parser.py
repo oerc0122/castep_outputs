@@ -15,9 +15,9 @@ class ESPData(TypedDict):
     #: Grid size sampled at.
     grid: int
     #: ESP Data.
-    esp: tuple[tuple[tuple[complex, ...]]]
+    esp: tuple[tuple[tuple[complex, ...], ...], ...]
     #: MGGA
-    mgga: tuple[tuple[tuple[complex, ...]]]
+    mgga: tuple[tuple[tuple[complex, ...], ...], ...]
 
 
 @file_or_path(mode="rb")
