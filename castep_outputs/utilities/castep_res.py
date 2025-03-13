@@ -6,7 +6,7 @@ import re
 from collections.abc import Sequence
 from typing import Union
 
-from .constants import FST_D, MINIMISERS, SHELLS
+from .constants import FST_D, MINIMISERS, SHELLS, SND_D
 
 #: Valid input where patterns are wanted.
 Pattern = Union[str, re.Pattern]
@@ -537,3 +537,8 @@ POSITIONS_SPIN_RE = re.compile(rf"(?:spin|magmom)\s*[= :\t]\s*(?P<spin>{FLOAT_RA
 POSITIONS_MIXTURE_RE = re.compile(rf"mixture[= :\t]\(\s*{labelled_floats(('mix', 'ratio'))}\)",
                                   re.IGNORECASE)
 SPEC_PROP_RE = re.compile(rf"\s*{ATOM_NAME_RE}\s+(?P<val>.*)")
+
+# Elastic Constants file
+ELASTIC_BLOCK_RE = re.compile(r"\s*BEGIN (?P<key>[^(]+)\((?P<unit>[^)]+)\)")
+ELASTIC_IS_RE = re.compile(rf"\s*(?P<index>\d+)\s+(?P<spec>{ATOM_NAME_RE})\s+(?P<dir>[XYZ])\s+"
+                           f"{labelled_floats(SND_D)}")
