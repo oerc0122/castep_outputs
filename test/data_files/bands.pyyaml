@@ -1,46 +1,49 @@
-!!python/object/apply:collections.defaultdict
-args:
-- &id001 !!python/name:builtins.list ''
-dictitems:
-  Fermi energy: !!python/tuple
-  - 0.323077
-  bands:
-  - band: !!python/tuple
-    - -2.56339233
-    - -2.56319008
-    - -2.5626493
-    qpt: !!python/tuple
-    - -0.375
-    - -0.375
-    - -0.375
-    spin_comp: 1
-    weight: 0.03125
-  - band: !!python/tuple
-    - -2.56369745
-    - -2.56331049
-    - -2.56254
-    qpt: !!python/tuple
-    - -0.375
-    - -0.375
-    - -0.125
-    spin_comp: 1
-    weight: 0.03125
-  coords: !!python/object/apply:collections.defaultdict
-  - *id001
-  eigenvalues: 3
-  electrons: 300
-  k-points: 2
-  spin components: 1
-  unit_cell:
-  - !!python/tuple
-    - 11.932676
-    - 0.0
-    - 0.0
-  - !!python/tuple
-    - 0.0
-    - 11.932676
-    - 0.0
-  - !!python/tuple
-    - 0.0
-    - 0.0
-    - 11.932676
+Fermi energy: !!python/tuple
+- 0.323077
+bands:
+- band: !!python/tuple
+  - -2.56339233
+  - -2.56319008
+  - -2.5626493
+  - -2.56339233
+  - -2.56319008
+  - -2.5626493
+  qpt: !!python/tuple
+  - -0.375
+  - -0.375
+  - -0.375
+  spin_comp: false
+  weight: 0.03125
+- band_down: !!python/tuple
+  - 2.56369745
+  - 2.56331049
+  - 2.56254
+  band_up: !!python/tuple
+  - -2.56369745
+  - -2.56331049
+  - -2.56254
+  qpt: !!python/tuple
+  - -0.375
+  - -0.375
+  - -0.125
+  spin_comp: true
+  weight: 0.03125
+coords: !!python/object/apply:collections.defaultdict
+- !!python/name:builtins.list ''
+eigenvalues: 3
+electrons: 300
+k-points: 2
+spin components: 1
+unit_cell:
+- !!python/tuple
+  - 11.932676
+  - 0.0
+  - 0.0
+- !!python/tuple
+  - 0.0
+  - 11.932676
+  - 0.0
+- !!python/tuple
+  - 0.0
+  - 0.0
+  - 11.932676
