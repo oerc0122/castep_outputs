@@ -9,7 +9,7 @@ from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers, labelle
 from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
 from ..utilities.datatypes import ThreeByThreeMatrix
 from ..utilities.filewrapper import Block
-from ..utilities.utility import add_aliases, atreg_to_index, to_type
+from ..utilities.utility import add_aliases, atreg_to_index, file_or_path, to_type
 
 
 class TSStructInfo(TypedDict, total=False):
@@ -44,6 +44,7 @@ class TSFileInfo(TypedDict):
     test: TSStructInfo
 
 
+@file_or_path(mode="r")
 def parse_ts_file(ts_file: TextIO) -> TSFileInfo:
     """
     Parse castep .ts file.

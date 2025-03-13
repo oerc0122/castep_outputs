@@ -4,15 +4,19 @@ from __future__ import annotations
 import io
 import logging
 import sys
+from collections import ChainMap
 from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, TextIO
 
+from ..bin_parsers import PARSERS as BIN_PARSERS
 from ..parsers import PARSERS
 from ..utilities.constants import OutFormats
 from ..utilities.dumpers import get_dumpers
 from ..utilities.utility import flatten_dict, json_safe, normalise
 from .args import extract_parsables, parse_args
+
+ALL_PARSERS = ChainMap(PARSERS, BIN_PARSERS)
 
 
 def parse_single(in_file: str | Path | TextIO,
@@ -57,18 +61,14 @@ def parse_single(in_file: str | Path | TextIO,
     if parser is None and isinstance(in_file, Path):
         ext = in_file.suffix.strip(".")
 
-        if ext not in PARSERS:
+        if ext not in ALL_PARSERS:
             raise KeyError(f"Parser for file {in_file} (assumed type: {ext}) not found")
 
-        parser = PARSERS[ext]
+        parser = ALL_PARSERS[ext]
 
     assert parser is not None
 
-    if isinstance(in_file, io.TextIOBase):
-        data = parser(in_file)
-    elif isinstance(in_file, Path):
-        with in_file.open(mode="r", encoding="utf-8") as file:
-            data = parser(file)
+    data = parser(in_file)
 
     if out_format == "json" or testing:
         data = normalise(data, {dict: json_safe, complex: json_safe})
@@ -112,7 +112,7 @@ def parse_all(
 
     data = {}
     for typ, paths in files.items():
-        parser = PARSERS[typ]
+        parser = ALL_PARSERS[typ]
         for path in paths:
             data[path] = parse_single(path, parser, out_format, loglevel=loglevel, testing=testing)
 

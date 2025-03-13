@@ -10,7 +10,13 @@ from typing import TextIO
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers
 from ..utilities.filewrapper import Block
-from ..utilities.utility import atreg_to_index, fix_data_types, stack_dict, to_type
+from ..utilities.utility import (
+    atreg_to_index,
+    file_or_path,
+    fix_data_types,
+    stack_dict,
+    to_type,
+)
 
 
 def parse_regular_header(block: Block,
@@ -59,6 +65,7 @@ def parse_regular_header(block: Block,
     return data
 
 
+@file_or_path(mode="r")
 def parse_kpt_info(inp: TextIO, prop: str | Sequence[str]) -> dict[str, list[int | float]]:
     """
     Parse standard form of kpt related .*_fmt files.

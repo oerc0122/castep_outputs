@@ -9,7 +9,7 @@ from ..utilities import castep_res as REs
 from ..utilities.castep_res import labelled_floats
 from ..utilities.datatypes import StandardHeader, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import fix_data_types, log_factory, stack_dict
+from ..utilities.utility import file_or_path, fix_data_types, log_factory, stack_dict
 from .parse_utilities import parse_regular_header
 
 
@@ -59,6 +59,7 @@ class PhononDosFileInfo(StandardHeader, total=False):
     gradients: list[GradientInfo]
 
 
+@file_or_path(mode="r")
 def parse_phonon_dos_file(phonon_dos_file: TextIO) -> PhononDosFileInfo:
     """
     Parse castep .phonon_dos file.

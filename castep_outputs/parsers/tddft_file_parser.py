@@ -8,7 +8,7 @@ from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers, labelled_floats
 from ..utilities.datatypes import ComplexThreeVector, StandardHeader
 from ..utilities.filewrapper import Block
-from ..utilities.utility import to_type
+from ..utilities.utility import file_or_path, to_type
 from .parse_utilities import parse_regular_header
 
 #: Overlap type
@@ -37,6 +37,7 @@ class TDDFTFileInfo(StandardHeader, total=False):
     spectroscopic_data: list[TDDFTSpectroData]
 
 
+@file_or_path(mode="r")
 def parse_tddft_file(tddft_file: TextIO) -> TDDFTFileInfo:
     """
     Parse castep .tddft file.

@@ -6,7 +6,7 @@ from typing import TextIO
 
 from ..utilities.datatypes import ComplexThreeVector, QData, StandardHeader, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import log_factory, to_type
+from ..utilities.utility import file_or_path, log_factory, to_type
 from .parse_utilities import parse_regular_header
 
 
@@ -34,6 +34,7 @@ class PhononFileInfo(StandardHeader, total=False):
     qpts: list[PhononFileQPoint]
 
 
+@file_or_path(mode="r")
 def parse_phonon_file(phonon_file: TextIO) -> PhononFileInfo:
     """Parse castep .phonon file.
 

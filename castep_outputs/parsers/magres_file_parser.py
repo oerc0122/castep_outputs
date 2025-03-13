@@ -9,7 +9,13 @@ import castep_outputs.utilities.castep_res as REs
 from ..utilities.castep_res import get_numbers
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import add_aliases, determine_type, normalise_key, to_type
+from ..utilities.utility import (
+    add_aliases,
+    determine_type,
+    file_or_path,
+    normalise_key,
+    to_type,
+)
 
 
 class AtomsInfo(TypedDict):
@@ -64,6 +70,7 @@ class MagresInfo(TypedDict):
     units: UnitsInfo
 
 
+@file_or_path(mode="r")
 def parse_magres_file(magres_file: TextIO) -> MagresInfo:
     """
     Parse castep .magres file.

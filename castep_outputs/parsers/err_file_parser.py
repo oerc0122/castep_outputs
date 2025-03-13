@@ -3,6 +3,8 @@ from __future__ import annotations
 
 from typing import TextIO, TypedDict
 
+from ..utilities.utility import file_or_path
+
 
 class ErrFileInfo(TypedDict):
     """Error file information."""
@@ -13,6 +15,7 @@ class ErrFileInfo(TypedDict):
     stack: list[str]
 
 
+@file_or_path(mode="r")
 def parse_err_file(err_file: TextIO) -> ErrFileInfo:
     """
     Parse castep .err files.
