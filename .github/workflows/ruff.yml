@@ -11,4 +11,4 @@ jobs:
       with:
         src: "./castep_outputs"
         args: "check"
-        version: "0.11.x"
+        version: "0.11.0"
