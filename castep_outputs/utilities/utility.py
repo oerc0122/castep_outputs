@@ -10,6 +10,7 @@ import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
 from copy import copy
+from fractions import Fraction
 from functools import partial, singledispatch, wraps
 from itertools import filterfalse
 from pathlib import Path
@@ -442,11 +443,7 @@ def _parse_float_or_rational(val: str) -> float:
     >>> _parse_float_or_rational("1/2")
     0.5
     """
-    if "/" in val:
-        numerator, denominator = val.split("/")
-        return float(numerator) / float(denominator)
-
-    return float(val)
+    return float(Fraction(val))
 
 
 def _parse_logical(val: str) -> bool:
