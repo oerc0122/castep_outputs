@@ -1526,8 +1526,7 @@ def _process_thermodynamics(block: Block) -> Thermodynamics:
         # elif re.match(r"\s+T\(", line):  # Can make dict/re based on labels
         #     thermo_label = line.split()
 
-    fix_data_types(accum, {key: float for
-                           key in ("t", "e", "f", "s", "cv")})
+    fix_data_types(accum, dict.fromkeys(("t", "e", "f", "s", "cv"), float))
     return accum
 
 
@@ -2379,14 +2378,14 @@ def _process_geom_table(block: Block) -> GeomTable:
     for line in block:
         if match := REs.GEOMOPT_MIN_TABLE_RE.match(line):
             val = match.groupdict()
-            fix_data_types(val, {key: float for key in ("lambda", "fdelta", "enthalpy")})
+            fix_data_types(val, dict.fromkeys(("lambda", "fdelta", "enthalpy"), float))
 
             key = normalise_string(val.pop("step"))
             accum[key] = cast(Dict[str, Union[bool, float]], val)
 
         elif match := REs.GEOMOPT_TABLE_RE.match(line):
             val = match.groupdict()
-            fix_data_types(val, {key: float for key in ("value", "tolerance")})
+            fix_data_types(val, dict.fromkeys(("value", "tolerance"), float))
 
             val["converged"] = val["converged"] == "Yes"
 

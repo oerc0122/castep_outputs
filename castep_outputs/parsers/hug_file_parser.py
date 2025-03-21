@@ -43,5 +43,5 @@ def parse_hug_file(hug_file: TextIO) -> HugFileInfo:
         if match := re.search(labelled_floats(cols), line):
             stack_dict(data, match.groupdict())
 
-    fix_data_types(data, {dt: float for dt in cols})
+    fix_data_types(data, dict.fromkeys(cols, float))
     return data

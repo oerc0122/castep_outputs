@@ -130,7 +130,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> PhononDosFileInfo:
                 stack_dict(dos, match.groupdict())
 
             if dos:
-                fix_data_types(dos, {key: float for key in headers})
+                fix_data_types(dos, dict.fromkeys(headers, float))
                 phonon_dos_info["dos"].append(dos)
 
     return phonon_dos_info
