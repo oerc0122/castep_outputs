@@ -36,7 +36,7 @@ jobs:
         pip install ".[test,ruamel,yaml]"
     - name: Run tests
       run: |
-        pytest --doctest-modules --cov=castep_outputs --cov-report xml:coverage.xml
+        pytest --color=yes --doctest-modules --cov=castep_outputs --cov-report xml:coverage.xml
     - name: Get Coverage
       uses: orgoro/coverage@v3.2
       continue-on-error: true
