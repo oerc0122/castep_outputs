@@ -3301,6 +3301,233 @@ Reading continuation data from model file BN.check
 
         self.assertEqual(test_dict, {'continuation': 'BN.check'})
 
+    def test_berry_phase(self):
+        test_text = io.StringIO("""
+
+         ------------------------------------
+         Berry phase polarisation calculation
+         ------------------------------------
+=====================================================================================
+ Polarisation (C/m^2) in Recip Lattice Basis defined on range [-Quantum/2:Quantum/2]
+              Direction                   Electronic   Ionic    Total    (Quantum)
+=====================================================================================
+ G_1:  (  1.0000,  0.0000,  0.0000   )      0.0000    0.0000    0.0000 (    1.9803 )
+ G_2:  (  0.0000,  1.0000,  0.0000   )      0.0000    0.0000    0.0000 (    1.9803 )
+ G_3:  (  0.0000,  0.0000,  1.0000   )     -0.5925    0.8173    0.2248 (    2.1052 )
+=====================================================================================
+
+=====================================================================================
+ Ionic Polarisation (Cartesian Basis):    0.000000    0.000000    0.014284 (e/bohr^2)
+ Elec  Polarisation (Cartesian Basis):    0.000000    0.000000   -0.010355 (e/bohr^2)
+ Total Polarisation (Cartesian Basis):    0.000000    0.000000    0.003929 (e/bohr^2)
+=====================================================================================
+
+=====================================================================================
+ Ionic Polarisation (Cartesian Basis):    0.000000    0.000000    0.817250 (C/m^2)
+ Elec  Polarisation (Cartesian Basis):    0.000000    0.000000   -0.592465 (C/m^2)
+ Total Polarisation (Cartesian Basis):    0.000000    0.000000    0.224785 (C/m^2)
+=====================================================================================
+        """)
+
+        test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict,
+                         {'berry_phase': {'elec': {'units': 'C/m^2',
+                                                   'val': (0.0, 0.0, -0.592465)},
+                                          'ionic': {'units': 'C/m^2',
+                                                    'val': (0.0, 0.0, 0.81725)},
+                                          'polarisation': {(0.0, 0.0, 1.0): {'elec': -0.5925,
+                                                                             'ionic': 0.8173,
+                                                                             'quantum': 2.1052,
+                                                                             'total': 0.2248,
+                                                                             'units': 'C/m^2'},
+                                                           (0.0, 1.0, 0.0): {'elec': 0.0,
+                                                                             'ionic': 0.0,
+                                                                             'quantum': 1.9803,
+                                                                             'total': 0.0,
+                                                                             'units': 'C/m^2'},
+                                                           (1.0, 0.0, 0.0): {'elec': 0.0,
+                                                                             'ionic': 0.0,
+                                                                             'quantum': 1.9803,
+                                                                             'total': 0.0,
+                                                                             'units': 'C/m^2'}},
+                                          'total': {'units': 'C/m^2',
+                                                    'val': (0.0, 0.0, 0.224785)}}},
+                         )
+
+
+    def test_berry_phase_verbose(self):
+        test_text = io.StringIO("""
+         ------------------------------------
+         Berry phase polarisation calculation
+         ------------------------------------
+MP grid:     2   2   2
+
+Initialising basis set.
+
+Standard grid dimensions:  30  30  30
+Fine grid dimensions:      30  30  30
+
+Plane wave load balancing: max 2109 min 2109 average 2109
+True cut-off energy of basis :  22.036
+ Reassigning basis set.
+True cut-off energy of basis :  22.036
+begin kpoints
+      -0.2500000000           -0.2500000000           -0.2500000000
+      -0.2500000000           -0.2500000000            0.2500000000
+      -0.2500000000            0.2500000000           -0.2500000000
+      -0.2500000000            0.2500000000            0.2500000000
+       0.2500000000           -0.2500000000           -0.2500000000
+       0.2500000000           -0.2500000000            0.2500000000
+       0.2500000000            0.2500000000           -0.2500000000
+       0.2500000000            0.2500000000            0.2500000000
+end kpoints
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      2 (-0.250,-0.250, 0.250)
+     with symmetry operation        (-1.00, 0.00, 0.00, 0.00,-1.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        (-1, 0, 0, 0,-1, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0) and inversion
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      3 (-0.250, 0.250,-0.250)
+     with symmetry operation        ( 0.00,-1.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        ( 0,-1, 0, 1, 0, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0)
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      4 (-0.250, 0.250, 0.250)
+     with symmetry operation        ( 0.00, 1.00, 0.00,-1.00, 0.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        ( 0, 1, 0,-1, 0, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0) and inversion
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      5 ( 0.250,-0.250,-0.250)
+     with symmetry operation        ( 0.00, 1.00, 0.00,-1.00, 0.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        ( 0, 1, 0,-1, 0, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0)
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      6 ( 0.250,-0.250, 0.250)
+     with symmetry operation        ( 0.00,-1.00, 0.00, 1.00, 0.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        ( 0,-1, 0, 1, 0, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0) and inversion
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      7 ( 0.250, 0.250,-0.250)
+     with symmetry operation        (-1.00, 0.00, 0.00, 0.00,-1.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        (-1, 0, 0, 0,-1, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0)
+  Transforming wvfns for kpt      1 (-0.250,-0.250,-0.250) to      8 ( 0.250, 0.250, 0.250)
+     with symmetry operation        ( 1.00, 0.00, 0.00, 0.00, 1.00, 0.00, 0.00, 0.00, 1.00)
+         fractional symmetry        ( 1, 0, 0, 0, 1, 0, 0, 0, 1)
+   reciprocal lattice vector        ( 0, 0, 0) and inversion
+ Starting polarisation calculation
+Initialising basis set.
+
+Standard grid dimensions:  30  30  30
+Fine grid dimensions:      30  30  30
+
+Plane wave load balancing: max 2109 min 2109 average 2109
+True cut-off energy of basis :  22.036
+ Reassigning basis set.
+True cut-off energy of basis :  22.036
+=====================================================================================
+             Ionic contribution to polarisation (phase) [-1:1]
+=====================================================================================
+ni nsp  Zion     frac_a1     frac_a2     frac_a3      pol_G1      pol_G2     pol_G3
+  1 1   6.00    0.500000    0.500000   -0.135200    1.000000    1.000000   -0.811200
+  2 1   6.00    0.500000    0.000000    0.603000    1.000000    0.000000   -0.382000
+  3 1   6.00    0.000000    0.500000    0.603000    0.000000    1.000000   -0.382000
+  1 2  12.00    0.500000    0.500000    0.529300    0.000000    0.000000    0.351600
+  1 3  14.00    0.000000    0.000000    0.000000    0.000000    0.000000    0.000000
+ Total ionic polarisation (phase [-1:1])            0.000000    0.000000    0.776400
+=====================================================================================
+
+=====================================================================================
+             Polarisation (phase) [-1:1] in Recip Lattice Basis (G_1, G_2, G_3)
+=====================================================================================
+Electronic polarisation     0.000000    0.000000   -0.562849
+Ionic polarisation          0.000000    0.000000    0.776400
+Total polarisation          0.000000    0.000000    0.213551
+=====================================================================================
+
+=====================================================================================
+             Polarisation (e bohr)       in Recip Lattice Basis (G_1, G_2, G_3)
+=====================================================================================
+Electronic polarisation     0.000000    0.000000   -4.411517
+Ionic polarisation          0.000000    0.000000    6.085290
+Total polarisation          0.000000    0.000000    1.673773
+=====================================================================================
+
+=====================================================================================
+      Volume Polarisation (e /bohr^2)    in Recip Lattice Basis (G_1, G_2, G_3)
+=====================================================================================
+Electronic polarisation     0.000000    0.000000   -0.010355
+Ionic polarisation          0.000000    0.000000    0.014284
+Total polarisation          0.000000    0.000000    0.003929
+=====================================================================================
+
+=====================================================================================
+      Volume Polarisation (C/m^2)        in Recip Lattice Basis (G_1, G_2, G_3)
+=====================================================================================
+Electronic polarisation     0.000000    0.000000   -0.592464
+Ionic polarisation          0.000000    0.000000    0.817250
+Total polarisation          0.000000    0.000000    0.224787
+=====================================================================================
+
+=====================================================================================
+ Polarisation (C/m^2) in Recip Lattice Basis defined on range [-Quantum/2:Quantum/2]
+              Direction                   Electronic   Ionic    Total    (Quantum)
+=====================================================================================
+ G_1:  (  1.0000,  0.0000,  0.0000   )      0.0000    0.0000    0.0000 (    1.9803 )
+ G_2:  (  0.0000,  1.0000,  0.0000   )      0.0000    0.0000    0.0000 (    1.9803 )
+ G_3:  (  0.0000,  0.0000,  1.0000   )     -0.5925    0.8173    0.2248 (    2.1052 )
+=====================================================================================
+
+=====================================================================================
+ Ionic Polarisation (Cartesian Basis):    0.000000    0.000000    0.014284 (e/bohr^2)
+ Elec  Polarisation (Cartesian Basis):    0.000000    0.000000   -0.010355 (e/bohr^2)
+ Total Polarisation (Cartesian Basis):    0.000000    0.000000    0.003929 (e/bohr^2)
+=====================================================================================
+
+=====================================================================================
+ Ionic Polarisation (Cartesian Basis):    0.000000    0.000000    0.817250 (C/m^2)
+ Elec  Polarisation (Cartesian Basis):    0.000000    0.000000   -0.592464 (C/m^2)
+ Total Polarisation (Cartesian Basis):    0.000000    0.000000    0.224787 (C/m^2)
+=====================================================================================
+        """)
+
+        test_dict = parse_castep_file(test_text)[0]
+
+        self.assertEqual(test_dict,
+                         {'berry_phase': {'elec': {'units': 'C/m^2',
+                                                   'val': (0.0, 0.0, -0.592464)},
+                                          'ionic': {'units': 'C/m^2',
+                                                    'val': (0.0, 0.0, 0.81725)},
+                                          'ionic_contribution_to_polarisation':
+                                          {'ions': {(1, 1): {'coords': (0.5, 0.5, -0.1352),
+                                                             'polarisation': (1.0, 1.0, -0.8112)},
+                                                    (1, 2): {'coords': (0.5, 0.0, 0.603),
+                                                             'polarisation': (1.0, 0.0, -0.382)},
+                                                    (1, 3): {'coords': (0.0, 0.5, 0.603),
+                                                             'polarisation': (0.0, 1.0, -0.382)},
+                                                    (2, 1): {'coords': (0.5, 0.5, 0.5293),
+                                                             'polarisation': (0.0, 0.0, 0.3516)},
+                                                    (3, 1): {'coords': (0.0, 0.0, 0.0),
+                                                             'polarisation': (0.0, 0.0, 0.0)}},
+                                           'total': (0.0, 0.0, 0.7764),
+                                           'units': 'phase'},
+                                          'polarisation': {(0.0, 0.0, 1.0): {'elec': -0.5925,
+                                                                             'ionic': 0.8173,
+                                                                             'quantum': 2.1052,
+                                                                             'total': 0.2248,
+                                                                             'units': 'C/m^2'},
+                                                           (0.0, 1.0, 0.0): {'elec': 0.0,
+                                                                             'ionic': 0.0,
+                                                                             'quantum': 1.9803,
+                                                                             'total': 0.0,
+                                                                             'units': 'C/m^2'},
+                                                           (1.0, 0.0, 0.0): {'elec': 0.0,
+                                                                             'ionic': 0.0,
+                                                                             'quantum': 1.9803,
+                                                                             'total': 0.0,
+                                                                             'units': 'C/m^2'}},
+                                          'total': {'units': 'C/m^2',
+                                                    'val': (0.0, 0.0, 0.224787)},
+                                          'volume_polarisation': {'Electronic': (0.0, 0.0, -0.592464),
+                                                                  'Ionic': (0.0, 0.0, 0.81725),
+                                                                  'Total': (0.0, 0.0, 0.224787),
+                                                                  'units': 'C/m^2'}}},
+                         )
 
 class test_pspot_parser(TestCase):
     def test_pspot_parser(self):

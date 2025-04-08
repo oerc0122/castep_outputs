@@ -103,6 +103,7 @@ class Filters(Flag):
     OPTICS = auto()
     PARAMETERS = auto()
     PHONON = auto()
+    POLARISATION = auto()
     POPN_ANALYSIS = auto()
     POSITION = auto()
     PSPOT = auto()
@@ -123,7 +124,7 @@ class Filters(Flag):
     LOW = (BS | CELL | CHEM_SHIELDING | DIPOLE |
            ELASTIC | ELF | FINAL_CONFIG | FORCE |
            MD_SUMMARY | OPTICS | POPN_ANALYSIS |
-           POSITION | SOLVATION | SPECIES_PROPS | SPIN |
+           POSITION | POLARISATION | SOLVATION | SPECIES_PROPS | SPIN |
            STRESS | TDDFT | THERMODYNAMICS | TSS)
 
     MEDIUM = LOW | PARAMETERS | GEOM_OPT | MD | PHONON
@@ -1238,8 +1239,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found elastic constants tensor")
 
-            if "elastic" not in curr_run:
-                curr_run["elastic"] = {}
+            curr_run.setdefault("elastic", {})
 
             val, _ = _process_3_6_matrix(block, split=False)
             curr_run["elastic"]["elastic_constants"] = val
@@ -1253,8 +1253,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found compliance matrix")
 
-            if "elastic" not in curr_run:
-                curr_run["elastic"] = {}
+            curr_run.setdefault("elastic", {})
 
             val, _ = _process_3_6_matrix(block, split=False)
             curr_run["elastic"]["compliance_matrix"] = val
@@ -1272,8 +1271,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found elastic %s contribution", typ)
 
-            if "elastic" not in curr_run:
-                curr_run["elastic"] = {}
+            curr_run.setdefault("elastic", {})
 
             val, _ = _process_3_6_matrix(block, split=False)
             curr_run["elastic"][typ] = val
@@ -1287,10 +1285,35 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found elastic properties")
 
-            if "elastic" not in curr_run:
-                curr_run["elastic"] = {}
+            curr_run.setdefault("elastic", {})
 
             curr_run["elastic"].update(_process_elastic_properties(block))
+
+        # Berry phase polarisation
+
+        elif block := Block.from_re(line, castep_file,  # Polarisation verbose
+                                    r"^\s*Ionic contribution to polarisation", "=+", n_end=14):
+
+            if Filters.POLARISATION not in to_parse:
+                continue
+
+            logger("Found verbose berry phase polarisation")
+
+            curr_run.setdefault("berry_phase", {})
+
+            curr_run["berry_phase"].update(_process_berry_phase(block))
+
+        elif block := Block.from_re(line, castep_file,  # Polarisation
+                                    r"^\s*Polarisation", "=+", n_end=6):
+
+            if Filters.POLARISATION not in to_parse:
+                continue
+
+            logger("Found berry phase polarisation")
+
+            curr_run.setdefault("berry_phase", {})
+
+            curr_run["berry_phase"].update(_process_berry_phase(block))
 
         # --- Extra blocks for testing
 
@@ -2508,5 +2531,76 @@ def _process_deloc_act_space_table(block: TextIO) -> DelocActiveSpace:
             accum["num_dof"] = to_type(get_numbers(line)[0], int)
         if "primitive" in line:
             accum["num_primitive_internals"] = to_type(get_numbers(line)[0], int)
+
+    return accum
+
+def _process_berry_phase(block: Block) -> dict[str, Any]:
+    accum = {}
+
+    for line in block:
+        if "Ionic contribution to polarisation" in line:
+            table_blk = Block.from_re(line, block, REs.POL_HEADER_RE, "=+", n_end=2)
+            match = REs.POL_HEADER_RE.search(line)
+            assert match
+            key = normalise_key(match["key"])
+            accum[key] = {"units": match["unit"]}
+
+            table_blk.remove_bounds(fore=3, back=1)  # Remove title, header and sep lines
+
+            accum[key]["total"] = to_type(get_numbers(table_blk[-1])[2:], float)
+            accum[key]["ions"] = {}
+            for line in table_blk[:-1]:
+                ni, nsp, z_ion, a, b, c, *pol = line.split()
+                accum[key]["ions"][to_type((nsp, ni), int)] = {"coords": to_type((a, b, c), float),
+                                                               "polarisation": to_type(pol, float)}
+
+        elif match := REs.POL_TABLE_RE.search(line):
+            key = normalise_key(match["key"])
+            accum[key] = {"units": match["unit"],
+                          "val": to_type(match.group("a", "b", "c"), float)}
+
+        elif table_blk := Block.from_re(line, block, REs.POL_HEADER_RE, "=+", n_end=2,
+                                        eof_possible=True):
+            match = REs.POL_HEADER_RE.search(line)
+            assert match
+            key = normalise_key(match["key"])
+
+            table_blk.remove_bounds(fore=2, back=1)
+
+            if key == "polarisation" and "Quantum" not in line:  # Ordinary polarisation
+                accum.setdefault(key, {})
+                if match["unit"] != "phase":
+                    accum[key]["units"] = match["unit"]
+                    subkey = "val"
+                else:
+                    subkey = "phase"
+
+                accum[key].setdefault(subkey, {})
+
+                for line in table_blk:
+                    curr = line.split()[0]
+                    accum[key][subkey][curr] = to_type(get_numbers(line), float)
+
+            elif key == "polarisation":
+                accum.setdefault(key, {})
+
+                # Extra line of description.
+
+                table_blk.remove_bounds(fore=1, back=0)
+                for line in table_blk:
+                    _, *direc, elec, ionic, total, quantum = to_type(get_numbers(line), float)
+                    accum[key][tuple(direc)] = {"elec": elec,
+                                                "ionic": ionic,
+                                                "total": total,
+                                                "quantum": quantum,
+                                                "units": match["unit"]}
+
+            elif key == "volume_polarisation":
+
+                accum[key] = {"units": match["unit"]}
+
+                for line in table_blk:
+                    curr = line.split()[0]
+                    accum[key][curr] = to_type(get_numbers(line), float)
 
     return accum
