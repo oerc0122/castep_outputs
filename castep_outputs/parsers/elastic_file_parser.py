@@ -4,9 +4,10 @@ from __future__ import annotations
 from collections import defaultdict
 from typing import TextIO
 
-from ..utilities.castep_res import get_numbers
+from ..utilities.castep_res import ELASTIC_BLOCK_RE, ELASTIC_INTERNAL_STRAIN_RE, get_numbers
 from ..utilities.filewrapper import Block
-from ..utilities.utility import file_or_path, to_type
+from ..utilities.utility import atreg_to_index, file_or_path, normalise_key, to_type
+from .parse_utilities import parse_regular_header
 
 
 @file_or_path(mode="r")
@@ -24,24 +25,34 @@ def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
     dict[str, list[list[float]]]
         Parsed info.
     """
-    accum = defaultdict(list)
+    accum = {}
 
     for line in elastic_file:
         if block := Block.from_re(line, elastic_file,
-                                  "^BEGIN Elastic Constants",
-                                  "^END Elastic Constants"):
-
-            accum["elastic_constants"] = [to_type(numbers, float)
-                                          for blk_line in block
-                                          if (numbers := get_numbers(blk_line))]
+                                  "BEGIN header", "END header"):
+            accum.update(parse_regular_header(block))
+            accum.pop("")
 
         elif block := Block.from_re(line, elastic_file,
-                                    "^BEGIN Compliance Matrix",
-                                    "^END Compliance Matrix"):
-            next(block)  # Skip Begin line w/units
+                                    "BEGIN Internal Strain", "END"):
+            match = ELASTIC_BLOCK_RE.match(next(block))
+            key = normalise_key(match["key"])
+            accum[key] = defaultdict(list)
+            accum[key]["units"] = match["unit"]
 
-            accum["compliance_matrix"] = [to_type(numbers, float)
-                                          for blk_line in block
-                                          if (numbers := get_numbers(blk_line))]
+            block.remove_bounds(fore=0, back=1)
+            for blk_line in block:
+                match = ELASTIC_INTERNAL_STRAIN_RE.match(blk_line).groupdict()
+                atom = atreg_to_index(match)
+                accum[key][atom].append(to_type(get_numbers(blk_line), float))
+
+        elif block := Block.from_re(line, elastic_file,
+                                    "BEGIN", "END"):
+            match = ELASTIC_BLOCK_RE.match(next(block))
+            key = normalise_key(match["key"])
+            accum[key] = {"units": match["unit"]}
+            accum[key]["val"] = tuple(to_type(numbers, float)
+                                      for blk_line in block
+                                      if (numbers := get_numbers(blk_line)))
 
     return accum
