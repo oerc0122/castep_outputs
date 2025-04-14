@@ -72,7 +72,7 @@
   constraints:
     cell_constraints: [1, 2, 3, 4, 5, 6]
     com_constrained: false
-    number_of_cell_constraints: 0
+    num_cell_constraints: 0
   energies:
     est_0K: [-855.4608365051]
     final_energy: [-855.4591072479]
@@ -354,8 +354,11 @@
       mass: 28.0855
       pseudo_atomic_energy: -101.0726
       pseudopot: Si_00PBE.usp
-  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
-    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '1: P1, P 1'}
+  symmetries:
+    max_deviation: 0.0
+    num_symmetry_operations: 1
+    point_group: {hermann_mauguin: '1', hermann_mauguin_full: '1', id: 1, schoenflies: C1}
+    space_group: {hall: P 1, id: 1, international: P1}
   target_stress:
   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Wed, 13 Mar 2024 21:18:26 +0000

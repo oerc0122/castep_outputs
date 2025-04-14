@@ -7,8 +7,8 @@
   constraints:
     cell_constraints: [0, 0, 0, 0, 0, 0]
     com_constrained: true
-    number_of_cell_constraints: 6
-    number_of_ionic_constraints: 3
+    num_cell_constraints: 6
+    num_ionic_constraints: 3
   energies:
     final_energy: [-9.151337939619e-06]
   finalisation_time: 0.0
@@ -555,8 +555,11 @@
   stresses:
     non_descript:
     - [-1.7e-05, -1.7e-05, 8e-06, -0.000197, 1.4e-05, -2.4e-05]
-  symmetries: {maximum_deviation_from_symmetry: 0.00000 ANG, number_of_symmetry_operations: 1,
-    point_group_of_crystal: '1: C1, 1, 1', space_group_of_crystal: '1: P1, P 1'}
+  symmetries:
+    max_deviation: 0.0
+    num_symmetry_operations: 1
+    point_group: {hermann_mauguin: '1', hermann_mauguin_full: '1', id: 1, schoenflies: C1}
+    space_group: {hall: P 1, id: 1, international: P1}
   target_stress:
   - [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
   time_started: Mon, 15 Jan 2024 16:32:12 +0000
