@@ -444,6 +444,45 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
              "t": tmp[i+3]}
             for i in range(0, len(tmp), 4)]
 
+def _parse_xc_definition(block: Block) -> dict[str, float]:
+    """
+    Parse xc_definition block to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[str, float]
+        Parsed info.
+    """
+    block_data = {"xc": {}, "params": {}}
+    block.remove_bounds(fore=0, back=1)
+
+    for line in strip_comments(block):
+        key, val = line.split(maxsplit=1)
+        key = normalise_key(key)
+
+        if key in {"nlxc_screening_length", "nlxc_screening_function",
+                   "nlxc_ppd_int", "nlxc_divergence_corr"}:
+
+            if key == "nlxc_screening_length":
+                block_data["params"][key] = float(val)
+            if key == "nlxc_screening_function":
+                block_data["params"][key] = val
+            if key == "nlxc_ppd_int":
+                block_data["params"][key] = val.upper() == "ON"
+            if key == "nlxc_divergence_corr":
+                block_data["params"][key] = val.upper() == "ON"
+
+            continue
+
+        block_data["xc"][key] = float(val)
+
+    return block_data
+
 def _parse_species_pot(block: Block) -> dict[str, str | PSPotStrInfo]:
     """Parse species pot block.
 
@@ -511,16 +550,19 @@ _parse_positions_abs = partial(_parse_positions, absolute=True)
 _parse_positions_frac = partial(_parse_positions, absolute=False)
 
 #: Cell/Param subparsers.
-_PARSERS: dict[str, Callable] = {"devel_code": _parse_devel_code_block,
-            "ionic_constraints": _parse_ionic_constraints,
-            "nonlinear_constraints": _parse_nonlinear_constraints,
-            "positions_abs": _parse_positions_abs,
-            "positions_frac": _parse_positions_frac,
-            "positions_abs_intermediate": _parse_positions,
-            "positions_frac_intermediate": _parse_positions,
-            "positions_abs_product": _parse_positions,
-            "positions_frac_product": _parse_positions,
-            "species_pot": _parse_species_pot,
-            "sedc_custom_params": _parse_sedc,
-            "hubbard_u": _parse_hubbard_u,
-            "symmetry_ops": _parse_symops}
+_PARSERS: dict[str, Callable] = {
+    "devel_code": _parse_devel_code_block,
+    "ionic_constraints": _parse_ionic_constraints,
+    "nonlinear_constraints": _parse_nonlinear_constraints,
+    "positions_abs": _parse_positions_abs,
+    "positions_frac": _parse_positions_frac,
+    "positions_abs_intermediate": _parse_positions,
+    "positions_frac_intermediate": _parse_positions,
+    "positions_abs_product": _parse_positions,
+    "positions_frac_product": _parse_positions,
+    "species_pot": _parse_species_pot,
+    "sedc_custom_params": _parse_sedc,
+    "hubbard_u": _parse_hubbard_u,
+    "symmetry_ops": _parse_symops,
+    "xc_definition": _parse_xc_definition,
+}
