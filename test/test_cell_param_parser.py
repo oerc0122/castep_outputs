@@ -506,6 +506,37 @@ PP: test_par=1 :ENDPP
                                                     "int_value": 31,
                                                     "string_value": "Hello"}})
 
+    def test_xc_def(self):
+        test_text = io.StringIO("""
+%block xc_definition
+oep 1.0
+hf 2.1
+lda 0.1
+libxc_mgga_xc 2.
+NLXC_SCREENING_LENGTH 1.
+NLXC_SCREENING_FUNCTION THOMAS-FERMI
+NLXC_DIVERGENCE_CORR ON
+NLXC_PPD_INT ON
+%endblock xc_definition
+""")
+        test_dict = parse_cell_param_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {"xc_definition": {
+            "xc": {
+                "oep": 1.0,
+                "hf": 2.1,
+                "lda": 0.1,
+                "libxc_mgga_xc": 2.0,
+            },
+            "params": {
+                "nlxc_divergence_corr": True,
+                "nlxc_ppd_int": True,
+                "nlxc_screening_length": 1.,
+                "nlxc_screening_function": "THOMAS-FERMI",
+            },
+        }})
+
+
 @pytest.mark.parametrize("string", [
     "1|0.8|11|15|18|10N(qc=8)[]",
     "1|1.2|23|29|33|20N:21L(qc=9)[]",
