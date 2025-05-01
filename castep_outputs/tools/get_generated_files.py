@@ -1,4 +1,5 @@
 """Attempt to guess the files which will be output by the castep calculation."""
+
 from __future__ import annotations
 
 from abc import abstractmethod
@@ -19,6 +20,7 @@ class UCEnum(Enum):
     def _missing_(cls, task):
         task = task.upper()
         return cls[task]
+
 
 class Task(UCEnum):
     """CASTEP tasks."""
@@ -92,21 +94,24 @@ class SpectralTheory(UCEnum):
 
 
 XC_TO_PS_THEORY = {
-    "PW91": "PBE",
-    "PBE": "PBE",
-    "RPBE": "RPBE",
-    "PBESOL": "PBESOL",
-    "WC": "WC",
-    "BLYP": "BLYP",
-    "MS2": "MS2",
-    "RSCAN": "RSCAN",
-    "R2SCAN": "RSCAN",
-    "LDA_PW": "LDA_PW",
+    "pw91": "pbe",
+    "pbe": "pbe",
+    "rpbe": "rpbe",
+    "pbesol": "pbesol",
+    "wc": "wc",
+    "blyp": "blyp",
+    "ms2": "ms2",
+    "rscan": "rscan",
+    "r2scan": "rscan",
+    "lda_pw": "lda_pw",
 }
 
 
 def get_spectral_files(
-    param_data: CellParamData, seedname: str, *, is_nlxc: bool,
+    param_data: CellParamData,
+    seedname: str,
+    *,
+    is_nlxc: bool,
 ) -> set[str]:
     """Get files associated with Task = Spectral.
 
@@ -129,7 +134,6 @@ def get_spectral_files(
     if param_data.get("write_orbitals") or raw_task == "BANDSTRUCTURE":
         out_files.add(f"{seedname}.orbitals")
     if spectral_theory is SpectralTheory.TDDFT:
-
         if spectral_task is SpectralTask.OPTICS:
             spec_calc = {"core": False, "ome": False, "dome": True}
         elif spectral_task in (SpectralTask.DOS, SpectralTask.BANDSTRUCTURE):
@@ -163,13 +167,14 @@ def get_spectral_files(
 
     out_files |= {
         f"{seedname}.{curr}_bin"
-        if spectral_theory is SpectralTheory.DFT else
-        f"{seedname}_tddft.{curr}_bin"
+        if spectral_theory is SpectralTheory.DFT
+        else f"{seedname}_tddft.{curr}_bin"
         for curr in ("core", "ome", "pdos", "dome")
         if spec_calc[curr]
     }
 
     return out_files
+
 
 @singledispatch
 def get_generated_files(
@@ -209,9 +214,12 @@ def get_generated_files(
     cell = parse_cell_param_file(cell_file)[0] if cell_file.exists() else {}
     return get_generated_files(param, cell, seedname.with_suffix(""))
 
+
 @get_generated_files.register(dict)
 def _(
-        param_data: CellParamData, cell_data: CellParamData, src: Path | str = "seedname",
+    param_data: CellParamData,
+    cell_data: CellParamData,
+    src: Path | str = "seedname",
 ) -> list[str]:
     seedname = Path(src).stem
     param_data = deepcopy(param_data)
@@ -220,20 +228,30 @@ def _(
     task = Task(raw_task)
 
     xc_f = param_data.get("xc_functional", "LDA").upper()
-    xc_d = {line.split(maxsplit=1)[0].upper()
-            for line in param_data.get("xc_definition", "").splitlines()
-            if line.strip()}
+    xc_d = param_data.get("xc_definition")
 
-    xc = xc_d if xc_d else {xc_f}
+    xc = xc_d["xc"].keys() if xc_d else {xc_f}
 
-    is_mgga = xc & {"MS2","RSCAN","R2SCAN", "LIBXC_MGGA", "LIBXC_HYB_MGGA"}
-    is_nlxc = xc & {"HF","HF-LDA", "SHF","SX-LDA","SHF-LDA", "PBE0",
-                     "B3LYP", "HSE03", "HSE06", "SPBE0"}
-    is_oep = xc & {"OEP", "LFX", "ELP", "CEDA"}
-    is_spin = (param_data.get("spin_treatment", "NONE").upper() == "VECTOR" or
-               param_data.get("spin_orbit_coupling") or
-               param_data.get("spin_polarised") or
-               param_data.get("spin_polarized"))
+    is_mgga = xc & {"ms2", "rscan", "r2scan", "libxc_mgga", "libxc_hyb_mgga"}
+    is_nlxc = xc & {
+        "hf",
+        "hf-lda",
+        "shf",
+        "sx-lda",
+        "shf-lda",
+        "pbe0",
+        "b3lyp",
+        "hse03",
+        "hse06",
+        "spbe0",
+    }
+    is_oep = xc & {"oep", "lfx", "elp", "ceda"}
+    is_spin = (
+        param_data.get("spin_treatment", "NONE").upper() == "VECTOR"
+        or param_data.get("spin_orbit_coupling")
+        or param_data.get("spin_polarised")
+        or param_data.get("spin_polarized")
+    )
     is_pp = devel_code.get("_pp", False)
     tddft_on = param_data.get("tddft_selected_state", 0) > 0
 
@@ -258,14 +276,16 @@ def _(
     elif write_check in (False, "FALSE", "NONE"):
         pass
     else:
-        raise NotImplementedError("Cannot understand checkpoint: "
-                                  f"{param_data['write_checkpoint']!r}")
-
+        raise NotImplementedError(
+            f"Cannot understand checkpoint: {param_data['write_checkpoint']!r}",
+        )
 
     if param_data.get("write_bands", True) and not is_pp:
-        out_files.add(f"{seedname}.bands"
-                      if not param_data.get("tddft_selected_state", 0) else
-                      f"{seedname}_tddft.bands")
+        out_files.add(
+            f"{seedname}.bands"
+            if not param_data.get("tddft_selected_state", 0)
+            else f"{seedname}_tddft.bands",
+        )
 
     if devel_code.get("write_formatted_bands"):
         out_files.add(f"{seedname}_*.orbit_fmt")
@@ -333,8 +353,9 @@ def _(
         if pp.get("pot_print"):
             if cell_data:
                 spec = {spec: None for spec, _ind in cell_data.get("positions_frac", {})}
-                out_files |= {f"{seedname}_{a}_{b}.pot"
-                              for a, b in combinations_with_replacement(spec, 2)}
+                out_files |= {
+                    f"{seedname}_{a}_{b}.pot" for a, b in combinations_with_replacement(spec, 2)
+                }
 
             else:
                 out_files.add(f"{seedname}_*_.pot")
@@ -342,12 +363,11 @@ def _(
         if pp.get("fd_check"):
             out_files.add(f"{seedname}.fd")
 
-    if (
-        param_data.get("pdos_calculate_weights") and
-        raw_task not in ("BANDSTRUCTURE", "ELECTRONICSPECTROSCOPY")
+    if param_data.get("pdos_calculate_weights") and raw_task not in (
+        "BANDSTRUCTURE",
+        "ELECTRONICSPECTROSCOPY",
     ):
         out_files.add(f"{seedname}.pdos_weights")
-
 
     is_usp = True
     for spec, pot in cell_data.get("species_pot", {}).items():
@@ -362,7 +382,7 @@ def _(
         elif xc & {"LIBXC_GGA", "LIBXC_HYB_GGA"}:
             theory = "PBE"
         else:
-            theory = XC_TO_PS_THEORY.get(xc[0], "LDA")
+            theory = XC_TO_PS_THEORY.get(next(iter(xc)), "LDA")
 
         otf_name = f"{spec}_EXT_{theory}_OTF"
 
@@ -388,11 +408,11 @@ def _(
     if devel_code.get("calc_elastic") or "elastic" in devel_code:
         out_files.add(f"{seedname}.elastic")
         if (
-                devel_code.get("elastic", {}).get("deform_pot") and
-                not is_mgga and
-                not is_usp and
-                not is_spin and
-                not is_nlxc
+            devel_code.get("elastic", {}).get("deform_pot")
+            and not is_mgga
+            and not is_usp
+            and not is_spin
+            and not is_nlxc
         ):
             out_files.add(f"{seedname}.dbands_dstrain")
 
@@ -419,7 +439,9 @@ def _(
             out_files.add(f"{seedname}.pes")
     elif task is Task.SPECTRAL:
         out_files |= get_spectral_files(
-            param_data, seedname, is_nlxc=is_nlxc,
+            param_data,
+            seedname,
+            is_nlxc=is_nlxc,
         )
     elif task is Task.MD:
         if param_data.get("write_md", True):
@@ -428,8 +450,10 @@ def _(
             out_files.add(f"{seedname}.hug")
 
         extrap = param_data.get("md_extrap", "first").lower()
-        opt_mem = (param_data.get("opt_strategy", "default").lower() == "memory" or
-                   param_data.get("opt_strategy_bias", 0) >= 0)
+        opt_mem = (
+            param_data.get("opt_strategy", "default").lower() == "memory"
+            or param_data.get("opt_strategy_bias", 0) >= 0
+        )
         mix_method = param_data.get("metals_method", "dm").lower()
         if mix_method == "dm" and extrap in ("first", "second", "mixed") and opt_mem:
             out_files.add(f"{seedname}.*.wfm")
@@ -439,8 +463,9 @@ def _(
             out_files.add(f"{seedname}.*..drho2m")
 
         if param_data.get("md_num_beads", 1) > 1 and param_data.get("num_farms", 1) > 1:
-            out_files |= {f"{seedname}_farm{i:0>3d}.castep"
-                          for i in range(param_data.get("num_farms"))}
+            out_files |= {
+                f"{seedname}_farm{i:0>3d}.castep" for i in range(param_data.get("num_farms"))
+            }
 
     elif task is Task.MAGRES:
         out_files.add(f"{seedname}.magres")

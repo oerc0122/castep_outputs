@@ -469,6 +469,45 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
     ]
 
 
+def _parse_xc_definition(block: Block) -> dict[str, float]:
+    """
+    Parse xc_definition block to dict.
+
+    Parameters
+    ----------
+    block
+        Input block to parse.
+
+    Returns
+    -------
+    dict[str, float]
+        Parsed info.
+    """
+    block_data = {"xc": {}, "params": {}}
+    block.remove_bounds(fore=0, back=1)
+
+    for line in strip_comments(block):
+        key, val = line.split(maxsplit=1)
+        key = normalise_key(key)
+
+        if key in {"nlxc_screening_length", "nlxc_screening_function",
+                   "nlxc_ppd_int", "nlxc_divergence_corr"}:
+
+            if key == "nlxc_screening_length":
+                block_data["params"][key] = float(val)
+            if key == "nlxc_screening_function":
+                block_data["params"][key] = val
+            if key == "nlxc_ppd_int":
+                block_data["params"][key] = val.upper() == "ON"
+            if key == "nlxc_divergence_corr":
+                block_data["params"][key] = val.upper() == "ON"
+
+            continue
+
+        block_data["xc"][key] = float(val)
+
+    return block_data
+
 def _parse_species_pot(block: Block) -> dict[str, str | PSPotStrInfo]:
     """Parse species pot block.
 
@@ -556,4 +595,5 @@ _PARSERS: dict[str, Callable] = {
     "sedc_custom_params": _parse_sedc,
     "hubbard_u": _parse_hubbard_u,
     "symmetry_ops": _parse_symops,
+    "xc_definition": _parse_xc_definition,
 }
