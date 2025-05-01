@@ -93,6 +93,8 @@ ignore = [
     "PLW2901",  # For loop variable overwritten
     "PLR2004",  # Magic constant value
     "D105",     # Magic method doc
+    "UP006",    # Use generic list[]
+    "UP007",    # Use | union
 ]
 
 [tool.ruff.lint.pydocstyle]
