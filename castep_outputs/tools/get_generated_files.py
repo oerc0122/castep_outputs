@@ -1,14 +1,12 @@
 """Attempt to guess the files which will be output by the castep calculation."""
 from __future__ import annotations
 
-import argparse
 from abc import abstractmethod
 from copy import deepcopy
 from enum import Enum, auto
 from functools import singledispatch
 from itertools import combinations_with_replacement
 from pathlib import Path
-from textwrap import indent
 
 from ..parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
 
@@ -131,8 +129,6 @@ def get_spectral_files(
     if param_data.get("write_orbitals") or raw_task == "BANDSTRUCTURE":
         out_files.add(f"{seedname}.orbitals")
     if spectral_theory is SpectralTheory.TDDFT:
-        if spectral_task is SpectralTask.CORELOSS:
-            raise KeyError("Invalid param file")
 
         if spectral_task is SpectralTask.OPTICS:
             spec_calc = {"core": False, "ome": False, "dome": True}
@@ -470,19 +466,3 @@ def _(
             out_files.add("den_dump*.dat")
 
     return sorted(out_files)
-
-def main():
-    """Run from CLI."""
-    ap = argparse.ArgumentParser(prog="castep_files",
-                                 description="""Attempts to work out what files will be produced
-                                 from given seeds.""",
-    )
-
-    ap.add_argument("seedname", nargs=argparse.REMAINDER, type=Path, help="Seed name for data")
-
-    args = ap.parse_args()
-
-    for seed in args.seedname:
-        print(seed.stem)
-        out = "\n".join(map(str, get_generated_files(seed)))
-        print(indent(out, "- "))

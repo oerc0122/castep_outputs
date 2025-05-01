@@ -1,7 +1,7 @@
 """Test get_generated_files."""
 import pytest
 
-from castep_outputs.scripts.get_generated_files import get_generated_files
+from castep_outputs.tools.get_generated_files import get_generated_files
 
 
 DUMMY_CELL = {
