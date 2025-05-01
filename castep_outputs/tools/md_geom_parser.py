@@ -4,7 +4,7 @@ from __future__ import annotations
 from collections.abc import Generator, Sequence
 from functools import singledispatchmethod
 from pathlib import Path
-from typing import overload
+from typing import Union, overload
 
 from castep_outputs.parsers.md_geom_file_parser import (
     MDGeomTimestepInfo,
@@ -124,7 +124,7 @@ While iteration should work, extracting particular frames may not.
     def __getitem__(self, frame: int) -> MDGeomTimestepInfo: ...
 
     @overload
-    def __getitem__(self, frame: Sequence | slice) -> list[MDGeomTimestepInfo]: ...
+    def __getitem__(self, frame: Union[Sequence, slice]) -> list[MDGeomTimestepInfo]: ...
 
     @singledispatchmethod
     def __getitem__(self, frame) -> list[MDGeomTimestepInfo] | MDGeomTimestepInfo:
