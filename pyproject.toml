@@ -37,7 +37,6 @@ test = ["pytest==8.3.4", "pytest-cov==5.0.0"]
 
 [project.scripts]
 castep_outputs = "castep_outputs.cli.castep_outputs_main:main"
-castep_files = "castep_outputs.scripts.get_generated_files:main"
 
 [project.urls]
 Homepage="https://github.com/oerc0122/castep_outputs"
