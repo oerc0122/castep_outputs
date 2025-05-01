@@ -1,0 +1,22 @@
+task : moleculardynamics # Comment
+
+md_delta_t = 5 fs
+md_ensemble = nvt
+md_thermostat = langevin
+md_ion_t = 50 fs
+md_num_iter = 10
+md_sample_iter = 5
+
+md_temperature 100 K
+
+
+cut_off_energy : 100 eV
+write_checkpoint : none
+write_bib : false
+
+%block DEVEL_CODE
+PP=T
+# Another comment
+PP: LJ=T LJ_EPS_Ar=120. LJ_SIG_Ar=0.3405 :ENDPP
+%endblock DEVEL_CODE
+popn_write : minimal
