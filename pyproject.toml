@@ -51,6 +51,8 @@ version = {attr = "castep_outputs.__version__"}
 line-length = 100
 indent-width = 4
 target-version = "py39"
+include = ["*.py", "*.pyi", "**/pyproject.toml"]
+
 
 # Exclude a variety of commonly ignored directories.
 extend-exclude = [
@@ -112,6 +114,8 @@ ignore = [
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+
 
 [tool.isort]
 profile = "black"
