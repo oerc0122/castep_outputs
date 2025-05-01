@@ -1,7 +1,9 @@
 """Lazy MD/Geom parser object."""
+
 from __future__ import annotations
 
-from collections.abc import Generator, Sequence
+import logging
+from collections.abc import Generator, Iterable
 from functools import singledispatchmethod
 from pathlib import Path
 from typing import overload
@@ -25,7 +27,7 @@ class MDGeomParser:
         File to parse.
     """
 
-    def __init__(self, md_geom_file: Path | str):
+    def __init__(self, md_geom_file: Path | str) -> None:
         self._next_frame = 0
 
         self.file = Path(md_geom_file).expanduser()
@@ -48,22 +50,33 @@ class MDGeomParser:
         len_est = (stat.st_size - self._start) / self._byte_len
 
         if not len_est.is_integer():
-            print(f"""\
-WARNING: Number of frames estimate is non-integral ({len_est}).
+            logging.warning("""\
+Number of frames estimate is non-integral (%d).
 This may have been caused by manually modifying the file.
 
 While iteration should work, extracting particular frames may not.
-""")
+""", len_est)
 
         self._len = int(len_est)
 
     @property
-    def next_frame(self) -> int:
+    def next_frame(self) -> int | None:
         """Get index of next frame to be read."""
         return self._next_frame
 
     def _get_index(self, frame: int) -> int:
-        """Get index of given frame in bytes."""
+        """Get index of given frame in bytes.
+
+        Parameters
+        ----------
+        frame : int
+            Frame to get.
+
+        Returns
+        -------
+        int
+            Position in bytes into file to get given frame.
+        """
         return self._start + (self._byte_len * frame)
 
     def _go_to_frame(self, frame: int) -> None:
@@ -86,7 +99,7 @@ While iteration should work, extracting particular frames may not.
             Parsed frame.
         """
         if -len(self) > frame > len(self):
-            print(f"Cannot get {frame}th frame. File only has {len(self)} frames.")
+            logging.warning("Cannot get %dth frame. File only has %d frames.", frame, len(self))
 
         if frame < 0:
             frame = len(self) + frame
@@ -96,14 +109,24 @@ While iteration should work, extracting particular frames may not.
         return next(self)
 
     def __len__(self) -> int:
-        """Get number of frames in file."""
+        """Get number of frames in file.
+
+        Returns
+        -------
+        int
+            Number of frames.
+        """
         return self._len
 
     def __iter__(self) -> Generator[MDGeomTimestepInfo, int, None]:
-        """
-        Get generator over all frames in system.
+        """Get generator over all frames in system.
 
         Jumps permitted through ``send``.
+
+        Yields
+        ------
+        MDGeomTimestepInfo
+            Information about each frame.
         """
         self._handle.seek(self._start)
         self._next_frame = 0
@@ -113,7 +136,18 @@ While iteration should work, extracting particular frames may not.
                 self._go_to_frame(jump)
 
     def __next__(self) -> MDGeomTimestepInfo:
-        """Get the next frame."""
+        """Get the next frame.
+
+        Returns
+        -------
+        MDGeomTimestepInfo
+            Information about the next frame.
+
+        Raises
+        ------
+        StopIteration
+            No more frames.
+        """
         if not (block := Block.get_lines(self._handle, self._frame_len, eof_possible=True)):
             raise StopIteration
 
@@ -122,38 +156,38 @@ While iteration should work, extracting particular frames may not.
 
     @overload
     def __getitem__(self, frame: int) -> MDGeomTimestepInfo: ...
-
     @overload
-    def __getitem__(self, frame: Sequence | slice) -> list[MDGeomTimestepInfo]: ...
-
+    def __getitem__(self, frame: Iterable[int] | slice) -> list[MDGeomTimestepInfo]: ...
     @singledispatchmethod
-    def __getitem__(self, frame) -> list[MDGeomTimestepInfo] | MDGeomTimestepInfo:
-        """Get particular frame of md/geom."""
+    def __getitem__(self, frame):
+        """Get particular frame of md/geom.
+
+        Returns
+        -------
+        MDGeomTimestepInfo
+            Information about given frames.
+        """
         raise NotImplementedError(f"Can't get {frame}th frame.")
 
     @__getitem__.register
     def _(self, frame: int) -> MDGeomTimestepInfo:
-        """Get particular frame of md/geom."""
         return self.get_frame(frame)
 
     @__getitem__.register
-    def _(self, frames: Sequence) -> list[MDGeomTimestepInfo]:
-        """Get particular frame of md/geom."""
+    def _(self, frames: Iterable[int]) -> list[MDGeomTimestepInfo]:
         return [self.get_frame(frame) for frame in frames]
 
     @__getitem__.register
     def _(self, frames: slice) -> list[MDGeomTimestepInfo]:
-        """Get particular frame of md/geom."""
-        range_ = frames.start or 0, frames.stop or len(self), frames.step or 1
+        range_ = frames.indices(len(self))
 
         return self[range(*range_)]
 
-    def __del__(self):
+    def __del__(self) -> None:
         """Close file before deletion."""
         self._handle.close()
 
     def __str__(self) -> str:
-        """Get file info."""
         return f"""\
 File: {self.file}
 Frames: {self._len}
