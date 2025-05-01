@@ -194,6 +194,10 @@ def get_generated_files(
     -------
     set[str]
         Files which would be produced.
+
+    Notes
+    -----
+    May struggle to get exact information from complex xc_definitions.
     """
     seedname = Path(seedname)
     if param_file is None:
@@ -214,15 +218,22 @@ def _(
     devel_code = param_data.get("devel_code", {})
     raw_task = param_data.get("task", "SINGLEPOINT").upper()
     task = Task(raw_task)
-    xc = param_data.get("xc_functional", "LDA").upper()
-    is_mgga = xc in ("MS2","RSCAN","R2SCAN", "LIBXC_MGGA", "LIBXC_HYB_MGGA")
-    is_nlxc = xc in ("HF","HF-LDA", "SHF","SX-LDA","SHF-LDA", "PBE0",
-                     "B3LYP", "HSE03", "HSE06", "SPBE0")
+
+    xc_f = param_data.get("xc_functional", "LDA").upper()
+    xc_d = {line.split(maxsplit=1)[0].upper()
+            for line in param_data.get("xc_definition", "").splitlines()
+            if line.strip()}
+
+    xc = xc_d if xc_d else {xc_f}
+
+    is_mgga = xc & {"MS2","RSCAN","R2SCAN", "LIBXC_MGGA", "LIBXC_HYB_MGGA"}
+    is_nlxc = xc & {"HF","HF-LDA", "SHF","SX-LDA","SHF-LDA", "PBE0",
+                     "B3LYP", "HSE03", "HSE06", "SPBE0"}
+    is_oep = xc & {"OEP", "LFX", "ELP", "CEDA"}
     is_spin = (param_data.get("spin_treatment", "NONE").upper() == "VECTOR" or
                param_data.get("spin_orbit_coupling") or
                param_data.get("spin_polarised") or
                param_data.get("spin_polarized"))
-    is_oep = xc in ("OEP 1.0", "LFX 1.0", "ELP 1.0", "CEDA 1.0")
     is_pp = devel_code.get("_pp", False)
     tddft_on = param_data.get("tddft_selected_state", 0) > 0
 
@@ -290,9 +301,9 @@ def _(
     if param_data.get("write_orbitals"):
         pass
     if param_data.get("write_cif_structure"):
-        out_files.add(f"{seedname}.cif")
+        out_files.add(f"{seedname}-out.cif")
     if param_data.get("write_cell_structure"):
-        out_files.add(f"{seedname}.cell")
+        out_files.add(f"{seedname}-out.cell")
 
     if param_data.get("efield_calc_ion_permittivity"):
         out_files.add(f"{seedname}.efield")
@@ -346,12 +357,12 @@ def _(
 
         is_usp = True
 
-        if xc in ("LIBXC_MGGA", "LIBXC_HYB_MGGA"):
+        if xc & {"LIBXC_MGGA", "LIBXC_HYB_MGGA"}:
             theory = "RSCAN"
-        elif xc in ("LIBXC_GGA", "LIBXC_HYB_GGA"):
+        elif xc & {"LIBXC_GGA", "LIBXC_HYB_GGA"}:
             theory = "PBE"
         else:
-            theory = XC_TO_PS_THEORY.get(xc, "LDA")
+            theory = XC_TO_PS_THEORY.get(xc[0], "LDA")
 
         otf_name = f"{spec}_EXT_{theory}_OTF"
 
