@@ -1,4 +1,4 @@
-"""Collection of basic scripts using castep_outputs.
+"""Collection of basic tools using castep_outputs.
 
-For more advanced scripts, see ``castep_outputs_tools``
+For more advanced scripts, see ``castep_outputs_tools``.
 """
