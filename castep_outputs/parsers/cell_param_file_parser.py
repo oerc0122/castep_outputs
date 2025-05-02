@@ -490,21 +490,15 @@ def _parse_xc_definition(block: Block) -> dict[str, float]:
         key, val = line.split(maxsplit=1)
         key = normalise_key(key)
 
-        if key in {"nlxc_screening_length", "nlxc_screening_function",
-                   "nlxc_ppd_int", "nlxc_divergence_corr"}:
+        if key == "nlxc_screening_length":
+            block_data["params"][key] = float(val)
+        elif key == "nlxc_screening_function":
+            block_data["params"][key] = val
+        elif key in ("nlxc_ppd_int", "nlxc_divergence_corr"):
+            block_data["params"][key] = val.upper() == "ON"
+        else:
+            block_data["xc"][key] = float(val)
 
-            if key == "nlxc_screening_length":
-                block_data["params"][key] = float(val)
-            if key == "nlxc_screening_function":
-                block_data["params"][key] = val
-            if key == "nlxc_ppd_int":
-                block_data["params"][key] = val.upper() == "ON"
-            if key == "nlxc_divergence_corr":
-                block_data["params"][key] = val.upper() == "ON"
-
-            continue
-
-        block_data["xc"][key] = float(val)
 
     return block_data
 
