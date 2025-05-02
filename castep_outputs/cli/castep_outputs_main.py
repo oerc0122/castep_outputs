@@ -1,6 +1,7 @@
 """Main castep parser access routines."""
 from __future__ import annotations
 
+import argparse
 import io
 import logging
 import sys
@@ -135,9 +136,14 @@ def parse_all(
             file_dumper(data, out_file)
 
 
-def main() -> None:
-    """Run the main program from command line."""
-    args = parse_args()
+def run(args: argparse.Namespace) -> None:
+    """Runner for main program.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Run arguments.
+    """
     dict_args = extract_parsables(args)
 
     parse_all(output=args.output,
@@ -145,6 +151,12 @@ def main() -> None:
               testing=args.testing,
               out_format=args.out_format,
               **dict_args)
+
+
+def main() -> None:
+    """Run the main program from command line."""
+    args = parse_args()
+    run(args)
 
 
 if __name__ == "__main__":
