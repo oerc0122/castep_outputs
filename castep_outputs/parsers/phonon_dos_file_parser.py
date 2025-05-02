@@ -88,7 +88,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> PhononDosFileInfo:
             logger("Found gradient block")
             qdata = defaultdict(list)
 
-            def fix(qdat):
+            def fix(qdat: dict) -> None:
                 fix_data_types(qdat, {"qpt": float,
                                       "pth": float,
                                       "n": int,

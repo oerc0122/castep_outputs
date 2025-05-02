@@ -1,4 +1,3 @@
-# pylint: disable=too-many-lines, too-many-branches, too-many-statements, too-many-locals
 """
 Extract results from .castep file for comparison and further processing.
 
@@ -58,6 +57,7 @@ from ..utilities.datatypes import (
 )
 from ..utilities.filewrapper import Block, FileWrapper
 from ..utilities.utility import (
+    Logger,
     add_aliases,
     atreg_to_index,
     determine_type,
@@ -476,7 +476,7 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run.update(data)
 
         # Energies
-        elif line.startswith("Final energy, E") or line.startswith("Final energy"):
+        elif line.startswith("Final energy"):
 
             logger("Found energy")
 
@@ -1871,7 +1871,7 @@ def _process_mulliken(block: Block) -> dict[AtomIndex, MullikenInfo]:
 def _process_band_structure(block: Block) -> list[BandStructure]:
     """Process a band structure into a list of kpts."""
 
-    def fdt(qdat):
+    def fdt(qdat: dict) -> None:
         fix_data_types(qdat, {"spin": int,
                               "kx": float,
                               "ky": float,
@@ -2078,7 +2078,7 @@ def _process_dynamical_matrix(block: Block) -> tuple[tuple[complex, ...], ...]:
     )
 
 
-def _process_pspot_string(string: str, *, debug=False) -> PSPotStrInfo:
+def _process_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
     if not (match := REs.PSPOT_RE.search(string)):
         raise ValueError(f"Attempt to parse {string} as PSPot failed")
 
@@ -2260,7 +2260,7 @@ def _process_autosolvation(block: Block) -> dict[str, float]:
     return accum
 
 
-def _process_phonon(block: Block, logger) -> list[QData]:
+def _process_phonon(block: Block, logger: Logger) -> list[QData]:
     qdata: dict[str, Any] = defaultdict(list)
     accum: list[QData] = []
 

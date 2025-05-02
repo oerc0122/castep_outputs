@@ -4,10 +4,11 @@ from __future__ import annotations
 import re
 from collections.abc import Sequence
 from io import StringIO
-from typing import NoReturn, TextIO
+from typing import NoReturn, TextIO, TypeVar
 
 from .castep_res import Pattern
 
+Self = TypeVar("Self", bound="FileWrapper")
 
 class FileWrapper:
     """
@@ -19,15 +20,15 @@ class FileWrapper:
         File to wrap and control.
     """
 
-    def __init__(self, file: TextIO):
+    def __init__(self, file: TextIO) -> Self:
         self._file = file
         self._pos = 0
         self._lineno = 0
 
-    def __iter__(self):
+    def __iter__(self) -> Self:
         return self
 
-    def __next__(self):
+    def __next__(self) -> str:
         self._lineno += 1
         self._pos = self.file.tell()
         nextline = self.file.readline()
@@ -35,7 +36,7 @@ class FileWrapper:
             raise StopIteration
         return nextline
 
-    def rewind(self):
+    def rewind(self) -> None:
         """
         Rewind file to previous line.
 
@@ -76,7 +77,7 @@ class FileWrapper:
         return self._lineno
 
     @property
-    def name(self):
+    def name(self) -> str:
         """
         Name of underlying file.
 
@@ -88,6 +89,8 @@ class FileWrapper:
         return self.file.name if hasattr(self.file, "name") else "unknown"
 
 
+Self = TypeVar("Self", bound="Block")
+
 class Block:
     """
     Data block class returned from :func:`get_block`.
@@ -95,8 +98,7 @@ class Block:
     Emulates the properties of both a file, and sequence.
     """
 
-    # pylint: disable=too-many-arguments
-    def __init__(self, parent: TextIO | FileWrapper | Block | None):
+    def __init__(self, parent: TextIO | FileWrapper | Block | None) -> Block:
         if isinstance(parent, (FileWrapper, Block)):
             self._lineno = parent.lineno
         else:
@@ -232,7 +234,8 @@ class Block:
     def from_iterable(
             cls,
             data: Sequence[str],
-            parent: TextIO | FileWrapper | Block | None = None):
+            parent: TextIO | FileWrapper | Block | None = None,
+    ) -> Self:
         r"""
         Construct a Block from an iterable containing strings.
 
@@ -253,7 +256,7 @@ class Block:
         block._data = tuple(data)
         return block
 
-    def remove_bounds(self, /, fore: int = 1, back: int = 2):
+    def remove_bounds(self, /, fore: int = 1, back: int = 2) -> None:
         """
         Remove the bounding lines of the block.
 
@@ -293,7 +296,7 @@ class Block:
         """
         return list(self._data)
 
-    def rewind(self):
+    def rewind(self) -> None:
         """
         Rewind to previous line.
 
@@ -307,16 +310,16 @@ class Block:
 
         self._i -= 1
 
-    def __bool__(self):
+    def __bool__(self) -> bool:
         return any(map(str.strip, self._data))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return "\n".join(self._data)
 
-    def __iter__(self):
+    def __iter__(self) -> Self:
         return self
 
-    def __next__(self):
+    def __next__(self) -> str:
         self._i += 1
         if self._i >= len(self):
             raise StopIteration
@@ -325,7 +328,7 @@ class Block:
     def __len__(self) -> int:
         return len(self._data)
 
-    def __getitem__(self, key: int | slice):
+    def __getitem__(self, key: int | slice) -> str:
         return self._data[key]
 
     @property

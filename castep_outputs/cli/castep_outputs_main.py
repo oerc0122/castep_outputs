@@ -90,7 +90,7 @@ def parse_all(
         *,
         loglevel: int = logging.WARNING,
         testing: bool = False,
-        **files,
+        **files: Sequence[Path],
 ) -> None:
     """
     Parse all files in files dict.
@@ -121,7 +121,6 @@ def parse_all(
 
     if output is None:
         file_dumper(data, sys.stdout)
-        print()
     elif isinstance(output, io.TextIOBase):
         file_dumper(data, output)
     else:
@@ -130,7 +129,7 @@ def parse_all(
             file_dumper(data, out_file)
 
 
-def main():
+def main() -> None:
     """Run the main program from command line."""
     args = parse_args()
     dict_args = extract_parsables(args)

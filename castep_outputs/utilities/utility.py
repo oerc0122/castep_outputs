@@ -24,6 +24,8 @@ from .filewrapper import FileWrapper
 
 T = TypeVar("T")
 NORMALISE_RE = re.compile(r"[_\W]+")
+LoggingLevels = Literal["debug", "info", "warning", "error", "critical"]
+Logger = Callable[[str, tuple[Any, ...], LoggingLevels], None]
 
 def normalise_string(string: str) -> str:
     """
@@ -125,7 +127,7 @@ def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) ->
     return (spec, int(ind))
 
 
-def normalise(obj: Any, mapping: dict[type, type | Callable]) -> Any:
+def normalise(obj: T, mapping: dict[type, type | Callable]) -> T:
     """
     Standardise data after processing.
 
@@ -159,7 +161,7 @@ def normalise(obj: Any, mapping: dict[type, type | Callable]) -> Any:
     return obj
 
 
-def json_safe(obj: Any) -> Any:
+def json_safe(obj: dict | complex | T) -> dict | T:
     """
     Recursively transform datatypes into JSON safe variants.
 
@@ -307,7 +309,7 @@ def add_aliases(in_dict: dict[str, Any],
 
 
 @functools.singledispatch
-def log_factory(file) -> Callable:
+def log_factory(file: TextIO | fileinput.FileInput | FileWrapper) -> Logger:
     """
     Return logging function to add file info to logs.
 
@@ -322,18 +324,18 @@ def log_factory(file) -> Callable:
         Function for logging data.
     """
     if hasattr(file, "name"):
-        def log_file(message, *args, level="info"):
+        def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
             getattr(logging, level)(f"[{file.name}] {message}", *args)
     else:
-        def log_file(message, *args, level="info"):
+        def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
             getattr(logging, level)(message, *args)
 
     return log_file
 
 
 @log_factory.register
-def _(file: fileinput.FileInput) -> Callable:
-    def log_file(message, *args, level="info"):
+def _(file: fileinput.FileInput) -> Logger:
+    def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
         getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
                                 f" {message}", *args)
 
@@ -341,8 +343,8 @@ def _(file: fileinput.FileInput) -> Callable:
 
 
 @log_factory.register
-def _(file: FileWrapper) -> Callable:
-    def log_file(message, *args, level="info"):
+def _(file: FileWrapper) -> Logger:
+    def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
         getattr(logging, level)(f"[{file.name}:{file.lineno}]"
                                 f" {message}", *args)
 
@@ -597,7 +599,7 @@ _BYTE_PARSERS: dict[type, Callable] = {complex: _parse_complex_bytes,
 
 
 @functools.singledispatch
-def to_type(data_in, _typ: type):
+def to_type(data_in: T, _typ: type) -> T:
     """
     Convert types to `typ` regardless of if data_in is iterable or otherwise.
 
@@ -624,19 +626,19 @@ def _(data_in: str, typ: type[T]) -> T:
 
 @to_type.register(tuple)
 @to_type.register(list)
-def _(data_in, typ: type[T]) -> tuple[T, ...]:
+def _(data_in: Any, typ: type[T]) -> tuple[T, ...]:
     parse_dict = _BYTE_PARSERS if data_in and isinstance(data_in[0], bytes) else _TYPE_PARSERS
     parser: Callable[[str], T] = parse_dict.get(typ, typ)
     return tuple(parser(x) for x in data_in)
 
 
 @to_type.register(bytes)
-def _(data_in, typ: type[T]) -> T | tuple[T, ...]:
+def _(data_in: Any, typ: type[T]) -> T | tuple[T, ...]:
     parser: Callable[[bytes], T] = _BYTE_PARSERS.get(typ, typ)
     return parser(data_in)
 
 
-def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]):
+def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]) -> None:
     """
     Apply correct types to elements of `in_dict` by mapping given in `type_dict`.
 
@@ -851,7 +853,7 @@ def get_only(seq: Sequence[T]) -> T:
 
     return val
 
-def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs):
+def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:  # paramspec 3.10+
     """Decorate to allow a parser to accept either a path or open file.
 
     Parameters
@@ -859,9 +861,9 @@ def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs):
     mode : Literal["r", "rb"]
         Open mode if passed a :class:`~pathlib.Path` or :class:`str`.
     """
-    def inner(func):
+    def inner(func: Callable) -> Callable:
         @wraps(func)
-        def wrapped(file: str | Path, *args, **kwargs):
+        def wrapped(file: str | Path, *args: Any, **kwargs: Any) -> Callable:
             file = Path(file)
             with file.open(mode, **open_kwargs) as in_file:
                 return func(in_file, *args, **kwargs)

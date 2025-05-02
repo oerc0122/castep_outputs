@@ -62,7 +62,7 @@ extend-exclude = [
 [tool.ruff.lint]
 # Allow unused variables when underscore-prefixed.
 select = [
-    "PL", # Pylint errors
+    "PL",  # Pylint
     "E",   # Pycodestyle
     "W",   # Pycodestyle warnings
     "F",   # Pyflakes
@@ -79,11 +79,23 @@ select = [
     "RET", # Flake8 return
     "ARG", # Flake8 unused args
     "PTH", # Flake8 use pathlib
+    "YTT", # Flake8 2020
+    "ANN", # Flake8 annotations
+    "BLE", # Flake8 Blind except
+    "C4",  # Flake8 comprehensions
+    "T10", # Flake8 debugger statements
+    "T20", # Flake8 Print
+    "FIX", # Flake8 Fixme
+    "LOG", # Flake8 Logging
+    "G",   # Flake8 Logging format
+    "PIE", # Flake8 Pie
     "I",   # Isort
+    "PERF",# Perflint
     "RUF", # Ruff specific
     "FURB",# Refurb
     "PERF",# Perflint
     "D",   # Pydocstyle
+    "DOC", # Pydoclint
     "UP",  # Pyupgrade
 ]
 ignore = [
@@ -93,6 +105,7 @@ ignore = [
     "PLW2901",  # For loop variable overwritten
     "PLR2004",  # Magic constant value
     "D105",     # Magic method doc
+    "ANN401",   # No typing.Any
 ]
 
 [tool.ruff.lint.pydocstyle]
