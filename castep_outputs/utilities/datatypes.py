@@ -1,32 +1,30 @@
 """Types produced by castep_outputs."""
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import Dict, List, Literal, Tuple, TypedDict, TypeVar, Union
+from collections.abc import Callable, Sequence
+from typing import Any, Literal, TextIO, TypedDict, TypeVar, Union
 
 T = TypeVar("T")
 
 #: Parser protocol
-ParserFunction = Callable  # [[TextIO], Dict[str, Any]] limited by 3.8
+ParserFunction = Callable[[TextIO], dict[str, Any]]
 
 # General types
 
-# Python 3.8 doesn't support concrete Sequence
-# MaybeSequence = Union[Sequence[T], T]
-MaybeSequence = Union[T, List[T], Tuple[T, ...]]
+MaybeSequence = Union[Sequence[T], T]
 
 #: CASTEP atom keys.
-AtomIndex = Tuple[str, int]
+AtomIndex = tuple[str, int]
 #: Standard 3D vector.
-ThreeVector = Tuple[float, float, float]
+ThreeVector = tuple[float, float, float]
 #: Complex 3D vector.
-ComplexThreeVector = Tuple[complex, complex, complex]
+ComplexThreeVector = tuple[complex, complex, complex]
 #: Voigt notation vector.
-SixVector = Tuple[float, float, float, float, float, float]
+SixVector = tuple[float, float, float, float, float, float]
 #: Three by three matrix.
-ThreeByThreeMatrix = Tuple[ThreeVector, ThreeVector, ThreeVector]
+ThreeByThreeMatrix = tuple[ThreeVector, ThreeVector, ThreeVector]
 #: Atom properties linking unique atom to a physical property.
-AtomPropBlock = Dict[AtomIndex, ThreeVector]
+AtomPropBlock = dict[AtomIndex, ThreeVector]
 
 
 class CellInfo(TypedDict):
@@ -366,7 +364,7 @@ class BondInfo(TypedDict):
 
 
 #: Full bond information for all pairs.
-BondData = Dict[Tuple[AtomIndex, AtomIndex], BondInfo]
+BondData = dict[tuple[AtomIndex, AtomIndex], BondInfo]
 
 
 class MullikenInfo(TypedDict, total=False):

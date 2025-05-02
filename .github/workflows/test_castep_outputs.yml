@@ -28,7 +28,7 @@ jobs:
       - name: Install vermin
         run: python -m pip install vermin
       - name: Run Vermin
-        run: vermin -t=3.8- --lint --no-parse-comments castep_outputs
+        run: vermin -t=3.9- --lint --no-parse-comments castep_outputs
 
   build:
     runs-on: ubuntu-latest
@@ -37,7 +37,7 @@ jobs:
       pull-requests: write
     strategy:
       matrix:
-        python-version: ["3.8", "3.9", "3.10", "3.11", "3.12"]
+        python-version: ["3.9", "3.10", "3.11", "3.12"]
 
     steps:
     - uses: actions/checkout@v4
