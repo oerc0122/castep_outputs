@@ -28,7 +28,7 @@ jobs:
       - name: Install vermin
         run: python -m pip install vermin
       - name: Run Vermin
-        run: vermin -t=3.8- --lint --no-parse-comments castep_outputs
+        run: vermin -t=3.9- --lint --no-parse-comments castep_outputs
 
   build:
     runs-on: ubuntu-latest

@@ -1,19 +1,17 @@
 """Types produced by castep_outputs."""
 from __future__ import annotations
 
-from collections.abc import Callable
-from typing import Literal, TypedDict, TypeVar, Union
+from collections.abc import Callable, Sequence
+from typing import Any, Literal, TextIO, TypedDict, TypeVar, Union
 
 T = TypeVar("T")
 
 #: Parser protocol
-ParserFunction = Callable  # [[TextIO], Dict[str, Any]] limited by 3.8
+ParserFunction = Callable[[TextIO], dict[str, Any]]
 
 # General types
 
-# Python 3.8 doesn't support concrete Sequence
-# MaybeSequence = Union[Sequence[T], T]
-MaybeSequence = Union[T, list[T], tuple[T, ...]]
+MaybeSequence = Union[Sequence[T], T]
 
 #: CASTEP atom keys.
 AtomIndex = tuple[str, int]
