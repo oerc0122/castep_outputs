@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from typing import List, Literal, TextIO, TypedDict
+from typing import Literal, TextIO, TypedDict
 
 from ..utilities import castep_res as REs
 from ..utilities.datatypes import ThreeVector
@@ -35,7 +35,7 @@ BandsFileInfo = TypedDict("BandsFileInfo", {
     "spin components": int,
     "Fermi Energy": float,
     "coords": dict,
-    "bands": List[BandsQData],
+    "bands": list[BandsQData],
     })
 
 

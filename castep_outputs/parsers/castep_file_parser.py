@@ -13,7 +13,7 @@ import itertools
 import re
 from collections import defaultdict
 from enum import Flag, auto
-from typing import Any, Dict, List, TextIO, Union, cast
+from typing import Any, TextIO, Union, cast
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import gen_table_re, get_numbers, labelled_floats
@@ -1779,7 +1779,7 @@ def _process_initial_spins(block: Block) -> dict[AtomIndex, InitialSpin]:
             ind = atreg_to_index(val)
             fix_data_types(val, {"spin": float, "magmom": float})
             val["fix"] = val["fix"] == "T"
-            accum[ind] = cast(Dict[str, Union[float, bool]], val)
+            accum[ind] = cast(dict[str, Union[float, bool]], val)
     return accum
 
 
@@ -2232,7 +2232,7 @@ def _process_occupancies(block: Block) -> list[Occupancies]:
         fix_data_types(elem, {"band": int,
                               "eigenvalue": float,
                               "occupancy": float})
-    return cast(List[Occupancies], accum)
+    return cast(list[Occupancies], accum)
 
 
 def _process_wvfn_line_min(block: Block) -> WvfnLineMin:
@@ -2404,7 +2404,7 @@ def _process_geom_table(block: Block) -> GeomTable:
             fix_data_types(val, dict.fromkeys(("lambda", "fdelta", "enthalpy"), float))
 
             key = normalise_string(val.pop("step"))
-            accum[key] = cast(Dict[str, Union[bool, float]], val)
+            accum[key] = cast(dict[str, Union[bool, float]], val)
 
         elif match := REs.GEOMOPT_TABLE_RE.match(line):
             val = match.groupdict()
@@ -2413,7 +2413,7 @@ def _process_geom_table(block: Block) -> GeomTable:
             val["converged"] = val["converged"] == "Yes"
 
             key = normalise_key(val.pop("parameter"))
-            accum[key] = cast(Dict[str, Union[bool, float]], val)
+            accum[key] = cast(dict[str, Union[bool, float]], val)
 
     return accum
 

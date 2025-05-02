@@ -1,6 +1,7 @@
 """General parser for the Fortran Unformatted file format."""
+from collections.abc import Generator
 from os import SEEK_CUR
-from typing import BinaryIO, Generator
+from typing import BinaryIO
 
 FortranBinaryReader = Generator[bytes, int, None]
 

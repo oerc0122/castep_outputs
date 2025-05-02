@@ -6,7 +6,7 @@ import typing
 from collections import Counter, defaultdict
 from collections.abc import Callable, Sequence
 from functools import partial
-from typing import Any, Dict, List, Literal, TextIO, Tuple, TypedDict, Union
+from typing import Any, Literal, TextIO, TypedDict, Union
 
 import castep_outputs.utilities.castep_res as REs
 
@@ -50,14 +50,14 @@ class NonLinearConstraint(TypedDict):
     #: Atoms and constraint definition.
     atoms: dict[AtomIndex, ThreeVector]
 
-DevelElem = MaybeSequence[Union[str, float, Dict[str, Union[str, float]]]]
-DevelBlock = Dict[str, Union[DevelElem, Dict[str, DevelElem]]]
-HubbardU = Dict[Union[str, AtomIndex], Union[str, Dict[str, float]]]
-CellParamData = Dict[str, Union[str, float, Tuple[float, str],
-                                Dict[str, Any], HubbardU, DevelBlock]]
-GeneralBlock = Dict[str, Union[
-    List[Union[str, float]],
-    Dict[str, MaybeSequence[float]],
+DevelElem = MaybeSequence[Union[str, float, dict[str, Union[str, float]]]]
+DevelBlock = dict[str, Union[DevelElem, dict[str, DevelElem]]]
+HubbardU = dict[Union[str, AtomIndex], Union[str, dict[str, float]]]
+CellParamData = dict[str, Union[str, float, tuple[float, str],
+                                dict[str, Any], HubbardU, DevelBlock]]
+GeneralBlock = dict[str, Union[
+    list[Union[str, float]],
+    dict[str, MaybeSequence[float]],
 ]]
 
 
@@ -409,7 +409,7 @@ def _parse_general(block: Block) -> GeneralBlock:
         if REs.SPEC_PROP_RE.match(line):
             if isinstance(block_data["data"], list):
                 block_data["data"] = {}
-                typing.cast(Dict[str, MaybeSequence[Union[float, str]]],
+                typing.cast(dict[str, MaybeSequence[Union[float, str]]],
                             block_data["data"])
 
             spec, val = line.strip().split(maxsplit=1)
