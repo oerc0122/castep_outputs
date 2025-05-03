@@ -2,7 +2,7 @@
 
 from __future__ import annotations
 
-from abc import abstractmethod
+import re
 from copy import deepcopy
 from enum import Enum, auto
 from functools import singledispatch
@@ -16,7 +16,6 @@ class UCEnum(Enum):
     """Auto upperclass enum."""
 
     @classmethod
-    @abstractmethod
     def _missing_(cls, task):
         task = task.upper()
         return cls[task]
@@ -218,19 +217,24 @@ def get_generated_files(
 @get_generated_files.register(dict)
 def _(
     param_data: CellParamData,
-    cell_data: CellParamData,
+    cell_data: CellParamData | None = None,
     src: Path | str = "seedname",
 ) -> list[str]:
+    if cell_data is None:
+        cell_data = {}
+
     seedname = Path(src).stem
     param_data = deepcopy(param_data)
     devel_code = param_data.get("devel_code", {})
     raw_task = param_data.get("task", "SINGLEPOINT").upper()
     task = Task(raw_task)
 
-    xc_f = param_data.get("xc_functional", "LDA").upper()
+    xc_f = param_data.get("xc_functional", "lda").lower()
     xc_d = param_data.get("xc_definition")
 
     xc = xc_d["xc"].keys() if xc_d else {xc_f}
+
+    xc = {typ[0] if (typ := re.match("libxc(_hyb)?_(m?gga|lda)", key)) else key for key in xc}
 
     is_mgga = xc & {"ms2", "rscan", "r2scan", "libxc_mgga", "libxc_hyb_mgga"}
     is_nlxc = xc & {
@@ -377,9 +381,9 @@ def _(
 
         is_usp = True
 
-        if xc & {"LIBXC_MGGA", "LIBXC_HYB_MGGA"}:
+        if xc & {"libxc_mgga", "libxc_hyb_mgga"}:
             theory = "RSCAN"
-        elif xc & {"LIBXC_GGA", "LIBXC_HYB_GGA"}:
+        elif xc & {"libxc_gga", "libxc_hyb_gga"}:
             theory = "PBE"
         else:
             theory = XC_TO_PS_THEORY.get(next(iter(xc)), "LDA")
