@@ -1,9 +1,10 @@
 """Module to assist processing of parsed outputs."""
 
-from typing import NamedTuple
+from typing import NamedTuple, TypeVar
 
 from ..utilities.castep_res import get_atom_parts
 
+Self = TypeVar("Self", bound="AtomLabel")
 
 class AtomLabel(NamedTuple):
     """Standard castep atom label."""
@@ -18,7 +19,7 @@ class AtomLabel(NamedTuple):
     label: str = ""
 
     @classmethod
-    def from_str(cls, string: str):
+    def from_str(cls, string: str) -> Self:
         """
         Build a label from a key-string.
 

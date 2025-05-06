@@ -21,7 +21,7 @@ with suppress(ImportError):
 Dumper = Callable[[Any, TextIO], None]
 
 
-def json_dumper(data: Any, file: TextIO):
+def json_dumper(data: Any, file: TextIO) -> None:
     """
     JSON format dumper.
 
@@ -35,7 +35,7 @@ def json_dumper(data: Any, file: TextIO):
     json.dump(data, file, indent=2)
 
 
-def ruamel_dumper(data: Any, file: TextIO):
+def ruamel_dumper(data: Any, file: TextIO) -> None:
     """
     YAML (ruamel.yaml) format dumper.
 
@@ -50,7 +50,7 @@ def ruamel_dumper(data: Any, file: TextIO):
     yaml_eng.dump(data, file)
 
 
-def pyyaml_dumper(data: Any, file: TextIO):
+def pyyaml_dumper(data: Any, file: TextIO) -> None:
     """
     YAML (pyyaml) format dumper.
 
@@ -64,7 +64,7 @@ def pyyaml_dumper(data: Any, file: TextIO):
     yaml.dump(data, file)
 
 
-def pprint_dumper(data: Any, file: TextIO):
+def pprint_dumper(data: Any, file: TextIO) -> None:
     """
     Pretty print dumper.
 
@@ -78,7 +78,7 @@ def pprint_dumper(data: Any, file: TextIO):
     print(pprint.pformat(data), file=file)
 
 
-def print_dumper(data: Any, file: TextIO):
+def print_dumper(data: Any, file: TextIO) -> None:
     """
     Python print dumper.
 
