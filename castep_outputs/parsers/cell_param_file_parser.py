@@ -53,11 +53,25 @@ class NonLinearConstraint(TypedDict):
     #: Atoms and constraint definition.
     atoms: dict[AtomIndex, ThreeVector]
 
+class XCDefParams(TypedDict, total=False):
+    """XC definition params."""
+
+    nlxc_screening_length: float
+    nlxc_screening_function: str
+    nlxc_ppd_int: bool
+    nlxc_divergence_corr: bool
+
+class XCDef(TypedDict):
+    """Information from XC definitions block."""
+
+    params: XCDefParams
+    xc: dict[str, float]
+
 DevelElem = MaybeSequence[Union[str, float, dict[str, Union[str, float]]]]
 DevelBlock = dict[str, Union[DevelElem, dict[str, DevelElem]]]
 HubbardU = dict[Union[str, AtomIndex], Union[str, dict[str, float]]]
 CellParamData = dict[str, Union[str, float, tuple[float, str],
-                                dict[str, Any], HubbardU, DevelBlock]]
+                                dict[str, Any], HubbardU, DevelBlock, XCDef]]
 GeneralBlock = dict[str, Union[
     list[Union[str, float]],
     dict[str, MaybeSequence[float]],
@@ -147,7 +161,7 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[CellParamData]:
 parse_cell_file = parse_cell_param_file
 parse_param_file = parse_cell_param_file
 
-def _parse_pspot_string(string: str, *, debug=False) -> PSPotStrInfo:
+def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
     if not (match := REs.PSPOT_RE.search(string)):
         raise ValueError(f"Attempt to parse {string} as PSPot failed")
 

@@ -8,15 +8,18 @@ from enum import Enum, auto
 from functools import singledispatch
 from itertools import combinations_with_replacement
 from pathlib import Path
+from typing import TypeVar
 
 from ..parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
+
+Self = TypeVar("Self", bound="UCEnum")
 
 
 class UCEnum(Enum):
     """Auto upperclass enum."""
 
     @classmethod
-    def _missing_(cls, task):
+    def _missing_(cls, task: str) -> Self:
         task = task.upper()
         return cls[task]
 
@@ -154,7 +157,6 @@ def get_spectral_files(
             spec_calc = {"core": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
             spec_calc = {"core": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
-            pass
         else:
             raise KeyError("Invalid param file")
 
@@ -173,6 +175,44 @@ def get_spectral_files(
     }
 
     return out_files
+
+
+def get_xc_info(param_data: CellParamData) -> set[str]:
+    """Get relevant info from the XC parameters.
+
+    Returns a reduced form of libxc
+
+    Parameters
+    ----------
+    param_data : CellParamData
+        Param file data containing functional definition.
+
+    Returns
+    -------
+    set[str]
+        Active xc functionals.
+
+    Examples
+    --------
+    >>> get_xc_info({"xc_functional": "pbe"})
+    {'pbe'}
+    >>> get_xc_info({"xc_functional": "pbe",  # xc_definition takes priority like castep.
+    ...              "xc_definition": {"xc": {"lda": 1.}}})
+    {'lda'}
+    >>> sorted(   # Sorted to force set order.
+    ... get_xc_info({"xc_definition": {"xc": {"pbe": 0.25,
+    ...                                       "libxc_gga_x_2d_b86_mgc": 0.25,
+    ...                                       "libxc_lda_c_vwn": 0.25,
+    ...                                       "libxc_hyb_mgga_xc_revtpssh": 0.25}}})
+    ... )
+    ['libxc_gga', 'libxc_hyb_mgga', 'libxc_lda', 'pbe']
+    """
+    xc_f = param_data.get("xc_functional", "lda").lower()
+    xc_d = param_data.get("xc_definition")
+
+    xc = xc_d["xc"].keys() if xc_d else {xc_f}
+
+    return {typ[0] if (typ := re.match("libxc(_hyb)?_(m?gga|lda)", key)) else key for key in xc}
 
 
 @singledispatch
@@ -229,12 +269,7 @@ def _(
     raw_task = param_data.get("task", "SINGLEPOINT").upper()
     task = Task(raw_task)
 
-    xc_f = param_data.get("xc_functional", "lda").lower()
-    xc_d = param_data.get("xc_definition")
-
-    xc = xc_d["xc"].keys() if xc_d else {xc_f}
-
-    xc = {typ[0] if (typ := re.match("libxc(_hyb)?_(m?gga|lda)", key)) else key for key in xc}
+    xc = get_xc_info(param_data)
 
     is_mgga = xc & {"ms2", "rscan", "r2scan", "libxc_mgga", "libxc_hyb_mgga"}
     is_nlxc = xc & {
