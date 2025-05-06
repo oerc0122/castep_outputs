@@ -1,4 +1,5 @@
 """Parse castep .magres files."""
+
 from __future__ import annotations
 
 from collections import defaultdict
@@ -62,9 +63,7 @@ class MagresInfo(TypedDict):
     calc_pspot: str
     calc_xcfunctional: str
     #: Crystal lattice.
-    lattice: tuple[float, float, float,
-                   float, float, float,
-                   float, float, float]
+    lattice: tuple[float, float, float, float, float, float, float, float, float]
     #: Magnetic susceptibility tensor.
     ms: dict[AtomIndex, list[float]]
     units: UnitsInfo
@@ -91,7 +90,6 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
 
     for line in magres_file:
         if block := Block.from_re(line, magres_file, r"^\s*\[\w+\]\s*$", r"^\s*\[/\w+\]\s*$"):
-
             block_name = next(block).strip().strip("[").strip("]")
 
             if block_name == "calculation":
@@ -102,8 +100,9 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
             elif block_name == "magres":
                 accum["magres"] = _process_magres_block(block, version)
             elif block_name == "magres_old":
-                (accum["total_shielding"],
-                 accum["atom_info"]) = _process_magres_old_block(block, accum)
+                (accum["total_shielding"], accum["atom_info"]) = _process_magres_old_block(
+                    block, accum,
+                )
 
     return accum
 
@@ -151,14 +150,12 @@ def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
     accum = {"units": {}, "coords": {}}
     for line in block:
         if line.startswith("lattice"):
-
             key, *val = line.split()
             accum[key] = to_type(val, float)
 
         elif line.startswith("atom"):
-
             key, _, spec, ind, *pos = line.split()
-            accum["coords"][(spec, int(ind))] = to_type(pos, float)
+            accum["coords"][spec, int(ind)] = to_type(pos, float)
 
         elif line.startswith("units"):
             _, key, val = line.split()
@@ -189,36 +186,41 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
             _, key, val = line.split()
             accum["units"][key] = val
 
-        elif (words := line.split())[0] in ("ms", "efg", "efg_local", "efg_nonlocal"):
+        elif (words := line.split())[0] in {"ms", "efg", "efg_local", "efg_nonlocal"}:
             key, spec, ind, *val = words
 
             if determine_type(ind) is float:  # Have a munged spec-ind
                 val.insert(0, ind)
                 spec, ind = spec[:-munge_fix], spec[-munge_fix:]
 
-            accum[key][(spec, int(ind))] = to_type(val, float)
+            accum[key][spec, int(ind)] = to_type(val, float)
 
         elif words[0].startswith("isc"):  # ISC props explicitly have spaces!
             key, speca, inda, specb, indb, *val = words
 
-            accum[key][((speca, int(inda)),
-                        (specb, int(indb)))] = to_type(val, float)
+            accum[key][(speca, int(inda)), (specb, int(indb))] = to_type(val, float)
 
-    add_aliases(accum, {"ms": "magnetic_resonance_shielding",
-                        "efg": "electric_field_gradient",
-                        "efg_local": "local_electric_field_gradient",
-                        "efg_nonlocal": "nonlocal_electric_field_gradient",
-                        "isc_fc": "j_coupling_fc",
-                        "isc_orbital_p": "j_coupling_orbital_p",
-                        "isc_orbital_d": "j_coupling_orbital_d",
-                        "isc_spin": "j_coupling_spin",
-                        "isc": "j_coupling_k_total"})
+    add_aliases(
+        accum,
+        {
+            "ms": "magnetic_resonance_shielding",
+            "efg": "electric_field_gradient",
+            "efg_local": "local_electric_field_gradient",
+            "efg_nonlocal": "nonlocal_electric_field_gradient",
+            "isc_fc": "j_coupling_fc",
+            "isc_orbital_p": "j_coupling_orbital_p",
+            "isc_orbital_d": "j_coupling_orbital_d",
+            "isc_spin": "j_coupling_spin",
+            "isc": "j_coupling_k_total",
+        },
+    )
 
     return accum
 
 
 def _process_magres_old_block(
-        block: Block, accum: dict,
+    block: Block,
+    accum: dict,
 ) -> tuple[ThreeByThreeMatrix, dict[AtomIndex, AtomsInfo]]:
     """
     Process the magres_old block.
@@ -242,11 +244,12 @@ def _process_magres_old_block(
     total_shielding = None
 
     for line in block:
-        if sub_blk := Block.from_re(line, block, "TOTAL Shielding Tensor",
-                                    REs.EMPTY, n_end=2):
-            total_shielding = [to_type(numbers, float)
-                               for sub_line in sub_blk
-                               if (numbers := get_numbers(sub_line))]
+        if sub_blk := Block.from_re(line, block, "TOTAL Shielding Tensor", REs.EMPTY, n_end=2):
+            total_shielding = [
+                to_type(numbers, float)
+                for sub_line in sub_blk
+                if (numbers := get_numbers(sub_line))
+            ]
         elif Block.from_re(line, block, "^=+$", "^=+$"):
             pass
         elif line.strip() and "[" not in line:

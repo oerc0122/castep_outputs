@@ -8,7 +8,8 @@ from typing import NoReturn, TextIO, TypeVar
 
 from .castep_res import Pattern
 
-Self = TypeVar("Self", bound="FileWrapper")
+FWSelf = TypeVar("FWSelf", bound="FileWrapper")
+
 
 class FileWrapper:
     """
@@ -20,12 +21,12 @@ class FileWrapper:
         File to wrap and control.
     """
 
-    def __init__(self, file: TextIO) -> Self:
+    def __init__(self, file: TextIO) -> FWSelf:
         self._file = file
         self._pos = 0
         self._lineno = 0
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> FWSelf:
         return self
 
     def __next__(self) -> str:
@@ -89,7 +90,8 @@ class FileWrapper:
         return self.file.name if hasattr(self.file, "name") else "unknown"
 
 
-Self = TypeVar("Self", bound="Block")
+BSelf = TypeVar("BSelf", bound="Block")
+
 
 class Block:
     """
@@ -133,7 +135,7 @@ class Block:
 
         Raises
         ------
-        IOError
+        OSError
             If EOF reached and ``not eof_possible``.
 
         Examples
@@ -202,7 +204,7 @@ class Block:
 
         Raises
         ------
-        IOError
+        OSError
             If EOF reached and ``not eof_possible``.
         """
         block = cls(in_file)
@@ -235,7 +237,7 @@ class Block:
             cls,
             data: Sequence[str],
             parent: TextIO | FileWrapper | Block | None = None,
-    ) -> Self:
+    ) -> BSelf:
         r"""
         Construct a Block from an iterable containing strings.
 
@@ -243,6 +245,11 @@ class Block:
         ----------
         data
             Data to read into block.
+
+        Returns
+        -------
+        Self
+            Block from an iterable.
 
         Examples
         --------
@@ -303,6 +310,11 @@ class Block:
         Useful for blocks not terminated by a clear
         statement, where we can only check if next line
         does *NOT* match.
+
+        Raises
+        ------
+        ValueError
+            Block already rewound fully.
         """
         if self._i < 0:
             self._i = -1
@@ -316,7 +328,7 @@ class Block:
     def __str__(self) -> str:
         return "\n".join(self._data)
 
-    def __iter__(self) -> Self:
+    def __iter__(self) -> BSelf:
         return self
 
     def __next__(self) -> str:

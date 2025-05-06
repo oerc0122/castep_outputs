@@ -5,6 +5,7 @@ from typing import BinaryIO
 
 FortranBinaryReader = Generator[bytes, int, None]
 
+
 def binary_file_reader(file: BinaryIO) -> FortranBinaryReader:
     """Yield the elements of a Fortran unformatted file.
 
@@ -47,14 +48,14 @@ def binary_file_reader(file: BinaryIO) -> FortranBinaryReader:
         if skip:  # NB. Send proceeds to yield.
             # `True` implies rewind 1
             if skip < 0 or skip is True:
-                for _ in range(abs(skip)-1):
+                for _ in range(abs(skip) - 1):
                     # Rewind to record size before last read
-                    file.seek(-size-12, SEEK_CUR)
+                    file.seek(-size - 12, SEEK_CUR)
                     size = int.from_bytes(file.read(4), "big")
 
                 # Rewind one extra (which will be yielded)
-                file.seek(-size-8, SEEK_CUR)
+                file.seek(-size - 8, SEEK_CUR)
             else:
                 for _ in range(skip):
                     size = int.from_bytes(file.read(4), "big")
-                    file.seek(size+4, SEEK_CUR)
+                    file.seek(size + 4, SEEK_CUR)

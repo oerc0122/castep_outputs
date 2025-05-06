@@ -43,6 +43,11 @@ def parse_phonon_file(phonon_file: TextIO) -> PhononFileInfo:
     phonon_file
         A handle to a CASTEP .phonon file.
 
+    Raises
+    ------
+    ValueError
+        Branches count doesn't match expected.
+
     Returns
     -------
     PhononFileInfo
@@ -78,7 +83,7 @@ def parse_phonon_file(phonon_file: TextIO) -> PhononFileInfo:
             if len(block) - 2 != phonon_info["branches"]:
                 raise ValueError("Malformed phonon frequencies. "
                                  f"Expected {phonon_info['branches']} branches, "
-                                 f"received {len(block)-2}")
+                                 f"received {len(block) - 2}")
 
             block.remove_bounds(1, 1)
 
@@ -101,7 +106,7 @@ def parse_phonon_file(phonon_file: TextIO) -> PhononFileInfo:
             if len(block) - 1 != expected_n_eigenvec:
                 raise ValueError("Malformed eigenvectors. "
                                  f"Expected {expected_n_eigenvec} branches, "
-                                 f"received {len(block)-1}")
+                                 f"received {len(block) - 1}")
 
             block.remove_bounds(1, 0)
 
