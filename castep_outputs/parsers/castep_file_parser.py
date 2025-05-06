@@ -2252,6 +2252,7 @@ def _process_dynamical_matrix(block: Block) -> tuple[tuple[complex, ...], ...]:
         for real_row, imag_row in zip(real_part, imag_part)
     )
 
+
 def _process_pspot_report(block: Block) -> PSPotReport:
 
     accum: PSPotReport = {"reference_electronic_structure": [],

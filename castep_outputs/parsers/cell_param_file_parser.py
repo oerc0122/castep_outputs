@@ -56,11 +56,27 @@ class NonLinearConstraint(TypedDict):
     atoms: dict[AtomIndex, ThreeVector]
 
 
+class XCDefParams(TypedDict, total=False):
+    """XC definition params."""
+
+    nlxc_screening_length: float
+    nlxc_screening_function: str
+    nlxc_ppd_int: bool
+    nlxc_divergence_corr: bool
+
+
+class XCDef(TypedDict):
+    """Information from XC definitions block."""
+
+    params: XCDefParams
+    xc: dict[str, float]
+
+
 DevelElem = MaybeSequence[Union[str, float, dict[str, Union[str, float]]]]
 DevelBlock = dict[str, Union[DevelElem, dict[str, DevelElem]]]
 HubbardU = dict[Union[str, AtomIndex], Union[str, dict[str, float]]]
 CellParamData = dict[
-    str, Union[str, float, tuple[float, str], dict[str, Any], HubbardU, DevelBlock],
+    str, Union[str, float, tuple[float, str], dict[str, Any], HubbardU, DevelBlock, XCDef],
 ]
 GeneralBlock = dict[
     str,
@@ -494,13 +510,13 @@ def _parse_xc_definition(block: Block) -> dict[str, float]:
             block_data["params"][key] = float(val)
         elif key == "nlxc_screening_function":
             block_data["params"][key] = val
-        elif key in ("nlxc_ppd_int", "nlxc_divergence_corr"):
+        elif key in {"nlxc_ppd_int", "nlxc_divergence_corr"}:
             block_data["params"][key] = val.upper() == "ON"
         else:
             block_data["xc"][key] = float(val)
 
-
     return block_data
+
 
 def _parse_species_pot(block: Block) -> dict[str, str | PSPotStrInfo]:
     """Parse species pot block.
