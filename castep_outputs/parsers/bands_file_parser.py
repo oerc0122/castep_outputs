@@ -84,7 +84,6 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
         elif re.match(rf"^\s*{REs.FNUMBER_RE}$", line.strip()):
             accum.append(line.strip())
 
-
     if qdata:
         qdata[current] = to_type(accum, float)
         qdata["spin_comp"] = "band_down" in qdata

@@ -68,7 +68,7 @@ def parse_tddft_file(tddft_file: TextIO) -> TDDFTFileInfo:
 
             for blk_line in block:
                 if match := REs.TDDFT_STATE_RE.match(blk_line):
-                    curr[(int(match["occ"]), int(match["unocc"]))] = float(match["overlap"])
+                    curr[int(match["occ"]), int(match["unocc"])] = float(match["overlap"])
 
                 elif match := re.match(r"\s*Total overlap for state", blk_line):
                     curr["total"] = float(get_numbers(blk_line)[-1])
@@ -91,7 +91,8 @@ def parse_tddft_file(tddft_file: TextIO) -> TDDFTFileInfo:
                     match["energy"] = float(match["energy"])
 
                     dip = list(to_type(get_numbers(match["dipoles"]), float))
-                    dip = [complex(real, imag) for real, imag in zip(dip[0::2], dip[1::2])]
+                    dip = list(map(complex, dip[0::2], dip[1::2]))
+
                     match["dipoles"] = dip
                     tddft_info["spectroscopic_data"].append(match)
 

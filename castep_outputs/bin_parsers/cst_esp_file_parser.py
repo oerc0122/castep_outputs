@@ -45,7 +45,7 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     prev_nx = None
     curr = []
     for datum in reader:
-        nx, ny = to_type(datum[:8], int)
+        nx, _ny = to_type(datum[:8], int)
         if prev_nx != nx and curr:
             accum["esp"].append(curr)
             curr = []

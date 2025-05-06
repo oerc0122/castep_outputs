@@ -159,6 +159,7 @@ class DelocActiveSpace(TypedDict):
     #: Size of the active space.
     active_space_size: int
 
+
 # Dipole
 
 class DipoleTable(TypedDict):
@@ -177,8 +178,8 @@ class DipoleTable(TypedDict):
     #: Total valence charge in system in fundamental charge.
     total_valence: float
 
-# Phonon
 
+# Phonon
 
 class CharTable(TypedDict):
     """Character table from group theory analysis of eigenvectors."""
@@ -237,6 +238,7 @@ class RamanReport(TypedDict, total=False):
     ii: float
     #: Depolarisation ratio in 0.5 A/amu.
     depolarisation: float | None
+
 
 # Occupancies
 
@@ -724,8 +726,8 @@ class TDDFTData(TypedDict):
     #: Whether state is: Spurious, Single, Doublet, etc.
     type: str
 
-# Other Files
 
+# Other Files
 
 class HeaderAtomInfo(TypedDict):
     """Atom info from header."""
