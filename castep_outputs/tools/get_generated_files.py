@@ -8,15 +8,18 @@ from enum import Enum, auto
 from functools import singledispatch
 from itertools import combinations_with_replacement
 from pathlib import Path
+from typing import TypeVar
 
 from ..parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
+
+Self = TypeVar("Self", bound="UCEnum")
 
 
 class UCEnum(Enum):
     """Auto upperclass enum."""
 
     @classmethod
-    def _missing_(cls, task):
+    def _missing_(cls, task: str) -> Self:
         task = task.upper()
         return cls[task]
 
@@ -114,6 +117,20 @@ def get_spectral_files(
 ) -> set[str]:
     """Get files associated with Task = Spectral.
 
+    Parameters
+    ----------
+    param_data : CellParamData
+        Dict containing parameters.
+    seedname : str
+        Current seedname.
+    is_nlxc : bool
+        Whether XC functional is non-local.
+
+    Returns
+    -------
+    set[str]
+        Files generated in spectral task.
+
     Raises
     ------
     KeyError
@@ -135,7 +152,7 @@ def get_spectral_files(
     if spectral_theory is SpectralTheory.TDDFT:
         if spectral_task is SpectralTask.OPTICS:
             spec_calc = {"core": False, "ome": False, "dome": True}
-        elif spectral_task in (SpectralTask.DOS, SpectralTask.BANDSTRUCTURE):
+        elif spectral_task in {SpectralTask.DOS, SpectralTask.BANDSTRUCTURE}:
             spec_calc = {"core": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
             spec_calc = {"core": False, "ome": False, "dome": True}
@@ -154,7 +171,6 @@ def get_spectral_files(
             spec_calc = {"core": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
             spec_calc = {"core": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
-            pass
         else:
             raise KeyError("Invalid param file")
 
@@ -173,6 +189,44 @@ def get_spectral_files(
     }
 
     return out_files
+
+
+def get_xc_info(param_data: CellParamData) -> set[str]:
+    """Get relevant info from the XC parameters.
+
+    Returns a reduced form of libxc
+
+    Parameters
+    ----------
+    param_data : CellParamData
+        Param file data containing functional definition.
+
+    Returns
+    -------
+    set[str]
+        Active xc functionals.
+
+    Examples
+    --------
+    >>> get_xc_info({"xc_functional": "pbe"})
+    {'pbe'}
+    >>> get_xc_info({"xc_functional": "pbe",  # xc_definition takes priority like castep.
+    ...              "xc_definition": {"xc": {"lda": 1.}}})
+    {'lda'}
+    >>> sorted(   # Sorted to force set order.
+    ... get_xc_info({"xc_definition": {"xc": {"pbe": 0.25,
+    ...                                       "libxc_gga_x_2d_b86_mgc": 0.25,
+    ...                                       "libxc_lda_c_vwn": 0.25,
+    ...                                       "libxc_hyb_mgga_xc_revtpssh": 0.25}}})
+    ... )
+    ['libxc_gga', 'libxc_hyb_mgga', 'libxc_lda', 'pbe']
+    """
+    xc_f = param_data.get("xc_functional", "lda").lower()
+    xc_d = param_data.get("xc_definition")
+
+    xc = xc_d["xc"].keys() if xc_d else {xc_f}
+
+    return {typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key)) else key for key in xc}
 
 
 @singledispatch
@@ -229,15 +283,10 @@ def _(
     raw_task = param_data.get("task", "SINGLEPOINT").upper()
     task = Task(raw_task)
 
-    xc_f = param_data.get("xc_functional", "lda").lower()
-    xc_d = param_data.get("xc_definition")
-
-    xc = xc_d["xc"].keys() if xc_d else {xc_f}
-
-    xc = {typ[0] if (typ := re.match("libxc(_hyb)?_(m?gga|lda)", key)) else key for key in xc}
+    xc = get_xc_info(param_data)
 
     is_mgga = xc & {"ms2", "rscan", "r2scan", "libxc_mgga", "libxc_hyb_mgga"}
-    is_nlxc = xc & {
+    is_nlxc = bool(xc & {
         "hf",
         "hf-lda",
         "shf",
@@ -248,7 +297,7 @@ def _(
         "hse03",
         "hse06",
         "spbe0",
-    }
+    })
     is_oep = xc & {"oep", "lfx", "elp", "ceda"}
     is_spin = (
         param_data.get("spin_treatment", "NONE").upper() == "VECTOR"
@@ -272,12 +321,12 @@ def _(
             param_data[i] = False
 
     write_check = param_data.get("write_checkpoint", "ALL").upper()
-    if write_check in (True, "TRUE", "ALL", "BOTH", "FULL"):
+    if write_check in {True, "TRUE", "ALL", "BOTH", "FULL"}:
         out_files.add(f"{seedname}.check")
         out_files.add(f"{seedname}.castep_bin")
     elif write_check == "MINIMAL":
         out_files.add(f"{seedname}.castep_bin")
-    elif write_check in (False, "FALSE", "NONE"):
+    elif write_check in {False, "FALSE", "NONE"}:
         pass
     else:
         raise NotImplementedError(
@@ -314,7 +363,7 @@ def _(
 
     if param_data.get("calculate_elf"):
         out_files.add(f"{seedname}.elf")
-        ## Commented out
+        # Commented out
         # out_files.add("rho_test.den_fmt")
         if param_data.get("write_formatted_elf"):
             out_files.add(f"{seedname}.elf_fmt")
@@ -344,7 +393,7 @@ def _(
         out_files.add(f"{seedname}.*.profile")
     if devel_code.get("write_formatted_bands"):
         out_files.add(f"{seedname}_*.orbit_fmt")
-    if devel_code.get("pp_hybrid") and task in (Task.GEOMOPT, Task.MD):
+    if devel_code.get("pp_hybrid") and task in {Task.GEOMOPT, Task.MD}:
         out_files.add(f"{seedname}.hybrid-md.xyz")
     if is_spin and devel_code.get("lda_sf_pot_write"):
         out_files.add(f"{seedname}.B_xc.pot_fmt")
@@ -367,10 +416,10 @@ def _(
         if pp.get("fd_check"):
             out_files.add(f"{seedname}.fd")
 
-    if param_data.get("pdos_calculate_weights") and raw_task not in (
+    if param_data.get("pdos_calculate_weights") and raw_task not in {
         "BANDSTRUCTURE",
         "ELECTRONICSPECTROSCOPY",
-    ):
+    }:
         out_files.add(f"{seedname}.pdos_weights")
 
     is_usp = True
@@ -396,7 +445,7 @@ def _(
             out_files.add(f"{otf_name}.beta")
             out_files.add(f"{otf_name}.econv")
 
-        ## Commented out 25.1
+        # Commented out 25.1
         # out_files.add(f"{otf_name}.orbs")
         # out_files.add(f"{otf_name}.potential")
 
@@ -450,7 +499,7 @@ def _(
     elif task is Task.MD:
         if param_data.get("write_md", True):
             out_files.add(f"{seedname}.md")
-        if param_data.get("md_ensemble") in ("nvhug", "nphug"):
+        if param_data.get("md_ensemble") in {"nvhug", "nphug"}:
             out_files.add(f"{seedname}.hug")
 
         extrap = param_data.get("md_extrap", "first").lower()
@@ -459,10 +508,10 @@ def _(
             or param_data.get("opt_strategy_bias", 0) >= 0
         )
         mix_method = param_data.get("metals_method", "dm").lower()
-        if mix_method == "dm" and extrap in ("first", "second", "mixed") and opt_mem:
+        if mix_method == "dm" and extrap in {"first", "second", "mixed"} and opt_mem:
             out_files.add(f"{seedname}.*.wfm")
             out_files.add(f"{seedname}.*..drhom")
-        if mix_method == "dm" and extrap in ("second", "mixed") and opt_mem:
+        if mix_method == "dm" and extrap in {"second", "mixed"} and opt_mem:
             out_files.add(f"{seedname}.*.wf2m")
             out_files.add(f"{seedname}.*..drho2m")
 
@@ -481,7 +530,7 @@ def _(
     elif task is Task.THERMODYNAMICS:
         ...  # No extra files? Created in secondd?
 
-    if task in (Task.PHONON, Task.PHONON_EFIELD):
+    if task in {Task.PHONON, Task.PHONON_EFIELD}:
         out_files.add(f"{seedname}.phonon")
         if param_data.get("phonon_calculate_dos"):
             out_files.add(f"{seedname}.phonon_dos")
@@ -490,7 +539,7 @@ def _(
         if devel_code.get("phonon", {}).get("write_first_order_potential"):
             out_files.add(f"{seedname}-*-*-*.ep_pot")
 
-    if task in (Task.EFIELD, Task.PHONON_EFIELD):
+    if task in {Task.EFIELD, Task.PHONON_EFIELD}:
         out_files.add(f"{seedname}.efield")
 
     if task is Task.WANNIER:
