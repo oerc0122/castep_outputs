@@ -1,8 +1,10 @@
 """Parse castep .magres files."""
+
 from __future__ import annotations
 
 from collections import defaultdict
-from typing import Literal, TextIO, TypedDict
+from collections.abc import Sequence
+from typing import Literal, SupportsFloat, TextIO, TypedDict
 
 import castep_outputs.utilities.castep_res as REs
 
@@ -17,17 +19,17 @@ from ..utilities.utility import (
 )
 
 MAGRES_ALIASES = {
-        "ms": "magnetic_shielding",
-        "efg": "electric_field_gradient",
-        "efg_local": "local_electric_field_gradient",
-        "efg_nonlocal": "nonlocal_electric_field_gradient",
-        "isc_fc": "j_coupling_fc",
-        "isc_orbital_p": "j_coupling_orbital_p",
-        "isc_orbital_d": "j_coupling_orbital_d",
-        "isc_spin": "j_coupling_spin",
-        "isc": "j_coupling_k_total",
-        "hf": "hyperfine",
-    }
+    "ms": "magnetic_shielding",
+    "efg": "electric_field_gradient",
+    "efg_local": "local_electric_field_gradient",
+    "efg_nonlocal": "nonlocal_electric_field_gradient",
+    "isc_fc": "j_coupling_fc",
+    "isc_orbital_p": "j_coupling_orbital_p",
+    "isc_orbital_d": "j_coupling_orbital_d",
+    "isc_spin": "j_coupling_spin",
+    "isc": "j_coupling_k_total",
+    "hf": "hyperfine",
+}
 
 MAGRES_DEFAULT_UNITS = {
     "atom": "Angstrom",
@@ -41,6 +43,7 @@ MAGRES_DEFAULT_UNITS = {
     "isc_orbital_d": "10^19.T^2.J^-1",
     "hf": "au",
 }
+
 
 class AtomsInfo(TypedDict):
     """Per atom magres information."""
@@ -62,16 +65,26 @@ class AtomsInfo(TypedDict):
 class UnitsInfo(TypedDict):
     """Information on magres units."""
 
-    atom: str  #: Position units.
-    lattice: str  #: Lattice length units.
-    ms: str  #: Magnetic response units.
-    efg: str  #: Electric field gradient units.
-    isc: str  #: J-coupling units.
-    isc_fc: str  #: Fermi contact J-coupling units.
-    isc_spin: str  #: Spin dipole J-coupling units.
-    isc_orbital_p: str  #: Orbital paramagnetic J-coupling units.
-    isc_orbital_d: str  #: Orbital diamagnetic J-coupling units.
-    hyperfine: str  #: Hyperfine coupling units.
+    #: Position units.
+    atom: str
+    #: Lattice length units.
+    lattice: str
+    #: Magnetic response units.
+    ms: str
+    #: Electric field gradient units.
+    efg: str
+    #: J-coupling units.
+    isc: str
+    #: Fermi contact J-coupling units.
+    isc_fc: str
+    #: Spin dipole J-coupling units.
+    isc_spin: str
+    #: Orbital paramagnetic J-coupling units.
+    isc_orbital_p: str
+    #: Orbital diamagnetic J-coupling units.
+    isc_orbital_d: str
+    #: Hyperfine coupling units.
+    hyperfine: str
 
 
 class MagresInfo(TypedDict):
@@ -90,9 +103,7 @@ class MagresInfo(TypedDict):
     calc_pspot: str
     calc_xcfunctional: str
     #: Crystal lattice.
-    lattice: tuple[float, float, float,
-                   float, float, float,
-                   float, float, float]
+    lattice: tuple[float, float, float, float, float, float, float, float, float]
     #: Magnetic shielding tensor.
     ms: dict[AtomIndex, list[float]]
     #: Electric field gradient tensor.
@@ -135,23 +146,24 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
     # pylint: disable=too-many-branches
 
     accum = defaultdict(dict)
+    magres_old = {}
 
     for line in magres_file:
         if block := Block.from_re(line, magres_file, r"^\s*\[\w+\]\s*$", r"^\s*\[/\w+\]\s*$"):
-
-            block_name = next(block).strip().strip("[").strip("]")
+            block_name = next(block).strip().strip("[]")
 
             if block_name == "calculation":
                 accum["calc"] = _process_calculation_block(block)
                 version = int(accum["calc"]["code_version"].split(".")[0])
             elif block_name == "atoms":
-                accum["atoms"] = _process_atoms_block(block)
+                accum["ions"] = _process_atoms_block(block)
             elif block_name == "magres":
                 accum["magres"] = _process_magres_block(block, version)
             elif block_name == "magres_old":
-                accum["magres_old"] = _process_magres_old_block(block)
+                magres_old = _process_magres_old_block(block)
 
-    return accum
+    # Accum takes priority
+    return magres_old | accum
 
 
 def _process_calculation_block(block: Block) -> dict[str, str]:
@@ -197,14 +209,12 @@ def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
     accum = {"units": {}, "coords": {}}
     for line in block:
         if line.startswith("lattice"):
-
             key, *val = line.split()
             accum[key] = to_type(val, float)
 
         elif line.startswith("atom"):
-
             key, _, spec, ind, *pos = line.split()
-            accum["coords"][(spec, int(ind))] = to_type(pos, float)
+            accum["coords"][spec, int(ind)] = to_type(pos, float)
 
         elif line.startswith("units"):
             _, key, val = line.split()
@@ -236,21 +246,22 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
             _, key, val = line.split()
             accum["units"][key] = val
 
-        elif (words := line.split())[0] in ("ms", "efg", "efg_local", "efg_nonlocal"):
+        elif (words := line.split())[0] in {"ms", "efg", "efg_local", "efg_nonlocal"}:
             key, spec, ind, *val = words
 
             if determine_type(ind) is float:  # Have a munged spec-ind
                 val.insert(0, ind)
                 spec, ind = spec[:-munge_fix], spec[-munge_fix:]
 
-            accum[key][(spec, int(ind))] = _list_to_threebythree(val)
+            accum[key][spec, int(ind)] = _list_to_threebythree(val)
         elif words[0].startswith("isc"):  # ISC props explicitly have spaces!
             key, speca, inda, specb, indb, *val = words
-            accum[key][((speca, int(inda)), (specb, int(indb)))] = _list_to_threebythree(val)
+            accum[key][(speca, int(inda)), (specb, int(indb))] = _list_to_threebythree(val)
 
     add_aliases(accum, MAGRES_ALIASES)
 
     return accum
+
 
 def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatrix]:
     """
@@ -266,16 +277,16 @@ def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatri
     dict[str, str | ThreeByThreeMatrix]
         Processed data.
     """
-    data = {"atoms": {"units": {}, "coords": {}}, "magres": {"units": {}}}
-    data["atoms"]["units"]["atom"] = "Angstrom"
+    data = {"ions": {"units": {}, "coords": {}}, "magres": {"units": {}}}
+    data["ions"]["units"]["atom"] = "Angstrom"
 
-    found_atoms = set()
+    found_ions = set()
     coords_matches = REs.MAGRES_OLD_RE["coords"].finditer(str(block))
     for match in coords_matches:
         index = atreg_to_index(match)
-        if index not in found_atoms:
-            data["atoms"]["coords"][index] = to_type(match["val"].split(), float)
-            found_atoms.add(index)
+        if index not in found_ions:
+            data["ions"]["coords"][index] = to_type(match["val"].split(), float)
+            found_ions.add(index)
 
     perturbing_index = None
     for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
@@ -287,7 +298,7 @@ def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatri
     for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
         index = atreg_to_index(match)
         sub_blk = match.groups()[3]
-        _process_tensors(sub_blk, index, data, "ms" )
+        _process_tensors(sub_blk, index, data, "ms")
         _process_tensors(sub_blk, index, data, "efg")
         _process_tensors(sub_blk, index, data, "hf")
         _process_jcoupling_tensors(sub_blk, index, perturbing_index, data)
@@ -295,31 +306,24 @@ def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatri
     return data
 
 
-def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: str):
+def _process_tensors(atom_data: str, index: AtomIndex, data: dict, tensor_type: str) -> None:
     """Process tensors from magres_old blocks."""
     tensors = REs.MAGRES_OLD_RE[f"{tensor_type}_tensor"].findall(atom_data)
     if not tensors:
         return
 
-    # Add default units from MAGRES_DEFAULT_UNITS if not present
-    if tensor_type not in data["magres"]["units"]:
-        data["magres"]["units"][tensor_type] = MAGRES_DEFAULT_UNITS.get(tensor_type, "")
-
-
-
-    # Ensure tensor dictionary exists
-    if tensor_type not in data["magres"]:
-        data["magres"][tensor_type] = {}
+    # Add defaults
+    data["magres"]["units"].setdefault(tensor_type, MAGRES_DEFAULT_UNITS.get(tensor_type, ""))
+    data["magres"].setdefault(tensor_type, {})
 
     # Store tensors
     for tensor in tensors:
         data["magres"][tensor_type][index] = _list_to_threebythree(tensor[1:])
 
+
 def _process_jcoupling_tensors(
-        atom_data: str,
-        index: AtomIndex,
-        perturbing_index: AtomIndex,
-        data: dict):
+    atom_data: str, index: AtomIndex, perturbing_index: AtomIndex, data: dict,
+) -> None:
     """Process J-coupling tensors from magres_old blocks."""
     jc_tensors = REs.MAGRES_OLD_RE["isc_tensor"].findall(atom_data)
     if not jc_tensors:
@@ -340,6 +344,21 @@ def _get_jcoupling_tag(tensor_type: str) -> str:
     """Get the J-coupling tag based on tensor type.
 
     These are the tags used in the magres_old blocks.
+
+    Parameters
+    ----------
+    tensor_type : str
+        Type of tensor to extract.
+
+    Returns
+    -------
+    str
+        Internal key.
+
+    Raises
+    ------
+    ValueError
+        If unrecognised tag.
     """
     TENSOR_TAG_LOOKUP = {
         "Fermi Contact": "isc_fc",
@@ -355,8 +374,29 @@ def _get_jcoupling_tag(tensor_type: str) -> str:
         raise ValueError(f"Unknown J-coupling tensor type: {tensor_type}") from err
 
 
-def _list_to_threebythree(lst: list[float] | list[str]) -> ThreeByThreeMatrix:
-    """List of 9 floats to 3x3 matrix.
+def _list_to_threebythree(lst: Sequence[SupportsFloat]) -> ThreeByThreeMatrix:
+    """Convert Sequence of 9 float-likes to 3x3 matrix.
+
+    Parameters
+    ----------
+    lst : Sequence[SupportsFloat]
+        Set of values to convert.
+
+    Returns
+    -------
+    ThreeByThreeMatrix
+        Converted values.
+
+    Examples
+    --------
+    >>> _list_to_threebythree("1 2 3 4 5 6 7 8 9".split())
+    ((1.0, 2.0, 3.0), (4.0, 5.0, 6.0), (7.0, 8.0, 9.0))
+    >>> _list_to_threebythree([1, 2, 3, 4, 5, 6, 7, 8, 9])
+    ((1.0, 2.0, 3.0), (4.0, 5.0, 6.0), (7.0, 8.0, 9.0))
+
+    Notes
+    -----
+    Only takes first nine elements, subsequent elements are ignored.
 
     Order is:
     ::
