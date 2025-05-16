@@ -6,6 +6,7 @@ from ..utilities.castep_res import get_atom_parts
 
 Self = TypeVar("Self", bound="AtomLabel")
 
+
 class AtomLabel(NamedTuple):
     """Standard castep atom label."""
 

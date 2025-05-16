@@ -27,6 +27,7 @@ NORMALISE_RE = re.compile(r"[_\W]+")
 LoggingLevels = Literal["debug", "info", "warning", "error", "critical"]
 Logger = Callable[[str, tuple[Any, ...], LoggingLevels], None]
 
+
 def normalise_string(string: str) -> str:
     """
     Normalise a string.
@@ -382,7 +383,7 @@ def determine_type(data: str) -> type:
     >>> determine_type('BEEF')
     <class 'str'>
     """
-    if data.title() in ("T", "True", "F", "False"):
+    if data.title() in {"T", "True", "F", "False"}:
         return bool
 
     if re.match(rf"(?:\s*{REs.EXPFNUMBER_RE})+", data):
@@ -477,7 +478,7 @@ def _parse_logical(val: str) -> bool:
     >>> _parse_logical("F")
     False
     """
-    return val.title() in ("T", "True", "1")
+    return val.title() in {"T", "True", "1"}
 
 
 def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
@@ -504,8 +505,9 @@ def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
     >>> _parse_float_bytes(one*3)
     (1.0, 1.0, 1.0)
     """
-    result = unpack(f">{len(val)//8}d", val)
+    result = unpack(f">{len(val) // 8}d", val)
     return result if len(result) != 1 else result[0]
+
 
 def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
     r"""Parse (big-endian) bytes to int.
@@ -531,8 +533,9 @@ def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
     >>> _parse_int_bytes(one*3)
     (1, 1, 1)
     """
-    result = unpack(f">{len(val)//4}i", val)
+    result = unpack(f">{len(val) // 4}i", val)
     return result if len(result) != 1 else result[0]
+
 
 def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
     r"""Parse (big-endian) bytes to bool.
@@ -558,8 +561,9 @@ def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
     >>> _parse_bool_bytes(one*3)
     (True, True, True)
     """
-    result = tuple(map(bool, unpack(f">{len(val)//4}i", val)))
+    result = tuple(map(bool, unpack(f">{len(val) // 4}i", val)))
     return result if len(result) != 1 else result[0]
+
 
 def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
     r"""Parse (big-endian) bytes to complex.
@@ -585,9 +589,10 @@ def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
     >>> _parse_complex_bytes((one+one)*3)
     ((1+1j), (1+1j), (1+1j))
     """
-    tmp = unpack(f">{len(val)//8}d", val)
+    tmp = unpack(f">{len(val) // 8}d", val)
     result = tuple(map(complex, tmp[::2], tmp[1::2]))
     return result if len(result) != 1 else result[0]
+
 
 _TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational,
                                        bool: _parse_logical}
@@ -717,6 +722,7 @@ def _strip_inline_comments(
 
         yield line
 
+
 def _strip_initial_comments(
         data: TextIO | FileWrapper | Block,
         *,
@@ -759,6 +765,7 @@ def _strip_initial_comments(
     data = map(str.rstrip, data)
     data = filter(None, data)
     yield from data
+
 
 def strip_comments(
         data: TextIO | FileWrapper | Block,
@@ -853,6 +860,7 @@ def get_only(seq: Sequence[T]) -> T:
 
     return val
 
+
 def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:  # paramspec 3.10+
     """Decorate to allow a parser to accept either a path or open file.
 
@@ -860,6 +868,11 @@ def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:  
     ----------
     mode : Literal["r", "rb"]
         Open mode if passed a :class:`~pathlib.Path` or :class:`str`.
+
+    Returns
+    -------
+    Callable
+        Wrapped function able to handle open files or paths invisibly.
     """
     def inner(func: Callable) -> Callable:
         @wraps(func)

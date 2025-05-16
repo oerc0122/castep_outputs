@@ -52,7 +52,7 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> XRDSFFileInfo:
     # Get headers from first line
     headers = xrd_sf_file.readline().split()[3:]
     # Turn Re(x) into x_re
-    headers = [(head[3:-1]+"_"+head[0:2]).lower() for head in headers]
+    headers = [f"{head[3:-1]}_{head[0:2]}".lower() for head in headers]
     headers_wo = {head[:-3] for head in headers}
 
     xrd_re = re.compile(rf"(?P<qvec>(?:\s*{REs.INTNUMBER_RE}){{3}})" +

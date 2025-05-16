@@ -42,6 +42,7 @@ class PositionsInfo(TypedDict, total=False):
     #: Mixture weight.
     weight: float
 
+
 class NonLinearConstraint(TypedDict):
     """Non-linear constraint information."""
 
@@ -49,6 +50,7 @@ class NonLinearConstraint(TypedDict):
     key: Literal["distance", "bend", "torsion"]
     #: Atoms and constraint definition.
     atoms: dict[AtomIndex, ThreeVector]
+
 
 DevelElem = MaybeSequence[Union[str, float, dict[str, Union[str, float]]]]
 DevelBlock = dict[str, Union[DevelElem, dict[str, DevelElem]]]
@@ -108,7 +110,7 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[CellParamData]:
 
     for line in cell_param_file:
         # Strip comments
-        line = re.split("[#!]", line)[0]
+        line = re.split(r"[#!]", line)[0]
 
         if block := Block.from_re(line, cell_param_file,
                                   re.compile(r"^\s*%block ", re.IGNORECASE),
@@ -170,12 +172,11 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
         block: DevelBlock = {}
         for par in re.finditer(REs.DEVEL_CODE_VAL_RE, block_str,
                                re.IGNORECASE | re.MULTILINE):
-            key, val = re.split("[:=]", par.group(0))
+            key, val = re.split(r"[:=]", par.group(0))
             key = normalise_key(key)
             typ = determine_type(val)
             block[key] = to_type(val, typ)
             block_str = block_str.replace(par.group(0), "")
-
 
         if block_str.strip():
             block["data"] = []
@@ -184,16 +185,16 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
                 block["data"].append(to_type(par, determine_type(par)))
 
         if block_title in devel_code_parsed:
-            devel_code_parsed[block_title].update(block) # type: ignore
+            devel_code_parsed[block_title].update(block)  # type: ignore
         else:
-            devel_code_parsed[block_title] = block # type: ignore
+            devel_code_parsed[block_title] = block  # type: ignore
 
         # Remove matched to get remainder
         main_block = main_block.replace(blk.group(0), "")
 
     # Catch remainder
     for par in re.finditer(REs.DEVEL_CODE_VAL_RE, main_block):
-        key, val = re.split("[:=]", par.group(0))
+        key, val = re.split(r"[:=]", par.group(0))
         key = normalise_key(key)
         typ = determine_type(val)
 
@@ -228,6 +229,7 @@ def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, Sequence[ThreeVect
             accum[ind].append(elem)
 
     return dict(accum)
+
 
 def _parse_nonlinear_constraints(block: Block) -> list[NonLinearConstraint]:
     """
@@ -301,6 +303,7 @@ def _parse_positions(block: Block, *, absolute: bool = False) -> dict[AtomIndex,
             accum[ind] = info
 
     return accum
+
 
 def _parse_hubbard_u(block: Block) -> HubbardU:
     """
@@ -383,9 +386,10 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
            for line in block
            if (numbers := REs.FLOAT_RAT_RE.findall(line))]
 
-    return [{"r": tmp[i:i+3],  # type: ignore
-             "t": tmp[i+3]}
+    return [{"r": tmp[i:i + 3],  # type: ignore
+             "t": tmp[i + 3]}
             for i in range(0, len(tmp), 4)]
+
 
 def _parse_general(block: Block) -> GeneralBlock:
     """
@@ -404,7 +408,7 @@ def _parse_general(block: Block) -> GeneralBlock:
     block_data: GeneralBlock = {"data": []}
 
     for line in block:
-        line = re.split("[#!]", line)[0]
+        line = re.split(r"[#!]", line)[0]
 
         if REs.SPEC_PROP_RE.match(line):
             if isinstance(block_data["data"], list):
@@ -430,6 +434,7 @@ def _parse_general(block: Block) -> GeneralBlock:
             block_data["units"] = line.strip()
 
     return block_data
+
 
 _parse_positions_abs = partial(_parse_positions, absolute=True)
 _parse_positions_frac = partial(_parse_positions, absolute=False)

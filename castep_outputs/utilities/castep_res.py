@@ -351,12 +351,14 @@ FORCES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Forces", r"\*+"), re.IGNO
 STRESSES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Stress Tensor", r"\*+"), re.IGNORECASE)
 
 # Bonds
-BOND_RE = re.compile(rf"""\s*
-                       (?P<spec1>{ATOM_NAME_RE})\s*(?P<ind1>\d+)\s*
-                       --\s*
-                       (?P<spec2>{ATOM_NAME_RE})\s*(?P<ind2>\d+)\s*
-                       {labelled_floats(("population", "spin", "length"), counts=(None,"0,1",None))}
-                       """, re.VERBOSE)
+BOND_RE = re.compile(
+    rf"""\s*
+    (?P<spec1>{ATOM_NAME_RE})\s*(?P<ind1>\d+)\s*
+    --\s*
+    (?P<spec2>{ATOM_NAME_RE})\s*(?P<ind2>\d+)\s*
+    {labelled_floats(("population", "spin", "length"), counts=(None, "0,1", None))}
+    """, re.VERBOSE,
+)
 
 # Pair pot
 PAIR_POT_RES = {
@@ -436,7 +438,7 @@ BS_RE = re.compile(
     rf"""
     Spin=\s*(?P<spin>{INTNUMBER_RE})\s*
     kpt=\s*{INTNUMBER_RE}\s*
-    \({labelled_floats(("kx","ky","kz"))}\)\s*
+    \({labelled_floats(("kx", "ky", "kz"))}\)\s*
     kpt-group=\s*(?P<kpgrp>{INTNUMBER_RE})
     """, re.VERBOSE)
 
@@ -473,17 +475,18 @@ BORN_RE = re.compile(rf"\s+{ATOM_RE}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})(?:\s*I
 # MagRes REs
 MAGRES_RE = (
     # "Chemical Shielding Tensor" 0
-    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso','aniso'))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso', 'aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "Chemical Shielding and Electric Field Gradient Tensor" 1
-    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso','aniso'))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso', 'aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)"
                rf"{labelled_floats(('cq', 'eta'))}\s*\|\s*"),
     # "Electric Field Gradient Tensor" 2
     re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('cq',))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "(?:I|Ani)sotropic J-coupling" 3
-    re.compile(rf"\s*\|\**\s*{ATOM_RE}{labelled_floats(('fc','sd','para','dia','tot'))}\s*\|\s*"),
+    re.compile(rf"\s*\|\**\s*{ATOM_RE}"
+               rf"{labelled_floats(('fc', 'sd', 'para', 'dia', 'tot'))}\s*\|\s*"),
     # "Hyperfine Tensor" 4
     re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso',))}\s*\|\s*"),
 )
