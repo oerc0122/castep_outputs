@@ -11,8 +11,8 @@ import castep_outputs.utilities.castep_res as REs
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
 from ..utilities.utility import (
-    add_aliases,
     atreg_to_index,
+    deep_merge_dict,
     determine_type,
     file_or_path,
     to_type,
@@ -21,16 +21,19 @@ from ..utilities.utility import (
 MAGRES_ALIASES = {
     "ms": "magnetic_shielding",
     "efg": "electric_field_gradient",
-    "efg_local": "local_electric_field_gradient",
-    "efg_nonlocal": "nonlocal_electric_field_gradient",
-    "isc_fc": "j_coupling_fc",
-    "isc_orbital_p": "j_coupling_orbital_p",
-    "isc_orbital_d": "j_coupling_orbital_d",
-    "isc_spin": "j_coupling_spin",
-    "isc": "j_coupling_k_total",
+    "isc": "indirect_spin_spin_coupling",
+    "isc_fc": "indirect_spin_spin_coupling_fc",
+    "isc_orbital_p": "indirect_spin_spin_coupling_orbital_p",
+    "isc_orbital_d": "indirect_spin_spin_coupling_orbital_d",
+    "isc_spin": "indirect_spin_spin_coupling_spin",
     "hf": "hyperfine",
 }
 
+# Note:
+# The default units for isc tensors in the magres blocks are:
+# 10^19.T^2.J^-1.
+# For the magres_old blocks the "J-coupling" units are given as
+# 10^19kg m^-2 s^-2 A^-2, which is equivalent!
 MAGRES_DEFAULT_UNITS = {
     "atom": "Angstrom",
     "lattice": "Angstrom",
@@ -104,8 +107,23 @@ class MagresInfo(TypedDict):
     calc_xcfunctional: str
     #: Crystal lattice.
     lattice: tuple[float, float, float, float, float, float, float, float, float]
-    #: Magnetic susceptibility tensor.
+    #: Magnetic shielding tensor.
     ms: dict[AtomIndex, list[float]]
+    #: Electric field gradient tensor.
+    efg: dict[AtomIndex, list[float]]
+    #: Indirect spin-spin coupling tensor.
+    isc: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    #: Fermi contact contribution to the indirect spin-spin coupling tensor.
+    isc_fc: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    #: Spin contribution to the indirect spin-spin coupling tensor.
+    isc_spin: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    #: Orbital paramagnetic contribution to the indirect spin-spin coupling tensor.
+    isc_orbital_p: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    #: Orbital diamagnetic contribution to the indirect spin-spin coupling tensor.
+    isc_orbital_d: dict[tuple[AtomIndex, AtomIndex], list[float]]
+    #: Hyperfine coupling tensor.
+    hf: dict[AtomIndex, list[float]]
+    #: Units information.
     units: UnitsInfo
 
 
@@ -141,12 +159,10 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
             elif block_name == "magres":
                 accum["magres"] = _process_magres_block(block, version)
             elif block_name == "magres_old":
-                (accum["total_shielding"], accum["atom_info"]) = _process_magres_old_block(
-                    block, accum,
-                )
+                magres_old = _process_magres_old_block(block)
 
     # Accum takes priority
-    return magres_old | accum
+    return deep_merge_dict(magres_old, accum)
 
 
 def _process_calculation_block(block: Block) -> dict[str, str]:
@@ -193,7 +209,7 @@ def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
     for line in block:
         if line.startswith("lattice"):
             key, *val = line.split()
-            accum[key] = to_type(val, float)
+            accum[key] = _list_to_threebythree(val)
 
         elif line.startswith("atom"):
             key, _, spec, ind, *pos = line.split()
@@ -229,43 +245,23 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
             _, key, val = line.split()
             accum["units"][key] = val
 
-        elif (words := line.split())[0] in {"ms", "efg", "efg_local", "efg_nonlocal"}:
+        elif (words := line.split())[0] in {"ms", "efg", "hf"}:
             key, spec, ind, *val = words
 
             if determine_type(ind) is float:  # Have a munged spec-ind
                 val.insert(0, ind)
                 spec, ind = spec[:-munge_fix], spec[-munge_fix:]
 
-            accum[key][spec, int(ind)] = to_type(val, float)
-
+            accum[key][spec, int(ind)] = _list_to_threebythree(val)
         elif words[0].startswith("isc"):  # ISC props explicitly have spaces!
             key, speca, inda, specb, indb, *val = words
             accum[key][(speca, int(inda)), (specb, int(indb))] = _list_to_threebythree(val)
 
-            accum[key][(speca, int(inda)), (specb, int(indb))] = to_type(val, float)
-
-    add_aliases(
-        accum,
-        {
-            "ms": "magnetic_resonance_shielding",
-            "efg": "electric_field_gradient",
-            "efg_local": "local_electric_field_gradient",
-            "efg_nonlocal": "nonlocal_electric_field_gradient",
-            "isc_fc": "j_coupling_fc",
-            "isc_orbital_p": "j_coupling_orbital_p",
-            "isc_orbital_d": "j_coupling_orbital_d",
-            "isc_spin": "j_coupling_spin",
-            "isc": "j_coupling_k_total",
-        },
-    )
-
+    # add_aliases(accum, MAGRES_ALIASES, replace=True)
     return accum
 
 
-def _process_magres_old_block(
-    block: Block,
-    accum: dict,
-) -> tuple[ThreeByThreeMatrix, dict[AtomIndex, AtomsInfo]]:
+def _process_magres_old_block(block: Block) -> dict[str, str | ThreeByThreeMatrix]:
     """
     Process the magres_old block.
 
@@ -290,24 +286,11 @@ def _process_magres_old_block(
             data["ions"]["coords"][index] = to_type(match["val"].split(), float)
             found_ions.add(index)
 
-    for line in block:
-        if sub_blk := Block.from_re(line, block, "TOTAL Shielding Tensor", REs.EMPTY, n_end=2):
-            total_shielding = [
-                to_type(numbers, float)
-                for sub_line in sub_blk
-                if (numbers := get_numbers(sub_line))
-            ]
-        elif Block.from_re(line, block, "^=+$", "^=+$"):
-            pass
-        elif line.strip() and "[" not in line:
-            spec, ind, key, *val = line.split()
-            atreg = spec, int(ind)
-            if key == "Eigenvalue":
-                atom_info[atreg]["eigvenvalue"].append(float(val[1]))
-            elif key == "Eigenvector":
-                atom_info[atreg]["eigvenvector"].append(to_type(val[1:], float))
-            elif ":" in key:
-                atom_info[atreg][normalise_key(key)] = float(val[0])
+    perturbing_index = None
+    for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
+        if match.groups()[0] == " Perturbing Atom":
+            perturbing_index = atreg_to_index(match)
+            break
 
     # The magres_old blocks have data in these atom blocks
     for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
@@ -318,6 +301,8 @@ def _process_magres_old_block(
         _process_tensors(sub_blk, index, data, "hf")
         _process_jcoupling_tensors(sub_blk, index, perturbing_index, data)
 
+    # Aliases
+    # add_aliases(data["magres"], MAGRES_ALIASES, replace=True)
     return data
 
 
