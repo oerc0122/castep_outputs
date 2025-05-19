@@ -130,6 +130,7 @@ def get_dumpers(dump_fmt: str) -> Dumper:
 
     return SUPPORTED_FORMATS[dump_fmt]
 
+
 #: Currently supported dumpers.
 SUPPORTED_FORMATS: dict[str, Dumper] = {"json": json_dumper,
                                         "ruamel": ruamel_dumper,

@@ -105,6 +105,7 @@ def parse_md_geom_frame(block: Block) -> MDGeomTimestepInfo:
 
     return curr
 
+
 @file_or_path(mode="r")
 def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     """

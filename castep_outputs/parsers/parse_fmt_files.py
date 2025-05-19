@@ -7,20 +7,64 @@ from .parse_utilities import parse_kpt_info
 
 
 def parse_elf_fmt_file(elf_file: TextIO) -> dict[str, list[int | float]]:
-    """Parse castep .elf_fmt files."""
+    """Parse castep .elf_fmt files.
+
+    Parameters
+    ----------
+    elf_file : TextIO
+        File to parse.
+
+    Returns
+    -------
+    dict[str, list[int | float]]
+        Parsed data.
+    """
     return parse_kpt_info(elf_file, ("chi_alpha", "chi_beta"))
 
 
 def parse_chdiff_fmt_file(chdiff_file: TextIO) -> dict[str, list[int | float]]:
-    """Parse castep .chdiff_fmt files."""
+    """Parse castep .chdiff_fmt files.
+
+    Parameters
+    ----------
+    chdiff_file : TextIO
+        File to parse.
+
+    Returns
+    -------
+    dict[str, list[int | float]]
+        Parsed data.
+    """
     return parse_kpt_info(chdiff_file, "chdiff")
 
 
 def parse_pot_fmt_file(pot_file: TextIO) -> dict[str, list[int | float]]:
-    """Parse castep .pot_fmt files."""
+    """Parse castep .pot_fmt files.
+
+    Parameters
+    ----------
+    pot_file : TextIO
+        File to parse.
+
+    Returns
+    -------
+    dict[str, list[int | float]]
+        Parsed data.
+    """
     return parse_kpt_info(pot_file, "pot")
 
 
 def parse_den_fmt_file(den_file: TextIO) -> dict[str, list[int | float]]:
-    """Parse castep .den_fmt files."""
+    """Parse castep .den_fmt files.
+
+    Parameters
+    ----------
+    den_file : TextIO
+        File to parse.
+
+    Returns
+    -------
+    dict[str, list[int | float]]
+        Parsed data.
+    """
     return parse_kpt_info(den_file, "density")

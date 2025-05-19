@@ -48,10 +48,8 @@ def parse_single(in_file: str | Path | TextIO,
 
     Raises
     ------
-    KeyError
+    ValueError
         If invalid `parser` provided.
-    AssertionError
-        Parser loading error.
     """
     logging.basicConfig(format="%(levelname)s: %(message)s", level=loglevel)
 
@@ -62,17 +60,18 @@ def parse_single(in_file: str | Path | TextIO,
         ext = in_file.suffix.strip(".")
 
         if ext not in ALL_PARSERS:
-            raise KeyError(f"Parser for file {in_file} (assumed type: {ext}) not found")
+            raise ValueError(f"Parser for file {in_file} (assumed type: {ext}) not found")
 
         parser = ALL_PARSERS[ext]
 
-    assert parser is not None
+    if parser is None:
+        raise ValueError("Unable to determine parser. Please specify through arguments.")
 
     data = parser(in_file)
 
     if out_format == "json" or testing:
         data = normalise(data, {dict: json_safe, complex: json_safe})
-    elif out_format in ("yaml", "ruamel"):
+    elif out_format in {"yaml", "ruamel"}:
         data = normalise(data, {tuple: list})
 
     if testing:

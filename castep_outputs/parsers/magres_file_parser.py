@@ -150,7 +150,6 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
     for line in magres_file:
         if block := Block.from_re(line, magres_file, r"^\s*\[\w+\]\s*$", r"^\s*\[/\w+\]\s*$"):
             block_name = next(block).strip().strip("[]")
-
             if block_name == "calculation":
                 accum["calc"] = _process_calculation_block(block)
                 version = int(accum["calc"]["code_version"].split(".")[0])
@@ -258,7 +257,6 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
             accum[key][(speca, int(inda)), (specb, int(indb))] = _list_to_threebythree(val)
 
     # add_aliases(accum, MAGRES_ALIASES, replace=True)
-
     return accum
 
 
