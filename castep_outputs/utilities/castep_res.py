@@ -6,7 +6,7 @@ import re
 from collections.abc import Sequence
 from typing import Union
 
-from .constants import FST_D, MINIMISERS, SHELLS
+from .constants import FST_D, MINIMISERS, SHELLS, SND_D
 
 #: Valid input where patterns are wanted.
 Pattern = Union[str, re.Pattern]
@@ -546,3 +546,9 @@ POL_HEADER_RE = re.compile(r"^\s*(?P<key>[\w\s]+)\s*\((?P<unit>[^)]+)\)")
 POL_TABLE_RE = re.compile(r"\s*(?P<key>Ionic|Elec|Total)[^:]+:"
                           rf"{labelled_floats(('a', 'b', 'c'))}\s*"
                           r"\((?P<unit>[^)]+)\)")
+
+# Elastic Constants file
+ELASTIC_BLOCK_RE = re.compile(r"\s*BEGIN (?P<key>[^(]+)\((?P<unit>[^)]+)\)")
+ELASTIC_INTERNAL_STRAIN_RE = re.compile(rf"\s*(?P<index>\d+)\s+(?P<spec>{ATOM_NAME_RE})\s+"
+                                        r"(?P<dir>[XYZ])\s+"
+                                        f"{labelled_floats(SND_D)}")
