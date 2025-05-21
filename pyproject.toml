@@ -109,7 +109,6 @@ ignore = [
     "PLR2004",  # Magic constant value
     "D105",     # Magic method doc
     "ANN401",   # No typing.Any
-    "UP006",    # Use generic list[]
     "UP007",    # Use | union
 ]
 allowed-confusables = ["α", "β", "γ"]

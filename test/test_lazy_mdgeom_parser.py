@@ -6,7 +6,7 @@ from castep_outputs.tools.md_geom_parser import MDGeomParser
 
 
 
-FILE = Path(__file__).parent / "data_files" / "test.md"
+FILE = Path(__file__).parent / "data_files" / "si8-md.md"
 
 @pytest.fixture
 def parser():
@@ -19,6 +19,7 @@ def test_read(parser):
 
     for frame in parser:
         # Check all expected keys present
+
         assert not ({"ions", "time", "E", "T", "h",
                      "energy", "temperature", "lattice_vectors"} - frame.keys())
 
@@ -64,3 +65,11 @@ def test_next_frame(parser):
     assert parser.next_frame is None
     parser[0]
     assert parser.next_frame == 1
+
+def test_getitem(parser):
+    it = iter(parser)
+    test = [next(it), next(it)]
+
+    assert parser[0, 1] == parser[0:2]
+
+    assert parser[0:2] == test
