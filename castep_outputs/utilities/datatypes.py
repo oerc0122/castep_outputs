@@ -567,6 +567,30 @@ class Symop(TypedDict):
     symmetry_related: list[AtomIndex]
 
 
+class PointGroup(TypedDict):
+    """Point group specification."""
+
+    #: Unique number defining space group.
+    id: int
+    #: Name in Schoenflies notation.
+    schoenflies: str
+    #: Name in reduced Hermann-Mauguin notation.
+    hermann_mauguin: str
+    #: Name in full Hermann-Mauguin.
+    hermann_mauguin_full: str
+
+
+class SpaceGroup(TypedDict):
+    """Space group specification."""
+
+    #: Unique number defining space group.
+    id: int
+    #: Name in reduced international notation.
+    international: str
+    #: Name in Hall notation.
+    hall: str
+
+
 class ConstraintsReport(TypedDict, total=False):
     """Constraints block information."""
 
@@ -585,19 +609,19 @@ class ConstraintsReport(TypedDict, total=False):
 
 
 class SymmetryReport(TypedDict, total=False):
-    """Symmetry block information."""
+    """Symmetry report information."""
 
-    #: Largest deviation from ideal symmetry in Ang.
-    maximum_deviation_from_symmetry: str
-    #: Number of symmetry operations.
-    number_of_symmetry_operations: int
-    #: Space group.
-    point_group_of_crystal: str
-    #: Point group.
-    space_group_of_crystal: str
+    #: Maximum deviation from symmetry in Å.
+    maximum_deviation: float
+    #: Total number of symmetry operations.
+    num_symmetry_operations: int
+    #: Point group information.
+    point_group: PointGroup
+    #: Space group information.
+    space_group: SpaceGroup
     #: List of all symmetry operations.
     symop: list[Symop]
-    #: Number of primitive cells in system.
+    #: Number of primitive cells in box.
     n_primitives: int
 
 
