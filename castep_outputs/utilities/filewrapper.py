@@ -21,7 +21,7 @@ class FileWrapper:
         File to wrap and control.
     """
 
-    def __init__(self, file: TextIO) -> FWSelf:
+    def __init__(self, file: TextIO) -> None:
         self._file = file
         self._pos = 0
         self._lineno = 0
@@ -89,6 +89,23 @@ class FileWrapper:
         """
         return self.file.name if hasattr(self.file, "name") else "unknown"
 
+    def tell(self) -> int:
+        """Position (in bytes) into file.
+
+        Returns
+        -------
+        int
+            Position of file.
+        """
+        return self.file.tell()
+
+    def close(self) -> None:
+        """Close wrapped file, and invalidate self."""
+        self.file.close()
+
+    def __del__(self) -> None:
+        self.close()
+
 
 BSelf = TypeVar("BSelf", bound="Block")
 
@@ -100,7 +117,7 @@ class Block:
     Emulates the properties of both a file, and sequence.
     """
 
-    def __init__(self, parent: TextIO | FileWrapper | Block | None) -> Block:
+    def __init__(self, parent: TextIO | FileWrapper | Block | None) -> None:
         if isinstance(parent, (FileWrapper, Block)):
             self._lineno = parent.lineno
         else:
