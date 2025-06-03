@@ -5,6 +5,7 @@ import argparse
 from collections.abc import Sequence
 from pathlib import Path
 
+from castep_outputs import __version__
 from castep_outputs.bin_parsers import CASTEP_FILE_FORMATS as BIN_FORMATS
 from castep_outputs.bin_parsers import CASTEP_OUTPUT_NAMES as BIN_NAMES
 from castep_outputs.parsers import CASTEP_FILE_FORMATS, CASTEP_OUTPUT_NAMES
@@ -23,7 +24,7 @@ ARG_PARSER = argparse.ArgumentParser(
 )
 
 ARG_PARSER.add_argument("seedname", nargs=argparse.REMAINDER, help="Seed name for data")
-ARG_PARSER.add_argument("-V", "--version", action="version", version="%(prog)s v0.1")
+ARG_PARSER.add_argument("-V", "--version", action="version", version=f"%(prog)s v{__version__}")
 ARG_PARSER.add_argument("-L", "--log", help="Verbose output",
                         choices=("DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"),
                         default="WARNING")
