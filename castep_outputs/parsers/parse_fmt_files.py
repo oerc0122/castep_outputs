@@ -69,7 +69,7 @@ def _parse_kpt_info(
 
     Returns
     -------
-    Dict[str, List[Union[int, float]]]
+    dict[str, list[int | float]]
         Parsed data.
     """
     # Skip header
