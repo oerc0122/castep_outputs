@@ -42,7 +42,6 @@ from ..utilities.datatypes import (
     PhononSymmetryReport,
     PSPotEnergy,
     PSPotReport,
-    PSPotStrInfo,
     QData,
     RamanReport,
     SCFDebugInfo,
@@ -72,7 +71,7 @@ from ..utilities.utility import (
     to_type,
 )
 from .bands_file_parser import parse_bands_file
-from .cell_param_file_parser import _parse_devel_code_block
+from .cell_param_file_parser import _parse_devel_code_block, _parse_pspot_string
 from .efield_file_parser import parse_efield_file
 from .elastic_file_parser import parse_elastic_file
 from .hug_file_parser import parse_hug_file
@@ -366,7 +365,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             for key, val in _process_spec_prop(block):
                 if Filters.PSPOT in to_parse and "|" in val:
-                    val = _process_pspot_string(val)
+                    val = _parse_pspot_string(val)
 
                 curr_run["species_properties"][key]["pseudopot"] = val
 
@@ -2254,59 +2253,6 @@ def _process_dynamical_matrix(block: Block) -> tuple[tuple[complex, ...], ...]:
     )
 
 
-def _process_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
-    if not (match := REs.PSPOT_RE.search(string)):
-        raise ValueError(f"Attempt to parse {string} as PSPot failed")
-
-    pspot = match.groupdict()
-    projectors = []
-
-    for proj in pspot["proj"].split(":"):
-        if match := REs.PSPOT_PROJ_RE.match(proj):
-            pdict = dict(zip(REs.PSPOT_PROJ_GROUPS, match.groups()))
-        else:
-            raise ValueError("Invalid PSPot string")
-
-        pdict["shell"] = SHELLS[int(pdict["shell"])]
-
-        if not pdict["type"]:
-            pdict["type"] = None
-
-        for prop in ("beta_delta", "de"):
-            if not pdict[prop]:
-                del pdict[prop]
-
-        fix_data_types(pdict, {"orbital": int,
-                               "beta_delta": float,
-                               "de": float})
-        projectors.append(pdict)
-
-    for prop in ("shell_swp", "shell_swp_end", "opt"):
-        if pspot[prop]:
-            pspot[prop] = pspot[prop].split(",")
-
-    pspot["projectors"] = tuple(projectors)
-    pspot["string"] = string
-    pspot["print"] = bool(pspot["print"])
-
-    if not debug:
-        for prop in ("shell_swp", "shell_swp_end", "local_energy",
-                     "poly_fit", "beta_radius", "r_inner", "debug"):
-            if pspot[prop] is None:
-                del pspot[prop]
-
-    fix_data_types(pspot, {"beta_radius": float,
-                           "r_inner": float,
-                           "core_radius": float,
-                           "coarse": float,
-                           "medium": float,
-                           "fine": float,
-                           "local_channel": int,
-                           })
-
-    return pspot
-
-
 def _process_pspot_report(block: Block) -> PSPotReport:
 
     accum: PSPotReport = {"reference_electronic_structure": [],
@@ -2335,7 +2281,7 @@ def _process_pspot_report(block: Block) -> PSPotReport:
             accum["solver"] = normalise_string(match["solver"])
 
         elif match := REs.PSPOT_RE.search(line):
-            accum["detail"] = _process_pspot_string(match.group(0))
+            accum["detail"] = _parse_pspot_string(match.group(0))
 
         elif "Augmentation charge Rinner" in line:
             accum["augmentation_charge_rinner"] = to_type(get_numbers(line), float)
