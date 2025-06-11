@@ -267,6 +267,17 @@ def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]) -> None:
         out_dict[key].append(val)
 
 
+def deep_merge_dict(d1: dict, d2: dict) -> dict:
+    """Recursively merge nested dictionaries."""
+    result = d1.copy()
+    for key, value in d2.items():
+        if (key in result and isinstance(result[key], dict)
+            and isinstance(value, dict)):
+            result[key] = deep_merge_dict(result[key], value)
+        else:
+            result[key] = value
+    return result
+
 def add_aliases(in_dict: dict[str, Any],
                 alias_dict: dict[str, str], *,
                 replace: bool = False,
