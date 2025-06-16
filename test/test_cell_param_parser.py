@@ -512,7 +512,7 @@ PP: test_par=1 :ENDPP
 oep 1.0
 hf 2.1
 lda 0.1
-libxc_mgga_xc 2.
+LIBXC_MGGA_XC_ZLP 2.
 NLXC_SCREENING_LENGTH 1.
 NLXC_SCREENING_FUNCTION THOMAS-FERMI
 NLXC_DIVERGENCE_CORR ON
@@ -526,7 +526,7 @@ NLXC_PPD_INT ON
                 "oep": 1.0,
                 "hf": 2.1,
                 "lda": 0.1,
-                "libxc_mgga_xc": 2.0,
+                "libxc_mgga_xc_zlp": 2.0,
             },
             "params": {
                 "nlxc_divergence_corr": True,

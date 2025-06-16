@@ -3,13 +3,13 @@ import pytest
 
 from castep_outputs.tools.get_generated_files import get_generated_files
 
-
 DUMMY_CELL = {
     "positions_frac": {
         ("Si", 1): {},
         ("N", 1): {},
     },
 }
+
 
 @pytest.mark.parametrize("seedname, expected", [
     ("test", [
@@ -21,9 +21,10 @@ DUMMY_CELL = {
         "test.cst_esp",
     ]),
 ])
-def test_cli_like(seedname, expected):
+def test_cli_like(seedname: str, expected: list[str]) -> None:
     """Test via the CLI like interface parsing files on-the-fly."""
     assert expected == get_generated_files(seedname)
+
 
 @pytest.mark.parametrize("cell, param, expected", [
     (DUMMY_CELL,
@@ -36,10 +37,10 @@ def test_cli_like(seedname, expected):
          "md_extrap": "mixed",
      },
      {
-         "seedname.*..drho2m",
+         "seedname.*.drho2m",
          "seedname.bib",
          "seedname.cst_esp",
-         "seedname.*..drhom",
+         "seedname.*.drhom",
          "seedname.castep",
          "seedname.md",
          "seedname.*.wf2m",
@@ -48,6 +49,65 @@ def test_cli_like(seedname, expected):
          "seedname.bands",
          "seedname.check",
      }),
+
+    (DUMMY_CELL | {
+        "species_pot": {
+            "Si": {
+                "proj": "30N1.9:31N2.1:32N2.1",
+                "opt": [
+                    "tm",
+                    "nonlcc",
+                ],
+                "print": True,
+                "projectors": [
+                    {
+                        "orbital": 3,
+                        "shell": "s",
+                        "type": "N",
+                        "de": 1.9,
+                    },
+                    {
+                        "orbital": 3,
+                        "shell": "p",
+                        "type": "N",
+                        "de": 2.1,
+                    },
+                    {
+                        "orbital": 3,
+                        "shell": "d",
+                        "type": "N",
+                        "de": 2.1,
+                    },
+                ],
+                "string": "2|1.9|2.1|1.3|3.675|5.512|7.35|30N1.9:31N2.1:32N2.1(tm,nonlcc)[]",
+            },
+        },
+    },
+     {
+         "task": "singlepoint",
+         "metals_method": "dm",
+         "opt_strategy": "memory",
+         "xc_definition": {
+             "xc": {
+                 "LIBXC_GGA_XC_ZLP": 1.0,
+             },
+         },
+         "write_otfg": "T",
+     },
+     {
+         "seedname.castep",
+         "seedname.cst_esp",
+         "Si_EXT_PBE_OTF.gamma",
+         "Si_EXT_PBE_OTF.pwave",
+         "Si_EXT_PBE_OTF.econv",
+         "Si_EXT_PBE_OTF.usp",
+         "seedname.bands",
+         "Si_EXT_PBE_OTF.beta",
+         "seedname.bib",
+         "seedname.castep_bin",
+         "seedname.check",
+     }),
+
 
     (DUMMY_CELL,
      {
@@ -185,7 +245,7 @@ def test_cli_like(seedname, expected):
       },
   ),
 
-], ids=["MD/Si8-md-extrapm", "Pair_pot/PP_BUCK",
+], ids=["MD/Si8-md-extrapm", "LIBXC test", "Pair_pot/PP_BUCK",
         "Excitations/GaAs", "Excitations/BN_DOS", "OTF-Gen/Si2-ps-tm"])
-def test_expected_files(cell, param, expected):
+def test_expected_files(cell, param, expected) -> None:
     assert expected == set(get_generated_files(param, cell))

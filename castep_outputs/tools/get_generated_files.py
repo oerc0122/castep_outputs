@@ -1,4 +1,11 @@
-"""Attempt to guess the files which will be output by the castep calculation."""
+"""
+Attempt to guess the files which will be output by the castep calculation.
+
+Notes
+-----
+This is based on the working version of CASTEP, so many not exactly align with
+the last release.
+"""
 
 from __future__ import annotations
 
@@ -225,8 +232,9 @@ def get_xc_info(param_data: CellParamData) -> set[str]:
     xc_d = param_data.get("xc_definition")
 
     xc = xc_d["xc"].keys() if xc_d else {xc_f}
+    xc = map(str.lower, xc)
 
-    return {typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key)) else key for key in xc}
+    return {typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key, re.I)) else key for key in xc}
 
 
 @singledispatch
@@ -234,8 +242,8 @@ def get_generated_files(
     seedname: Path | str = "seedname",
     /,
     *,
-    param_file: Path | str | None = None,
-    cell_file: Path | str | None = None,
+    param_file: Path | None = None,
+    cell_file: Path | None = None,
 ) -> list[str]:
     """Predict files which would be produced by running inputs.
 
@@ -428,8 +436,6 @@ def _(
             is_usp = is_usp or pot.endswith(".usp", ".uspcc", ".uspso")
             continue
 
-        is_usp = True
-
         if xc & {"libxc_mgga", "libxc_hyb_mgga"}:
             theory = "RSCAN"
         elif xc & {"libxc_gga", "libxc_hyb_gga"}:
@@ -510,10 +516,10 @@ def _(
         mix_method = param_data.get("metals_method", "dm").lower()
         if mix_method == "dm" and extrap in {"first", "second", "mixed"} and opt_mem:
             out_files.add(f"{seedname}.*.wfm")
-            out_files.add(f"{seedname}.*..drhom")
+            out_files.add(f"{seedname}.*.drhom")
         if mix_method == "dm" and extrap in {"second", "mixed"} and opt_mem:
             out_files.add(f"{seedname}.*.wf2m")
-            out_files.add(f"{seedname}.*..drho2m")
+            out_files.add(f"{seedname}.*.drho2m")
 
         if param_data.get("md_num_beads", 1) > 1 and param_data.get("num_farms", 1) > 1:
             out_files |= {
