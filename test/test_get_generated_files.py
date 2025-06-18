@@ -89,7 +89,7 @@ def test_cli_like(seedname: str, expected: list[str]) -> None:
          "opt_strategy": "memory",
          "xc_definition": {
              "xc": {
-                 "LIBXC_GGA_XC_ZLP": 1.0,
+                 "LIBXC_GGA_XC_B97_D": 1.0,
              },
          },
          "write_otfg": "T",

@@ -234,7 +234,8 @@ def get_xc_info(param_data: CellParamData) -> set[str]:
     xc = xc_d["xc"].keys() if xc_d else {xc_f}
     xc = map(str.lower, xc)
 
-    return {typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key, re.I)) else key for key in xc}
+    return {typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key, re.IGNORECASE)) else key
+            for key in xc}
 
 
 @singledispatch
