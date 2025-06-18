@@ -3,8 +3,10 @@
 import io
 import pprint
 import unittest
+import pytest
 
 from castep_outputs.parsers import parse_cell_param_file
+from castep_outputs.parsers.cell_param_file_parser import _parse_pspot_string
 
 
 class test_cell_parser(unittest.TestCase):
@@ -503,6 +505,58 @@ PP: test_par=1 :ENDPP
                                                     "float_number": 15.12,
                                                     "int_value": 31,
                                                     "string_value": "Hello"}})
+
+    def test_xc_def(self):
+        test_text = io.StringIO("""
+%block xc_definition
+oep 1.0
+hf 2.1
+lda 0.1
+LIBXC_MGGA_XC_ZLP 2.
+NLXC_SCREENING_LENGTH 1.
+NLXC_SCREENING_FUNCTION THOMAS-FERMI
+NLXC_DIVERGENCE_CORR ON
+NLXC_PPD_INT ON
+%endblock xc_definition
+""")
+        test_dict = parse_cell_param_file(test_text)[0]
+        pprint.pprint(test_dict)
+        self.assertEqual(test_dict, {"xc_definition": {
+            "xc": {
+                "oep": 1.0,
+                "hf": 2.1,
+                "lda": 0.1,
+                "libxc_mgga_xc_zlp": 2.0,
+            },
+            "params": {
+                "nlxc_divergence_corr": True,
+                "nlxc_ppd_int": True,
+                "nlxc_screening_length": 1.,
+                "nlxc_screening_function": "THOMAS-FERMI",
+            },
+        }})
+
+
+@pytest.mark.parametrize("string", [
+    "1|0.8|11|15|18|10N(qc=8)[]",
+    "1|1.2|23|29|33|20N:21L(qc=9)[]",
+    "2|1.4|1.4|1.3|6|10|12|20:21(qc=6)",
+    "1|0.8|0.8|0.6|2|6|8|10(qc=6)",
+    "2|1.0|1.3|0.7|13|16|18|20:21(qc=7)",
+    "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]",
+    "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG",
+    "2|1.9|2.1|1.3|3.675|5.512|7.35|30N1.9:31N2.1:32N2.1(tm,nonlcc)[]",
+    "2|1.75|1.75|1.3|6.4|8.1|11|30N:31N:32L(qc=6.5)[3s2,3p1.5,3d0.25]",
+    "2|1.8|1.8|1.3|2|3|4|30:31:32LGG(qc=4)",
+    "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]",
+    "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]",
+])
+def test_pspot_parser(string):
+    pytest.skip("Correct answers not provided")
+    test_dict = _parse_pspot_string(string)
+
+    pprint.pprint(test_dict)
+    # self.assertEqual(test_dict, {})
 
 
 if __name__ == "__main__":

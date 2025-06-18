@@ -5,8 +5,7 @@ import pprint
 from unittest import TestCase, main
 
 from castep_outputs.parsers import parse_castep_file
-from castep_outputs.parsers.castep_file_parser import (Filters,
-                                                       _process_pspot_string)
+from castep_outputs.parsers.castep_file_parser import Filters
 
 
 class test_castep_parser(TestCase):
@@ -3528,32 +3527,6 @@ Total polarisation          0.000000    0.000000    0.224787
                                                                   'Total': (0.0, 0.0, 0.224787),
                                                                   'units': 'C/m^2'}}},
                          )
-
-class test_pspot_parser(TestCase):
-    def test_pspot_parser(self):
-        test_text = io.StringIO("""
-1|0.8|11|15|18|10N(qc=8)[]
-1|1.2|23|29|33|20N:21L(qc=9)[]
-2|1.4|1.4|1.3|6|10|12|20:21(qc=6)
-1|0.8|0.8|0.6|2|6|8|10(qc=6)
-2|1.0|1.3|0.7|13|16|18|20:21(qc=7)
-2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]
-2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG
-2|1.9|2.1|1.3|3.675|5.512|7.35|30N1.9:31N2.1:32N2.1(tm,nonlcc)[]
-2|1.75|1.75|1.3|6.4|8.1|11|30N:31N:32L(qc=6.5)[3s2,3p1.5,3d0.25]
-2|1.8|1.8|1.3|2|3|4|30:31:32LGG(qc=4)
-2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]
-2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]
-        """)
-        self.skipTest("Correct answers not provided")
-        for line in test_text:
-            if not line.strip():
-                continue
-            print(f"{line=}")
-            test_dict = _process_pspot_string(line)
-
-            pprint.pprint(test_dict)
-            # self.assertEqual(test_dict, {})
 
 
 if __name__ == '__main__':
