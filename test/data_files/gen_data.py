@@ -1,15 +1,42 @@
 """Generate testing benchmark files for dumpers."""
+from __future__ import annotations
+
 import pathlib
 
 from castep_outputs.cli.castep_outputs_main import parse_all
 
 
-def gen_data():
+def gen_data(
+    types: tuple[str | tuple[str, str]] = (
+        "castep",
+        "bands",
+        "cell",
+        "param",
+        "elastic",
+        "md",
+        "ts",
+        "efield",
+        "cst_esp",
+        "den_fmt",
+        "chdiff_fmt",
+        "pot_fmt",
+        "elf_fmt",
+        "xrd_sf",
+        "phonon",
+        "phonon_dos",
+        "magres",
+        "efield",
+        "tddft",
+        "err",
+        "epme",
+        ("pp-md", "castep"),
+        ("si8-md", "castep"),
+    ),
+    fmts: tuple[str] = ("json", "pyyaml", "ruamel"),
+) -> None:
     """Generate benchmark data."""
-    for type_ in ("castep", "bands", "cell", "param", "elastic", "md", "ts", "efield", "cst_esp",
-                  "den_fmt", "chdiff_fmt", "pot_fmt", "elf_fmt", "xrd_sf", "phonon", "phonon_dos",
-                  "magres", "efield", "tddft", "err", ("pp-md", "castep"), ("si8-md", "castep")):
-        for fmt in ("json", "pyyaml", "ruamel"):
+    for type_ in types:
+        for fmt in fmts:
             print(type_, fmt)
             if isinstance(type_, tuple):
                 name, typ = type_

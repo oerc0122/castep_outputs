@@ -8,6 +8,7 @@ from .castep_file_parser import parse_castep_file
 from .cell_param_file_parser import parse_cell_param_file
 from .efield_file_parser import parse_efield_file
 from .elastic_file_parser import parse_elastic_file
+from .epme_file_parser import parse_epme_file
 from .err_file_parser import parse_err_file
 from .hug_file_parser import parse_hug_file
 from .magres_file_parser import parse_magres_file
@@ -34,6 +35,7 @@ __all__ = [
     "parse_efield_file",
     "parse_elastic_file",
     "parse_elf_fmt_file",
+    "parse_epme_file",
     "parse_err_file",
     "parse_hug_file",
     "parse_magres_file",
@@ -70,6 +72,7 @@ PARSERS: dict[str, Callable] = {
     "tddft": parse_tddft_file,
     "err": parse_err_file,
     "phonon": parse_phonon_file,
+    "epme": parse_epme_file,
     }
 
 #: Names of parsers/parsable file extensions (without ``"."``).
