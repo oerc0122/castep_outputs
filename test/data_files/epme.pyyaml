@@ -1,0 +1,1455 @@
+data:
+  ? !!python/tuple
+  - !!python/tuple
+    - 0.1
+    - 0.1
+    - 0.1
+  - !!python/tuple
+    - 0.2
+    - 0.3
+    - 0.4
+  : - band_f: 1
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '0.247426+0.000142j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.319768+0.001096j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.258178-0.001733j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.356699+0.000202j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '0.247426-0.000789j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.319768+0.001365j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.258178+0.001475j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.356699-0.00121j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '0.247426+0.000811j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.319768+0.002808j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.258178+0.000188j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.356699-0.001983j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '0.247426-0.001372j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.319768+0.002262j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.258178+0.004729j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000623
+      e_p_matrix: !!python/complex '-0.356699+0.002536j'
+      ph_index: 1
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '0.247426-0.000661j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.319768+0.002768j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.258178-0.000244j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.356699-0.003668j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '0.247426-0.001817j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.319768+0.001169j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.258178+0.001899j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.356699-0.002181j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '0.247426+0.001908j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.319768+0.005029j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.258178+0.000577j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.356699-0.007303j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '0.247426-0.001148j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.319768-0.000891j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.258178+0.003667j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000686
+      e_p_matrix: !!python/complex '-0.356699+0.00295j'
+      ph_index: 2
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '0.247426-0.003762j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.319768+0.001693j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.258178-0.001215j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.356699-0.004401j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '0.247426-0.001312j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.319768-0.002361j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.258178+0.003091j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.356699+0.000718j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '0.247426+0.001378j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.319768+0.008803j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.258178+0.003614j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.356699-0.008609j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '0.247426-0.002966j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.319768-0.001415j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.258178+0.006038j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.000982
+      e_p_matrix: !!python/complex '-0.356699+0.000221j'
+      ph_index: 3
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426-0.002692j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768+0.001389j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.00013j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.001963j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426+0.000491j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768+0.000697j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.007298j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.001499j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426+0.002588j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768+0.006245j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.004676j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.004447j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426-0.00423j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768-0.002376j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.005254j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.000344j'
+      ph_index: 4
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426-0.001981j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768+0.001311j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178-0.002545j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.00391j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426+0.002186j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768-0.000621j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.010388j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.001855j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426+0.00434j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768+0.005525j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.007045j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.006929j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '0.247426-0.004443j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.319768-0.002846j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.258178+0.007893j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.002221
+      e_p_matrix: !!python/complex '-0.356699-0.000747j'
+      ph_index: 5
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '0.247426-0.00363j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.319768+0.002172j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.258178+0.000652j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 1
+      e_f: -0.416805
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.356699-0.005746j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - 0.053174
+        - 0.053174
+      - !!python/tuple
+        - 0.053174
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '0.247426+0.00398j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.319768-0.000557j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.258178+0.013087j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 2
+      e_f: -0.019546
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.356699-0.002995j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.353488
+        - -0.353488
+      - !!python/tuple
+        - -0.353488
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '0.247426+0.006094j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.319768+0.004811j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.258178+0.009249j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 3
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.356699-0.0067j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.027499
+        - -0.154281
+      - !!python/tuple
+        - -0.03525
+        - -0.0258
+        - 0.126509
+    - band_f: 1
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '0.247426-0.002265j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.365335
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.043401
+        - 0.140949
+    - band_f: 2
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.319768-0.003781j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.153268
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.285686
+        - -0.302026
+    - band_f: 3
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.258178+0.008017j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.078819
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - 0.308213
+        - -0.255948
+    - band_f: 4
+      band_i: 4
+      e_f: 0.014827
+      e_i: 0.00228
+      e_p_matrix: !!python/complex '-0.356699-0.000132j'
+      ph_index: 6
+      velocity: !!python/tuple
+      - !!python/tuple
+        - -0.028907
+        - -0.117186
+        - 0.009588
+      - !!python/tuple
+        - -0.109431
+        - -0.0258
+        - 0.126509
+fermi_energy: -0.006836441548187979
+n_bands: 4
+n_branches: 6
+version: 1
+volume: 264.3184306659754
