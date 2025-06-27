@@ -8,7 +8,7 @@ def gen_data():
     """Generate benchmark data."""
     for type_ in ("castep", "bands", "cell", "param", "elastic", "md", "ts", "efield", "cst_esp",
                   "den_fmt", "chdiff_fmt", "pot_fmt", "elf_fmt", "xrd_sf", "phonon", "phonon_dos",
-                  "magres", "efield", "tddft", "err", ("pp-md", "castep"), ("si8-md", "castep")):
+                  "magres", "efield", "tddft", "err", "pes", ("pp-md", "castep"), ("si8-md", "castep")):
         for fmt in ("json", "pyyaml", "ruamel"):
             print(type_, fmt)
             if isinstance(type_, tuple):

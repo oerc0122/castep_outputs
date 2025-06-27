@@ -18,6 +18,7 @@ from .parse_fmt_files import (
                               parse_elf_fmt_file,
                               parse_pot_fmt_file,
 )
+from .pes_file_parser import parse_pes_file
 from .phonon_dos_file_parser import parse_phonon_dos_file
 from .phonon_file_parser import parse_phonon_file
 from .tddft_file_parser import parse_tddft_file
@@ -39,6 +40,7 @@ __all__ = [
     "parse_magres_file",
     "parse_md_geom_file",
     "parse_md_geom_file",
+    "parse_pes_file",
     "parse_phonon_dos_file",
     "parse_phonon_file",
     "parse_pot_fmt_file",
@@ -70,6 +72,7 @@ PARSERS: dict[str, Callable] = {
     "tddft": parse_tddft_file,
     "err": parse_err_file,
     "phonon": parse_phonon_file,
+    "pes": parse_pes_file,
     }
 
 #: Names of parsers/parsable file extensions (without ``"."``).
