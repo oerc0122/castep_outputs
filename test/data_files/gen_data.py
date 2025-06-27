@@ -36,6 +36,7 @@ ALL_SETS = (
     "efield",
     "tddft",
     "err",
+    "pes",
     "epme",
     "epme_bin",
     ("pp-md", "castep"),
