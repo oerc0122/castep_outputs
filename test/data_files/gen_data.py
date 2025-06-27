@@ -31,6 +31,7 @@ ALL_SETS = (
     "efield",
     "tddft",
     "err",
+    "pes",
     "epme",
     ("pp-md", "castep"),
     ("si8-md", "castep"),
@@ -63,7 +64,10 @@ if __name__ == "__main__":
 
     argp.add_argument("datasets", nargs=REMAINDER, help="Sets to generate.", default=ALL_SETS)
     argp.add_argument(
-        "--formats", nargs="+", help="Formats to generate.", default=("json", "pyyaml", "ruamel"),
+        "--formats",
+        nargs="+",
+        help="Formats to generate.",
+        default=("json", "pyyaml", "ruamel"),
     )
     args = argp.parse_args()
 
