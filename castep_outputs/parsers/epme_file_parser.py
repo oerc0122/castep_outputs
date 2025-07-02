@@ -1,4 +1,4 @@
-"""Parse castep .phonon files."""
+"""Parse castep .epme files."""
 
 from __future__ import annotations
 
@@ -12,6 +12,10 @@ from ..utilities.utility import file_or_path, log_factory, to_type
 class EPMEData(TypedDict):
     """Single line of EPME data."""
 
+    # Initial k-point
+    kpt_i: ThreeVector
+    # Final k-point
+    kpt_f: ThreeVector
     # Branch index.
     ph_index: int
     # Initial band.
@@ -44,7 +48,7 @@ class EPMEFileInfo(TypedDict):
     # Number of phonon branches.
     n_branches: int
     # EPME data.
-    data: dict[tuple[ThreeVector, ThreeVector], list[EPMEData]]
+    data: list[EPMEData]
 
 
 def _parse_epme_header(epme_file: TextIO) -> EPMEFileInfo:
@@ -68,7 +72,7 @@ def _parse_epme_header(epme_file: TextIO) -> EPMEFileInfo:
     epme_data["fermi_energy"] = float(next(epme_file).rsplit(maxsplit=1)[1])
     epme_data["n_bands"] = int(next(epme_file).rsplit(maxsplit=1)[1])
     epme_data["n_branches"] = int(next(epme_file).rsplit(maxsplit=1)[1])
-    epme_data["data"] = {}
+    epme_data["data"] = []
 
     return epme_data
 
@@ -90,23 +94,21 @@ def parse_epme_file(epme_file: TextIO) -> EPMEFileInfo:
     logger = log_factory(epme_file)
 
     epme_data: EPMEFileInfo = _parse_epme_header(epme_file)
-    line_data = []
+    kpt_i, kpt_f = None, None
 
     for line in epme_file:
         if line.startswith("Electron-Phonon coupling"):
             kpts = to_type(get_numbers(line), float)
-            kpts = kpts[:3], kpts[3:]
-            logger("Found k-point pair: %s", kpts)
-            line_data = []
-            epme_data["data"][kpts] = line_data
+            kpt_i, kpt_f = kpts[:3], kpts[3:]
+            logger("Found k-point pair: %s -> %s", kpt_i, kpt_f)
             next(epme_file)  # Skip header
             continue
         data = line.split()
-        curr = {}
+        curr = {"kpt_i": kpt_i, "kpt_f": kpt_f}
         curr["ph_index"], curr["band_i"], curr["band_f"] = to_type(data[:3], int)
         curr["e_i"], curr["e_f"] = to_type(data[3:5], float)
         curr["velocity"] = to_type(data[5:8], float), to_type(data[8:11], float)
         curr["e_p_matrix"] = complex(*to_type(data[11:13], float))
-        line_data.append(curr)
+        epme_data["data"].append(curr)
 
     return epme_data
