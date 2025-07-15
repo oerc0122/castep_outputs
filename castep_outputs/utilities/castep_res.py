@@ -475,10 +475,10 @@ BORN_RE = re.compile(rf"\s+{ATOM_RE}(?P<charges>(?:\s*{FNUMBER_RE}){{3}})(?:\s*I
 # MagRes REs
 MAGRES_RE = (
     # "Chemical Shielding Tensor" 0
-    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso', 'aniso'))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('cs_iso', 'cs_aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "Chemical Shielding and Electric Field Gradient Tensor" 1
-    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso', 'aniso'))}\s*"
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('cs_iso', 'cs_aniso'))}\s*"
                rf"(?P<asym>{FNUMBER_RE}|N/A)"
                rf"{labelled_floats(('cq', 'eta'))}\s*\|\s*"),
     # "Electric Field Gradient Tensor" 2
@@ -486,9 +486,9 @@ MAGRES_RE = (
                rf"(?P<asym>{FNUMBER_RE}|N/A)\s*\|\s*"),
     # "(?:I|Ani)sotropic J-coupling" 3
     re.compile(rf"\s*\|\**\s*{ATOM_RE}"
-               rf"{labelled_floats(('fc', 'sd', 'para', 'dia', 'tot'))}\s*\|\s*"),
+               rf"{labelled_floats(('fermi_contact', 'spin_dipolar', 'paramagnetic', 'diamagnetic', 'total'))}\s*\|\s*"),
     # "Hyperfine Tensor" 4
-    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('iso',))}\s*\|\s*"),
+    re.compile(rf"\s*\|\s*{ATOM_RE}{labelled_floats(('hf_iso',))}\s*\|\s*"),
 )
 
 # MagRes Tasks
