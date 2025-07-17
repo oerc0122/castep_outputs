@@ -7,10 +7,10 @@ Port of extract_results.pl
 """
 from __future__ import annotations
 
-import io
 import itertools
 import re
 from collections import defaultdict
+from collections.abc import Callable
 from enum import Flag, auto
 from typing import Any, TextIO, Union, cast
 
@@ -83,6 +83,20 @@ from .parse_fmt_files import (
 )
 from .phonon_dos_file_parser import parse_phonon_dos_file
 from .xrd_sf_file_parser import parse_xrd_sf_file
+
+# Reduced set of parsers needed for .castep test extras
+PARSERS: dict[str, Callable] = {
+    "bands": parse_bands_file,
+    "hug": parse_hug_file,
+    "phonon_dos": parse_phonon_dos_file,
+    "efield": parse_efield_file,
+    "xrd_sf": parse_xrd_sf_file,
+    "elf_fmt": parse_elf_fmt_file,
+    "chdiff_fmt": parse_chdiff_fmt_file,
+    "pot_fmt": parse_pot_fmt_file,
+    "den_fmt": parse_den_fmt_file,
+    "elastic": parse_elastic_file,
+}
 
 
 class Filters(Flag):
@@ -180,6 +194,7 @@ def parse_castep_file(castep_file_in: TextIO,
     logger = log_factory(castep_file)
 
     for line in castep_file:
+        logger("%s", line, level="debug")
         # Build Info
         if block := Block.from_re(line, castep_file,
                                   r"^\s*Compiled for",
@@ -1316,140 +1331,26 @@ def parse_castep_file(castep_file_in: TextIO,
 
         # --- Extra blocks for testing
 
-        # Hugoniot data
-        elif block := Block.from_re(line, castep_file, "BEGIN hug", "END hug"):
+        elif block := Block.from_re(
+            line,
+            castep_file,
+            f"<BEGIN ({'|'.join(PARSERS)})>",
+            f"<END ({'|'.join(PARSERS)})>",
+        ):
 
             if Filters.TEST_EXTRA_DATA not in to_parse:
                 continue
 
-            logger("Found hug block")
+            key = re.search(r"BEGIN (\w+)", line).group(1)
 
-            val = parse_hug_file(block)
-            curr_run["hug"].append(val)
+            logger("Found %s block", key)
 
-        # Bands block (spectral data)
-        elif block := Block.from_re(line, castep_file, "BEGIN bands", "END bands"):
+            curr_run.setdefault("external_files", {})
 
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
+            block.remove_bounds(1, 1)
 
-            logger("Found bands block")
-
-            val = parse_bands_file(block)
-            curr_run["bands"].append(val["bands"])
-
-        elif block := Block.from_re(line, castep_file, "BEGIN phonon_dos", "END phonon_dos"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found phonon_dos block")
-
-            val = parse_phonon_dos_file(block)
-            curr_run["phonon_dos"] = val["dos"]
-            curr_run["gradients"] = val["gradients"]
-
-        # E-Field
-        elif block := Block.from_re(line, castep_file, "BEGIN efield", "END efield"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found efield block")
-
-            val = parse_efield_file(block)
-            curr_run["oscillator_strengths"] = val["oscillator_strengths"]
-            curr_run["permittivity"] = val["permittivity"]
-
-        # Elastic
-        elif block := Block.from_re(line, castep_file, "<BEGIN elastic>", "<END elastic>"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found elastic block")
-
-            val = parse_elastic_file(block)
-            curr_run["oscillator_strengths"] = val["elastic_constants"]
-            curr_run["permittivity"] = val["compliance_matrix"]
-
-        # XRD Structure Factor
-        elif block := Block.from_re(line, castep_file, "BEGIN xrd_sf", "END xrd_sf"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found xrdsf")
-
-            block = "\n".join(block[1:-1])  # Strip begin/end tags lazily
-            block = io.StringIO(block)
-            val = parse_xrd_sf_file(block)
-
-            curr_run["xrd_sf"] = val
-
-        # ELF FMT
-        elif block := Block.from_re(line, castep_file, "BEGIN elf_fmt", "END elf_fmt"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found ELF fmt")
-
-            block = "\n".join(block[1:-1])  # Strip begin/end tags lazily
-            block = io.StringIO(block)
-            val = parse_elf_fmt_file(block)
-            if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = val
-            else:
-                curr_run["kpt-data"].update(val)
-
-        # CHDIFF FMT
-        elif block := Block.from_re(line, castep_file, "BEGIN chdiff_fmt", "END chdiff_fmt"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found CHDIFF fmt")
-
-            block = "\n".join(block[1:-1])  # Strip begin/end tags lazily
-            block = io.StringIO(block)
-            val = parse_chdiff_fmt_file(block)
-            if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = val
-            else:
-                curr_run["kpt-data"].update(val)
-
-        # POT FMT
-        elif block := Block.from_re(line, castep_file, "BEGIN pot_fmt", "END pot_fmt"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found POT fmt")
-
-            block = "\n".join(block[1:-1])  # Strip begin/end tags lazily
-            block = io.StringIO(block)
-            val = parse_pot_fmt_file(block)
-            if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = val
-            else:
-                curr_run["kpt-data"].update(val)
-
-        # DEN FMT
-        elif block := Block.from_re(line, castep_file, "BEGIN den_fmt", "END den_fmt"):
-
-            if Filters.TEST_EXTRA_DATA not in to_parse:
-                continue
-
-            logger("Found DEN fmt")
-
-            block = "\n".join(block[1:-1])  # Strip begin/end tags lazily
-            block = io.StringIO(block)
-            val = parse_den_fmt_file(block)
-            if "kpt-data" not in curr_run:
-                curr_run["kpt-data"] = val
-            else:
-                curr_run["kpt-data"].update(val)
+            val = PARSERS[key](block)
+            curr_run["external_files"][key] = val
 
     if curr_run:
         fix_data_types(curr_run, {"energies": float,
