@@ -788,15 +788,20 @@ Charge spilling parameter for spin component 2 = 0.44%
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'constraints': {'number_of_cell_constraints': 0,
-                                                     'number_of_ionic_constraints': 3,
-                                                     'cell_constraints': (1, 2, 3, 4, 5, 6),
-                                                     'com_constrained': True},
-                                     'symmetries': {'maximum_deviation_from_symmetry': '0.00000 ANG',
-                                                    'number_of_symmetry_operations': 1,
-                                                    'point_group_of_crystal': '1: C1, 1, 1',
-                                                    'space_group_of_crystal': '1: P1, P 1',
-                                                    'n_primitives': 2}})
+        self.assertEqual(test_dict, {'constraints': {'cell_constraints': (1, 2, 3, 4, 5, 6),
+                                                     'com_constrained': True,
+                                                     'num_cell_constraints': 0,
+                                                     'num_ionic_constraints': 3},
+                                     'symmetries': {'max_deviation': 0.0,
+                                                    'n_primitives': 2,
+                                                    'num_symmetry_operations': 1,
+                                                    'point_group': {'hermann_mauguin': '1',
+                                                                    'hermann_mauguin_full': '1',
+                                                                    'id': 1,
+                                                                    'schoenflies': 'C1'},
+                                                    'space_group': {'hall': 'P 1',
+                                                                    'id': 1,
+                                                                    'international': 'P1'}}})
 
         test_text = io.StringIO("""
                            -------------------------------
@@ -854,8 +859,8 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'constraints': {'number_of_cell_constraints': 6,
-                                                     'number_of_ionic_constraints': 3,
+        self.assertEqual(test_dict, {'constraints': {'num_cell_constraints': 6,
+                                                     'num_ionic_constraints': 3,
                                                      'cell_constraints': (0, 0, 0, 0, 0, 0),
                                                      'com_constrained': True,
                                                      'ionic_constraints':
@@ -868,10 +873,15 @@ Charge spilling parameter for spin component 2 = 0.44%
                                                       ('Se', 3): [(143935.2749, 0.0, 0.0),
                                                                   (0.0, 143935.2749, 0.0),
                                                                   (0.0, 0.0, 143935.2749)]}},
-                                     'symmetries': {'maximum_deviation_from_symmetry': '0.00000 ANG',
-                                                    'number_of_symmetry_operations': 1,
-                                                    'point_group_of_crystal': '1: C1, 1, 1',
-                                                    'space_group_of_crystal': '213: P4_132, P 4bd 2ab 3',
+                                     'symmetries': {'max_deviation': 0.0,
+                                                    'num_symmetry_operations': 1,
+                                                    'point_group': {'hermann_mauguin': '1',
+                                                                    'hermann_mauguin_full': '1',
+                                                                    'id': 1,
+                                                                    'schoenflies': 'C1'},
+                                                    'space_group': {'hall': 'P 4bd 2ab 3',
+                                                                    'id': 213,
+                                                                    'international': 'P4_132'},
                                                     'symop': [{'displacement': (0.0, 0.0, -0.0),
                                                                'rotation': [(1.0, 0.0, 0.0),
                                                                             (0.0, 1.0, -0.0),
