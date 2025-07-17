@@ -36,7 +36,7 @@ def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
         elif block := Block.from_re(line, elastic_file,
                                     "BEGIN Internal Strain", "END"):
             match = ELASTIC_BLOCK_RE.match(next(block))
-            key = normalise_key(match["key"])
+            key = normalise_key(match["key"]).removesuffix("_xx_yy_zz_yz_zx_xy")
             accum[key] = defaultdict(list)
             accum[key]["units"] = match["unit"]
 
@@ -49,7 +49,8 @@ def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
         elif block := Block.from_re(line, elastic_file,
                                     "BEGIN", "END"):
             match = ELASTIC_BLOCK_RE.match(next(block))
-            key = normalise_key(match["key"])
+            key = normalise_key(match["key"]).removesuffix("_xx_yy_zz_yz_zx_xy")
+
             accum[key] = {"units": match["unit"]}
             accum[key]["val"] = tuple(to_type(numbers, float)
                                       for blk_line in block

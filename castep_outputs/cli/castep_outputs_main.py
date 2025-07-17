@@ -11,6 +11,7 @@ from typing import Any, TextIO
 
 from ..bin_parsers import PARSERS as BIN_PARSERS
 from ..parsers import PARSERS
+from ..parsers.castep_file_parser import Filters
 from ..utilities.constants import OutFormats
 from ..utilities.dumpers import get_dumpers
 from ..utilities.utility import flatten_dict, json_safe, normalise
@@ -67,7 +68,10 @@ def parse_single(in_file: str | Path | TextIO,
     if parser is None:
         raise ValueError("Unable to determine parser. Please specify through arguments.")
 
-    data = parser(in_file)
+    if parser is ALL_PARSERS["castep"] and testing:
+        data = parser(in_file, filters=Filters.TESTING)
+    else:
+        data = parser(in_file)
 
     if out_format == "json" or testing:
         data = normalise(data, {dict: json_safe, complex: json_safe})
