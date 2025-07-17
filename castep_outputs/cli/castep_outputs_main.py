@@ -57,6 +57,9 @@ def parse_single(in_file: str | Path | TextIO,
     if isinstance(in_file, str):
         in_file = Path(in_file)
 
+    if isinstance(parser, str):
+        parser = PARSERS.get(parser)
+
     if parser is None and isinstance(in_file, Path):
         ext = in_file.suffix.strip(".")
 

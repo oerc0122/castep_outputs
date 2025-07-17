@@ -54,6 +54,7 @@ target-version = "py39"
 
 # Exclude a variety of commonly ignored directories.
 extend-exclude = [
+    "*.ipynb",
     ".#*",
     "__pycache__",
     "test"
@@ -113,6 +114,8 @@ allowed-confusables = ["α", "β", "γ"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
+
+
 
 [tool.isort]
 profile = "black"

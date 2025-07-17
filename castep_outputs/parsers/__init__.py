@@ -5,7 +5,11 @@ from collections.abc import Callable
 
 from .bands_file_parser import parse_bands_file
 from .castep_file_parser import parse_castep_file
-from .cell_param_file_parser import parse_cell_param_file
+from .cell_param_file_parser import (
+    parse_cell_file,
+    parse_cell_param_file,
+    parse_param_file,
+)
 from .efield_file_parser import parse_efield_file
 from .elastic_file_parser import parse_elastic_file
 from .epme_file_parser import parse_epme_file
@@ -14,10 +18,10 @@ from .hug_file_parser import parse_hug_file
 from .magres_file_parser import parse_magres_file
 from .md_geom_file_parser import parse_md_geom_file
 from .parse_fmt_files import (
-                              parse_chdiff_fmt_file,
-                              parse_den_fmt_file,
-                              parse_elf_fmt_file,
-                              parse_pot_fmt_file,
+    parse_chdiff_fmt_file,
+    parse_den_fmt_file,
+    parse_elf_fmt_file,
+    parse_pot_fmt_file,
 )
 from .phonon_dos_file_parser import parse_phonon_dos_file
 from .phonon_file_parser import parse_phonon_file
@@ -28,7 +32,7 @@ from .xrd_sf_file_parser import parse_xrd_sf_file
 __all__ = [
     "parse_bands_file",
     "parse_castep_file",
-    "parse_cell_param_file",
+    "parse_cell_file",
     "parse_cell_param_file",
     "parse_chdiff_fmt_file",
     "parse_den_fmt_file",
@@ -41,6 +45,7 @@ __all__ = [
     "parse_magres_file",
     "parse_md_geom_file",
     "parse_md_geom_file",
+    "parse_param_file",
     "parse_phonon_dos_file",
     "parse_phonon_file",
     "parse_pot_fmt_file",
@@ -53,8 +58,8 @@ __all__ = [
 #: Dictionary of available parsers.
 PARSERS: dict[str, Callable] = {
     "castep": parse_castep_file,
-    "cell": parse_cell_param_file,
-    "param": parse_cell_param_file,
+    "cell": parse_cell_file,
+    "param": parse_param_file,
     "geom": parse_md_geom_file,
     "md": parse_md_geom_file,
     "bands": parse_bands_file,
