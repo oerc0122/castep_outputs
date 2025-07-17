@@ -2933,15 +2933,15 @@ Message: Generation of delocalized internals is successful
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Chemical Shielding',
-                                      ('C', 1): {'aniso': 175.31,
+                                      ('C', 1): {'cs_aniso': 175.31,
                                                  'asym': 0.0,
-                                                 'iso': 162.01},
-                                      ('C', 2): {'aniso': 175.31,
+                                                 'cs_iso': 162.01},
+                                      ('C', 2): {'cs_aniso': 175.31,
                                                  'asym': None,
-                                                 'iso': 162.0},
-                                      ('C:tag', 2): {'aniso': 175.31,
+                                                 'cs_iso': 162.0},
+                                      ('C:tag', 2): {'cs_aniso': 175.31,
                                                      'asym': 1.0,
-                                                     'iso': 162.0}
+                                                     'cs_iso': 162.0}
                                        }
                                       ]}
                          )
@@ -2961,13 +2961,14 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
+        pprint.pprint(test_dict)
         self.assertEqual(test_dict, {'magres':
                                      [{'task': '(An)Isotropic J-coupling',
-                                       ('C', 2): {'dia': -0.48,
-                                                  'fc': 128.25,
-                                                  'para': -1.22,
-                                                  'sd': 3.2,
-                                                  'tot': 129.75}
+                                       ('C', 2): {'diamagnetic': -0.48,
+                                                  'fermi_contact': 128.25,
+                                                  'paramagnetic': -1.22,
+                                                  'spin_dipolar': 3.2,
+                                                  'total': 129.75}
                                        }
                                       ]}
                          )
@@ -2985,24 +2986,25 @@ Message: Generation of delocalized internals is successful
   ===============================================================================
         """)
         test_dict = parse_castep_file(test_text)[0]
+
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Chemical Shielding and Electric '
                                        'Field Gradient',
-                                       ('H', 1): {'aniso': 8.55,
+                                       ('H', 1): {'cs_aniso': 8.55,
                                                   'asym': 0.11,
                                                   'cq': 0.1968,
                                                   'eta': 0.02,
-                                                  'iso': 28.24},
-                                       ('H', 2): {'aniso': 9.29,
+                                                  'cs_iso': 28.24},
+                                       ('H', 2): {'cs_aniso': 9.29,
                                                   'asym': 0.22,
                                                   'cq': 0.1932,
                                                   'eta': 0.03,
-                                                  'iso': 28.75},
-                                       ('H:T', 3): {'aniso': 7.26,
+                                                  'cs_iso': 28.75},
+                                       ('H:T', 3): {'cs_aniso': 7.26,
                                                     'asym': None,
                                                     'cq': 0.1996,
                                                     'eta': 0.01,
-                                                    'iso': 28.71}}
+                                                    'cs_iso': 28.71}}
                                       ]}
                          )
 
@@ -3043,7 +3045,7 @@ Message: Generation of delocalized internals is successful
 
         self.assertEqual(test_dict, {'magres':
                                      [{'task': 'Hyperfine',
-                                       ('H', 1): {'iso': -1227.0}}
+                                       ('H', 1): {'hf_iso': -1227.0}}
                                       ]
                                      }
                          )
