@@ -244,7 +244,7 @@ def flatten_dict(dictionary: MutableMapping[Any, Any],
         new_key = str(parent_key) + separator + key if parent_key else key
         if isinstance(value, collections.abc.MutableMapping):
             items.extend(flatten_dict(value, new_key, separator).items())
-        elif isinstance(value, list):
+        elif isinstance(value, (list, tuple)):
             for keyx, val in enumerate(value):
                 items.extend(flatten_dict({str(keyx): val}, new_key).items())
         else:
