@@ -9,7 +9,7 @@ import logging
 import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
-from copy import copy
+from copy import copy, deepcopy
 from fractions import Fraction
 from functools import partial, singledispatch, wraps
 from itertools import filterfalse
@@ -282,14 +282,39 @@ def deep_merge_dict(d1: dict, d2: dict) -> dict:
     dict
         Merged dictionaries.
 
+    Notes
+    -----
+        When both dictionaries contain the same key:
+
+        - If both values are dictionaries, they are merged recursively
+        - Otherwise, the value from `d2` overwrites the value from `d1`
+
+        The original dictionaries are not modified.
+
+    Examples
+    --------
+        >>> d1 = {'a': 1, 'b': {'x': 10, 'y': 20}}
+        >>> d2 = {'b': {'y': 30, 'z': 40}, 'c': 3}
+        >>> deep_merge_dict(d1, d2)
+        {'a': 1, 'b': {'x': 10, 'y': 30, 'z': 40}, 'c': 3}
+
+        >>> d1 = {'config': {'debug': True, 'level': 1}}
+        >>> d2 = {'config': {'level': 2, 'verbose': False}}
+        >>> deep_merge_dict(d1, d2)
+        {'config': {'debug': True, 'level': 2, 'verbose': False}}
+
+        >>> d1 = {'a': [1, 2, 3]}
+        >>> d2 = {'a': [4, 5, 6]}
+        >>> deep_merge_dict(d1, d2)  # Non-dict values are replaced
+        {'a': [4, 5, 6]}
     """
-    result = d1.copy()
+    result = deepcopy(d1)
     for key, value in d2.items():
         if (key in result and isinstance(result[key], dict)
             and isinstance(value, dict)):
             result[key] = deep_merge_dict(result[key], value)
         else:
-            result[key] = value
+            result[key] = deepcopy(value)
     return result
 
 
