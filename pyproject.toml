@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "castep_outputs"
 authors = [{name = "Jacob Wilkins", email = "jacob.wilkins@stfc.ac.uk"}]
 dynamic = ["version"]
-requires-python = ">= 3.9"
+requires-python = ">= 3.10"
 readme = "README.rst"
 description = "A package for extracting information from castep outputs"
 keywords = ["castep", "dft", "parser"]
@@ -32,7 +32,7 @@ classifiers = [
 ruamel = ["ruamel.yaml>=0.17.22,<0.19"]
 yaml = ["pyYAML>=3.13"]
 docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0", "sphinx-autodoc-typehints"]
-lint = ["ruff==0.8.0"]
+lint = ["ruff==0.14.14"]
 test = ["pytest==8.3.4", "pytest-cov==5.0.0"]
 
 [project.scripts]
@@ -50,7 +50,6 @@ version = {attr = "castep_outputs.__version__"}
 [tool.ruff]
 line-length = 100
 indent-width = 4
-target-version = "py39"
 
 # Exclude a variety of commonly ignored directories.
 extend-exclude = [
@@ -109,13 +108,12 @@ ignore = [
     "PLR2004",  # Magic constant value
     "D105",     # Magic method doc
     "ANN401",   # No typing.Any
+    "RUF067",   # Require empty init
 ]
 allowed-confusables = ["α", "β", "γ"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"
-
-
 
 [tool.isort]
 profile = "black"

@@ -612,7 +612,7 @@ def to_type(data_in: T, _typ: type) -> T:
     ----------
     data_in : str or ~collections.abc.Sequence
         Data to convert.
-    typ : type
+    _typ : type
         Type to convert to.
 
     Returns
