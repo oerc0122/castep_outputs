@@ -3,8 +3,9 @@ from __future__ import annotations
 
 import json
 import pprint
+from collections.abc import Callable
 from contextlib import suppress
-from typing import Any, Callable, TextIO
+from typing import Any, TextIO
 
 _YAML_TYPE = None
 

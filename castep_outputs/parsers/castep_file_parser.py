@@ -12,7 +12,7 @@ import re
 from collections import defaultdict
 from collections.abc import Callable
 from enum import Flag, auto
-from typing import Any, TextIO, Union, cast
+from typing import Any, TextIO, cast
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import gen_table_re, get_numbers, labelled_floats
@@ -1683,7 +1683,11 @@ def _process_unit_cell(block: Block) -> CellInfo:
             else:
                 prop.append(float(numbers[0]))
 
-    cell.update({name: val for val, name in zip(prop, ("volume", "density_amu", "density_g"))})
+    cell.update({name: val for val, name in zip(
+        prop,
+        ("volume", "density_amu", "density_g"),
+        strict=False,
+    )})
 
     return cell
 
@@ -1812,7 +1816,7 @@ def _process_initial_spins(block: Block) -> dict[AtomIndex, InitialSpin]:
             ind = atreg_to_index(val)
             fix_data_types(val, {"spin": float, "magmom": float})
             val["fix"] = val["fix"] == "T"
-            accum[ind] = cast(dict[str, Union[float, bool]], val)
+            accum[ind] = cast(dict[str, float | bool], val)
     return accum
 
 
@@ -2201,8 +2205,9 @@ def _process_dynamical_matrix(block: Block) -> tuple[tuple[complex, ...], ...]:
     imag_part = [numbers[2:] for line in block if (numbers := get_numbers(line))]
 
     return tuple(
-        tuple(complex(float(real), float(imag)) for real, imag in zip(real_row, imag_row))
-        for real_row, imag_row in zip(real_part, imag_part)
+        tuple(complex(float(real), float(imag))
+              for real, imag in zip(real_row, imag_row, strict=True))
+        for real_row, imag_row in zip(real_part, imag_part, strict=True)
     )
 
 
@@ -2302,7 +2307,11 @@ def _process_dftd(block: Block) -> dict[str, Any]:
 def _process_occupancies(block: Block) -> list[Occupancies]:
     label = ("band", "eigenvalue", "occupancy")
 
-    accum = [dict(zip(label, numbers)) for line in block if (numbers := get_numbers(line))]
+    accum = [
+        dict(zip(label, numbers, strict=True))
+        for line in block
+        if (numbers := get_numbers(line))
+    ]
     for elem in accum:
         fix_data_types(elem, {"band": int,
                               "eigenvalue": float,
@@ -2369,7 +2378,7 @@ def _process_phonon(block: Block, logger: Logger) -> list[QData]:
                 head, tail = char_line.split("|")
                 _, rep, *name, mul = head.split()
                 *vals, _ = tail.split()
-                char.append({"chars": tuple(zip(headers, map(int, vals))),
+                char.append({"chars": tuple(zip(headers, map(int, vals), strict=False)),
                              "mul": int(mul),
                              "rep": rep,
                              "name": name})
@@ -2429,9 +2438,13 @@ def _process_pair_params(block_in: Block) -> dict[str, dict[str, dict | str]]:
                     if lab not in accum[typ]:
                         accum[typ][lab] = {}
 
-                    accum[typ][lab].update(zip(labels,
-                                               to_type(match["params"].split(),
-                                                       float)))
+                    accum[typ][lab].update(
+                        zip(
+                            labels,
+                            to_type(match["params"].split(), float),
+                            strict=True,
+                        ),
+                    )
 
                 elif match := REs.PAIR_POT_RES["two_body_one_spec"].match(blk_line):
                     labels = ((match["spec"],),)
@@ -2454,7 +2467,7 @@ def _process_pair_params(block_in: Block) -> dict[str, dict[str, dict | str]]:
 
                     accum[typ][lab].update(zip(labels,
                                                to_type(match["params"].split(),
-                                                       float)))
+                                                       float), strict=False))
 
         # Globals
         elif match := REs.PAIR_POT_RES["three_body_val"].match(line):
@@ -2479,7 +2492,7 @@ def _process_geom_table(block: Block) -> GeomTable:
             fix_data_types(val, dict.fromkeys(("lambda", "fdelta", "enthalpy"), float))
 
             key = normalise_string(val.pop("step"))
-            accum[key] = cast(dict[str, Union[bool, float]], val)
+            accum[key] = cast(dict[str, bool | float], val)
 
         elif match := REs.GEOMOPT_TABLE_RE.match(line):
             val = match.groupdict()
@@ -2488,7 +2501,7 @@ def _process_geom_table(block: Block) -> GeomTable:
             val["converged"] = val["converged"] == "Yes"
 
             key = normalise_key(val.pop("parameter"))
-            accum[key] = cast(dict[str, Union[bool, float]], val)
+            accum[key] = cast(dict[str, bool | float], val)
 
     return accum
 
@@ -2523,7 +2536,7 @@ def _process_elastic_properties(block: Block) -> ElasticProperties:
     for line in block:
         if "::" in line:
             key = line.split("::")[0]
-            val = cast(Union[ThreeVector, SixVector], to_type(get_numbers(line), float))
+            val = cast(ThreeVector | SixVector, to_type(get_numbers(line), float))
 
             if len(val) == 1:
                 val = val[0]
@@ -2543,7 +2556,7 @@ def _process_elastic_properties(block: Block) -> ElasticProperties:
 def _process_internal_constraints(block: TextIO) -> list[InternalConstraints]:
 
     # Skip table headers
-    for _ in zip(range(3), block):
+    for _ in zip(range(3), block, strict=False):
         pass
 
     accum = []
