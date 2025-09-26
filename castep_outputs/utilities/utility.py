@@ -17,9 +17,7 @@ from struct import unpack
 from typing import TYPE_CHECKING, Any, Literal, Protocol, TextIO, TypeVar
 
 import castep_outputs.utilities.castep_res as REs
-from castep_outputs.utilities.filewrapper import Block
-
-from .filewrapper import FileWrapper
+from castep_outputs.utilities.filewrapper import Block, FileWrapper
 
 if TYPE_CHECKING:
     from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
@@ -218,7 +216,9 @@ def json_safe(obj: dict | complex | T) -> dict | T:
 
 
 def flatten_dict(
-    dictionary: MutableMapping[Any, Any], parent_key: str = "", separator: str = "_"
+    dictionary: MutableMapping[Any, Any],
+    parent_key: str = "",
+    separator: str = "_",
 ) -> dict[str, Any]:
     """
     Turn a nested dictionary into a flattened dictionary.
