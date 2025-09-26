@@ -8,7 +8,7 @@ from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers
 from ..utilities.constants import FST_D, TAG_ALIASES
 from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
 from ..utilities.filewrapper import Block
-from ..utilities.utility import add_aliases, atreg_to_index, file_or_path, to_type
+from ..utilities.utility import add_aliases, atreg_to_index, file_or_path, log_factory, to_type
 
 
 class MDAtomProps(TypedDict):
@@ -120,13 +120,32 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     -------
     list[MDGeomTimestepInfo]
         Step-by-step Parsed info.
+
+    Raises
+    ------
+    ValueError
+        Potentially invalid MD/Geom file provided.
     """
-    while "END header" not in md_geom_file.readline():
-        pass
-    md_geom_file.readline()
+    logger = log_factory(md_geom_file)
+
+    for line in md_geom_file:
+        if line.strip():
+            break
+
+    if line.strip() and line.strip() == "BEGIN header":
+        while "END header" not in md_geom_file.readline():
+            pass
+        md_geom_file.readline()
+    else:
+        logger("Non-standard md/geom file: missing header.", level="warning")
+
     steps = []
     while block := Block.from_re("", md_geom_file, "", "^$", eof_possible=True):
         steps.append(parse_md_geom_frame(block))
+
+    if not steps:
+        logger("Invalid or empty md/geom file.", level="error")
+        raise ValueError("Invalid or empty md/geom file.")
 
     return steps
 
