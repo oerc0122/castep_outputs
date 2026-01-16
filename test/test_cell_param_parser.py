@@ -550,6 +550,7 @@ NLXC_PPD_INT ON
     "2|1.8|1.8|1.3|2|3|4|30:31:32LGG(qc=4)",
     "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]",
     "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]",
+    "3|2.4|2.4|1.0|8|9|10|40:41:32U2U2(qc=5.5)"
 ])
 def test_pspot_parser(string):
     pytest.skip("Correct answers not provided")
