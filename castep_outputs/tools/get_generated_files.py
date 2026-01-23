@@ -158,31 +158,31 @@ def get_spectral_files(
         out_files.add(f"{seedname}.orbitals")
     if spectral_theory is SpectralTheory.TDDFT:
         if spectral_task is SpectralTask.OPTICS:
-            spec_calc = {"core": False, "ome": False, "dome": True}
+            spec_calc = {"elnes": False, "ome": False, "dome": True}
         elif spectral_task in {SpectralTask.DOS, SpectralTask.BANDSTRUCTURE}:
-            spec_calc = {"core": False, "ome": False, "dome": False}
+            spec_calc = {"elnes": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
-            spec_calc = {"core": False, "ome": False, "dome": True}
+            spec_calc = {"elnes": False, "ome": False, "dome": True}
         else:
             raise KeyError("Invalid param file")
     else:  # noqa: PLR5501
         if spectral_task is SpectralTask.CORELOSS:
             if is_nlxc:
                 raise KeyError("Invalid param file")
-            spec_calc = {"core": True, "ome": True, "dome": False}
+            spec_calc = {"elnes": True, "ome": True, "dome": False}
         elif spectral_task is SpectralTask.OPTICS:
-            spec_calc = {"core": False, "ome": False, "dome": True}
+            spec_calc = {"elnes": False, "ome": False, "dome": True}
         elif spectral_task is SpectralTask.DOS:
-            spec_calc = {"core": False, "ome": not is_nlxc, "dome": False}
+            spec_calc = {"elnes": False, "ome": not is_nlxc, "dome": False}
         elif spectral_task is SpectralTask.BANDSTRUCTURE:
-            spec_calc = {"core": False, "ome": False, "dome": False}
+            spec_calc = {"elnes": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
-            spec_calc = {"core": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
+            spec_calc = {"elnes": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
         else:
             raise KeyError("Invalid param file")
 
     spectral_devel = devel_code.get("spectral", {})
-    spec_calc["core"] = spectral_devel.get("calc_core", spec_calc["core"])
+    spec_calc["elnes"] = spectral_devel.get("calc_core", spec_calc["elnes"])
     spec_calc["ome"] = spectral_devel.get("calc_ome", spec_calc["ome"])
     spec_calc["pdos"] = spectral_devel.get("calc_pdos", param_data.get("pdos_calculate_weights"))
     spec_calc["dome"] = spectral_devel.get("calc_dome", spec_calc["dome"])
@@ -191,7 +191,7 @@ def get_spectral_files(
         f"{seedname}.{curr}_bin"
         if spectral_theory is SpectralTheory.DFT
         else f"{seedname}_tddft.{curr}_bin"
-        for curr in ("core", "ome", "pdos", "dome")
+        for curr in ("elnes", "ome", "pdos", "dome")
         if spec_calc[curr]
     }
 
