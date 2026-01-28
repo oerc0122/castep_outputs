@@ -38,6 +38,7 @@ ALL_SETS = (
     "err",
     "epme",
     "epme_bin",
+    "castep_bin",
     ("pp-md", "castep"),
     ("si8-md", "castep"),
 )

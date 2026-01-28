@@ -317,28 +317,37 @@ def _parse_str_bytes(val: bytes) -> tuple[str, ...]:
     return (str(val, encoding="ascii"),)
 
 
-_TYPE_PARSERS: dict[type, Callable[[str], Any]] = {
+_TYPE_PARSERS: dict[type, Callable[[str], tuple]] = {
     complex: complex,
     float: _parse_float_or_rational,
     int: int,
     bool: _parse_logical,
     str: str,
 }
+
 _BYTE_PARSERS: dict[type, Callable[[bytes], tuple]] = {
     complex: _parse_complex_bytes,
     float: _parse_float_bytes,
     bool: _parse_bool_bytes,
     int: _parse_int_bytes,
     str: _parse_str_bytes,
+    bytes: lambda x: (x,),
 }
 ToTypeTuple: TypeAlias = tuple[type[T], EllipsisType]
+ByteParser: TypeAlias = Callable[[bytes], T]
+TypeTupleMapping: TypeAlias = Mapping[str, type[T] | ByteParser[T] | ToTypeTuple[T]]
 
 
 @overload
 def parse_bytes(data_in: bytes, typ: type[T]) -> T: ...
 @overload
-def parse_bytes(data_in: bytes, typ: ToTypeTuple) -> tuple[T, ...]: ...
-def parse_bytes(data_in, typ):
+def parse_bytes(data_in: bytes, typ: ToTypeTuple[T]) -> tuple[T, ...]: ...
+@overload
+def parse_bytes(data_in: bytes, typ: ByteParser[T]) -> T: ...
+def parse_bytes(
+    data_in: bytes,
+    typ: type[T] | ToTypeTuple[T] | ByteParser[T],
+) -> T | tuple[T, ...]:
     r"""Convert from (Fortran) bytes to a Python type.
 
     Parameters
@@ -378,6 +387,9 @@ def parse_bytes(data_in, typ):
         case type() as type_:
             parser = _BYTE_PARSERS[type_]
             out = get_only(parser(data_in))
+        case Callable() as type_:
+            parser = type_
+            out = parser(data_in)
         case _:
             raise TypeError(f"Cannot handle converting to {typ!r}.")
 
