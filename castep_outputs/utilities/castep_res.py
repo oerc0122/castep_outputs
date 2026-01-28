@@ -562,6 +562,46 @@ MAGRES_TASK = (
     "Hyperfine",
 )
 
+TENSOR_RE = (rf"{labelled_floats(('xx', 'xy', 'xz'))}[\n\r]+"
+             rf"{labelled_floats(('yx', 'yy', 'yz'))}[\n\r]+"
+             rf"{labelled_floats(('zx', 'zy', 'zz'))}")
+
+MAGRES_OLD_RE = {
+    # Atom lines
+    "atom": re.compile(
+        r"=+\s+"
+        rf"( Perturbing Atom|Atom): {ATOM_RE}[\r\n]+"
+        r"=+[\r\n]+"
+        r"([^=]+)\s+",
+        re.MULTILINE | re.DOTALL,
+    ),
+    # Coordinates
+    "coords": re.compile(
+        rf"{ATOM_RE}\s+Coordinates\s+{THREEVEC_RE}\s+A",
+    ),
+    # Magnetic shielding tensor
+    "ms_tensor": re.compile(
+        rf"\s*(.*?) Shielding Tensor[\r\n]+{TENSOR_RE}",
+    ),
+    # Spin-Spin coupling tensor
+    "isc_tensor": re.compile(
+        r"\s{0,}J-coupling (.*?)[\r\n]+"
+        rf"{TENSOR_RE}",
+    ),
+    # Electric field gradient tensor
+    "efg_tensor": re.compile(
+        r"\s{0,}(.*?) tensor[\r\n]+"
+        rf"{TENSOR_RE}"
+        r"\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+V_xx\s+[-0-9\.]+",
+    ),
+    # Hyperfine tensor
+    "hf_tensor": re.compile(
+        r"\s{0,}(.*?) tensor[\r\n]+"
+        rf"{TENSOR_RE}"
+        r"\s+[A-Za-z]+\s+\d+\s+Eigenvalue\s+A_xx\s+[-0-9\.]+",
+    ),
+}
+
 # Regexp to identify block in .phonon or .phonon_dos file
 FRACCOORDS_RE = re.compile(
     rf"\s*(?P<index>{INTNUMBER_RE}){labelled_floats(('u', 'v', 'w'))}"
