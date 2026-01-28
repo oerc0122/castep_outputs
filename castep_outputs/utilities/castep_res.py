@@ -311,14 +311,14 @@ PS_SHELL_RE = re.compile(
 )
 
 # PS Projector
-PROJ_TYPES = "[UNGHLP]"
+PROJ_TYPES = r"[UNGHLP]\d?"
 PSPOT_SHELL_RE = rf"(?:{SHELL_RE}{FNUMBER_RE}?)"
 PSPOT_PROJ_GROUPS = ("orbital", "shell", "type", "de", "beta_delta")
 PSPOT_PROJ_RE = re.compile(
     rf"""
     (\d)                            # Orbital
     (\d)                            # Shell type
-    ({PROJ_TYPES}*)                 # Proj type
+    ((?:{PROJ_TYPES})*)             # Proj type
     ((?:[\+-=]{FNUMBER_RE})?)       # DE_use
     ((?:@{FNUMBER_RE})?)            # beta_delta
 """,
