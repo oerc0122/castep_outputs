@@ -5,22 +5,20 @@ from __future__ import annotations
 import re
 import typing
 from collections import Counter, defaultdict
-from collections.abc import Callable, Sequence
 from functools import partial
-from typing import Any, Literal, TextIO, TypedDict
+from typing import Any, Literal, TextIO, TypeAlias, TypedDict
 
 import castep_outputs.utilities.castep_res as REs
-
-from ..utilities.constants import SHELLS
-from ..utilities.datatypes import (
+from castep_outputs.utilities.constants import SHELLS
+from castep_outputs.utilities.datatypes import (
     AtomIndex,
     MaybeSequence,
     PSPotStrInfo,
     ThreeByThreeMatrix,
     ThreeVector,
 )
-from ..utilities.filewrapper import Block
-from ..utilities.utility import (
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.utility import (
     atreg_to_index,
     determine_type,
     file_or_path,
@@ -30,6 +28,9 @@ from ..utilities.utility import (
     strip_comments,
     to_type,
 )
+
+if typing.TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 
 class PositionsInfo(TypedDict, total=False):
@@ -73,12 +74,13 @@ class XCDef(TypedDict):
 
 
 DevelElem = MaybeSequence[str | float | dict[str, str | float]]
-DevelBlock = dict[str, DevelElem | dict[str, DevelElem]]
-HubbardU = dict[str | AtomIndex, str | dict[str, float]]
-CellParamData = dict[
-    str, str | float | tuple[float, str] | dict[str, Any] | HubbardU | DevelBlock | XCDef,
+DevelBlock: TypeAlias = dict[str, DevelElem | dict[str, DevelElem]]
+HubbardU: TypeAlias = dict[str | AtomIndex, str | dict[str, float]]
+CellParamData: TypeAlias = dict[
+    str,
+    str | float | tuple[float, str] | dict[str, Any] | HubbardU | DevelBlock | XCDef,
 ]
-GeneralBlock = dict[
+GeneralBlock: TypeAlias = dict[
     str,
     list[str | float] | dict[str, MaybeSequence[float]],
 ]
@@ -245,6 +247,7 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
         Parsed info.
     """
     main_block = " ".join(map(str.strip, in_block))
+    main_block = re.sub(r"%endblock\s+devel_code", "", main_block, flags=re.IGNORECASE)
 
     matches = re.finditer(REs.DEVEL_CODE_BLOCK_GENERIC_RE, main_block, re.IGNORECASE | re.MULTILINE)
     devel_code_parsed: DevelBlock = {}
@@ -269,9 +272,9 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
                 block["data"].append(to_type(par, determine_type(par)))
 
         if block_title in devel_code_parsed:
-            devel_code_parsed[block_title].update(block)  # type: ignore
+            devel_code_parsed[block_title].update(block)
         else:
-            devel_code_parsed[block_title] = block  # type: ignore
+            devel_code_parsed[block_title] = block
 
         # Remove matched to get remainder
         main_block = main_block.replace(blk.group(0), "")
@@ -286,6 +289,15 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
             key = f"_{key}"
 
         devel_code_parsed[key] = to_type(val, typ)
+
+    # Catch present components
+    for par in re.finditer(r"(?<![:=])\b[A-Za-z_-]+\b(?![:=])", main_block):
+        key = normalise_key(par.group(0))
+
+        if key in devel_code_parsed:  # Var has same name as block
+            key = f"_{key}"
+
+        devel_code_parsed[key] = None
 
     return devel_code_parsed
 
@@ -475,7 +487,7 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
 
     return [
         {
-            "r": tmp[i : i + 3],  # type: ignore
+            "r": tmp[i : i + 3],
             "t": tmp[i + 3],
         }
         for i in range(0, len(tmp), 4)
@@ -562,12 +574,12 @@ def _parse_general(block: Block) -> GeneralBlock:
         if REs.SPEC_PROP_RE.match(line):
             if isinstance(block_data["data"], list):
                 block_data["data"] = {}
-                typing.cast(dict[str, MaybeSequence[float | str]], block_data["data"])
+                typing.cast("dict[str, MaybeSequence[float | str]]", block_data["data"])
 
             spec, val = line.strip().split(maxsplit=1)
             val = to_type(val, determine_type(val))
 
-            typing.cast(MaybeSequence[float | str], val)
+            typing.cast("MaybeSequence[float | str]", val)
 
             block_data["data"][spec] = val
 
