@@ -5,9 +5,8 @@ from __future__ import annotations
 import logging
 import re
 from collections import Counter, defaultdict
-from collections.abc import Callable, Sequence
 from functools import partial
-from typing import Any, Literal, TextIO, TypedDict, cast
+from typing import TYPE_CHECKING, Any, Literal, TextIO, TypeAlias, TypedDict, cast
 
 import castep_outputs.utilities.castep_res as REs
 from castep_outputs.utilities.constants import SHELLS
@@ -29,6 +28,9 @@ from castep_outputs.utilities.utility import (
     strip_comments,
     strip_nones,
 )
+
+if TYPE_CHECKING:
+    from collections.abc import Callable, Sequence
 
 
 class PositionsInfo(TypedDict, total=False):
@@ -72,13 +74,13 @@ class XCDef(TypedDict):
 
 
 DevelElem = MaybeSequence[str | float | dict[str, str | float]]
-DevelBlock = dict[str, DevelElem | dict[str, DevelElem]]
-HubbardU = dict[str | AtomIndex, str | dict[str, float]]
-CellParamData = dict[
+DevelBlock: TypeAlias = dict[str, DevelElem | dict[str, DevelElem]]
+HubbardU: TypeAlias = dict[str | AtomIndex, str | dict[str, float]]
+CellParamData: TypeAlias = dict[
     str,
     str | float | tuple[float, str] | dict[str, Any] | HubbardU | DevelBlock | XCDef,
 ]
-GeneralBlock = dict[
+GeneralBlock: TypeAlias = dict[
     str,
     list[str | float] | dict[str, MaybeSequence[float]],
 ]
@@ -338,6 +340,7 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
         Parsed info.
     """
     main_block = " ".join(map(str.strip, in_block))
+    main_block = re.sub(r"%endblock\s+devel_code", "", main_block, flags=re.IGNORECASE)
 
     matches = re.finditer(REs.DEVEL_CODE_BLOCK_GENERIC_RE, main_block, re.IGNORECASE | re.MULTILINE)
     devel_code_parsed: DevelBlock = {}
@@ -362,9 +365,9 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
                 block["data"].append(to_type(par, determine_type(par)))
 
         if block_title in devel_code_parsed:
-            devel_code_parsed[block_title].update(block)  # type: ignore
+            devel_code_parsed[block_title].update(block)
         else:
-            devel_code_parsed[block_title] = block  # type: ignore
+            devel_code_parsed[block_title] = block
 
         # Remove matched to get remainder
         main_block = main_block.replace(blk.group(0), "")
@@ -379,6 +382,15 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
             key = f"_{key}"
 
         devel_code_parsed[key] = to_type(val, typ)
+
+    # Catch present components
+    for par in re.finditer(r"(?<![:=])\b[A-Za-z_-]+\b(?![:=])", main_block):
+        key = normalise_key(par.group(0))
+
+        if key in devel_code_parsed:  # Var has same name as block
+            key = f"_{key}"
+
+        devel_code_parsed[key] = None
 
     return devel_code_parsed
 
