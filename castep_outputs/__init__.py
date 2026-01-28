@@ -7,3 +7,5 @@ __version__ = "0.2.0"
 
 from .cli.castep_outputs_main import parse_single  # noqa: F401
 from .parsers import *  # noqa: F403
+from .tools import MDGeomParser as MDGeomParser  # noqa: PLC0414
+from .tools import get_generated_files as get_generated_files  # noqa: PLC0414
