@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 import re
-from typing import Literal, TextIO, TypedDict, Union
+from typing import Literal, TextIO, TypedDict
 
 from ..utilities import castep_res as REs
 from ..utilities.castep_res import get_numbers, labelled_floats
@@ -12,7 +12,7 @@ from ..utilities.utility import file_or_path, to_type
 from .parse_utilities import parse_regular_header
 
 #: Overlap type
-TDDFTOverlap = dict[Union[tuple[int, int], Literal["total"]], float]
+TDDFTOverlap = dict[tuple[int, int] | Literal["total"], float]
 
 
 class TDDFTSpectroData(TypedDict):

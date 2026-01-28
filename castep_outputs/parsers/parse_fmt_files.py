@@ -93,7 +93,7 @@ def _parse_kpt_info(
             words = line.split()
             qpt = to_type(words[0:3], int)
             val = to_type(words[3:], float)
-            stack_dict(qdata, {"q": qpt, **dict(zip(prop, val))})
+            stack_dict(qdata, {"q": qpt, **dict(zip(prop, val, strict=False))})
 
     return qdata
 

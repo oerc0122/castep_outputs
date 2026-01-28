@@ -5,12 +5,11 @@ from __future__ import annotations
 import itertools
 import re
 from collections.abc import Sequence
-from typing import Union
 
 from .constants import FST_D, MINIMISERS, SHELLS, SND_D
 
 #: Valid input where patterns are wanted.
-Pattern = Union[str, re.Pattern]
+Pattern = str | re.Pattern
 
 
 def get_numbers(line: str) -> list[str]:

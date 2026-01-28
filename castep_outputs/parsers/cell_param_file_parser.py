@@ -7,7 +7,7 @@ import typing
 from collections import Counter, defaultdict
 from collections.abc import Callable, Sequence
 from functools import partial
-from typing import Any, Literal, TextIO, TypedDict, Union
+from typing import Any, Literal, TextIO, TypedDict
 
 import castep_outputs.utilities.castep_res as REs
 
@@ -72,18 +72,15 @@ class XCDef(TypedDict):
     xc: dict[str, float]
 
 
-DevelElem = MaybeSequence[Union[str, float, dict[str, Union[str, float]]]]
-DevelBlock = dict[str, Union[DevelElem, dict[str, DevelElem]]]
-HubbardU = dict[Union[str, AtomIndex], Union[str, dict[str, float]]]
+DevelElem = MaybeSequence[str | float | dict[str, str | float]]
+DevelBlock = dict[str, DevelElem | dict[str, DevelElem]]
+HubbardU = dict[str | AtomIndex, str | dict[str, float]]
 CellParamData = dict[
-    str, Union[str, float, tuple[float, str], dict[str, Any], HubbardU, DevelBlock, XCDef],
+    str, str | float | tuple[float, str] | dict[str, Any] | HubbardU | DevelBlock | XCDef,
 ]
 GeneralBlock = dict[
     str,
-    Union[
-        list[Union[str, float]],
-        dict[str, MaybeSequence[float]],
-    ],
+    list[str | float] | dict[str, MaybeSequence[float]],
 ]
 
 
@@ -180,7 +177,7 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
 
     for proj in pspot["proj"].split(":"):
         if match := REs.PSPOT_PROJ_RE.match(proj):
-            pdict = dict(zip(REs.PSPOT_PROJ_GROUPS, match.groups()))
+            pdict = dict(zip(REs.PSPOT_PROJ_GROUPS, match.groups(), strict=True))
         else:
             raise ValueError("Invalid PSPot string")
 
@@ -565,12 +562,12 @@ def _parse_general(block: Block) -> GeneralBlock:
         if REs.SPEC_PROP_RE.match(line):
             if isinstance(block_data["data"], list):
                 block_data["data"] = {}
-                typing.cast(dict[str, MaybeSequence[Union[float, str]]], block_data["data"])
+                typing.cast(dict[str, MaybeSequence[float | str]], block_data["data"])
 
             spec, val = line.strip().split(maxsplit=1)
             val = to_type(val, determine_type(val))
 
-            typing.cast(MaybeSequence[Union[float, str]], val)
+            typing.cast(MaybeSequence[float | str], val)
 
             block_data["data"][spec] = val
 
