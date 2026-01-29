@@ -76,7 +76,8 @@ DevelElem = MaybeSequence[Union[str, float, dict[str, Union[str, float]]]]
 DevelBlock = dict[str, Union[DevelElem, dict[str, DevelElem]]]
 HubbardU = dict[Union[str, AtomIndex], Union[str, dict[str, float]]]
 CellParamData = dict[
-    str, Union[str, float, tuple[float, str], dict[str, Any], HubbardU, DevelBlock, XCDef],
+    str,
+    Union[str, float, tuple[float, str], dict[str, Any], HubbardU, DevelBlock, XCDef],
 ]
 GeneralBlock = dict[
     str,
@@ -248,6 +249,7 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
         Parsed info.
     """
     main_block = " ".join(map(str.strip, in_block))
+    main_block = re.sub(r"%endblock\s+devel_code", "", main_block, flags=re.IGNORECASE)
 
     matches = re.finditer(REs.DEVEL_CODE_BLOCK_GENERIC_RE, main_block, re.IGNORECASE | re.MULTILINE)
     devel_code_parsed: DevelBlock = {}
@@ -272,9 +274,9 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
                 block["data"].append(to_type(par, determine_type(par)))
 
         if block_title in devel_code_parsed:
-            devel_code_parsed[block_title].update(block)  # type: ignore
+            devel_code_parsed[block_title].update(block)
         else:
-            devel_code_parsed[block_title] = block  # type: ignore
+            devel_code_parsed[block_title] = block
 
         # Remove matched to get remainder
         main_block = main_block.replace(blk.group(0), "")
@@ -289,6 +291,15 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
             key = f"_{key}"
 
         devel_code_parsed[key] = to_type(val, typ)
+
+    # Catch present components
+    for par in re.finditer(r"(?<![:=])\b[A-Za-z_-]+\b(?![:=])", main_block):
+        key = normalise_key(par.group(0))
+
+        if key in devel_code_parsed:  # Var has same name as block
+            key = f"_{key}"
+
+        devel_code_parsed[key] = None
 
     return devel_code_parsed
 
@@ -478,7 +489,7 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
 
     return [
         {
-            "r": tmp[i : i + 3],  # type: ignore
+            "r": tmp[i : i + 3],
             "t": tmp[i + 3],
         }
         for i in range(0, len(tmp), 4)

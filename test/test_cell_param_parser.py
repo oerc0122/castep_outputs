@@ -490,6 +490,7 @@ MIX_METRIC_Q : 20.0
     def test_devel_code(self):
         test_text = io.StringIO("""
 %block devel_code
+present_value
 bool_value=F
 true_val=True
 int_value=31
@@ -499,7 +500,8 @@ PP: test_par=1 :ENDPP
 %endblock devel_code
         """)
         test_dict = parse_cell_param_file(test_text)[0]
-        self.assertEqual(test_dict, {"devel_code": {"pp": {"test_par": 1},
+        self.assertEqual(test_dict, {"devel_code": {"present_value": None,
+                                                    "pp": {"test_par": 1},
                                                     "bool_value": False,
                                                     "true_val": True,
                                                     "float_number": 15.12,
