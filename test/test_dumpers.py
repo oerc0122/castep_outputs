@@ -40,6 +40,7 @@ def _to_complex(complx):
     ("test.phonon", "phonon", "phonon"),
     ("test.cst_esp", "cst_esp", "cst_esp"),
     ("test.epme", "epme", "epme"),
+    ("test.pes", "pes", "pes"),
 ])
 @pytest.mark.parametrize("out_format", ("json", "ruamel", "pyyaml"))
 def test_dump(file, typ, ref, out_format):
