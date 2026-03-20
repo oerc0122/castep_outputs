@@ -571,7 +571,7 @@ MAGRES_OLD_RE = {
         r"=+\s+"
         rf"( Perturbing Atom|Atom): {ATOM_RE}[\r\n]+"
         r"=+[\r\n]+"
-        r"([^=]+)\s+",
+        r"(?P<blk>[^=]+)\s+",
         re.MULTILINE | re.DOTALL,
     ),
     # Coordinates
