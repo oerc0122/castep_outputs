@@ -1618,6 +1618,7 @@ def _process_params(block: Block) -> dict[str, dict[str, str | tuple[Any, ...]]]
     for line in block:
         if dev_block := Block.from_re(line, block, "Developer Code", gen_table_re("", r"\*+")):
 
+            dev_block.remove_bounds(1, 1)
             opt["devel_code"] = _parse_devel_code_block(dev_block)
 
         elif match := re.match(r"\s*\*+ ([A-Za-z -]+) \*+", line):
