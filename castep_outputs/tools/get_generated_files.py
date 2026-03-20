@@ -158,40 +158,43 @@ def get_spectral_files(
         out_files.add(f"{seedname}.orbitals")
     if spectral_theory is SpectralTheory.TDDFT:
         if spectral_task is SpectralTask.OPTICS:
-            spec_calc = {"core": False, "ome": False, "dome": True}
+            spec_calc = {"elnes": False, "ome": False, "dome": True}
         elif spectral_task in {SpectralTask.DOS, SpectralTask.BANDSTRUCTURE}:
-            spec_calc = {"core": False, "ome": False, "dome": False}
+            spec_calc = {"elnes": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
-            spec_calc = {"core": False, "ome": False, "dome": True}
+            spec_calc = {"elnes": False, "ome": False, "dome": True}
         else:
             raise KeyError("Invalid param file")
     else:  # noqa: PLR5501
         if spectral_task is SpectralTask.CORELOSS:
             if is_nlxc:
                 raise KeyError("Invalid param file")
-            spec_calc = {"core": True, "ome": True, "dome": False}
+            spec_calc = {"elnes": True, "ome": True, "dome": False}
         elif spectral_task is SpectralTask.OPTICS:
-            spec_calc = {"core": False, "ome": False, "dome": True}
+            spec_calc = {"elnes": False, "ome": False, "dome": True}
         elif spectral_task is SpectralTask.DOS:
-            spec_calc = {"core": False, "ome": not is_nlxc, "dome": False}
+            spec_calc = {"elnes": False, "ome": not is_nlxc, "dome": False}
         elif spectral_task is SpectralTask.BANDSTRUCTURE:
-            spec_calc = {"core": False, "ome": False, "dome": False}
+            spec_calc = {"elnes": False, "ome": False, "dome": False}
         elif spectral_task is SpectralTask.ALL:
-            spec_calc = {"core": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
+            spec_calc = {"elnes": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
         else:
             raise KeyError("Invalid param file")
 
     spectral_devel = devel_code.get("spectral", {})
-    spec_calc["core"] = spectral_devel.get("calc_core", spec_calc["core"])
+    spec_calc["elnes"] = spectral_devel.get("calc_core", spec_calc["elnes"])
     spec_calc["ome"] = spectral_devel.get("calc_ome", spec_calc["ome"])
     spec_calc["pdos"] = spectral_devel.get("calc_pdos", param_data.get("pdos_calculate_weights"))
     spec_calc["dome"] = spectral_devel.get("calc_dome", spec_calc["dome"])
+
+    if "spectral_spinvec" in devel_code and "spectral_spinvec_append" in devel_code:
+        out_files.add(f"{seedname}.nc_spinvec")
 
     out_files |= {
         f"{seedname}.{curr}_bin"
         if spectral_theory is SpectralTheory.DFT
         else f"{seedname}_tddft.{curr}_bin"
-        for curr in ("core", "ome", "pdos", "dome")
+        for curr in ("elnes", "ome", "pdos", "dome")
         if spec_calc[curr]
     }
 
@@ -234,8 +237,10 @@ def get_xc_info(param_data: CellParamData) -> set[str]:
     xc = xc_d["xc"].keys() if xc_d else {xc_f}
     xc = map(str.lower, xc)
 
-    return {typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key, re.IGNORECASE)) else key
-            for key in xc}
+    return {
+        typ[0] if (typ := re.match(r"libxc(_hyb)?_(m?gga|lda)", key, re.IGNORECASE)) else key
+        for key in xc
+    }
 
 
 @singledispatch
@@ -295,18 +300,21 @@ def _(
     xc = get_xc_info(param_data)
 
     is_mgga = xc & {"ms2", "rscan", "r2scan", "libxc_mgga", "libxc_hyb_mgga"}
-    is_nlxc = bool(xc & {
-        "hf",
-        "hf-lda",
-        "shf",
-        "sx-lda",
-        "shf-lda",
-        "pbe0",
-        "b3lyp",
-        "hse03",
-        "hse06",
-        "spbe0",
-    })
+    is_nlxc = bool(
+        xc
+        & {
+            "hf",
+            "hf-lda",
+            "shf",
+            "sx-lda",
+            "shf-lda",
+            "pbe0",
+            "b3lyp",
+            "hse03",
+            "hse06",
+            "spbe0",
+        },
+    )
     is_oep = xc & {"oep", "lfx", "elp", "ceda"}
     is_spin = (
         param_data.get("spin_treatment", "NONE").upper() == "VECTOR"
