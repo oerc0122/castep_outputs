@@ -2,7 +2,7 @@
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
-from typing import Any, Literal, TextIO, TypedDict, TypeVar, Union
+from typing import Any, Literal, TextIO, TypedDict, TypeVar
 
 T = TypeVar("T")
 
@@ -11,7 +11,7 @@ ParserFunction = Callable[[TextIO], dict[str, Any]]
 
 # General types
 
-MaybeSequence = Union[Sequence[T], T]
+MaybeSequence = Sequence[T] | T
 
 #: CASTEP atom keys.
 AtomIndex = tuple[str, int]

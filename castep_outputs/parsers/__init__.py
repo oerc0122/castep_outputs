@@ -44,7 +44,6 @@ __all__ = [
     "parse_hug_file",
     "parse_magres_file",
     "parse_md_geom_file",
-    "parse_md_geom_file",
     "parse_param_file",
     "parse_phonon_dos_file",
     "parse_phonon_file",

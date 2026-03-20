@@ -39,7 +39,7 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     accum = {"esp": []}
 
     reader = binary_file_reader(cst_esp_file)
-    for (key, typ), datum in zip(dtypes.items(), reader):
+    for (key, typ), datum in zip(dtypes.items(), reader, strict=False):
         accum[key] = to_type(datum, typ)
 
     prev_nx = None
