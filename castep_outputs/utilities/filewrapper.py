@@ -198,14 +198,14 @@ class Block:
         Block
             Recovered block of data matching prereqs.
 
-        Notes
-        -----
-        Advances `in_file` as it does so.
-
         Raises
         ------
         OSError
             If EOF reached and ``not eof_possible``.
+
+        Notes
+        -----
+        Advances `in_file` as it does so.
         """
         block = cls(in_file)
 

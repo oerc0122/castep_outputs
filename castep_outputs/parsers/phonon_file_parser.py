@@ -43,15 +43,15 @@ def parse_phonon_file(phonon_file: TextIO) -> PhononFileInfo:
     phonon_file
         A handle to a CASTEP .phonon file.
 
-    Raises
-    ------
-    ValueError
-        Branches count doesn't match expected.
-
     Returns
     -------
     PhononFileInfo
         Parsed data.
+
+    Raises
+    ------
+    ValueError
+        Branches count doesn't match expected.
     """
     # pylint: disable=too-many-locals
 

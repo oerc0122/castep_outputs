@@ -26,14 +26,14 @@ def get_numbers(line: str) -> list[str]:
     list[str]
         All numbers found in `line`.
 
+    See Also
+    --------
+    NUMBER_RE : RegEx matching numbers.
+
     Examples
     --------
     >>> get_numbers("Hello 13, my name is 3.142")
     ['13', '3.142']
-
-    See Also
-    --------
-    NUMBER_RE : RegEx matching numbers.
     """
     return NUMBER_RE.findall(line)
 
