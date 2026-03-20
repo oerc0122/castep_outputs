@@ -31,7 +31,7 @@ classifiers = [
 [project.optional-dependencies]
 ruamel = ["ruamel.yaml>=0.17.22,<0.19"]
 yaml = ["pyYAML>=3.13"]
-docs = ["jupyter-book>=0.13.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0", "sphinx-autodoc-typehints"]
+docs = ["jupyter-book<2", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0", "sphinx-autodoc-typehints"]
 lint = ["ruff==0.14.14"]
 test = ["pytest==8.3.4", "pytest-cov==5.0.0"]
 
