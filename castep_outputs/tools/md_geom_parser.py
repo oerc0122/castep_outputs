@@ -118,7 +118,7 @@ While iteration should work, extracting particular frames may not.
         IndexError
             Requested frame out of range.
         """
-        if -len(self) > frame < len(self):
+        if frame not in range(-len(self), len(self)):
             raise IndexError(f"Cannot get {frame}th frame. File only has {len(self)} frames.")
 
         if frame < 0:
@@ -127,7 +127,7 @@ While iteration should work, extracting particular frames may not.
         if frame != self.next_frame:
             self._go_to_frame(frame)
 
-        return next(self)
+        return self.read_next()
 
     def __len__(self) -> int:
         """Get number of frames in file.
@@ -156,7 +156,7 @@ While iteration should work, extracting particular frames may not.
             if trial is not None:
                 i = trial
 
-    def __next__(self) -> MDGeomTimestepInfo:
+    def read_next(self) -> MDGeomTimestepInfo:
         """Get the next frame.
 
         Returns

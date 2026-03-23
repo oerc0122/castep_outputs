@@ -73,3 +73,13 @@ def test_getitem(parser):
     assert parser[0, 1] == parser[0:2]
 
     assert parser[0:2] == test
+
+    assert parser[-1] == parser[2]
+    assert parser[-2] == parser[1]
+    assert parser[-3] == parser[0]
+
+    with pytest.raises(IndexError):
+        parser[-4]
+
+    with pytest.raises(IndexError):
+        parser[3]
