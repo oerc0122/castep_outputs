@@ -7,15 +7,20 @@ import sys
 from collections import ChainMap
 from collections.abc import Callable, Sequence
 from pathlib import Path
-from typing import Any, TextIO
+from typing import TYPE_CHECKING, Any, TextIO
 
-from ..bin_parsers import PARSERS as BIN_PARSERS
-from ..parsers import PARSERS
-from ..parsers.castep_file_parser import Filters
-from ..utilities.constants import OutFormats
-from ..utilities.dumpers import get_dumpers
-from ..utilities.utility import flatten_dict, json_safe, normalise
+from castep_outputs.bin_parsers import PARSERS as BIN_PARSERS
+from castep_outputs.parsers import PARSERS
+from castep_outputs.parsers.castep_file_parser import Filters
+from castep_outputs.utilities.dumpers import get_dumpers
+from castep_outputs.utilities.utility import flatten_dict, json_safe, normalise
+
 from .args import extract_parsables, parse_args
+
+if TYPE_CHECKING:
+    import argparse
+
+    from castep_outputs.utilities.constants import OutFormats
 
 ALL_PARSERS = ChainMap(PARSERS, BIN_PARSERS)
 
@@ -135,9 +140,14 @@ def parse_all(
             file_dumper(data, out_file)
 
 
-def main() -> None:
-    """Run the main program from command line."""
-    args = parse_args()
+def run(args: argparse.Namespace) -> None:
+    """Runner for main program.
+
+    Parameters
+    ----------
+    args : argparse.Namespace
+        Run arguments.
+    """
     dict_args = extract_parsables(args)
 
     parse_all(output=args.output,
@@ -145,6 +155,12 @@ def main() -> None:
               testing=args.testing,
               out_format=args.out_format,
               **dict_args)
+
+
+def main() -> None:
+    """Run the main program from command line."""
+    args = parse_args()
+    run(args)
 
 
 if __name__ == "__main__":
