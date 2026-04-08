@@ -1,10 +1,11 @@
 """Parser for cst_esp files."""
 from __future__ import annotations
 
-from typing import BinaryIO, TypedDict
+from typing import Any, BinaryIO, TypedDict, cast
 
-from ..utilities.utility import file_or_path, to_type
-from .fortran_bin_parser import binary_file_reader
+from castep_outputs.utilities.utility import file_or_path, to_type
+
+from .fortran_bin_parser import FortranBinaryReader
 
 
 class ESPData(TypedDict):
@@ -36,14 +37,12 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     """
     dtypes = {"n_spins": int, "grid": int}
 
-    accum = {"esp": []}
-
-    reader = binary_file_reader(cst_esp_file)
-    for (key, typ), datum in zip(dtypes.items(), reader, strict=False):
-        accum[key] = to_type(datum, typ)
+    reader = FortranBinaryReader(cst_esp_file)
+    accum: dict[str, Any] = reader.get_dtype_dict(dtypes)
 
     prev_nx = None
     curr = []
+    accum["esp"] = []
     for datum in reader:
         nx, _ny = to_type(datum[:8], int)
         if prev_nx != nx and curr:
@@ -58,4 +57,4 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     if len(accum["esp"]) > size:  # Have MGGA pot
         accum["esp"], accum["mgga"] = accum["esp"][:size], accum["esp"][size:]
 
-    return accum
+    return cast("ESPData", accum)
