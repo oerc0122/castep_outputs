@@ -4,11 +4,16 @@
 
 from __future__ import annotations
 
-import pathlib
+from pathlib import Path
 from argparse import REMAINDER, ArgumentParser
-from collections.abc import Sequence
+from typing import TYPE_CHECKING, Literal
 
 from castep_outputs.cli.castep_outputs_main import parse_all
+
+if TYPE_CHECKING:
+    from collections.abc import Iterable
+
+    from castep_outputs.utilities.constants import OutFormats
 
 ALL_SETS = (
     "castep",
@@ -32,13 +37,14 @@ ALL_SETS = (
     "tddft",
     "err",
     "epme",
+    "epme_bin",
     ("pp-md", "castep"),
     ("si8-md", "castep"),
 )
 
 def gen_data(
-    types: Sequence[tuple[str | tuple[str, str]]] = ALL_SETS,
-    fmts: tuple[str] = ("json", "pyyaml", "ruamel"),
+    types: Iterable[str | tuple[str, str]] = ALL_SETS,
+    fmts: tuple[OutFormats, ...] = ("json", "pyyaml", "ruamel"),
 ) -> None:
     """Generate benchmark data."""
 
@@ -53,9 +59,9 @@ def gen_data(
                 in_name = "test"
 
             # Delete existing
-            pth = pathlib.Path(f"{name}.{fmt}")
+            pth = Path(f"{name}.{fmt}")
             pth.unlink(missing_ok=True)
-            parse_all(output=str(pth), out_format=fmt, **{typ: [f"{in_name}.{typ}"]})
+            parse_all(output=str(pth), out_format=fmt, **{typ: [Path(f"{in_name}.{typ}")]})
 
 
 if __name__ == "__main__":
@@ -63,7 +69,10 @@ if __name__ == "__main__":
 
     argp.add_argument("datasets", nargs=REMAINDER, help="Sets to generate.")
     argp.add_argument(
-        "--formats", nargs="+", help="Formats to generate.", default=("json", "pyyaml", "ruamel"),
+        "--formats",
+        nargs="+",
+        help="Formats to generate.",
+        default=("json", "pyyaml", "ruamel"),
     )
     args = argp.parse_args()
 
