@@ -8,24 +8,31 @@ import functools
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
 from copy import copy
 from fractions import Fraction
 from functools import partial, singledispatch, wraps
 from itertools import filterfalse
 from pathlib import Path
 from struct import unpack
-from typing import Any, Literal, TextIO, TypeVar
+from typing import TYPE_CHECKING, Any, Literal, Protocol, TextIO, TypeVar
 
 import castep_outputs.utilities.castep_res as REs
+from castep_outputs.utilities.filewrapper import Block, FileWrapper
 
-from ..utilities.filewrapper import Block
-from .filewrapper import FileWrapper
+if TYPE_CHECKING:
+    from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
 
 T = TypeVar("T")
 NORMALISE_RE = re.compile(r"[_\W]+")
 LoggingLevels = Literal["debug", "info", "warning", "error", "critical"]
-Logger = Callable[[str, tuple[Any, ...], LoggingLevels], None]
+
+
+class Logger(Protocol):
+    """Logging wrapper."""
+
+    @staticmethod
+    def __call__(message: str, *args: Any, level: LoggingLevels = "info") -> None:
+        """Dump log."""
 
 
 def normalise_string(string: str) -> str:
@@ -208,9 +215,11 @@ def json_safe(obj: dict | complex | T) -> dict | T:
     return obj
 
 
-def flatten_dict(dictionary: MutableMapping[Any, Any],
-                 parent_key: str = "",
-                 separator: str = "_") -> dict[str, Any]:
+def flatten_dict(
+    dictionary: MutableMapping[Any, Any],
+    parent_key: str = "",
+    separator: str = "_",
+) -> dict[str, Any]:
     """
     Turn a nested dictionary into a flattened dictionary.
 
@@ -267,10 +276,13 @@ def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]) -> None:
         out_dict[key].append(val)
 
 
-def add_aliases(in_dict: dict[str, Any],
-                alias_dict: dict[str, str], *,
-                replace: bool = False,
-                inplace: bool = True) -> dict[str, Any]:
+def add_aliases(
+    in_dict: dict[str, Any],
+    alias_dict: dict[str, str],
+    *,
+    replace: bool = False,
+    inplace: bool = True,
+) -> dict[str, Any]:
     """
     Add aliases of known names into dictionary.
 
@@ -325,9 +337,11 @@ def log_factory(file: TextIO | fileinput.FileInput | FileWrapper) -> Logger:
         Function for logging data.
     """
     if hasattr(file, "name"):
+
         def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
             getattr(logging, level)(f"[{file.name}] {message}", *args)
     else:
+
         def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
             getattr(logging, level)(message, *args)
 
@@ -337,8 +351,7 @@ def log_factory(file: TextIO | fileinput.FileInput | FileWrapper) -> Logger:
 @log_factory.register
 def _(file: fileinput.FileInput) -> Logger:
     def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
-        getattr(logging, level)(f"[{file.filename()}:{file.lineno()}]"
-                                f" {message}", *args)
+        getattr(logging, level)(f"[{file.filename()}:{file.lineno()}] {message}", *args)
 
     return log_file
 
@@ -346,8 +359,7 @@ def _(file: fileinput.FileInput) -> Logger:
 @log_factory.register
 def _(file: FileWrapper) -> Logger:
     def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
-        getattr(logging, level)(f"[{file.name}:{file.lineno}]"
-                                f" {message}", *args)
+        getattr(logging, level)(f"[{file.name}:{file.lineno}] {message}", *args)
 
     return log_file
 
@@ -594,13 +606,14 @@ def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
     return result if len(result) != 1 else result[0]
 
 
-_TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational,
-                                       bool: _parse_logical}
-_BYTE_PARSERS: dict[type, Callable] = {complex: _parse_complex_bytes,
-                                       float: _parse_float_bytes,
-                                       bool: _parse_bool_bytes,
-                                       int: _parse_int_bytes,
-                                       str: partial(str, encoding="ascii")}
+_TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational, bool: _parse_logical}
+_BYTE_PARSERS: dict[type, Callable] = {
+    complex: _parse_complex_bytes,
+    float: _parse_float_bytes,
+    bool: _parse_bool_bytes,
+    int: _parse_int_bytes,
+    str: partial(str, encoding="ascii"),
+}
 
 
 @functools.singledispatch
@@ -677,9 +690,9 @@ def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]
 
 
 def _strip_inline_comments(
-        data: TextIO | FileWrapper | Block,
-        *,
-        comment_char: set[str],
+    data: TextIO | FileWrapper | Block,
+    *,
+    comment_char: set[str],
 ) -> Iterator[str]:
     r"""
     Strip all comments from provided data.
@@ -724,9 +737,9 @@ def _strip_inline_comments(
 
 
 def _strip_initial_comments(
-        data: TextIO | FileWrapper | Block,
-        *,
-        comment_char: set[str],
+    data: TextIO | FileWrapper | Block,
+    *,
+    comment_char: set[str],
 ) -> Iterator[str]:
     r"""
     Strip line-initial comments from provided data.
@@ -768,10 +781,11 @@ def _strip_initial_comments(
 
 
 def strip_comments(
-        data: TextIO | FileWrapper | Block,
-        *,
-        comment_char: str | set[str] = "#!",
-        remove_inline: bool = False) -> Block:
+    data: TextIO | FileWrapper | Block,
+    *,
+    comment_char: str | set[str] = "#!",
+    remove_inline: bool = False,
+) -> Block:
     r"""
     Strip comments from data.
 
@@ -874,6 +888,7 @@ def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:  
     Callable
         Wrapped function able to handle open files or paths invisibly.
     """
+
     def inner(func: Callable) -> Callable:
         @wraps(func)
         def wrapped(file: str | Path, *args: Any, **kwargs: Any) -> Callable:
