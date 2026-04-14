@@ -15,9 +15,9 @@ from enum import Enum, auto
 from functools import singledispatch
 from itertools import combinations_with_replacement
 from pathlib import Path
-from typing import TypeVar
+from typing import Any, TypeVar
 
-from ..parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
+from castep_outputs.parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
 
 Self = TypeVar("Self", bound="UCEnum")
 
@@ -26,9 +26,13 @@ class UCEnum(Enum):
     """Auto upperclass enum."""
 
     @classmethod
-    def _missing_(cls, task: str) -> Self:
-        task = task.upper()
-        return cls[task]
+    def _missing_(cls, value: Any) -> Self | None:
+        if not isinstance(value, str):
+            return None
+        value = value.upper()
+        if value not in cls.__members__:
+            return None
+        return cls[value]
 
 
 class Task(UCEnum):

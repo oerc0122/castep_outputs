@@ -1,14 +1,15 @@
 """Convenient filewrapper class."""
+
 from __future__ import annotations
 
 import re
-from collections.abc import Sequence
 from io import StringIO
-from typing import NoReturn, TextIO, TypeVar
+from typing import TYPE_CHECKING, NoReturn, TextIO, TypeVar, overload
 
-from .castep_res import Pattern
+if TYPE_CHECKING:
+    from collections.abc import Iterable
 
-FWSelf = TypeVar("FWSelf", bound="FileWrapper")
+    from castep_outputs.utilities.castep_res import Pattern
 
 
 class FileWrapper:
@@ -21,12 +22,14 @@ class FileWrapper:
         File to wrap and control.
     """
 
+    Self = TypeVar("Self", bound="FileWrapper")
+
     def __init__(self, file: TextIO) -> None:
         self._file = file
         self._pos = 0
         self._lineno = 0
 
-    def __iter__(self) -> FWSelf:
+    def __iter__(self) -> Self:
         return self
 
     def __next__(self) -> str:
@@ -107,15 +110,14 @@ class FileWrapper:
         self.close()
 
 
-BSelf = TypeVar("BSelf", bound="Block")
-
-
 class Block:
     """
     Data block class returned from :func:`get_block`.
 
     Emulates the properties of both a file, and sequence.
     """
+
+    Self = TypeVar("Self", bound="Block")
 
     def __init__(self, parent: TextIO | FileWrapper | Block | None) -> None:
         if isinstance(parent, (FileWrapper, Block)):
@@ -129,11 +131,11 @@ class Block:
 
     @classmethod
     def get_lines(
-            cls,
-            in_file: TextIO | FileWrapper | Block,
-            n_lines: int,
-            *,
-            eof_possible: bool = False,
+        cls,
+        in_file: TextIO | FileWrapper | Block,
+        n_lines: int,
+        *,
+        eof_possible: bool = False,
     ) -> Block:
         r"""
         Read the next `n_lines` from `in_file` and return the block.
@@ -183,14 +185,14 @@ class Block:
 
     @classmethod
     def from_re(
-            cls,
-            init_line: str,
-            in_file: TextIO | FileWrapper | Block,
-            start: Pattern,
-            end: Pattern,
-            *,
-            n_end: int = 1,
-            eof_possible: bool = False,
+        cls,
+        init_line: str,
+        in_file: TextIO | FileWrapper | Block,
+        start: Pattern,
+        end: Pattern,
+        *,
+        n_end: int = 1,
+        eof_possible: bool = False,
     ) -> Block:
         """
         Check if line is the start of a block and return the block if it is.
@@ -251,10 +253,10 @@ class Block:
 
     @classmethod
     def from_iterable(
-            cls,
-            data: Sequence[str],
-            parent: TextIO | FileWrapper | Block | None = None,
-    ) -> BSelf:
+        cls,
+        data: Iterable[str],
+        parent: TextIO | FileWrapper | Block | None = None,
+    ) -> Self:
         r"""
         Construct a Block from an iterable containing strings.
 
@@ -295,8 +297,7 @@ class Block:
             Whether to strip trailing line from data.
         """
         self._lineno += fore
-        self._data = self._data[fore:
-                                -back if back else None]
+        self._data = self._data[fore : -back if back else None]
 
     def asstringio(self) -> StringIO:
         """
@@ -345,7 +346,7 @@ class Block:
     def __str__(self) -> str:
         return "\n".join(self._data)
 
-    def __iter__(self) -> BSelf:
+    def __iter__(self) -> Self:
         return self
 
     def __next__(self) -> str:
@@ -357,7 +358,11 @@ class Block:
     def __len__(self) -> int:
         return len(self._data)
 
-    def __getitem__(self, key: int | slice) -> str:
+    @overload
+    def __getitem__(self, key: int) -> str: ...
+    @overload
+    def __getitem__(self, key: slice) -> tuple[str, ...]: ...
+    def __getitem__(self, key):
         return self._data[key]
 
     @property

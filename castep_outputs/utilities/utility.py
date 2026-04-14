@@ -8,31 +8,57 @@ import functools
 import logging
 import re
 from collections import defaultdict
+from collections.abc import Callable
 from copy import copy
 from fractions import Fraction
 from functools import partial, singledispatch, wraps
 from itertools import filterfalse
 from pathlib import Path
 from struct import unpack
-from typing import TYPE_CHECKING, Any, Literal, Protocol, TextIO, TypeVar
+from typing import (
+    IO,
+    TYPE_CHECKING,
+    Any,
+    Concatenate,
+    Literal,
+    ParamSpec,
+    Protocol,
+    TextIO,
+    TypeAlias,
+    TypedDict,
+    TypeVar,
+    cast,
+    overload,
+)
 
 import castep_outputs.utilities.castep_res as REs
 from castep_outputs.utilities.filewrapper import Block, FileWrapper
 
 if TYPE_CHECKING:
-    from collections.abc import Callable, Iterable, Iterator, MutableMapping, Sequence
+    from collections.abc import Iterable, Iterator, Mapping, MutableMapping, Sequence
 
 T = TypeVar("T")
+In = TypeVar("In")
+Out = TypeVar("Out")
+K = TypeVar("K")
+P = ParamSpec("P")
+
 NORMALISE_RE = re.compile(r"[_\W]+")
 LoggingLevels = Literal["debug", "info", "warning", "error", "critical"]
 
 
 class Logger(Protocol):
-    """Logging wrapper."""
+    """Protocol for logging classes."""
 
-    @staticmethod
-    def __call__(message: str, *args: Any, level: LoggingLevels = "info") -> None:
-        """Dump log."""
+    def __call__(self, message: str, *args: Any, level: LoggingLevels = "info") -> None:
+        """Call method for logging methods."""
+
+
+class ComplexDict(TypedDict):
+    """Dict of complex values."""
+
+    real: float
+    imag: float
 
 
 def normalise_string(string: str) -> str:
@@ -135,7 +161,18 @@ def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) ->
     return (spec, int(ind))
 
 
-def normalise(obj: T, mapping: dict[type, type | Callable]) -> T:
+NormDict: TypeAlias = dict[type[In], type[Out] | Callable[[In], Out]]
+
+
+@overload
+def normalise(obj: T, mapping: NormDict) -> T: ...
+@overload
+def normalise(obj: In, mapping: NormDict) -> Out: ...
+@overload
+def normalise(obj: Iterable[In | T], mapping: NormDict) -> tuple[Out | T, ...]: ...
+@overload
+def normalise(obj: Mapping[K, In | T], mapping: NormDict) -> dict[K, Out | T]: ...
+def normalise(obj, mapping):
     """
     Standardise data after processing.
 
@@ -169,7 +206,13 @@ def normalise(obj: T, mapping: dict[type, type | Callable]) -> T:
     return obj
 
 
-def json_safe(obj: dict | complex | T) -> dict | T:
+@overload
+def json_safe(obj: complex) -> ComplexDict: ...
+@overload
+def json_safe(obj: T) -> T: ...
+@overload
+def json_safe(obj: dict[Any, T]) -> dict[str, T]: ...
+def json_safe(obj):
     """
     Recursively transform datatypes into JSON safe variants.
 
@@ -211,7 +254,7 @@ def json_safe(obj: dict | complex | T) -> dict | T:
 
         obj = obj_out
     elif isinstance(obj, complex):
-        obj = {"real": obj.real, "imag": obj.imag}
+        obj: ComplexDict = {"real": obj.real, "imag": obj.imag}
     return obj
 
 
@@ -261,7 +304,7 @@ def flatten_dict(
     return dict(items)
 
 
-def stack_dict(out_dict: dict[Any, list], in_dict: dict[Any, list]) -> None:
+def stack_dict(out_dict: Mapping[Any, list[T]], in_dict: Mapping[Any, T]) -> None:
     """
     Append items in `in_dict` to the keys in `out_dict`.
 
@@ -737,7 +780,7 @@ def _strip_inline_comments(
 
 
 def _strip_initial_comments(
-    data: TextIO | FileWrapper | Block,
+    data: Iterable[str],
     *,
     comment_char: set[str],
 ) -> Iterator[str]:
@@ -774,10 +817,10 @@ def _strip_initial_comments(
     'Hello|End of line # comment'
     """
     comment_re = re.compile(rf"^\s*({'|'.join(comment_char)})")
-    data = filterfalse(comment_re.match, data)
-    data = map(str.rstrip, data)
-    data = filter(None, data)
-    yield from data
+    out = cast("Iterable[str]", filterfalse(comment_re.match, data))
+    out = map(str.rstrip, out)
+    out = filter(None, out)
+    yield from out
 
 
 def strip_comments(
@@ -870,12 +913,12 @@ def get_only(seq: Sequence[T]) -> T:
     """
     val, *rest = seq
     if rest:
-        raise ValueError(f"Multiple elements in sequence (remainder={', '.join(rest)}).")
+        raise ValueError(f"Multiple elements in sequence (remainder={', '.join(map(str, rest))}).")
 
     return val
 
 
-def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:  # paramspec 3.10+
+def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:
     """Decorate to allow a parser to accept either a path or open file.
 
     Parameters
@@ -889,9 +932,11 @@ def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:  
         Wrapped function able to handle open files or paths invisibly.
     """
 
-    def inner(func: Callable) -> Callable:
+    def inner(
+        func: Callable[Concatenate[IO, P], Out],
+    ) -> Callable[Concatenate[str | Path | IO, P], Out]:
         @wraps(func)
-        def wrapped(file: str | Path, *args: Any, **kwargs: Any) -> Callable:
+        def wrapped(file: str | Path, *args: P.args, **kwargs: P.kwargs) -> Out:
             file = Path(file)
             with file.open(mode, **open_kwargs) as in_file:
                 return func(in_file, *args, **kwargs)
