@@ -12,7 +12,6 @@ from __future__ import annotations
 import re
 from copy import deepcopy
 from enum import Enum, auto
-from functools import singledispatch
 from itertools import combinations_with_replacement
 from pathlib import Path
 from typing import Any, TypeVar
@@ -247,28 +246,39 @@ def get_xc_info(param_data: CellParamData) -> set[str]:
     }
 
 
-@singledispatch
 def get_generated_files(
     seedname: Path | str = "seedname",
     /,
     *,
     param_file: Path | None = None,
     cell_file: Path | None = None,
+    param_data: CellParamData | None = None,
+    cell_data: CellParamData | None = None,
 ) -> list[str]:
     """Predict files which would be produced by running inputs.
+
+    Tries to load data with the following priorities:
+
+    - (cell|param)_data
+    - (cell|param)_file
+    - seedname.(cell|param)
 
     Parameters
     ----------
     seedname : Path | str, optional
         Seedname of files to parse.
     param_file : Path | str, optional
-        Pre-parsed param file.
+        Param file to parse.
     cell_file : Path | str, optional
+        Cell file to parse.
+    param_data : CellParamData, optional
+        Pre-parsed param file.
+    cell_data : CellParamData, optional
         Pre-parsed cell file.
 
     Returns
     -------
-    set[str]
+    list[str]
         Files which would be produced.
 
     Notes
@@ -281,13 +291,15 @@ def get_generated_files(
     if cell_file is None:
         cell_file = seedname.with_suffix(".cell")
 
-    param = parse_cell_param_file(param_file)[0] if param_file.exists() else {}
-    cell = parse_cell_param_file(cell_file)[0] if cell_file.exists() else {}
-    return get_generated_files(param, cell, seedname.with_suffix(""))
+    if param_data is None:
+        param_data = parse_cell_param_file(param_file)[0] if param_file.exists() else {}
+    if cell_data is None:
+        cell_data = parse_cell_param_file(cell_file)[0] if cell_file.exists() else {}
+
+    return _get_generated_files(param_data, cell_data, seedname.with_suffix(""))
 
 
-@get_generated_files.register(dict)
-def _(
+def _get_generated_files(
     param_data: CellParamData,
     cell_data: CellParamData | None = None,
     src: Path | str = "seedname",
@@ -393,7 +405,7 @@ def _(
         out_files.add(f"{seedname}.eps_format")
 
     if param_data.get("write_orbitals"):
-        pass
+        out_files.add(f"{seedname}.orbitals")
     if param_data.get("write_cif_structure"):
         out_files.add(f"{seedname}-out.cif")
     if param_data.get("write_cell_structure"):

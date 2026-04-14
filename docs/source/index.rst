@@ -13,6 +13,7 @@ castep-outputs documentation
    installation
    tutorial
    cli
+   tools
    api
 
 

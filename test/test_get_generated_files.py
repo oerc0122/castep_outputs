@@ -296,4 +296,4 @@ def test_cli_like(seedname: str, expected: list[str]) -> None:
     ],
 )
 def test_expected_files(cell, param, expected) -> None:
-    assert expected == set(get_generated_files(param, cell))
+    assert expected == set(get_generated_files(param_data=param, cell_data=cell))

@@ -3,5 +3,5 @@ Command line interface
 
 .. argparse::
    :module: castep_outputs.cli.args
-   :func: ARG_PARSER
+   :func: get_parser
    :prog: castep_outputs
