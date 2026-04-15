@@ -1,6 +1,8 @@
 """General parser for the Fortran Unformatted file format."""
 
 from collections.abc import Iterable, Iterator, Mapping
+from functools import singledispatchmethod
+from itertools import count
 from os import SEEK_CUR
 from typing import BinaryIO, TypeVar, overload
 
@@ -112,34 +114,71 @@ class FortranBinaryReader:
         """
         return parse_bytes(next(self), typ)
 
-    # TypeVarTuple 3.11+
     @overload
-    def get_dtype_cycle(self, dtypes: tuple[type[T], ...]) -> Iterator[tuple[T, ...]]: ...
+    def get_dtype_cycle(
+        self,
+        dtypes: tuple[type[T], ...],
+        *,
+        n: int | None,
+    ) -> Iterator[tuple[T, ...]]: ...
     @overload
     def get_dtype_cycle(
         self,
         dtypes: tuple[ToTypeTuple, ...],
+        *,
+        n: int | None,
     ) -> Iterator[tuple[tuple[T, ...], ...]]: ...
     @overload
     def get_dtype_cycle(
         self,
         dtypes: tuple[type[T] | ToTypeTuple, ...],
+        *,
+        n: int | None,
     ) -> Iterator[tuple[T | tuple[T, ...], ...]]: ...
-    def get_dtype_cycle(self, dtypes):
+    @overload
+    def get_dtype_cycle(
+        self,
+        dtypes: Mapping[K, type[T]],
+        *,
+        n: int | None,
+    ) -> Iterator[dict[K, T]]: ...
+    @overload
+    def get_dtype_cycle(
+        self,
+        dtypes: Mapping[K, ToTypeTuple],
+        *,
+        n: int | None,
+    ) -> Iterator[dict[K, tuple[T, ...]]]: ...
+    @overload
+    def get_dtype_cycle(
+        self,
+        dtypes: Mapping[K, type[T] | ToTypeTuple],
+        *,
+        n: int | None,
+    ) -> Iterator[dict[K, T | tuple[T, ...]]]: ...
+    def get_dtype_cycle(self, dtypes, *, n=None):
         """Get iterator over values reading dtypes each cycle.
 
         Parameters
         ----------
         dtypes
             Dtypes to load simultaneously.
+        n
+            Number of iterations to load or infinite if ``None``.
 
         Yields
         ------
-        T or tuple[T, ...]
+        :
             Loaded data.
         """
-        while True:
-            yield tuple(self.get(dtype) for dtype in dtypes)
+        ind = count() if n is None else range(n)
+
+        if isinstance(dtypes, dict):
+            for _ in ind:
+                yield self.get_dtype_dict(dtypes)
+        else:
+            for _ in ind:
+                yield tuple(self.get_dtype_iter(dtypes))
 
     @overload
     def get_dtype_iter(self, dtypes: Iterable[type[T]]) -> Iterator[T]: ...
@@ -160,7 +199,7 @@ class FortranBinaryReader:
 
         Yields
         ------
-        T or tuple[T, ...]
+        :
             Loaded data.
         """
         for dtype in dtypes:

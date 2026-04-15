@@ -73,9 +73,9 @@ phonons:
   - 0.0022205102480270943
   - 0.002220554212564772
   - 0.0022798531537583113
-  index: 0
-  kpt_f: 2
-  kpt_i: 1
+  kpts: !!python/tuple
+  - 1
+  - 2
   matrix_elements: !!python/tuple
   - !!python/complex '-6.299620891668109e-05-6.605025705282822e-05j'
   - !!python/complex '-0.000780443395807947+0.00024838009539697724j'

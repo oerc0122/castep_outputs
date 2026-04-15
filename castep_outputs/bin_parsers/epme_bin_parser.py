@@ -2,20 +2,19 @@
 
 from __future__ import annotations
 
-from itertools import product
 from math import isqrt
 from typing import TYPE_CHECKING, BinaryIO, TypedDict, cast
 
-from castep_outputs.bin_parsers.fortran_bin_parser import FortranBinaryReader, binary_file_reader
-from castep_outputs.utilities.utility import file_or_path, to_type
+from castep_outputs.bin_parsers.fortran_bin_parser import FortranBinaryReader
+from castep_outputs.utilities.utility import file_or_path, filter_underscore
 
 if TYPE_CHECKING:
     from castep_outputs.utilities.datatypes import AtomIndex, ThreeVector
 
 HEADER_DTYPES = {
-    "FILE_TYPE": str,
+    "_FILE_TYPE": str,
     "version": int,
-    "HEADER": str,
+    "_HEADER": str,
     "n_spins": int,
     "fermi_energy": float,
 }
@@ -37,10 +36,8 @@ class EPMEBinKPoint(TypedDict):
 class EPMEBinPhonon(TypedDict):
     """Phonon and matrix element data."""
 
-    #: Initial k-point index.
-    kpt_i: int
-    #: Final k-point index.
-    kpt_f: int
+    #: Initial and final k-point index.
+    kpts: tuple[int, int]
     #: Phonon index
     index: int
 
@@ -99,16 +96,16 @@ def _check_header(reader: FortranBinaryReader, test: bytes) -> None:
     --------
     >>> from io import BytesIO
     >>> raw = BytesIO(b"\x00\x00\x00\x06HEADER\x00\x00\x00\x06")
-    >>> data = binary_file_reader(raw)
+    >>> data = FortranBinaryReader(raw)
     >>> _check_header(data, b"HEADER")
     >>> raw = BytesIO(b"\x00\x00\x00\x06HEADER\x00\x00\x00\x06")
-    >>> data = binary_file_reader(raw)
+    >>> data = FortranBinaryReader(raw)
     >>> _check_header(data, b"NOT")
     Traceback (most recent call last):
     ValueError: Unexpected data (b'HEADER') in epme file, expected b'NOT'.
     """
     if (x := next(reader)) != test:
-        reader.send(-2)
+        reader.rewind(2)
         raise ValueError(f"Unexpected data ({x}) in epme file, expected {test}.")
 
 
@@ -122,9 +119,7 @@ def _parse_header(reader: FortranBinaryReader, accum: dict) -> None:
     accum : dict
         Data destination.
     """
-    for (key, typ), datum in zip(HEADER_DTYPES.items(), reader, strict=False):
-        if not key.isupper():
-            accum[key] = to_type(datum, typ)
+    accum.update(filter_underscore(reader.get_dtype_dict(HEADER_DTYPES)))
 
 
 def _parse_atoms(reader: FortranBinaryReader, accum: dict) -> None:
@@ -139,16 +134,12 @@ def _parse_atoms(reader: FortranBinaryReader, accum: dict) -> None:
     """
     _check_header(reader, b"ATOM")
 
-    accum["n_ions"] = to_type(next(reader), int)
-    accum["real_lattice"] = to_type(next(reader), float)
+    n_ion = accum["n_ions"] = reader.get(int)
+    accum["real_lattice"] = reader.get(float)
     accum["ions"] = {}
 
-    for _ in range(accum["n_ions"]):
-        ind = to_type(next(reader), int)
-        spec = to_type(next(reader), str).strip()
-        pos = to_type(next(reader), float)
-
-        accum["ions"][spec, ind] = pos
+    for ind, spec, pos in reader.get_dtype_cycle((int, str, float), n=n_ion):
+        accum["ions"][spec.strip(), ind] = pos
 
 
 def _parse_kpoint(reader: FortranBinaryReader, accum: dict) -> None:
@@ -163,23 +154,24 @@ def _parse_kpoint(reader: FortranBinaryReader, accum: dict) -> None:
     """
     _check_header(reader, b"KPOINT")
 
-    accum["n_kpoint_pairs"] = to_type(next(reader), int) // 2
-    accum["n_bands"] = to_type(next(reader), int)
+    accum["n_kpoint_pairs"] = reader.get(int) // 2
+    accum["n_bands"] = reader.get(int)
     accum["kpoints"] = {}
 
-    for ns, _nq, _k in product(
-        range(1, accum["n_spins"] + 1),
-        range(accum["n_kpoint_pairs"]),
-        range(2),
-    ):
-        _ns = to_type(next(reader), int)
-        nk = to_type(next(reader), int)
-        kpoint = accum["kpoints"][ns, nk] = {}
-        kpoint["n_bands"] = to_type(next(reader), int)
-        kpoint["min_band"] = to_type(next(reader), int)
+    total = accum["n_spins"] * accum["n_kpoint_pairs"] * 2
+    dtypes = {
+        "ns": int,
+        "nk": int,
+        "n_bands": int,
+        "min_band": int,
+        "eigenvalues": float,
+        "velocities": float,
+    }
 
-        kpoint["eigenvalues"] = to_type(next(reader), float)
-        kpoint["velocities"] = to_type(next(reader), float)
+    for data in reader.get_dtype_cycle(dtypes, n=total):
+        ns = data.pop("ns")
+        nk = data.pop("nk")
+        accum["kpoints"][ns, nk] = data
 
 
 def _parse_phonons(reader: FortranBinaryReader, accum: dict) -> None:
@@ -199,8 +191,8 @@ def _parse_phonons(reader: FortranBinaryReader, accum: dict) -> None:
     """
     _check_header(reader, b"EPCOUPLING")
 
-    n_kpoint_pairs = to_type(next(reader), int)
-    n_bands = isqrt(to_type(next(reader), int))
+    n_kpoint_pairs = reader.get(int)
+    n_bands = isqrt(reader.get(int))
 
     if "n_kpoint_pairs" in accum and n_kpoint_pairs != accum["n_kpoint_pairs"]:
         raise ValueError("Number of kpoint pairs doesn't match between EPCOUPLING and KPOINTS.")
@@ -210,21 +202,20 @@ def _parse_phonons(reader: FortranBinaryReader, accum: dict) -> None:
 
     accum.setdefault("n_kpoint_pairs", n_kpoint_pairs)
     accum.setdefault("n_bands", n_bands)
-    accum["phonons"] = []
 
-    for index in range(n_kpoint_pairs):
-        phonon = {}
+    dtypes = {
+        "_nq": int,
+        "_nb": int,
+        "_nb2": int,
+        "kpts": int,
+        "frequencies": float,
+        "modes": complex,
+        "matrix_elements": complex,
+    }
 
-        _nq = next(reader)
-        _n_bands = next(reader)
-        _n_bands = next(reader)
-        phonon["kpt_i"], phonon["kpt_f"] = to_type(next(reader), int)
-
-        phonon["index"] = index
-        phonon["frequencies"] = to_type(next(reader), float)
-        phonon["modes"] = to_type(next(reader), complex)
-        phonon["matrix_elements"] = to_type(next(reader), complex)
-        accum["phonons"].append(phonon)
+    accum["phonons"] = [
+        filter_underscore(proc) for proc in reader.get_dtype_cycle(dtypes, n=n_kpoint_pairs)
+    ]
 
 
 @file_or_path(mode="rb")
@@ -241,7 +232,7 @@ def parse_epme_bin_file(epme_file: BinaryIO) -> EPMEBinData:
     EPMEBinData
         Parsed data.
     """
-    reader = binary_file_reader(epme_file)
+    reader = FortranBinaryReader(epme_file)
 
     data = {}
     _parse_header(reader, data)
