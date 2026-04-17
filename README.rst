@@ -123,7 +123,7 @@ logging via the `logging
 
    my_dict = parse_single('my_file', loglevel=logging.INFO)
 
-The available parsing functions for parsing the given format are:
+The available functions for parsing the respective file formats are:
 
  - bands: ``parse_bands_file``
  - castep: ``parse_castep_file``
