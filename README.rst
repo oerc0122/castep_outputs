@@ -1,6 +1,9 @@
 castep_outputs
 ==============
 
+.. image:: https://img.shields.io/badge/version-0.3.0-blue
+   :alt: Version
+
 Parser for CASTEP output files
 
 ``castep_outputs`` parses the output files of `castep
@@ -36,11 +39,11 @@ Command-line
 When run as a commandline tool, it attempts to find all files for the
 given seedname, filtered by ``inc`` args (default: all). Explicit
 files can be passed using longname arguments. castep_outputs can parse
-most human-readable castep outputs including: ``.castep``, ``.cell``,
-``.param``, ``.geom``, ``.md``, ``.bands``, ``.hug``, ``.phonon``,
-``.phonon_dos``, ``.efield``, ``.xrd_sf``, ``.elf_fmt``,
-``.chdiff_fmt``, ``.pot_fmt``, ``.den_fmt``, ``.elastic``, ``.ts``,
-``.magres``, ``.tddft``, ``.err``.
+most human-readable castep outputs including:
+``.bands``, ``.castep``, ``.cell``, ``.chdiff_fmt``, ``.cst_esp``, ``.den_fmt``,
+``.efield``, ``.elastic``, ``.elf_fmt``, ``.epme``, ``.err``, ``.geom``,
+``.hug``, ``.magres``, ``.md``, ``.param``, ``.phonon``, ``.phonon_dos``,
+``.pot_fmt``, ``.tddft``, ``.ts``, ``.xrd_sf``.
 
 to run in basic mode:
 
@@ -101,12 +104,12 @@ directly.
 
 ::
 
-   import castep_outputs as co
+   from castep_outputs import parse_single, parse_castep_file
 
-   my_dict = co.parse_single('my_file', co.parse_castep_file)
+   my_dict = parse_single('my_file', parse_castep_file)
 
    with open('my_file', 'r', encoding='utf-8') as inp:
-       my_dict = co.parse_castep_file(inp)
+       my_dict = parse_castep_file(inp)
 
 It is recommended that you use ``parse_single`` as it uses special file-handling
 to give better diagnostics if it fails. It is possible to enable more detailed
@@ -120,65 +123,70 @@ logging via the `logging
 
    my_dict = parse_single('my_file', loglevel=logging.INFO)
 
-The available parsing functions are:
+The available parsing functions for parsing the given format are:
 
--  ``parse_bands_file``
--  ``parse_castep_file``
--  ``parse_cell_file``
--  ``parse_cell_param_file``
--  ``parse_chdiff_fmt_file``
--  ``parse_den_fmt_file``
--  ``parse_efield_file``
--  ``parse_elastic_file``
--  ``parse_elf_fmt_file``
--  ``parse_err_file``
--  ``parse_geom_file``
--  ``parse_hug_file``
--  ``parse_magres_file``
--  ``parse_md_file``
--  ``parse_md_geom_file``
--  ``parse_param_file``
--  ``parse_phonon_file``
--  ``parse_phonon_dos_file``
--  ``parse_pot_fmt_file``
--  ``parse_tddft_file``
--  ``parse_tddft_file``
--  ``parse_ts_file``
--  ``parse_xrd_sf_file``
+ - bands: ``parse_bands_file``
+ - castep: ``parse_castep_file``
+ - cell: ``parse_cell_param_file``
+ - param: ``parse_cell_param_file``
+ - chdiff_fmt: ``parse_chdiff_fmt_file``
+ - cst_esp: ``parse_cst_esp_file``
+ - den_fmt: ``parse_den_fmt_file``
+ - efield: ``parse_efield_file``
+ - elastic: ``parse_elastic_file``
+ - elf_fmt: ``parse_elf_fmt_file``
+ - epme: ``parse_epme_file``
+ - err: ``parse_err_file``
+ - hug: ``parse_hug_file``
+ - magres: ``parse_magres_file``
+ - geom: ``parse_md_geom_file``
+ - md: ``parse_md_geom_file``
+ - phonon_dos: ``parse_phonon_dos_file``
+ - phonon: ``parse_phonon_file``
+ - pot_fmt: ``parse_pot_fmt_file``
+ - tddft: ``parse_tddft_file``
+ - ts: ``parse_ts_file``
+ - xrd_sf: ``parse_xrd_sf_file``
 
 Which return processed ``list``\ s of ``dict``\ s of data ready for use
 in other applications.
 
-See `Documentation <https://oerc0122.github.io/castep_outputs/intro.html>`_ for full layout.
+See `Documentation <https://oerc0122.github.io/castep_outputs/index.html>`_ for full layout.
 
 Full usage
 ----------
 
 ::
 
-   usage: castep_outputs [-h] [-V] [-L {DEBUG,INFO,WARNING,ERROR,CRITICAL}] [-o OUTPUT]
-                         [-f {json,ruamel,yaml,pprint,print}] [-t] [-A] [--inc-castep]
-                         [--inc-cell] [--inc-param] [--inc-geom] [--inc-md]
-                         [--inc-bands] [--inc-hug] [--inc-phonon_dos] [--inc-efield]
-                         [--inc-xrd_sf] [--inc-elf_fmt] [--inc-chdiff_fmt]
-                         [--inc-pot_fmt] [--inc-den_fmt] [--inc-elastic] [--inc-ts]
-                         [--inc-magres] [--inc-tddft] [--inc-err] [--inc-phonon]
+   usage: castep_outputs [-h] [-V] [-L {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
+                         [-o OUTPUT] [-f {json,ruamel,pyyaml,pprint,print}]
+                         [-t] [-A] [--inc-castep] [--inc-cell] [--inc-param]
+                         [--inc-geom] [--inc-md] [--inc-bands] [--inc-hug]
+                         [--inc-phonon_dos] [--inc-efield] [--inc-xrd_sf]
+                         [--inc-elf_fmt] [--inc-chdiff_fmt] [--inc-pot_fmt]
+                         [--inc-den_fmt] [--inc-elastic] [--inc-ts]
+                         [--inc-magres] [--inc-tddft] [--inc-err]
+                         [--inc-phonon] [--inc-epme] [--inc-cst_esp]
                          [--castep [CASTEP ...]] [--cell [CELL ...]]
-                         [--param [PARAM ...]] [--geom [GEOM ...]] [--md [MD ...]]
-                         [--bands [BANDS ...]] [--hug [HUG ...]]
-                         [--phonon_dos [PHONON_DOS ...]] [--efield [EFIELD ...]]
-                         [--xrd_sf [XRD_SF ...]] [--elf_fmt [ELF_FMT ...]]
-                         [--chdiff_fmt [CHDIFF_FMT ...]] [--pot_fmt [POT_FMT ...]]
-                         [--den_fmt [DEN_FMT ...]] [--elastic [ELASTIC ...]]
-                         [--ts [TS ...]] [--magres [MAGRES ...]] [--tddft [TDDFT ...]]
+                         [--param [PARAM ...]] [--geom [GEOM ...]]
+                         [--md [MD ...]] [--bands [BANDS ...]]
+                         [--hug [HUG ...]] [--phonon_dos [PHONON_DOS ...]]
+                         [--efield [EFIELD ...]] [--xrd_sf [XRD_SF ...]]
+                         [--elf_fmt [ELF_FMT ...]]
+                         [--chdiff_fmt [CHDIFF_FMT ...]]
+                         [--pot_fmt [POT_FMT ...]] [--den_fmt [DEN_FMT ...]]
+                         [--elastic [ELASTIC ...]] [--ts [TS ...]]
+                         [--magres [MAGRES ...]] [--tddft [TDDFT ...]]
                          [--err [ERR ...]] [--phonon [PHONON ...]]
+                         [--epme [EPME ...]] [--cst_esp [CST_ESP ...]]
                          ...
 
-   Attempts to find all files for seedname, filtered by `inc` args (default: all).
-   Explicit files can be passed using longname arguments. castep_outputs can parse most
-   human-readable castep outputs including: .castep, .cell, .param, .geom, .md, .bands,
-   .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt, .pot_fmt, .den_fmt,
-   .elastic, .ts, .magres, .tddft, .err, .phonon
+   Attempts to find all files for seedname, filtered by `inc` args (default:
+   all). Explicit files can be passed using longname arguments. castep_outputs
+   can parse most castep outputs including: .castep, .cell, .param, .geom,
+   .md, .bands, .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt,
+   .pot_fmt, .den_fmt, .elastic, .ts, .magres, .tddft, .err, .phonon, .epme,
+   .cst_esp
 
    positional arguments:
      seedname              Seed name for data
@@ -186,11 +194,10 @@ Full usage
    options:
      -h, --help            show this help message and exit
      -V, --version         show program's version number and exit
-     -L {DEBUG,INFO,WARNING,ERROR,CRITICAL}, --log {DEBUG,INFO,WARNING,ERROR,CRITICAL}
+     -L, --log {DEBUG,INFO,WARNING,ERROR,CRITICAL}
                            Verbose output
-     -o OUTPUT, --output OUTPUT
-                           File to write output, default: screen
-     -f {json,ruamel,yaml,pprint,print}, --out-format {json,ruamel,yaml,pprint,print}
+     -o, --output OUTPUT   File to write output, default: screen
+     -f, --out-format {json,ruamel,pyyaml,pprint,print}
                            Output format
      -t, --testing         Set testing mode to produce flat outputs
      -A, --inc-all         Extract all available information
@@ -214,6 +221,8 @@ Full usage
      --inc-tddft           Extract .tddft information
      --inc-err             Extract .err information
      --inc-phonon          Extract .phonon information
+     --inc-epme            Extract .epme information
+     --inc-cst_esp         Extract .cst_esp information
      --castep [CASTEP ...]
                            Extract from CASTEP as .castep type
      --cell [CELL ...]     Extract from CELL as .cell type
@@ -245,34 +254,40 @@ Full usage
      --err [ERR ...]       Extract from ERR as .err type
      --phonon [PHONON ...]
                            Extract from PHONON as .phonon type
+     --epme [EPME ...]     Extract from EPME as .epme type
+     --cst_esp [CST_ESP ...]
+                           Extract from CST_ESP as .cst_esp type
+
 
 Current Parsers:
 
--  ``.bands``
--  ``.castep``
--  ``.cell``
--  ``.chdiff_fmt``
--  ``.den_fmt``
--  ``.efield``
--  ``.elastic``
--  ``.elf_fmt``
--  ``.err``
--  ``.geom``
--  ``.hug``
--  ``.magres``
--  ``.md``
--  ``.param``
--  ``.phonon``
--  ``.phonon_dos``
--  ``.pot_fmt``
--  ``.tddft``
--  ``.ts``
--  ``.xrd_sf``
+- ``.bands``
+- ``.castep``
+- ``.cell``
+- ``.chdiff_fmt``
+- ``.cst_esp``
+- ``.den_fmt``
+- ``.efield``
+- ``.elastic``
+- ``.elf_fmt``
+- ``.epme``
+- ``.err``
+- ``.geom``
+- ``.hug``
+- ``.magres``
+- ``.md``
+- ``.param``
+- ``.phonon``
+- ``.phonon_dos``
+- ``.pot_fmt``
+- ``.tddft``
+- ``.ts``
+- ``.xrd_sf``
 
 Current dumpers:
 
--  ``json``
--  ``ruamel.yaml``
--  ``pyyaml``
--  ``print``
--  ``pprint``
+- ``json``
+- ``pprint``
+- ``print``
+- ``pyyaml``
+- ``ruamel``
