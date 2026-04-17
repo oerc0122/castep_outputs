@@ -248,7 +248,6 @@ def get_xc_info(param_data: CellParamData) -> set[str]:
 
 def get_generated_files(
     seedname: Path | str = "seedname",
-    /,
     *,
     param_file: Path | None = None,
     cell_file: Path | None = None,
