@@ -14,11 +14,14 @@ from copy import deepcopy
 from enum import Enum, auto
 from itertools import combinations_with_replacement
 from pathlib import Path
+from string import ascii_lowercase as lower
+from string import ascii_uppercase as upper
 from typing import Any, TypeVar
 
 from castep_outputs.parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
 
 Self = TypeVar("Self", bound="UCEnum")
+TRANS_TABLE = str.maketrans(lower, upper, "+ ")
 
 
 class UCEnum(Enum):
@@ -28,7 +31,7 @@ class UCEnum(Enum):
     def _missing_(cls, value: Any) -> Self | None:
         if not isinstance(value, str):
             return None
-        value = value.upper()
+        value = value.translate(TRANS_TABLE)
         if value not in cls.__members__:
             return None
         return cls[value]
@@ -43,8 +46,7 @@ class Task(UCEnum):
     EFIELD = auto()
     THERMODYNAMICS = auto()
     EPCOUPLING = auto()
-    # Not implemented yet.
-    # ELASTIC = auto()
+    ELASTIC = auto()
     GEOMOPT = auto()
     MD = auto()
     SOCKET_DRIVER = auto()
@@ -69,6 +71,7 @@ class Task(UCEnum):
 
     TSS = TRANSITION_STATE_SEARCH
     TRANSITIONSTATESEARCH = TRANSITION_STATE_SEARCH
+    PHONONEFIELD = PHONON_EFIELD
 
     ELECTRONICSPECTROSCOPY = SPECTRAL
     BANDSTRUCTURE = SPECTRAL
@@ -352,13 +355,14 @@ def _get_generated_files(
         ):
             param_data[i] = False
 
-    write_check = param_data.get("write_checkpoint", "ALL").upper()
-    if write_check in {True, "TRUE", "ALL", "BOTH", "FULL"}:
+    # Write checkpoint can be True
+    write_check = str(param_data.get("write_checkpoint", "ALL")).upper()
+    if write_check in {"TRUE", "ALL", "BOTH", "FULL"}:
         out_files.add(f"{seedname}.check")
         out_files.add(f"{seedname}.castep_bin")
     elif write_check == "MINIMAL":
         out_files.add(f"{seedname}.castep_bin")
-    elif write_check in {False, "FALSE", "NONE"}:
+    elif write_check in {"FALSE", "NONE"}:
         pass
     else:
         raise NotImplementedError(
