@@ -1,0 +1,26 @@
+name: Lint
+
+on: [push]
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v6
+    - uses: astral-sh/ruff-action@v3
+      with:
+        src: "./castep_outputs"
+        args: "check"
+        version: "0.15.10"
+
+  readme:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v6
+      with:
+        python-version: "3.13"
+    - uses: actions/checkout@v6
+    - name: Check readme status
+      run: |
+        PYTHONPATH=. python utils/update_readme.py --lint
