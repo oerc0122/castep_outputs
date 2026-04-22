@@ -182,7 +182,6 @@ def parse_castep_file(castep_file_in: TextIO,
     ValueError
         On invalid top-level blocks.
     """
-
     runs: list[dict[str, Any]] = []
     curr_run: dict[str, Any] = defaultdict(list)
 
@@ -1045,7 +1044,10 @@ def parse_castep_file(castep_file_in: TextIO,
 
         # GeomOpt
         elif block := Block.from_re(
-            line, castep_file, "Final Configuration", rf"\s*{REs.MINIMISERS_RE}\s*: Final"
+            line,
+            castep_file,
+            "Final Configuration",
+            rf"\s*{REs.MINIMISERS_RE}\s*: Final",
         ):
             if Filters.GEOM_OPT not in to_parse and Filters.FINAL_CONFIG not in to_parse:
                 continue
@@ -2399,10 +2401,10 @@ def _process_phonon(block: Block, logger: Logger) -> list[QData]:
                 if re.search(r"[-=]{4,}", char_line):
                     break
                 if char_line.startswith(" Sum over"):
-                    break  # TODO: Implement parser
+                    break  # TODO: Implement parser  # noqa: FIX002
                 if char_line.startswith((" *** Warning", "?")):
                     # WARNINGS
-                    break  # TODO: Implement parser
+                    break  # TODO: Implement parser  # noqa: FIX002
 
                 head, tail = char_line.split("|")
                 _, rep, *name, mul = head.split()
@@ -2413,7 +2415,7 @@ def _process_phonon(block: Block, logger: Logger) -> list[QData]:
                         "mul": int(mul),
                         "rep": rep,
                         "name": name,
-                    }
+                    },
                 )
 
             for row in char:

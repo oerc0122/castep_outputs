@@ -400,7 +400,7 @@ Ti:Tag C6:1.0 R0:3.6404 alpha:-0.6668
         """)
 
         test_dict = parse_cell_param_file(test_text)[0]
-        pprint.pprint(test_dict)
+
         self.assertEqual(test_dict, {"sedc_custom_params": {"H": {"C6": 0.0,
                                                                   "R0": 1.6404,
                                                                   "alpha": 0.6668},

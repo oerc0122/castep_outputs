@@ -172,7 +172,7 @@ parse_cell_file = parse_cell_param_file
 parse_param_file = parse_cell_param_file
 
 
-def _parse_pspot_string(string: str, *, debug: bool = False):
+def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
 
     logging.debug("%s", string)
 
@@ -214,7 +214,12 @@ def _parse_pspot_string(string: str, *, debug: bool = False):
 
     for projectors in string.split(":"):
         logging.debug("Full projector: %s", projectors)
-        proj = {"orbital": projectors[0], "shell": projectors[1], "projectors": []}
+        proj = {
+            "orbital": projectors[0],
+            "shell": SHELLS[int(projectors[1])],
+            "shell_ind": projectors[1],
+            "projectors": [],
+        }
         for projector in re.findall(f"[{REs.PROJ_TYPES}][^{REs.PROJ_TYPES}]*", projectors[2:]):
             logging.debug("Projector: %s", projector)
 
@@ -233,7 +238,7 @@ def _parse_pspot_string(string: str, *, debug: bool = False):
             fix_data_types(proj_data, {"beta_delta": float, "beta_e": float, "beta_rc": float})
             proj["projectors"].append(proj_data)
 
-        fix_data_types(proj, {"orbital": int, "shell": int})
+        fix_data_types(proj, {"orbital": int, "shell_ind": int})
         pspot["projectors"].append(proj)
 
     if not debug:
