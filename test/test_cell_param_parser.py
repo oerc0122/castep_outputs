@@ -400,13 +400,14 @@ Ti:Tag C6:1.0 R0:3.6404 alpha:-0.6668
         """)
 
         test_dict = parse_cell_param_file(test_text)[0]
-
+        pprint.pprint(test_dict)
         self.assertEqual(test_dict, {"sedc_custom_params": {"H": {"C6": 0.0,
                                                                   "R0": 1.6404,
                                                                   "alpha": 0.6668},
                                                             "Ti:Tag": {"C6": 1.0,
                                                                        "R0": 3.6404,
-                                                                       "alpha": -0.6668}}})
+                                                                       "alpha": -0.6668},
+                                                            "units": {"energy": "eV", "distance": "Ang"}}})
 
     def test_parse_hubbard_u(self):
         test_text = io.StringIO("""
@@ -560,9 +561,11 @@ NLXC_PPD_INT ON
     "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG[]",
     "2|1.8|3.675|5.512|7.35|30UU:31UU:32LGG{1s1}[]",
     "3|2.4|2.4|1.0|8|9|10|40:41:32U2U2(qc=5.5)"
+    "3|1.7|1.7|0.9|14|16|18|40U:41U:42:50:51{5s0.5,5p0.5}(qc=6)[]"
+    "3|1.6|16|16|19|40U:50:41:42(qc=7){5s0.5}"
+    "2|2|2|1.4|8|11|11|50N:60NH:51UU:52LGG:43U1.6+0U1.6+0.1{5d0.9,4f0.1}(qc=6)"
 ])
 def test_pspot_parser(string):
-    pytest.skip("Correct answers not provided")
     test_dict = _parse_pspot_string(string)
 
     pprint.pprint(test_dict)

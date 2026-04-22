@@ -407,6 +407,14 @@ def _(file: FileWrapper) -> Logger:
     return log_file
 
 
+@log_factory.register
+def _(file: Block) -> Logger:
+    def log_file(message: str, *args: Any, level: LoggingLevels = "info") -> None:
+        getattr(logging, level)(f"[{file.name}:{file.lineno}] {message}", *args)
+
+    return log_file
+
+
 def determine_type(data: str) -> type:
     """
     Determine the datatype and return the appropriate type.

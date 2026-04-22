@@ -1,4 +1,6 @@
 """Test get_generated_files."""
+import os
+from pathlib import Path
 
 import os
 from pathlib import Path

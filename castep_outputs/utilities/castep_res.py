@@ -194,6 +194,8 @@ FNUMBER_RE = r"(?:[+-]?(?:\d*\.\d+|\d+\.\d*))"
 #: :meta hide-value:
 INTNUMBER_RE = r"(?:[+-]?(?<!\.)\d+(?!\.))"
 
+FINTNUMBER_RE = rf"(?:{FNUMBER_RE}|{INTNUMBER_RE})"
+
 #: Float or int with exponent.
 #:
 #: :meta hide-value:
@@ -310,17 +312,15 @@ PS_SHELL_RE = re.compile(
 )
 
 # PS Projector
-PROJ_TYPES = r"[UNGHLP]\d?"
 PSPOT_SHELL_RE = rf"(?:{SHELL_RE}{FNUMBER_RE}?)"
-PSPOT_PROJ_GROUPS = ("orbital", "shell", "type", "de", "beta_delta")
+PROJ_TYPES = "UNGHLP"
 PSPOT_PROJ_RE = re.compile(
     rf"""
-    (\d)                            # Orbital
-    (\d)                            # Shell type
-    ((?:{PROJ_TYPES})*)             # Proj type
-    ((?:[\+-=]{FNUMBER_RE})?)       # DE_use
-    ((?:@{FNUMBER_RE})?)            # beta_delta
-""",
+    (?P<type>[{PROJ_TYPES}])
+    (?P<beta_rc> {FINTNUMBER_RE})?
+    (?:(?:=[+-]?|[+-]) (?P<beta_e> {FINTNUMBER_RE}))?
+    (?:@(?P<beta_delta>{FINTNUMBER_RE}))?
+    """,
     re.VERBOSE,
 )
 
@@ -349,26 +349,28 @@ PSPOT_DEF_RE = re.compile(
 )
 
 # PSPot String
-PSPOT_RE = re.compile(
+PSPOT_INFO_RE = re.compile(
     rf"""^
-    (?:{labelled_floats(("local_energy",), sep="")}=)?
-    (?P<local_channel>\d+)
-    (?P<poly_fit>-)?\|
+    -?{labelled_floats(("local_energy",), suffix="=")}?
+    -?(?P<local_channel>\d+)-?\|
     {labelled_floats(("core_radius",), sep="")}\|
     (?:{labelled_floats(("beta_radius",), sep="")}\|)?
-    (?(beta_radius){labelled_floats(("r_inner",), sep="")}\| |)
+    (?(beta_radius){labelled_floats(("r_inner",), sep="")}\|)
     (?:{labelled_floats(("coarse",), sep="")}\|)
     (?:{labelled_floats(("medium",), sep="")}\|)
     (?:{labelled_floats(("fine",), sep="")}\|)
-    (?P<proj>{PSPOT_PROJ_RE.pattern}(?::{PSPOT_PROJ_RE.pattern})*)
-    (?:\{{(?P<shell_swp>{SHELL_RE}(?:,{SHELL_RE})*)\}})?
-    (?:\((?P<opt>[^)]+)\))?
-    (?P<debug>\#)?
-    (?P<print>\[(?P<shell_swp_end> {PSPOT_SHELL_RE}(?:,{PSPOT_SHELL_RE})* )?\])?
-    $
 """,
     re.VERBOSE,
 )
+
+# Since PSPot impossible to correctly define with REs (non ordered)
+# This handles the search case (assuming no whitespace in string)
+# by looking for the start and just slurping until whitespace.
+PSPOT_FULL_LAZY = re.compile(rf"{PSPOT_INFO_RE.pattern}\S+", re.VERBOSE)
+
+PSPOT_TEST_RE = re.compile(rf"(?:\[((?:{PSPOT_SHELL_RE}(?:,{PSPOT_SHELL_RE})*)?)\])")
+PSPOT_ADJ_RE = re.compile(rf"(?:\{{({PSPOT_SHELL_RE}(?:,{PSPOT_SHELL_RE})*)\}})")
+PSPOT_FLAG_RE = re.compile(r"(?:\(([^)]+)\))")
 
 # Forces block
 FORCES_BLOCK_RE = re.compile(gen_table_re("([a-zA-Z ]*)Forces", r"\*+"), re.IGNORECASE)
@@ -626,7 +628,7 @@ POL_TABLE_RE = re.compile(
 )
 
 # Elastic Constants file
-ELASTIC_BLOCK_RE = re.compile(r"\s*BEGIN (?P<key>[^(]+)\((?P<unit>[^)]+)\)")
+ELASTIC_BLOCK_RE = re.compile(r"\s*BEGIN (?P<key>[^(]+)(?:\((?P<unit>[^)]+)\))?")
 ELASTIC_INTERNAL_STRAIN_RE = re.compile(
     rf"\s*(?P<index>\d+)\s+(?P<spec>{ATOM_NAME_RE})\s+"
     r"(?P<dir>[XYZ])\s+"

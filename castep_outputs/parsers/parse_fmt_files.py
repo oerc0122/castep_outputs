@@ -73,7 +73,7 @@ def _parse_kpt_info(
         Parsed data.
     """
     # Skip header
-    while "END header" not in (line := inp.readline()):
+    while "END header" not in (line := next(inp)):
         pass
 
     cols = re.search(r'"([^"]+)"', line).group(1)

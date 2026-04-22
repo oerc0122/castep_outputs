@@ -116,6 +116,7 @@ ignore = [
     "D105",     # Magic method doc
     "ANN401",   # No typing.Any
     "RUF067",   # Require empty init
+    "LOG015",   # Call to base logger
 ]
 allowed-confusables = ["α", "β", "γ"]
 
