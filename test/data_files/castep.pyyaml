@@ -564,25 +564,31 @@
             coarse: 12.0
             core_radius: 1.8
             fine: 16.0
-            local_channel: 3
-            medium: 14.0
-            opt:
+            flags:
             - qc=7
+            local_channel: 3.0
+            medium: 14.0
+            poly_fit: false
             print: false
             proj: 30U:40:31:32
-            projectors: !!python/tuple
+            projectors:
             - orbital: 3
+              projectors:
+              - type: U
               shell: s
-              type: U
+              shell_ind: 0
             - orbital: 4
+              projectors: []
               shell: s
-              type: null
+              shell_ind: 0
             - orbital: 3
+              projectors: []
               shell: p
-              type: null
+              shell_ind: 1
             - orbital: 3
+              projectors: []
               shell: d
-              type: null
+              shell_ind: 2
             r_inner: 0.6
             string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
     symmetries:
@@ -1191,25 +1197,31 @@
             coarse: 12.0
             core_radius: 1.8
             fine: 16.0
-            local_channel: 3
-            medium: 14.0
-            opt:
+            flags:
             - qc=7
+            local_channel: 3.0
+            medium: 14.0
+            poly_fit: false
             print: false
             proj: 30U:40:31:32
-            projectors: !!python/tuple
+            projectors:
             - orbital: 3
+              projectors:
+              - type: U
               shell: s
-              type: U
+              shell_ind: 0
             - orbital: 4
+              projectors: []
               shell: s
-              type: null
+              shell_ind: 0
             - orbital: 3
+              projectors: []
               shell: p
-              type: null
+              shell_ind: 1
             - orbital: 3
+              projectors: []
               shell: d
-              type: null
+              shell_ind: 2
             r_inner: 0.6
             string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
     symmetries:

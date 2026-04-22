@@ -38,9 +38,9 @@
           - Ar
           - 1
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 1.0e-05
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 2
@@ -52,30 +52,30 @@
           - Ar
           - 3
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 4
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 5
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 6
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 7
@@ -87,30 +87,30 @@
           - Ar
           - 8
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 9
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 10
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - -1.0e-05
           ? !!python/tuple
           - Ar
           - 11
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 12
@@ -137,14 +137,14 @@
           - 15
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 16
           : !!python/tuple
           - -1.0e-05
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
@@ -158,7 +158,7 @@
           - 18
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
@@ -172,92 +172,92 @@
           - 20
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 21
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 22
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 23
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 24
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 25
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 26
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 27
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 28
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 29
           : !!python/tuple
           - 4.0e-05
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 30
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 31
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 32
           : !!python/tuple
           - 1.0e-05
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 33
@@ -269,8 +269,8 @@
           - Ar
           - 34
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
@@ -285,7 +285,7 @@
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 37
@@ -304,8 +304,8 @@
           - Ar
           - 39
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - 1.0e-05
           ? !!python/tuple
           - Ar
@@ -325,7 +325,7 @@
           - Ar
           - 42
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
@@ -333,7 +333,7 @@
           - 43
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
@@ -360,21 +360,21 @@
           - Ar
           - 47
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 48
           : !!python/tuple
           - -4.0e-05
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 49
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
@@ -382,13 +382,13 @@
           - 50
           : !!python/tuple
           - 1.0e-05
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 51
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 1.0e-05
           - 1.0e-05
           ? !!python/tuple
@@ -402,65 +402,65 @@
           - Ar
           - 53
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 1.0e-05
           - -3.0e-05
           ? !!python/tuple
           - Ar
           - 54
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 55
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 56
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - -1.0e-05
           ? !!python/tuple
           - Ar
           - 57
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 58
           : !!python/tuple
           - 1.0e-05
           - 1.0e-05
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 59
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - -1.0e-05
           ? !!python/tuple
           - Ar
           - 60
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 61
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 62
@@ -472,30 +472,30 @@
           - Ar
           - 63
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 64
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 65
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 66
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 67
@@ -509,7 +509,7 @@
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 69
@@ -522,13 +522,13 @@
           - 70
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 1.0e-05
           ? !!python/tuple
           - Ar
           - 71
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 1.0e-05
           - -1.0e-05
           ? !!python/tuple
@@ -536,43 +536,43 @@
           - 72
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 73
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 74
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - -1.0e-05
           ? !!python/tuple
           - Ar
           - 75
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 76
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 77
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 78
@@ -584,28 +584,28 @@
           - Ar
           - 79
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 80
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 81
           : !!python/tuple
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
           - 82
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
@@ -619,7 +619,7 @@
           - Ar
           - 84
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
@@ -633,37 +633,37 @@
           - Ar
           - 86
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 87
           : !!python/tuple
-          - -0.0
           - 0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 88
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 89
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 90
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 91
@@ -675,22 +675,22 @@
           - Ar
           - 92
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 93
           : !!python/tuple
           - 0.0
           - 0.0
-          - -0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 94
           : !!python/tuple
           - 0.0
-          - -0.0
+          - 0.0
           - 0.0
           ? !!python/tuple
           - Ar
@@ -703,14 +703,14 @@
           - Ar
           - 96
           : !!python/tuple
-          - -0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 97
           : !!python/tuple
-          - -0.0
+          - 0.0
           - 0.0
           - 0.0
           ? !!python/tuple
@@ -718,8 +718,8 @@
           - 98
           : !!python/tuple
           - 0.0
-          - -0.0
-          - -0.0
+          - 0.0
+          - 0.0
           ? !!python/tuple
           - Ar
           - 99
@@ -732,7 +732,7 @@
           - 100
           : !!python/tuple
           - 1.0e-05
-          - -0.0
+          - 0.0
           - 0.0
     initial_cell: !!python/object/apply:collections.defaultdict
       args:
@@ -1747,18 +1747,20 @@
             coarse: 7.0
             core_radius: 1.6
             fine: 9.0
-            local_channel: 2
+            local_channel: 2.0
             medium: 8.0
-            opt: null
+            poly_fit: false
             print: false
             proj: '30:31'
-            projectors: !!python/tuple
+            projectors:
             - orbital: 3
+              projectors: []
               shell: s
-              type: null
+              shell_ind: 0
             - orbital: 3
+              projectors: []
               shell: p
-              type: null
+              shell_ind: 1
             string: 2|1.6|7|8|9|30:31
     stresses: !!python/object/apply:collections.defaultdict
       args:
