@@ -312,14 +312,18 @@ PS_SHELL_RE = re.compile(
 )
 
 # PS Projector
+
+# Need to elimate sign from FP re.
+FP_NUM_RE = r"(?:\d+\.?\d*|\d*\.\d+)"
+
 PSPOT_SHELL_RE = rf"(?:{SHELL_RE}{FNUMBER_RE}?)"
 PROJ_TYPES = "UNGHLP"
 PSPOT_PROJ_RE = re.compile(
     rf"""
     (?P<type>[{PROJ_TYPES}])
-    (?P<beta_rc> {FINTNUMBER_RE})?
-    (?:(?:=[+-]?|[+-]) (?P<beta_e> {FINTNUMBER_RE}))?
-    (?:@(?P<beta_delta>{FINTNUMBER_RE}))?
+    (?P<beta_rc> {FP_NUM_RE})?
+    (?:(?:=[+-]?|[+-]) (?P<beta_e> {FP_NUM_RE}))?
+    (?:@(?P<beta_delta>{FP_NUM_RE}))?
     """,
     re.VERBOSE,
 )

@@ -8,7 +8,7 @@ import functools
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Iterable
 from copy import copy
 from fractions import Fraction
 from functools import partial, singledispatch, wraps
@@ -118,6 +118,39 @@ def normalise_key(string: str) -> str:
     'i_3_semi_colons'
     """
     return NORMALISE_RE.sub("_", string).strip("_").lower()
+
+
+def strip_nones(
+    data: dict[K, Any],
+    *,
+    include: Iterable[K] | None = None,
+    exclude: Iterable[K] = (),
+) -> None:
+    """Strip ``None`` from datasets.
+
+    Parameters
+    ----------
+    data : dict[K, Any]
+        Dataset to filter.
+    include : Iterable[K] or None
+        Values to include (or all if None)
+    exclude : Iterable[K]
+        Keys/indices to ignore.
+
+    Examples
+    --------
+    >>> data = {"a": 1, "b": None, "c": None}
+    >>> strip_nones(data, exclude=("c",))
+    >>> data
+    {'a': 1, 'c': None}
+    """
+    keys = data.keys() - set(exclude)
+    if include is not None:
+        keys = keys.intersection(include)
+
+    for key in keys:
+        if data[key] is None:
+            del data[key]
 
 
 def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) -> tuple[str, int]:

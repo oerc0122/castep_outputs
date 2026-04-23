@@ -459,8 +459,8 @@ class PSProjData(TypedDict):
     beta_rc: float
 
 
-class PSPotProj(TypedDict):
-    """Pseudopotential projector information."""
+class PSPotBFG(TypedDict):
+    """Beta function group information."""
 
     #: Electronic orbital.
     orbital: int
@@ -499,8 +499,8 @@ class PSPotStrInfo(TypedDict, total=False):
     fine: float
     #: Projection
     proj: str
-    #: All pseudopotential projectors.
-    projectors: list[PSPotProj]
+    #: All beta functions.
+    beta_functions: list[PSPotBFG]
     #: Extra options.
     flags: list[str]
     #: Testing print substitutions.

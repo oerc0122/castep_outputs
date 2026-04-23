@@ -14,6 +14,7 @@ from castep_outputs.utilities.constants import SHELLS
 from castep_outputs.utilities.datatypes import (
     AtomIndex,
     MaybeSequence,
+    PSPotBFG,
     PSPotStrInfo,
     ThreeByThreeMatrix,
     ThreeVector,
@@ -27,6 +28,7 @@ from castep_outputs.utilities.utility import (
     log_factory,
     normalise_key,
     strip_comments,
+    strip_nones,
     to_type,
 )
 
@@ -172,19 +174,100 @@ parse_cell_file = parse_cell_param_file
 parse_param_file = parse_cell_param_file
 
 
-def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
+def _parse_beta_function(string: str, *, debug: bool = False) -> PSPotBFG:
+    """Parse a beta function group into its components.
 
+    Parameters
+    ----------
+    string : str
+        Input beta_function group.
+
+    Returns
+    -------
+    PSPotBFG
+        Parsed data.
+
+    Raises
+    ------
+    ValueError
+        If unable to parse.
+
+    Examples
+    --------
+    >>> from pprint import pprint
+    >>> pprint(_parse_beta_function("30U2.1U+1.1"))
+    {'orbital': 3,
+     'projectors': [{'beta_rc': 2.1, 'type': 'U'}, {'beta_e': 1.1, 'type': 'U'}],
+     'shell': 's',
+     'shell_ind': 0}
+    >>> pprint(_parse_beta_function("31UU"))
+    {'orbital': 3,
+     'projectors': [{'type': 'U'}, {'type': 'U'}],
+     'shell': 'p',
+     'shell_ind': 1}
+    >>> _parse_beta_function("32")
+    {'orbital': 3, 'shell': 'd', 'shell_ind': 2, 'projectors': []}
+    """
+    logging.debug("Full beta_Function: %s", string)
+
+    projectors = []
+
+    # Parse from proj_type (NUHLGP) -> next one (exclusive)
+    for projector in re.findall(f"[{REs.PROJ_TYPES}][^{REs.PROJ_TYPES}]*", string[2:]):
+        logging.debug("Projector: %s", projector)
+
+        if not (match := REs.PSPOT_PROJ_RE.match(projector)):
+            logging.error("Failed parsing %s", projector)
+            raise ValueError(f"Attempt to parse {string!r} as PSPot failed.")
+
+        proj_data = match.groupdict()
+
+        logging.debug("Components: %s", proj_data)
+        if not debug:
+            strip_nones(proj_data, include=("beta_delta", "beta_e", "beta_rc"))
+
+        fix_data_types(proj_data, {"beta_delta": float, "beta_e": float, "beta_rc": float})
+        projectors.append(proj_data)
+
+    return {
+        "orbital": int(string[0]),
+        "shell": SHELLS[int(string[1])],
+        "shell_ind": int(string[1]),
+        "projectors": projectors,
+    }
+
+
+def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
+    """Parse PSPot strings to their components.
+
+    Parameters
+    ----------
+    string : str
+        String to be parsed.
+    debug : bool
+        Whether to maintain ``None`` s in unmatched output.
+
+    Returns
+    -------
+    PSPotStrInfo
+        Processed information.
+
+    Raises
+    ------
+    ValueError
+        Unable to parse string as PSPot.
+    """
     logging.debug("%s", string)
 
     pspot: dict[str, Any] = {
         "print": "[" in string,
-        "poly_fit": "-" in string[:string.find("|")],
+        "poly_fit": "-" in string[: string.find("|")],
         "beta_functions": [],
         "string": string,
     }
 
-    # Remove polyfit
-    string = re.sub(r"-?([^|]+)-?\|", r"\g<1>|", string, count=1)
+    # Remove polyfit `-` from string
+    string = re.sub(r"([^|]*)-([^|]*)\|", r"\g<1>\g<2>|", string, count=1)
 
     for label, mark, regex in (
         ("adjustment", "{", REs.PSPOT_ADJ_RE),
@@ -211,50 +294,16 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
     pspot.update(match.groupdict())
     string = string[: match.start()] + string[match.end() :]
     pspot["beta_function_string"] = string
-
-    for projectors in string.split(":"):
-        logging.debug("Full projector: %s", projectors)
-        beta_functions = {
-            "orbital": projectors[0],
-            "shell": SHELLS[int(projectors[1])],
-            "shell_ind": projectors[1],
-            "projectors": [],
-        }
-
-        for projector in re.findall(f"[{REs.PROJ_TYPES}][^{REs.PROJ_TYPES}]*", projectors[2:]):
-            logging.debug("Projector: %s", projector)
-
-            if not (match := REs.PSPOT_PROJ_RE.match(projector)):
-                logging.error("Failed parsing %s", projector)
-                raise ValueError(f"Attempt to parse {string!r} as PSPot failed.")
-
-            proj_data = match.groupdict()
-
-            logging.debug("Components: %s", proj_data)
-            if not debug:
-                for prop in ("beta_delta", "beta_e", "beta_rc"):
-                    if proj_data[prop] is None:
-                        del proj_data[prop]
-
-            fix_data_types(proj_data, {"beta_delta": float, "beta_e": float, "beta_rc": float})
-            beta_functions["projectors"].append(proj_data)
-
-        fix_data_types(beta_functions, {"orbital": int, "shell_ind": int})
-
-        # Each orbital modification can have multiple projectors
-        pspot["beta_functions"].append(beta_functions)
+    pspot["beta_functions"] = [
+        _parse_beta_function(beta_function_group, debug=debug)
+        for beta_function_group in string.split(":")
+    ]
 
     if not debug:
-        for prop in (
-            "local_energy",
-            "beta_radius",
-            "r_inner",
-            "adjustment",
-            "testing",
-            "flags",
-        ):
-            if pspot[prop] is None:
-                del pspot[prop]
+        strip_nones(
+            pspot,
+            include=("local_energy", "beta_radius", "r_inner", "adjustment", "testing", "flags"),
+        )
 
     fix_data_types(
         pspot,
