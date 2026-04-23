@@ -1,4 +1,4 @@
-"""Parser for dome_bin files."""
+"""Parser for ome_bin files."""
 
 from __future__ import annotations
 
@@ -13,21 +13,24 @@ HEADER = {
 }
 
 
-class DOMEData(TypedDict):
-    """Data as parsed from dome_bin."""
+class OMEData(TypedDict):
+    """Data from electrostatic potential."""
 
-    file_ver: float
-    header: str
-    data: tuple[tuple[float, ...], ...]
+    #: Number of spins in run.
+    n_spins: int
+    #: Grid size sampled at.
+    grid: int
+    #: OME Data.
+    data: tuple[tuple[tuple[complex, ...], ...], ...]
 
 
 @file_or_path(mode="rb")
-def parse_dome_bin_file(dome_bin_file: BinaryIO) -> DOMEData:
-    """Parse castep `dome_bin` files.
+def parse_ome_bin_file(ome_bin_file: BinaryIO) -> OMEData:
+    """Parse castep `ome_bin` files.
 
     Parameters
     ----------
-    dome_bin_file
+    ome_bin_file
         File to parse.
 
     Returns
@@ -35,14 +38,14 @@ def parse_dome_bin_file(dome_bin_file: BinaryIO) -> DOMEData:
     :
         Parsed data.
     """
-    reader = FortranBinaryReader(dome_bin_file)
+    reader = FortranBinaryReader(ome_bin_file)
 
     accum = reader.get_dtype_dict(HEADER)
 
     accum["data"] = []
 
-    for data in reader.get_dtype_cycle([(float, ...)]):
+    for data in reader.get_dtype_cycle([(complex, ...)]):
         accum["data"].append(data)
 
     accum["data"] = tuple(accum["data"])
-    return cast("DOMEData", accum)
+    return cast("OMEData", accum)
