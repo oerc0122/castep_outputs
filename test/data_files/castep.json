@@ -176,7 +176,7 @@
         "pseudopot": {
           "print": false,
           "poly_fit": false,
-          "projectors": [
+          "beta_functions": [
             {
               "orbital": 3,
               "shell": "s",
@@ -217,7 +217,7 @@
           "coarse": 12.0,
           "medium": 14.0,
           "fine": 16.0,
-          "proj": "30U:40:31:32"
+          "beta_function_string": "30U:40:31:32"
         }
       }
     },
@@ -827,7 +827,7 @@
         "pseudopot": {
           "print": false,
           "poly_fit": false,
-          "projectors": [
+          "beta_functions": [
             {
               "orbital": 3,
               "shell": "s",
@@ -868,7 +868,7 @@
           "coarse": 12.0,
           "medium": 14.0,
           "fine": 16.0,
-          "proj": "30U:40:31:32"
+          "beta_function_string": "30U:40:31:32"
         }
       }
     },

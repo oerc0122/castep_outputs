@@ -540,15 +540,8 @@
       mass: 39.948
       pseudo_atomic_energy: -583.0922
       pseudopot:
-        coarse: 7.0
-        core_radius: 1.6
-        fine: 9.0
-        local_channel: 2.0
-        medium: 8.0
-        poly_fit: false
-        print: false
-        proj: 30:31
-        projectors:
+        beta_function_string: 30:31
+        beta_functions:
         - orbital: 3
           projectors: []
           shell: s
@@ -557,6 +550,13 @@
           projectors: []
           shell: p
           shell_ind: 1
+        coarse: 7.0
+        core_radius: 1.6
+        fine: 9.0
+        local_channel: 2.0
+        medium: 8.0
+        poly_fit: false
+        print: false
         string: 2|1.6|7|8|9|30:31
   stresses:
     non_descript:

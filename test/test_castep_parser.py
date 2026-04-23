@@ -619,6 +619,33 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
                         "electric_quadrupole_moment": 0.33,
                         "mass": 54.93805,
                         "pseudopot": {
+                            "beta_function_string": "30U:40:31:32",
+                            "beta_functions": [
+                                {
+                                    "orbital": 3,
+                                    "projectors": [{"type": "U"}],
+                                    "shell": "s",
+                                    "shell_ind": 0,
+                                },
+                                {
+                                    "orbital": 4,
+                                    "projectors": [],
+                                    "shell": "s",
+                                    "shell_ind": 0,
+                                },
+                                {
+                                    "orbital": 3,
+                                    "projectors": [],
+                                    "shell": "p",
+                                    "shell_ind": 1,
+                                },
+                                {
+                                    "orbital": 3,
+                                    "projectors": [],
+                                    "shell": "d",
+                                    "shell_ind": 2,
+                                },
+                            ],
                             "beta_radius": 1.8,
                             "coarse": 12.0,
                             "core_radius": 1.8,
@@ -628,18 +655,6 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
                             "medium": 14.0,
                             "poly_fit": False,
                             "print": False,
-                            "proj": "30U:40:31:32",
-                            "projectors": [
-                                {
-                                    "orbital": 3,
-                                    "projectors": [{"type": "U"}],
-                                    "shell": "s",
-                                    "shell_ind": 0,
-                                },
-                                {"orbital": 4, "projectors": [], "shell": "s", "shell_ind": 0},
-                                {"orbital": 3, "projectors": [], "shell": "p", "shell_ind": 1},
-                                {"orbital": 3, "projectors": [], "shell": "d", "shell_ind": 2},
-                            ],
                             "r_inner": 0.6,
                             "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)",
                         },

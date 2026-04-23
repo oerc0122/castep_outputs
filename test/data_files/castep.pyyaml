@@ -560,18 +560,8 @@
           mass: 54.93805
           pseudo_atomic_energy: -2901.7207
           pseudopot:
-            beta_radius: 1.8
-            coarse: 12.0
-            core_radius: 1.8
-            fine: 16.0
-            flags:
-            - qc=7
-            local_channel: 3.0
-            medium: 14.0
-            poly_fit: false
-            print: false
-            proj: 30U:40:31:32
-            projectors:
+            beta_function_string: 30U:40:31:32
+            beta_functions:
             - orbital: 3
               projectors:
               - type: U
@@ -589,6 +579,16 @@
               projectors: []
               shell: d
               shell_ind: 2
+            beta_radius: 1.8
+            coarse: 12.0
+            core_radius: 1.8
+            fine: 16.0
+            flags:
+            - qc=7
+            local_channel: 3.0
+            medium: 14.0
+            poly_fit: false
+            print: false
             r_inner: 0.6
             string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
     symmetries:
@@ -1193,18 +1193,8 @@
           mass: 54.93805
           pseudo_atomic_energy: -2901.7207
           pseudopot:
-            beta_radius: 1.8
-            coarse: 12.0
-            core_radius: 1.8
-            fine: 16.0
-            flags:
-            - qc=7
-            local_channel: 3.0
-            medium: 14.0
-            poly_fit: false
-            print: false
-            proj: 30U:40:31:32
-            projectors:
+            beta_function_string: 30U:40:31:32
+            beta_functions:
             - orbital: 3
               projectors:
               - type: U
@@ -1222,6 +1212,16 @@
               projectors: []
               shell: d
               shell_ind: 2
+            beta_radius: 1.8
+            coarse: 12.0
+            core_radius: 1.8
+            fine: 16.0
+            flags:
+            - qc=7
+            local_channel: 3.0
+            medium: 14.0
+            poly_fit: false
+            print: false
             r_inner: 0.6
             string: 3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)
     symmetries:

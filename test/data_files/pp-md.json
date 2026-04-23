@@ -87,7 +87,7 @@
         "pseudopot": {
           "print": false,
           "poly_fit": false,
-          "projectors": [
+          "beta_functions": [
             {
               "orbital": 3,
               "shell": "s",
@@ -107,7 +107,7 @@
           "coarse": 7.0,
           "medium": 8.0,
           "fine": 9.0,
-          "proj": "30:31"
+          "beta_function_string": "30:31"
         }
       }
     },

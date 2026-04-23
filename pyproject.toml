@@ -144,3 +144,6 @@ override_SS05 = [  # override SS05 to allow docstrings starting with these words
     '^Access ',
     '^Class ',
 ]
+
+[tool.ruff.lint.extend-per-file-ignores]
+"castep_file_parser.py" = ["FIX002"]

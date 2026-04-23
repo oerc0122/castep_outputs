@@ -179,7 +179,7 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
     pspot: dict[str, Any] = {
         "print": "[" in string,
         "poly_fit": "-" in string[:string.find("|")],
-        "projectors": [],
+        "beta_functions": [],
         "string": string,
     }
 
@@ -203,23 +203,24 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
             pspot[label] = None
 
     if not (match := REs.PSPOT_INFO_RE.match(string)):
-        logging.error("Failed parsing main.")
+        logging.error("Failed parsing pspot definition string.")
         raise ValueError(f"Attempt to parse {string!r} as PSPot failed.")
 
     logging.debug("Main: %s", match.groupdict())
 
     pspot.update(match.groupdict())
     string = string[: match.start()] + string[match.end() :]
-    pspot["proj"] = string
+    pspot["beta_function_string"] = string
 
     for projectors in string.split(":"):
         logging.debug("Full projector: %s", projectors)
-        proj = {
+        beta_functions = {
             "orbital": projectors[0],
             "shell": SHELLS[int(projectors[1])],
             "shell_ind": projectors[1],
             "projectors": [],
         }
+
         for projector in re.findall(f"[{REs.PROJ_TYPES}][^{REs.PROJ_TYPES}]*", projectors[2:]):
             logging.debug("Projector: %s", projector)
 
@@ -236,10 +237,12 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
                         del proj_data[prop]
 
             fix_data_types(proj_data, {"beta_delta": float, "beta_e": float, "beta_rc": float})
-            proj["projectors"].append(proj_data)
+            beta_functions["projectors"].append(proj_data)
 
-        fix_data_types(proj, {"orbital": int, "shell_ind": int})
-        pspot["projectors"].append(proj)
+        fix_data_types(beta_functions, {"orbital": int, "shell_ind": int})
+
+        # Each orbital modification can have multiple projectors
+        pspot["beta_functions"].append(beta_functions)
 
     if not debug:
         for prop in (
