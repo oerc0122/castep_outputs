@@ -267,7 +267,7 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
     }
 
     # Remove polyfit `-` from string
-    string = re.sub(r"([^|]*)-([^|]*)\|", r"\g<1>\g<2>|", string, count=1)
+    string = re.sub(r"^([^|]*)-([^|]*)\|", r"\g<1>\g<2>|", string, count=1)
 
     for label, mark, regex in (
         ("adjustment", "{", REs.PSPOT_ADJ_RE),
