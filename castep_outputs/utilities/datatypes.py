@@ -1,4 +1,5 @@
 """Types produced by castep_outputs."""
+
 from __future__ import annotations
 
 from collections.abc import Callable, Sequence
@@ -48,6 +49,7 @@ class CellInfo(TypedDict):
 
 # Initial Spins
 
+
 class InitialSpin(TypedDict):
     """Initial spins as read from cell file."""
 
@@ -60,6 +62,7 @@ class InitialSpin(TypedDict):
 
 
 # Elastic
+
 
 class ElasticProperties(TypedDict):
     """Elastic properties as measured from elastic calculation."""
@@ -81,6 +84,7 @@ class ElasticProperties(TypedDict):
 
 
 # Geometry
+
 
 class FinalConfig(TypedDict):
     """Final configuration following optimisation."""
@@ -162,6 +166,7 @@ class DelocActiveSpace(TypedDict):
 
 # Dipole
 
+
 class DipoleTable(TypedDict):
     """Molecular dipole status."""
 
@@ -180,6 +185,7 @@ class DipoleTable(TypedDict):
 
 
 # Phonon
+
 
 class CharTable(TypedDict):
     """Character table from group theory analysis of eigenvectors."""
@@ -242,6 +248,7 @@ class RamanReport(TypedDict, total=False):
 
 # Occupancies
 
+
 class Occupancies(TypedDict):
     """SCF Band occupancies report."""
 
@@ -254,6 +261,7 @@ class Occupancies(TypedDict):
 
 
 # SCF
+
 
 class WvfnLineMin(TypedDict):
     """Wavefunction minimisation report."""
@@ -376,6 +384,7 @@ class DeltaSCFReport(TypedDict, total=False):
 
 # Bonds
 
+
 class BondInfo(TypedDict):
     """Single-bond information from final bonding report."""
 
@@ -428,27 +437,38 @@ class MullikenInfo(TypedDict, total=False):
 
 # PSPot
 
-class PSPotProj(TypedDict):
-    """Pseudopotential projector information."""
+
+class PSProjData(TypedDict):
+    """Information about projectors."""
+
+    #: Pseudopotential projector handling.
+    #: Type can be:
+    #:
+    #: - ``U`` - a single ultrasoft projector.
+    #: - ``N`` - a single norm-conserving projector.
+    #: - ``L`` - use this projector as the local component.
+    #: - ``G`` - an ultrasoft GIPAW Gamma projector.
+    #: - ``H`` - a norm-conserving GIPAW Gamma projector.
+    #: - ``P`` - Dummy: do not make a projector.
+    #: - ``LG`` - Make Gammas for local channel (not done by default).
+    #:
+    #: An unlabelled projector will be `None`
+    type: Literal["U", "N", "L", "G", "H", "P"]
+    beta_delta: float
+    beta_e: float
+    beta_rc: float
+
+
+class PSPotBFG(TypedDict):
+    """Beta function group information."""
 
     #: Electronic orbital.
     orbital: int
     #: Electronic shell state.
     shell: Literal["s", "p", "d", "f"]
-    #: Pseudopotential projector handling.
-    #: Type can be:
-    #:
-    #: - ``U`` - a single ultrasoft projector.
-    #: - ``UU`` - Two ultrasoft projectors.
-    #: - ``N`` - a single norm-conserving projector.
-    #: - ``L`` - use this projector as the local component.
-    #: - ``G`` - an ultrasoft GIPAW Gamma projector.
-    #: - ``H`` - an norm-conserving GIPAW Gamma projector.
-    #: - ``P`` - Dummy: do not make a projector.
-    #: - ``LG`` - Make Gammas for local channel (not done by default).
-    #:
-    #: An unlabelled projector will be `None`
-    type: Literal["U", "UU", "N", "L", "G", "H", "P", "LG", "LL", "GG", "LGG", None]
+    shell_ind: int
+
+    projectors: list[PSProjData]
 
 
 class PSPotStrInfo(TypedDict, total=False):
@@ -479,12 +499,16 @@ class PSPotStrInfo(TypedDict, total=False):
     fine: float
     #: Projection
     proj: str
-    #: All pseudopotential projectors.
-    projectors: tuple[PSPotProj, ...]
+    #: All beta functions.
+    beta_functions: list[PSPotBFG]
     #: Extra options.
-    opt: list[str]
-    shell_swp: str
-    shell_swp_end: str
+    flags: list[str]
+    #: Testing print substitutions.
+    testing: list[str]
+    #: Adjust orbital weights.
+    adjustment: list[str]
+    #: Whether to use polynomial fitting.
+    poly_fit: bool
     #: Print detailed debug information of PSpot.
     print: bool
     #: Total PSPot string.
@@ -578,6 +602,7 @@ class PSPotEnergy(TypedDict):
 
 # Symmetry & Constraints
 
+
 class Symop(TypedDict):
     """Symmetry operation definition."""
 
@@ -649,6 +674,7 @@ class SymmetryReport(TypedDict, total=False):
 
 # KPoints
 
+
 class KPoint(TypedDict):
     """Single :math:`k`-point definition."""
 
@@ -680,6 +706,7 @@ class KPointsSpec(TypedDict, total=False):
 
 # Memory Report
 
+
 class MemoryEst(TypedDict):
     """Memory estimate."""
 
@@ -690,6 +717,7 @@ class MemoryEst(TypedDict):
 
 
 # Band Structure
+
 
 class BandStructure(TypedDict):
     """Band structure table information."""
@@ -711,6 +739,7 @@ class BandStructure(TypedDict):
 
 
 # Thermodynamics
+
 
 class Thermodynamics(TypedDict):
     """
@@ -739,6 +768,7 @@ class Thermodynamics(TypedDict):
 
 # MD
 
+
 class MDInfo(TypedDict, total=False):
     """Per-step MD information block."""
 
@@ -762,6 +792,7 @@ class MDInfo(TypedDict, total=False):
 
 # TDDFT
 
+
 class TDDFTData(TypedDict):
     """Time-dependent DFT information."""
 
@@ -774,6 +805,7 @@ class TDDFTData(TypedDict):
 
 
 # Other Files
+
 
 class HeaderAtomInfo(TypedDict):
     """Atom info from header."""

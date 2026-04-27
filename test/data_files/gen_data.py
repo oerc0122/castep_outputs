@@ -36,12 +36,12 @@ ALL_SETS = (
     ("si8-md", "castep"),
 )
 
-
 def gen_data(
     types: Sequence[tuple[str | tuple[str, str]]] = ALL_SETS,
     fmts: tuple[str] = ("json", "pyyaml", "ruamel"),
 ) -> None:
     """Generate benchmark data."""
+
     for type_ in types:
         for fmt in fmts:
             print(type_, fmt)
@@ -61,10 +61,10 @@ def gen_data(
 if __name__ == "__main__":
     argp = ArgumentParser(prog="gen_data", description="Generate test data.")
 
-    argp.add_argument("datasets", nargs=REMAINDER, help="Sets to generate.", default=ALL_SETS)
+    argp.add_argument("datasets", nargs=REMAINDER, help="Sets to generate.")
     argp.add_argument(
         "--formats", nargs="+", help="Formats to generate.", default=("json", "pyyaml", "ruamel"),
     )
     args = argp.parse_args()
 
-    gen_data(args.datasets, args.formats)
+    gen_data(args.datasets or ALL_SETS, args.formats)

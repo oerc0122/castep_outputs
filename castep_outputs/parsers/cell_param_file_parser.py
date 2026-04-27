@@ -2,18 +2,19 @@
 
 from __future__ import annotations
 
+import logging
 import re
-import typing
 from collections import Counter, defaultdict
 from collections.abc import Callable, Sequence
 from functools import partial
-from typing import Any, Literal, TextIO, TypedDict
+from typing import Any, Literal, TextIO, TypedDict, cast
 
 import castep_outputs.utilities.castep_res as REs
 from castep_outputs.utilities.constants import SHELLS
 from castep_outputs.utilities.datatypes import (
     AtomIndex,
     MaybeSequence,
+    PSPotBFG,
     PSPotStrInfo,
     ThreeByThreeMatrix,
     ThreeVector,
@@ -27,6 +28,7 @@ from castep_outputs.utilities.utility import (
     log_factory,
     normalise_key,
     strip_comments,
+    strip_nones,
     to_type,
 )
 
@@ -147,14 +149,18 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[CellParamData]:
             curr[block_title] = _PARSERS.get(block_title, _parse_general)(block)
 
         elif match := REs.PARAM_VALUE_RE.match(line):
+            if match["str"] is not None:
+                key, val = match.group("key", "str")
+                curr[key.strip().lower()] = to_type(val.strip(), determine_type(val))
+
+                logger("Found param %s", key)
+                continue
 
             key, val, unit = match.group("key", "val", "unit")
             key = key.strip().lower()
             logger("Found param %s", key)
 
-            if determine_type(val) is str:
-                val = val.strip()
-            elif " " in val.strip():
+            if " " in val.strip():
                 val = to_type(val.split(), determine_type(val))
             else:
                 val = to_type(val, determine_type(val))
@@ -172,66 +178,151 @@ parse_cell_file = parse_cell_param_file
 parse_param_file = parse_cell_param_file
 
 
-def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
-    if not (match := REs.PSPOT_RE.search(string)):
-        raise ValueError(f"Attempt to parse {string} as PSPot failed")
+def _parse_beta_function(string: str, *, debug: bool = False) -> PSPotBFG:
+    """Parse a beta function group into its components.
 
-    pspot = match.groupdict()
+    Parameters
+    ----------
+    string : str
+        Input beta_function group.
+
+    Returns
+    -------
+    PSPotBFG
+        Parsed data.
+
+    Raises
+    ------
+    ValueError
+        If unable to parse.
+
+    Examples
+    --------
+    >>> from pprint import pprint
+    >>> pprint(_parse_beta_function("30U2.1U+1.1"))
+    {'orbital': 3,
+     'projectors': [{'beta_rc': 2.1, 'type': 'U'}, {'beta_e': 1.1, 'type': 'U'}],
+     'shell': 's',
+     'shell_ind': 0}
+    >>> pprint(_parse_beta_function("31UU"))
+    {'orbital': 3,
+     'projectors': [{'type': 'U'}, {'type': 'U'}],
+     'shell': 'p',
+     'shell_ind': 1}
+    >>> _parse_beta_function("32")
+    {'orbital': 3, 'shell': 'd', 'shell_ind': 2, 'projectors': []}
+    """
+    logging.debug("Full beta_Function: %s", string)
+
     projectors = []
 
-    for proj in pspot["proj"].split(":"):
-        if match := REs.PSPOT_PROJ_RE.match(proj):
-            pdict = dict(zip(REs.PSPOT_PROJ_GROUPS, match.groups(), strict=True))
+    # Parse from proj_type (NUHLGP) -> next one (exclusive)
+    for projector in re.findall(f"[{REs.PROJ_TYPES}][^{REs.PROJ_TYPES}]*", string[2:]):
+        logging.debug("Projector: %s", projector)
+
+        if not (match := REs.PSPOT_PROJ_RE.match(projector)):
+            logging.error("Failed parsing %s", projector)
+            raise ValueError(f"Attempt to parse {string!r} as PSPot failed.")
+
+        proj_data = match.groupdict()
+
+        logging.debug("Components: %s", proj_data)
+        if not debug:
+            strip_nones(proj_data, include=("beta_delta", "beta_e", "beta_rc"))
+
+        fix_data_types(proj_data, {"beta_delta": float, "beta_e": float, "beta_rc": float})
+        projectors.append(proj_data)
+
+    return {
+        "orbital": int(string[0]),
+        "shell": SHELLS[int(string[1])],
+        "shell_ind": int(string[1]),
+        "projectors": projectors,
+    }
+
+
+def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
+    """Parse PSPot strings to their components.
+
+    Parameters
+    ----------
+    string : str
+        String to be parsed.
+    debug : bool
+        Whether to maintain ``None`` s in unmatched output.
+
+    Returns
+    -------
+    PSPotStrInfo
+        Processed information.
+
+    Raises
+    ------
+    ValueError
+        Unable to parse string as PSPot.
+    """
+    logging.debug("%s", string)
+
+    pspot: dict[str, Any] = {
+        "print": "[" in string,
+        "poly_fit": "-" in string[: string.find("|")],
+        "beta_functions": [],
+        "string": string,
+    }
+
+    # Remove polyfit `-` from string
+    string = re.sub(r"^([^|]*)-([^|]*)\|", r"\g<1>\g<2>|", string, count=1)
+
+    for label, mark, regex in (
+        ("adjustment", "{", REs.PSPOT_ADJ_RE),
+        ("testing", "[", REs.PSPOT_TEST_RE),
+        ("flags", "(", REs.PSPOT_FLAG_RE),
+    ):
+        if mark in string:
+            logging.debug("Found %s", label)
+            if not (match := regex.search(string)):
+                logging.error("Failed parsing %s.", label)
+                raise ValueError(f"Attempt to parse {string!r} as PSPot failed.")
+
+            pspot[label] = match[1].split(",")
+            string = string[: match.start()] + string[match.end() :]
         else:
-            raise ValueError("Invalid PSPot string")
+            pspot[label] = None
 
-        pdict["shell"] = SHELLS[int(pdict["shell"])]
+    if not (match := REs.PSPOT_INFO_RE.match(string)):
+        logging.error("Failed parsing pspot definition string.")
+        raise ValueError(f"Attempt to parse {string!r} as PSPot failed.")
 
-        if not pdict["type"]:
-            pdict["type"] = None
+    logging.debug("Main: %s", match.groupdict())
 
-        for prop in ("beta_delta", "de"):
-            if not pdict[prop]:
-                del pdict[prop]
-
-        fix_data_types(pdict, {"orbital": int, "beta_delta": float, "de": float})
-        projectors.append(pdict)
-
-    for prop in ("shell_swp", "shell_swp_end", "opt"):
-        if pspot[prop]:
-            pspot[prop] = pspot[prop].split(",")
-
-    pspot["projectors"] = tuple(projectors)
-    pspot["string"] = string
-    pspot["print"] = bool(pspot["print"])
+    pspot.update(match.groupdict())
+    string = string[: match.start()] + string[match.end() :]
+    pspot["beta_function_string"] = string
+    pspot["beta_functions"] = [
+        _parse_beta_function(beta_function_group, debug=debug)
+        for beta_function_group in string.split(":")
+    ]
 
     if not debug:
-        for prop in (
-            "shell_swp",
-            "shell_swp_end",
-            "local_energy",
-            "poly_fit",
-            "beta_radius",
-            "r_inner",
-            "debug",
-        ):
-            if pspot[prop] is None:
-                del pspot[prop]
+        strip_nones(
+            pspot,
+            include=("local_energy", "beta_radius", "r_inner", "adjustment", "testing", "flags"),
+        )
 
     fix_data_types(
         pspot,
         {
             "beta_radius": float,
-            "r_inner": float,
-            "core_radius": float,
             "coarse": float,
-            "medium": float,
+            "core_radius": float,
             "fine": float,
-            "local_channel": int,
+            "local_channel": float,
+            "local_energy": float,
+            "medium": float,
+            "r_inner": float,
         },
     )
-
-    return pspot
+    return cast("PSPotStrInfo", pspot)
 
 
 def _parse_devel_code_block(in_block: Block) -> DevelBlock:
@@ -449,6 +540,11 @@ def _parse_sedc(block: Block) -> dict[str, dict[str, float]]:
         block.rewind()
         units = ("eV", "Ang")
 
+    accum["units"] = {
+        "energy": units[0],
+        "distance": units[1],
+    }
+
     for line in block:
         if re.match(r"^\s*%endblock", line, re.IGNORECASE):
             continue
@@ -479,7 +575,7 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
 
     return [
         {
-            "r": tmp[i : i + 3],  # type: ignore
+            "r": tmp[i : i + 3],
             "t": tmp[i + 3],
         }
         for i in range(0, len(tmp), 4)
@@ -540,7 +636,7 @@ def _parse_species_pot(block: Block) -> dict[str, str | PSPotStrInfo]:
             case [spec]:
                 block_data[None] = spec
             case [spec, pot]:
-                if REs.PSPOT_RE.search(pot):  # We have pspot definition
+                if REs.PSPOT_FULL_LAZY.search(pot):  # We have pspot definition
                     pot = _parse_pspot_string(pot)
                 block_data[spec] = pot
 
@@ -568,13 +664,12 @@ def _parse_general(block: Block) -> GeneralBlock:
 
         if REs.SPEC_PROP_RE.match(line):
             if isinstance(block_data["data"], list):
-                block_data["data"] = {}
-                typing.cast(dict[str, MaybeSequence[float | str]], block_data["data"])
+                block_data["data"] = cast("dict[str, MaybeSequence[float | str]]", {})
 
             spec, val = line.strip().split(maxsplit=1)
             val = to_type(val, determine_type(val))
 
-            typing.cast(MaybeSequence[float | str], val)
+            val = cast(MaybeSequence[float | str], val)
 
             block_data["data"][spec] = val
 

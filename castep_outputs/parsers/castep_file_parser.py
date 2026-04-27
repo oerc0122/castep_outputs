@@ -5,12 +5,13 @@ Notes
 -----
 Port of extract_results.pl
 """
+
 from __future__ import annotations
 
 import itertools
 import re
 from collections import defaultdict
-from collections.abc import Callable
+from collections.abc import Callable, Iterator
 from enum import Flag, auto
 from typing import Any, TextIO, cast
 
@@ -181,8 +182,6 @@ def parse_castep_file(castep_file_in: TextIO,
     ValueError
         On invalid top-level blocks.
     """
-    # pylint: disable=redefined-outer-name
-
     runs: list[dict[str, Any]] = []
     curr_run: dict[str, Any] = defaultdict(list)
 
@@ -334,8 +333,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             key, val = _process_ps_energy(block)
 
-            if "species_properties" not in curr_run:
-                curr_run["species_properties"] = defaultdict(dict)
+            curr_run.setdefault("species_properties", defaultdict(dict))
 
             curr_run["species_properties"][key].update(val)
 
@@ -347,8 +345,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found mass")
 
-            if "species_properties" not in curr_run:
-                curr_run["species_properties"] = defaultdict(dict)
+            curr_run.setdefault("species_properties", defaultdict(dict))
 
             for key, val in _process_spec_prop(block):
                 curr_run["species_properties"][key]["mass"] = float(val)
@@ -362,8 +359,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found electric quadrupole moment")
 
-            if "species_properties" not in curr_run:
-                curr_run["species_properties"] = defaultdict(dict)
+            curr_run.setdefault("species_properties", defaultdict(dict))
 
             for key, val, *_ in _process_spec_prop(block):
                 curr_run["species_properties"][key]["electric_quadrupole_moment"] = float(val)
@@ -377,8 +373,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found pseudopotentials")
 
-            if "species_properties" not in curr_run:
-                curr_run["species_properties"] = defaultdict(dict)
+            curr_run.setdefault("species_properties", defaultdict(dict))
 
             for key, val in _process_spec_prop(block):
                 if Filters.PSPOT in to_parse and "|" in val:
@@ -496,8 +491,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found energy")
 
-            if "energies" not in curr_run:
-                curr_run["energies"] = defaultdict(list)
+            curr_run.setdefault("energies", defaultdict(list))
 
             curr_run["energies"]["final_energy"].append(to_type(get_numbers(line)[-1], float))
 
@@ -515,8 +509,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found estimated 0K energy")
 
-            if "energies" not in curr_run:
-                curr_run["energies"] = defaultdict(list)
+            curr_run.setdefault("energies", defaultdict(list))
 
             curr_run["energies"]["est_0K"].append(to_type(get_numbers(line)[-1], float))
 
@@ -524,8 +517,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found SEDC energy correction")
 
-            if "energies" not in curr_run:
-                curr_run["energies"] = defaultdict(list)
+            curr_run.setdefault("energies", defaultdict(list))
 
             curr_run["energies"]["sedc_correction"].append(to_type(get_numbers(line)[-1], float))
 
@@ -533,8 +525,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found SEDC final energy")
 
-            if "energies" not in curr_run:
-                curr_run["energies"] = defaultdict(list)
+            curr_run.setdefault("energies", defaultdict(list))
 
             curr_run["energies"]["disperson_corrected"].append(
                 to_type(get_numbers(line)[-1], float))
@@ -544,8 +535,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found free energy (E-TS)")
 
-            if "energies" not in curr_run:
-                curr_run["energies"] = defaultdict(list)
+            curr_run.setdefault("energies", defaultdict(list))
 
             curr_run["energies"]["free_energy"].append(to_type(get_numbers(line)[-1], float))
 
@@ -557,8 +547,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
             logger("Found solvation energy")
 
-            if "energies" not in curr_run:
-                curr_run["energies"] = defaultdict(list)
+            curr_run.setdefault("energies", defaultdict(list))
 
             curr_run["energies"]["solvation"].append(*to_type(get_numbers(line), float))
 
@@ -622,8 +611,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if Filters.POSITION not in to_parse:
                 continue
 
-            if "labels" not in curr_run:
-                curr_run["labels"] = defaultdict(dict)
+            curr_run.setdefault("labels", defaultdict(dict))
 
             logger("Found initial positions")
 
@@ -761,8 +749,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if Filters.FORCE not in to_parse:
                 continue
 
-            if "forces" not in curr_run:
-                curr_run["forces"] = defaultdict(list)
+            curr_run.setdefault("forces", defaultdict(list))
 
             key, val = _process_forces(block)
 
@@ -777,8 +764,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if Filters.FORCE not in to_parse:
                 continue
 
-            if "forces" not in curr_run:
-                curr_run["forces"] = defaultdict(list)
+            curr_run.setdefault("forces", defaultdict(list))
 
             key = "com_force_removal"
             val = to_type([get_numbers(line)[0] for line in block if line.startswith(" dF")], float)
@@ -1001,13 +987,21 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["elf"] = _process_elf(block)
 
         # MD Block
-        elif ((block := Block.from_re(line, castep_file,  # Capture general MD step
-                                    "Starting MD iteration",
-                                     "finished MD iteration")) or
-              (block := Block.from_re(line, castep_file,  # Capture 0th iteration
-                                     "Starting MD",
-                                     gen_table_re("", "=+")))):
-
+        elif (
+            block := Block.from_re(
+                line,
+                castep_file,  # Capture general MD step
+                "Starting MD iteration",
+                "(finished MD iteration|Finished MD$)",
+            )
+        ) or (
+            block := Block.from_re(
+                line,
+                castep_file,  # Capture 0th iteration
+                "Starting MD",
+                gen_table_re("", "=+"),
+            )
+        ):
             if Filters.MD not in to_parse:
                 continue
 
@@ -1036,9 +1030,12 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run.update(_process_md_block(block))
 
         # GeomOpt
-        elif block := Block.from_re(line, castep_file, "Final Configuration",
-                                    rf"\s*{REs.MINIMISERS_RE}: Final"):
-
+        elif block := Block.from_re(
+            line,
+            castep_file,
+            "Final Configuration",
+            rf"\s*{REs.MINIMISERS_RE}\s*: Final",
+        ):
             if Filters.GEOM_OPT not in to_parse and Filters.FINAL_CONFIG not in to_parse:
                 continue
 
@@ -1053,8 +1050,7 @@ def parse_castep_file(castep_file_in: TextIO,
             if Filters.GEOM_OPT not in to_parse:
                 continue
 
-            if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = defaultdict(list)
+            curr_run.setdefault("geom_opt", defaultdict(list))
 
             if not curr_run["geom_opt"]["iterations"]:
                 data = {key: val for key, val in curr_run.items()
@@ -1087,6 +1083,8 @@ def parse_castep_file(castep_file_in: TextIO,
             if Filters.GEOM_OPT not in to_parse:
                 continue
 
+            curr_run.setdefault("geom_opt", defaultdict(list))
+
             minim = match["minim"]
 
             logger("Found %s energy", minim)
@@ -1095,8 +1093,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
         elif match := re.search(rf"trial guess \(lambda=\s*({REs.EXPFNUMBER_RE})\)", line):
 
-            if "geom_opt" not in curr_run:
-                curr_run["geom_opt"] = defaultdict(list)
+            curr_run.setdefault("geom_opt", defaultdict(list))
 
             curr_run["geom_opt"]["trial"].append(float(match.group(1)))
 
@@ -1434,8 +1431,13 @@ def _process_spec_prop(block: Block) -> list[list[str]]:
 
     for line in block:
         words = line.split()
-        if words and re.match(rf"{REs.SPECIES_RE}\b", words[0]):
 
+        if not words:
+            continue
+
+        if words[-1] == "on-the-fly":
+            accum.append([words[0], words[-1]])
+        elif re.match(rf"{REs.SPECIES_RE}\b", words[0]):
             accum.append(words)
 
     return accum
@@ -2238,7 +2240,7 @@ def _process_pspot_report(block: Block) -> PSPotReport:
         elif match := re.search(r"Atomic Solver:\s*(?P<solver>[\w\s-]+)", line):
             accum["solver"] = normalise_string(match["solver"])
 
-        elif match := REs.PSPOT_RE.search(line):
+        elif match := REs.PSPOT_FULL_LAZY.search(line):
             accum["detail"] = _parse_pspot_string(match.group(0))
 
         elif "Augmentation charge Rinner" in line:
@@ -2369,19 +2371,33 @@ def _process_phonon(block: Block, logger: Logger) -> list[QData]:
                                          r"Rep\s+Mul", gen_table_re("[-=]+", r"\+"),
                                          eof_possible=True):
             headers = next(char_table).split()[4:]
+
+            # Until 3.11+ Self
+            char_table = cast("Iterator[str]", char_table)
+
             next(char_table)
             char: list[CharTable] = []
+
             for char_line in char_table:
                 if re.search(r"[-=]{4,}", char_line):
                     break
+                if char_line.startswith(" Sum over"):
+                    break  # TODO: Implement parser
+                if char_line.startswith((" *** Warning", "?")):
+                    # WARNINGS
+                    break  # TODO: Implement parser
 
                 head, tail = char_line.split("|")
                 _, rep, *name, mul = head.split()
                 *vals, _ = tail.split()
-                char.append({"chars": tuple(zip(headers, map(int, vals), strict=False)),
-                             "mul": int(mul),
-                             "rep": rep,
-                             "name": name})
+                char.append(
+                    {
+                        "chars": tuple(zip(headers, map(int, vals), strict=False)),
+                        "mul": int(mul),
+                        "rep": rep,
+                        "name": name,
+                    },
+                )
 
             for row in char:
                 if not row["name"]:
@@ -2553,7 +2569,7 @@ def _process_elastic_properties(block: Block) -> ElasticProperties:
     return accum
 
 
-def _process_internal_constraints(block: TextIO) -> list[InternalConstraints]:
+def _process_internal_constraints(block: Block) -> list[InternalConstraints]:
 
     # Skip table headers
     for _ in zip(range(3), block, strict=False):
@@ -2592,7 +2608,7 @@ def _process_internal_constraints(block: TextIO) -> list[InternalConstraints]:
     return accum
 
 
-def _process_deloc_table(block: TextIO) -> DelocInternalsTable:
+def _process_deloc_table(block: Block) -> DelocInternalsTable:
 
     accum: DelocInternalsTable = {"constraint_mapping": {}}
     for line in block:
@@ -2609,7 +2625,7 @@ def _process_deloc_table(block: TextIO) -> DelocInternalsTable:
     return accum
 
 
-def _process_deloc_act_space_table(block: TextIO) -> DelocActiveSpace:
+def _process_deloc_act_space_table(block: Block) -> DelocActiveSpace:
 
     accum = {}
     for line in block:

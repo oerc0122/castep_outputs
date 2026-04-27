@@ -1,9 +1,9 @@
-# pylint: skip-file
-
+import os
+import pytest
 import io
 import pprint
-from unittest import TestCase, main
-
+from unittest import TestCase
+from pathlib import Path
 from castep_outputs.parsers import parse_castep_file
 from castep_outputs.parsers.castep_file_parser import Filters
 
@@ -21,15 +21,23 @@ class test_castep_parser(TestCase):
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'build_info':
-                                     {'summary': ('Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 '
-                                                  'from code version 2c6c6d262 update-jenkins '
-                                                  'Fri Apr 14 15:13:22 2023 +0100'),
-                                      'compiler': 'GNU Fortran 12.2.1; Optimisation: FAST',
-                                      'comms': 'Open MPI v4.1.4',
-                                      'mathlibs': 'blas (LAPACK version 3.11.0)',
-                                      'fft_lib': 'fftw3 version fftw-3.3.10-sse2-avx',
-                                      'fundamental_constants_values': 'CODATA 2018'}})
+        self.assertEqual(
+            test_dict,
+            {
+                "build_info": {
+                    "summary": (
+                        "Compiled for GNU 12.2.1 on 14-04-2023 15:14:41 "
+                        "from code version 2c6c6d262 update-jenkins "
+                        "Fri Apr 14 15:13:22 2023 +0100"
+                    ),
+                    "compiler": "GNU Fortran 12.2.1; Optimisation: FAST",
+                    "comms": "Open MPI v4.1.4",
+                    "mathlibs": "blas (LAPACK version 3.11.0)",
+                    "fft_lib": "fftw3 version fftw-3.3.10-sse2-avx",
+                    "fundamental_constants_values": "CODATA 2018",
+                }
+            },
+        )
 
     def test_get_final_printout(self):
         test_text = io.StringIO("""
@@ -43,12 +51,17 @@ Overall parallel efficiency rating: Satisfactory (64%)
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'calculation_time': 135.01,
-                                     'finalisation_time': 0.03,
-                                     'initialisation_time': 1.07,
-                                     'peak_memory_use': 149108.0,
-                                     'total_time': 136.11,
-                                     'parallel_efficiency': 64.0})
+        self.assertEqual(
+            test_dict,
+            {
+                "calculation_time": 135.01,
+                "finalisation_time": 0.03,
+                "initialisation_time": 1.07,
+                "peak_memory_use": 149108.0,
+                "total_time": 136.11,
+                "parallel_efficiency": 64.0,
+            },
+        )
 
     def test_get_title(self):
         test_text = io.StringIO("""
@@ -58,7 +71,7 @@ Overall parallel efficiency rating: Satisfactory (64%)
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'title': 'CASTEP calculation for SSEC2016'})
+        self.assertEqual(test_dict, {"title": "CASTEP calculation for SSEC2016"})
 
     def test_get_warning(self):
         test_text = io.StringIO("""
@@ -96,35 +109,36 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'warning': ['WARNING - requested pressure too low to be '
-                                                 'accurately maintained - proceed with caution ...',
-
-                                                 'Warning - deprecated keyword PHONON_SUM_RULE found '
-                                                 'in input file - preferred usage is '
-                                                 'PHONON_SUM_RULE_METHOD',
-
-                                                 'Warning in parameters_validate: current value of '
-                                                 'ELEC_ENERGY_TOL = 0.100000E-07eV is too large to '
-                                                 'achieve desired level of convergence of response '
-                                                 'properties. This may cause convergence failures '
-                                                 'and/or inaccuracy of results of PHONON calculations '
-                                                 '- recommend you use a smaller value, e.g. '
-                                                 'ELEC_ENERGY_TOL ~ 0.221894E-09eV',
-
-                                                 'Warning in parameters_validate: current value of '
-                                                 'ELEC_EIGENVALUE_TOL = 0.500000E-08eV is too large to '
-                                                 'achieve desired level of convergence of response '
-                                                 'properties. This may cause convergence failures '
-                                                 'and/or inaccuracy of results of PHONON calculations '
-                                                 '- recommend you use a smaller value, e.g. '
-                                                 'ELEC_EIGENVALUE_TOL = 0.221894E-09eV',
-
-                                                 'TS: Warning - a minimum between Reactant-TS was '
-                                                 'found for image   3',
-
-                                                 'Warning in secondd_find_acoustics Failed to identify '
-                                                 '3 eigenvectors with acoustic character Acoustic sum '
-                                                 'rule correction will only be applied to 2 mode(s)']})
+        self.assertEqual(
+            test_dict,
+            {
+                "warning": [
+                    "WARNING - requested pressure too low to be "
+                    "accurately maintained - proceed with caution ...",
+                    "Warning - deprecated keyword PHONON_SUM_RULE found "
+                    "in input file - preferred usage is "
+                    "PHONON_SUM_RULE_METHOD",
+                    "Warning in parameters_validate: current value of "
+                    "ELEC_ENERGY_TOL = 0.100000E-07eV is too large to "
+                    "achieve desired level of convergence of response "
+                    "properties. This may cause convergence failures "
+                    "and/or inaccuracy of results of PHONON calculations "
+                    "- recommend you use a smaller value, e.g. "
+                    "ELEC_ENERGY_TOL ~ 0.221894E-09eV",
+                    "Warning in parameters_validate: current value of "
+                    "ELEC_EIGENVALUE_TOL = 0.500000E-08eV is too large to "
+                    "achieve desired level of convergence of response "
+                    "properties. This may cause convergence failures "
+                    "and/or inaccuracy of results of PHONON calculations "
+                    "- recommend you use a smaller value, e.g. "
+                    "ELEC_EIGENVALUE_TOL = 0.221894E-09eV",
+                    "TS: Warning - a minimum between Reactant-TS was found for image   3",
+                    "Warning in secondd_find_acoustics Failed to identify "
+                    "3 eigenvectors with acoustic character Acoustic sum "
+                    "rule correction will only be applied to 2 mode(s)",
+                ]
+            },
+        )
 
     def test_get_tss_table(self):
         test_text = io.StringIO("""
@@ -189,13 +203,22 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'memory_estimate':
-                                     [{'blas_internal_memory_storage': {'disk': 0.0, 'memory': 0.0},
-                                       'electronic_energy_minimisation_requirements': {'disk': 0.0,
-                                                                                       'memory': 6100.6},
-                                       'force_calculation_requirements': {'disk': 0.0, 'memory': 9.8},
-                                       'model_and_support_data': {'disk': 0.0, 'memory': 3780.5}}
-                                      ]})
+        self.assertEqual(
+            test_dict,
+            {
+                "memory_estimate": [
+                    {
+                        "blas_internal_memory_storage": {"disk": 0.0, "memory": 0.0},
+                        "electronic_energy_minimisation_requirements": {
+                            "disk": 0.0,
+                            "memory": 6100.6,
+                        },
+                        "force_calculation_requirements": {"disk": 0.0, "memory": 9.8},
+                        "model_and_support_data": {"disk": 0.0, "memory": 3780.5},
+                    }
+                ]
+            },
+        )
 
     def test_get_cell_structure(self):
 
@@ -219,26 +242,24 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_cell':
-                                     {'cell_angles': [90.0, 90.0, 90.0],
-                                      'density_amu': 4.364016,
-                                      'density_g': 7.246619,
-                                      'lattice_parameters': [6.3145,
-                                                             6.3145,
-                                                             6.3145],
-                                      'real_lattice': [(6.3145, 0.0, 0.0),
-                                                       (0.0, 6.3145, 0.0),
-                                                       (0.0, 0.0, 6.3145)],
-                                      'recip_lattice': [(0.995040828,
-                                                         0.0,
-                                                         0.0),
-                                                        (0.0,
-                                                         0.995040828,
-                                                         0.0),
-                                                        (0.0,
-                                                         0.0,
-                                                         0.995040828)],
-                                      'volume': 251.777492}})
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_cell": {
+                    "cell_angles": [90.0, 90.0, 90.0],
+                    "density_amu": 4.364016,
+                    "density_g": 7.246619,
+                    "lattice_parameters": [6.3145, 6.3145, 6.3145],
+                    "real_lattice": [(6.3145, 0.0, 0.0), (0.0, 6.3145, 0.0), (0.0, 0.0, 6.3145)],
+                    "recip_lattice": [
+                        (0.995040828, 0.0, 0.0),
+                        (0.0, 0.995040828, 0.0),
+                        (0.0, 0.0, 0.995040828),
+                    ],
+                    "volume": 251.777492,
+                }
+            },
+        )
 
     def test_get_supercell(self):
         test_text = io.StringIO("""
@@ -246,9 +267,9 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'supercell': ((1.0, 1.0, -1.0),
-                                                   (1.0, -1.0, 1.0),
-                                                   (-1.0, 1.0, 1.0))})
+        self.assertEqual(
+            test_dict, {"supercell": ((1.0, 1.0, -1.0), (1.0, -1.0, 1.0), (-1.0, 1.0, 1.0))}
+        )
 
     def test_get_atom_structure(self):
         test_text = io.StringIO("""
@@ -267,10 +288,16 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_positions':
-                                     {('Mn', 1): (0.061, 0.061, 0.061),
-                                      ('Mn', 2): (0.811, 0.311, 0.189),
-                                      ('Mn:aTag', 3): (0.939, 0.561, 0.439)}})
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_positions": {
+                    ("Mn", 1): (0.061, 0.061, 0.061),
+                    ("Mn", 2): (0.811, 0.311, 0.189),
+                    ("Mn:aTag", 3): (0.939, 0.561, 0.439),
+                }
+            },
+        )
 
     def test_get_atom_struct_labelled(self):
         test_text = io.StringIO("""
@@ -286,13 +313,17 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_positions': {('H [H1]', 1): (0.0, 0.0, 0.0),
-                                                           ('H [H2]', 2): (-0.0, -0.0, 0.166667),
-                                                           ('H', 3): (1.0, -1.0, 0.0)},
-                                     'labels': {('H', 1): 'H1',
-                                                ('H', 2): 'H2',
-                                                ('H', 3): 'NULL'}
-                                     })
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_positions": {
+                    ("H [H1]", 1): (0.0, 0.0, 0.0),
+                    ("H [H2]", 2): (-0.0, -0.0, 0.166667),
+                    ("H", 3): (1.0, -1.0, 0.0),
+                },
+                "labels": {("H", 1): "H1", ("H", 2): "H2", ("H", 3): "NULL"},
+            },
+        )
 
     def test_get_atom_struct_mixed(self):
         test_text = io.StringIO("""
@@ -309,12 +340,17 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_positions': {
-            ('Si', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.75},
-            ('Ge', 1): {'pos': (0.0, 0.0, 0.0), 'weight': 0.25},
-            ('Si [A1]', 2): {'pos': (0.25, 1.25, 0.25), 'weight': 0.75},
-            ('Ge:MyTag', 2): {'pos': (0.25, 1.25, 0.25), 'weight': 0.25}
-                                     }})
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_positions": {
+                    ("Si", 1): {"pos": (0.0, 0.0, 0.0), "weight": 0.75},
+                    ("Ge", 1): {"pos": (0.0, 0.0, 0.0), "weight": 0.25},
+                    ("Si [A1]", 2): {"pos": (0.25, 1.25, 0.25), "weight": 0.75},
+                    ("Ge:MyTag", 2): {"pos": (0.25, 1.25, 0.25), "weight": 0.25},
+                }
+            },
+        )
 
     def test_get_atom_velocities(self):
         test_text = io.StringIO("""
@@ -329,10 +365,16 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_velocities':
-                                     {('Si', 1): (3.60123, 0.98642, 2.77447),
-                                      ('Si', 2): (1.85523, 3.24536, 6.70727),
-                                      ('Si:aTag', 3): (5.86792, 2.40481, 1.76858)}})
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_velocities": {
+                    ("Si", 1): (3.60123, 0.98642, 2.77447),
+                    ("Si", 2): (1.85523, 3.24536, 6.70727),
+                    ("Si:aTag", 3): (5.86792, 2.40481, 1.76858),
+                }
+            },
+        )
 
     def test_get_atom_spin_params(self):
         test_text = io.StringIO("""
@@ -347,12 +389,15 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'initial_spins': {('Cr', 1): {'fix': False,
-                                                                   'magmom': 3.0,
-                                                                   'spin': 0.5},
-                                                       ('Cr', 2): {'fix': True,
-                                                                   'magmom': -3.0,
-                                                                   'spin': -0.5}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_spins": {
+                    ("Cr", 1): {"fix": False, "magmom": 3.0, "spin": 0.5},
+                    ("Cr", 2): {"fix": True, "magmom": -3.0, "spin": -0.5},
+                }
+            },
+        )
 
     def test_get_pspot(self):
         test_text = io.StringIO("""
@@ -417,65 +462,85 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'pspot_detail':
-                                     [{'augmentation_charge_rinner': (0.6,),
-                                       'element': 'Mn',
-                                       'ionic_charge': 15.0,
-                                       'level_of_theory': 'LDA',
-                                       'partial_core_correction': (0.6,),
-                                       'pseudopotential_definition': [{'Rc': 1.803,
-                                                                       'beta': 1,
-                                                                       'e': -3.132,
-                                                                       'j': 1,
-                                                                       'l': 0,
-                                                                       'norm': 0,
-                                                                       'scheme': 'qc'},
-                                                                      {'Rc': 1.803,
-                                                                       'beta': 'loc',
-                                                                       'e': 0.0,
-                                                                       'j': 0,
-                                                                       'l': 3,
-                                                                       'norm': 0,
-                                                                       'scheme': 'pn'},
-                                                                      {'Rc': 1.395,
-                                                                       'beta': 3,
-                                                                       'e': -0.501,
-                                                                       'j': None,
-                                                                       'l': 0,
-                                                                       'norm': 0,
-                                                                       'scheme': 'qc'},
-                                                                      {'Rc': 1.803,
-                                                                       'beta': 'loc',
-                                                                       'e': 0.0,
-                                                                       'j': None,
-                                                                       'l': 3,
-                                                                       'norm': 0,
-                                                                       'scheme': 'pn'}],
-                                       'reference_electronic_structure': [{'energy': -0.501,
-                                                                           'occupation': 2.0,
-                                                                           'orb': '2s'},
-                                                                          {'energy': -3.132,
-                                                                           'occupation': 2.0,
-                                                                           'orb': '3s1/2'},
-                                                                          {'energy': -2.001,
-                                                                           'occupation': 2.0,
-                                                                           'orb': '3p1/2'}],
-                                       'solver': 'Koelling-Harmon'},
-                                      {'element': 'Mn',
-                                       'ionic_charge': 15.0,
-                                       'level_of_theory': 'LDA',
-                                       'pseudopotential_definition': [{'Rc': 1.803,
-                                                                       'beta': 1,
-                                                                       'e': -3.132,
-                                                                       'j': 1,
-                                                                       'l': 0,
-                                                                       'norm': 0,
-                                                                       'scheme': 'qc'}],
-                                       'reference_electronic_structure': [{'energy': -0.501,
-                                                                           'occupation': 2.0,
-                                                                           'orb': '2s'}],
-                                       'solver': 'Koelling-Harmon'}],
-                                     'species_properties': {'Mn': {'pseudo_atomic_energy': -2901.7207}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "pspot_detail": [
+                    {
+                        "augmentation_charge_rinner": (0.6,),
+                        "element": "Mn",
+                        "ionic_charge": 15.0,
+                        "level_of_theory": "LDA",
+                        "partial_core_correction": (0.6,),
+                        "pseudopotential_definition": [
+                            {
+                                "Rc": 1.803,
+                                "beta": 1,
+                                "e": -3.132,
+                                "j": 1,
+                                "l": 0,
+                                "norm": 0,
+                                "scheme": "qc",
+                            },
+                            {
+                                "Rc": 1.803,
+                                "beta": "loc",
+                                "e": 0.0,
+                                "j": 0,
+                                "l": 3,
+                                "norm": 0,
+                                "scheme": "pn",
+                            },
+                            {
+                                "Rc": 1.395,
+                                "beta": 3,
+                                "e": -0.501,
+                                "j": None,
+                                "l": 0,
+                                "norm": 0,
+                                "scheme": "qc",
+                            },
+                            {
+                                "Rc": 1.803,
+                                "beta": "loc",
+                                "e": 0.0,
+                                "j": None,
+                                "l": 3,
+                                "norm": 0,
+                                "scheme": "pn",
+                            },
+                        ],
+                        "reference_electronic_structure": [
+                            {"energy": -0.501, "occupation": 2.0, "orb": "2s"},
+                            {"energy": -3.132, "occupation": 2.0, "orb": "3s1/2"},
+                            {"energy": -2.001, "occupation": 2.0, "orb": "3p1/2"},
+                        ],
+                        "solver": "Koelling-Harmon",
+                    },
+                    {
+                        "element": "Mn",
+                        "ionic_charge": 15.0,
+                        "level_of_theory": "LDA",
+                        "pseudopotential_definition": [
+                            {
+                                "Rc": 1.803,
+                                "beta": 1,
+                                "e": -3.132,
+                                "j": 1,
+                                "l": 0,
+                                "norm": 0,
+                                "scheme": "qc",
+                            }
+                        ],
+                        "reference_electronic_structure": [
+                            {"energy": -0.501, "occupation": 2.0, "orb": "2s"}
+                        ],
+                        "solver": "Koelling-Harmon",
+                    },
+                ],
+                "species_properties": {"Mn": {"pseudo_atomic_energy": -2901.7207}},
+            },
+        )
 
     def test_get_pspot_debug(self):
         test_text = io.StringIO("""
@@ -499,13 +564,18 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'pspot_debug':
-                                     [{'eigenvalue': -18.40702924, 'nl': 10, 'type': 'AE'},
-                                      {'eigenvalue': -0.54031716, 'nl': 20, 'type': 'AE'},
-                                      {'eigenvalue': -0.0183688, 'nl': 21, 'type': 'AE'},
-                                      {'eigenvalue': -0.5402629, 'nl': 20, 'type': 'PS'},
-                                      {'eigenvalue': -0.01829559, 'nl': 21, 'type': 'PS'}
-                                      ]})
+        self.assertEqual(
+            test_dict,
+            {
+                "pspot_debug": [
+                    {"eigenvalue": -18.40702924, "nl": 10, "type": "AE"},
+                    {"eigenvalue": -0.54031716, "nl": 20, "type": "AE"},
+                    {"eigenvalue": -0.0183688, "nl": 21, "type": "AE"},
+                    {"eigenvalue": -0.5402629, "nl": 20, "type": "PS"},
+                    {"eigenvalue": -0.01829559, "nl": 21, "type": "PS"},
+                ]
+            },
+        )
 
     def test_get_species_prop(self):
         test_text = io.StringIO("""
@@ -535,44 +605,68 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
                                     O  my_pot.usp
         """)
         test_dict = parse_castep_file(test_text)[0]
-
-        self.assertEqual(test_dict, {'initial_spins': {('Mn', 1): {'fix': False,
-                                                                   'magmom': 2.500,
-                                                                   'spin': 0.166667},
-                                                       ('Mn', 2): {'fix': False,
-                                                                   'magmom': 2.500,
-                                                                   'spin': 0.166667}},
-                                     'species_properties': {'Mn': {'electric_quadrupole_moment': 0.33,
-                                                                   'mass': 54.93805,
-                                                                   'pseudopot': {'beta_radius': 1.8,
-                                                                                 'coarse': 12.0,
-                                                                                 'core_radius': 1.8,
-                                                                                 'fine': 16.0,
-                                                                                 'local_channel': 3,
-                                                                                 'medium': 14.0,
-                                                                                 'opt': ['qc=7'],
-                                                                                 'print': False,
-                                                                                 'proj': '30U:40:31:32',
-                                                                                 'projectors': ({'orbital': 3,
-                                                                                                 'shell': 's',
-                                                                                                 'type': 'U'},
-                                                                                                {'orbital': 4,
-                                                                                                 'shell': 's',
-                                                                                                 'type': None},
-                                                                                                {'orbital': 3,
-                                                                                                 'shell': 'p',
-                                                                                                 'type': None},
-                                                                                                {'orbital': 3,
-                                                                                                 'shell': 'd',
-                                                                                                 'type': None}),
-                                                                                 'r_inner': 0.6,
-                                                                                 'string': '3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)'}},
-                                                            'O': {'mass': 15.9993815,
-                                                                  'electric_quadrupole_moment': 1.0,
-                                                                  'pseudopot': 'my_pot.usp'}
-                                                            },
-                                     'quantisation_axis': (1.0, 2.0, 3.0)
-                                     })
+        pprint.pprint(test_dict)
+        self.assertEqual(
+            test_dict,
+            {
+                "initial_spins": {
+                    ("Mn", 1): {"fix": False, "magmom": 2.5, "spin": 0.166667},
+                    ("Mn", 2): {"fix": False, "magmom": 2.5, "spin": 0.166667},
+                },
+                "quantisation_axis": (1.0, 2.0, 3.0),
+                "species_properties": {
+                    "Mn": {
+                        "electric_quadrupole_moment": 0.33,
+                        "mass": 54.93805,
+                        "pseudopot": {
+                            "beta_function_string": "30U:40:31:32",
+                            "beta_functions": [
+                                {
+                                    "orbital": 3,
+                                    "projectors": [{"type": "U"}],
+                                    "shell": "s",
+                                    "shell_ind": 0,
+                                },
+                                {
+                                    "orbital": 4,
+                                    "projectors": [],
+                                    "shell": "s",
+                                    "shell_ind": 0,
+                                },
+                                {
+                                    "orbital": 3,
+                                    "projectors": [],
+                                    "shell": "p",
+                                    "shell_ind": 1,
+                                },
+                                {
+                                    "orbital": 3,
+                                    "projectors": [],
+                                    "shell": "d",
+                                    "shell_ind": 2,
+                                },
+                            ],
+                            "beta_radius": 1.8,
+                            "coarse": 12.0,
+                            "core_radius": 1.8,
+                            "fine": 16.0,
+                            "flags": ["qc=7"],
+                            "local_channel": 3.0,
+                            "medium": 14.0,
+                            "poly_fit": False,
+                            "print": False,
+                            "r_inner": 0.6,
+                            "string": "3|1.8|1.8|0.6|12|14|16|30U:40:31:32(qc=7)",
+                        },
+                    },
+                    "O": {
+                        "electric_quadrupole_moment": 1.0,
+                        "mass": 15.9993815,
+                        "pseudopot": "my_pot.usp",
+                    },
+                },
+            },
+        )
 
     def test_get_params(self):
         test_text = io.StringIO("""
@@ -613,24 +707,33 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'options': {'constrained dft - deltascf':
-                                                 {'deltaSCF method': 'simple',
-                                                  'deltaSCF smearing width': (0.01,
-                                                                              'eV'),
-                                                  'deltaSCSF spin moment in channel 1': 0.0,
-                                                  'deltaSCSF spin moment in channel 2': 0.0,
-                                                  'groundstate checkpoint data in': 'N2-base.check'},
-                                                 'density mixing': {'density-mixing scheme': 'Broyden',
-                                                                    'max. length of mixing history': 20},
-                                                 'devel_code': {'calculate_xrd_sf': {'data': [0, 0, 0,
-                                                                                              1, 1, 1,
-                                                                                              2, 2, 0,
-                                                                                              3, 1, 1,
-                                                                                              2, 2, 2]},
-                                                                'dw_factor': {'data': ['Si', 0.4668]}},
-                                                 'general': {'output verbosity': 'normal (1)',
-                                                             'write checkpoint data to': 'beta-mn.check'},
-                                                 'output_units': {'length': 'A'}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "options": {
+                    "constrained dft - deltascf": {
+                        "deltaSCF method": "simple",
+                        "deltaSCF smearing width": (0.01, "eV"),
+                        "deltaSCSF spin moment in channel 1": 0.0,
+                        "deltaSCSF spin moment in channel 2": 0.0,
+                        "groundstate checkpoint data in": "N2-base.check",
+                    },
+                    "density mixing": {
+                        "density-mixing scheme": "Broyden",
+                        "max. length of mixing history": 20,
+                    },
+                    "devel_code": {
+                        "calculate_xrd_sf": {"data": [0, 0, 0, 1, 1, 1, 2, 2, 0, 3, 1, 1, 2, 2, 2]},
+                        "dw_factor": {"data": ["Si", 0.4668]},
+                    },
+                    "general": {
+                        "output verbosity": "normal (1)",
+                        "write checkpoint data to": "beta-mn.check",
+                    },
+                    "output_units": {"length": "A"},
+                }
+            },
+        )
 
     def test_get_dftd_params(self):
         test_text = io.StringIO("""
@@ -654,13 +757,17 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'dftd': {'dispersion_correction_scheme': 'G06',
-                                              'parameter_d': 20.0,
-                                              'parameter_s6': 0.75,
-                                              'species': {'H': {'c6': 1.451, 'r0': 1.001},
-                                                          'N': {'c6': 12.7481, 'r0': 1.397}}
-                                              }}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "dftd": {
+                    "dispersion_correction_scheme": "G06",
+                    "parameter_d": 20.0,
+                    "parameter_s6": 0.75,
+                    "species": {"H": {"c6": 1.451, "r0": 1.001}, "N": {"c6": 12.7481, "r0": 1.397}},
+                }
+            },
+        )
 
         test_text = io.StringIO("""
                                 --------------------
@@ -676,12 +783,18 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'dftd': {'dispersion_correction_scheme': 'XDM',
-                                              'parameter_a1': 0.3454,
-                                              'parameter_a2': 5.229439,
-                                              'parameter_sc': 1.0,
-                                              'species': {}}}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "dftd": {
+                    "dispersion_correction_scheme": "XDM",
+                    "parameter_a1": 0.3454,
+                    "parameter_a2": 5.229439,
+                    "parameter_sc": 1.0,
+                    "species": {},
+                }
+            },
+        )
 
     def test_get_verbose_com_remove(self):
         test_text = io.StringIO("""
@@ -694,9 +807,16 @@ firstd_calculate: removing force on centre of mass
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces': {'com_force_removal': [(-1.0633987424376136e-08,
-                                                                       4.9260774814424966e-08,
-                                                                       -0.0009537973786169963)]}})
+        self.assertEqual(
+            test_dict,
+            {
+                "forces": {
+                    "com_force_removal": [
+                        (-1.0633987424376136e-08, 4.9260774814424966e-08, -0.0009537973786169963)
+                    ]
+                }
+            },
+        )
 
     def test_get_k_pts(self):
         test_text = io.StringIO("""
@@ -711,9 +831,16 @@ firstd_calculate: removing force on centre of mass
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'k-points': {'kpoint_mp_grid': (4, 4, 4),
-                                                  'kpoint_mp_offset': (0.0, 0.0, 0.0),
-                                                  'num_kpoints': 32}})
+        self.assertEqual(
+            test_dict,
+            {
+                "k-points": {
+                    "kpoint_mp_grid": (4, 4, 4),
+                    "kpoint_mp_offset": (0.0, 0.0, 0.0),
+                    "num_kpoints": 32,
+                }
+            },
+        )
 
         test_text = io.StringIO("""
                            -------------------------------
@@ -725,7 +852,7 @@ firstd_calculate: removing force on centre of mass
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'k-points': {'num_kpoints': 2}})
+        self.assertEqual(test_dict, {"k-points": {"num_kpoints": 2}})
 
         test_text = io.StringIO("""
              +++++++++++++++++++++++++++++++++++++++++++++++++++++++
@@ -737,9 +864,18 @@ firstd_calculate: removing force on centre of mass
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'k-points': {'points': [{'qpt': (0.0, 0.0, 0.0), 'weight': 1.0},
-                                                             {'qpt': (4.0, 6.0, 4.0), 'weight': 5.0}],
-                                                  'num_kpoints': 2}})
+        self.assertEqual(
+            test_dict,
+            {
+                "k-points": {
+                    "points": [
+                        {"qpt": (0.0, 0.0, 0.0), "weight": 1.0},
+                        {"qpt": (4.0, 6.0, 4.0), "weight": 5.0},
+                    ],
+                    "num_kpoints": 2,
+                }
+            },
+        )
 
     def test_get_applied_efield(self):
         test_text = io.StringIO("""
@@ -749,7 +885,7 @@ firstd_calculate: removing force on centre of mass
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'applied_field': (0.1, 0.1, 0.1)})
+        self.assertEqual(test_dict, {"applied_field": (0.1, 0.1, 0.1)})
 
     def test_charge_spilling(self):
         test_text = io.StringIO("""
@@ -762,9 +898,14 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'species_properties':
-                                     {'Fe': {'charge_spilling': (0.0009, 0.0044),
-                                             'pseudo_atomic_energy': -490.5382}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "species_properties": {
+                    "Fe": {"charge_spilling": (0.0009, 0.0044), "pseudo_atomic_energy": -490.5382}
+                }
+            },
+        )
 
     def test_get_symmetry(self):
         test_text = io.StringIO("""
@@ -791,20 +932,29 @@ Charge spilling parameter for spin component 2 = 0.44%
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'constraints': {'cell_constraints': (1, 2, 3, 4, 5, 6),
-                                                     'com_constrained': True,
-                                                     'num_cell_constraints': 0,
-                                                     'num_ionic_constraints': 3},
-                                     'symmetries': {'max_deviation': 0.0,
-                                                    'n_primitives': 2,
-                                                    'num_symmetry_operations': 1,
-                                                    'point_group': {'hermann_mauguin': '1',
-                                                                    'hermann_mauguin_full': '1',
-                                                                    'id': 1,
-                                                                    'schoenflies': 'C1'},
-                                                    'space_group': {'hall': 'P 1',
-                                                                    'id': 1,
-                                                                    'international': 'P1'}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "constraints": {
+                    "cell_constraints": (1, 2, 3, 4, 5, 6),
+                    "com_constrained": True,
+                    "num_cell_constraints": 0,
+                    "num_ionic_constraints": 3,
+                },
+                "symmetries": {
+                    "max_deviation": 0.0,
+                    "n_primitives": 2,
+                    "num_symmetry_operations": 1,
+                    "point_group": {
+                        "hermann_mauguin": "1",
+                        "hermann_mauguin_full": "1",
+                        "id": 1,
+                        "schoenflies": "C1",
+                    },
+                    "space_group": {"hall": "P 1", "id": 1, "international": "P1"},
+                },
+            },
+        )
 
         test_text = io.StringIO("""
                            -------------------------------
@@ -862,42 +1012,57 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'constraints': {'num_cell_constraints': 6,
-                                                     'num_ionic_constraints': 3,
-                                                     'cell_constraints': (0, 0, 0, 0, 0, 0),
-                                                     'com_constrained': True,
-                                                     'ionic_constraints':
-                                                     {('Se', 1): [(143935.2749, 0.0, 0.0),
-                                                                  (0.0, 143935.2749, 0.0),
-                                                                  (0.0, 0.0, 143935.2749)],
-                                                      ('Se', 2): [(143935.2749, 0.0, 0.0),
-                                                                  (0.0, 143935.2749, 0.0),
-                                                                  (0.0, 0.0, 143935.2749)],
-                                                      ('Se', 3): [(143935.2749, 0.0, 0.0),
-                                                                  (0.0, 143935.2749, 0.0),
-                                                                  (0.0, 0.0, 143935.2749)]}},
-                                     'symmetries': {'max_deviation': 0.0,
-                                                    'num_symmetry_operations': 1,
-                                                    'point_group': {'hermann_mauguin': '1',
-                                                                    'hermann_mauguin_full': '1',
-                                                                    'id': 1,
-                                                                    'schoenflies': 'C1'},
-                                                    'space_group': {'hall': 'P 4bd 2ab 3',
-                                                                    'id': 213,
-                                                                    'international': 'P4_132'},
-                                                    'symop': [{'displacement': (0.0, 0.0, -0.0),
-                                                               'rotation': [(1.0, 0.0, 0.0),
-                                                                            (0.0, 1.0, -0.0),
-                                                                            (-0.0, -0.0, 1.0)],
-                                                               'symmetry_related': [('Br', 1),
-                                                                                    ('Rb', 1)]},
-                                                              {'displacement': (0.0, 0.0, 0.0),
-                                                               'rotation': [(1.0, 0.0, 0.0),
-                                                                            (0.0, 1.0, 0.0),
-                                                                            (0.0, 0.0, 1.0)],
-                                                               'symmetry_related': [('Se', 1),
-                                                                                    ('Se', 2),
-                                                                                    ('Se', 3)]}]}})
+        self.assertEqual(
+            test_dict,
+            {
+                "constraints": {
+                    "num_cell_constraints": 6,
+                    "num_ionic_constraints": 3,
+                    "cell_constraints": (0, 0, 0, 0, 0, 0),
+                    "com_constrained": True,
+                    "ionic_constraints": {
+                        ("Se", 1): [
+                            (143935.2749, 0.0, 0.0),
+                            (0.0, 143935.2749, 0.0),
+                            (0.0, 0.0, 143935.2749),
+                        ],
+                        ("Se", 2): [
+                            (143935.2749, 0.0, 0.0),
+                            (0.0, 143935.2749, 0.0),
+                            (0.0, 0.0, 143935.2749),
+                        ],
+                        ("Se", 3): [
+                            (143935.2749, 0.0, 0.0),
+                            (0.0, 143935.2749, 0.0),
+                            (0.0, 0.0, 143935.2749),
+                        ],
+                    },
+                },
+                "symmetries": {
+                    "max_deviation": 0.0,
+                    "num_symmetry_operations": 1,
+                    "point_group": {
+                        "hermann_mauguin": "1",
+                        "hermann_mauguin_full": "1",
+                        "id": 1,
+                        "schoenflies": "C1",
+                    },
+                    "space_group": {"hall": "P 4bd 2ab 3", "id": 213, "international": "P4_132"},
+                    "symop": [
+                        {
+                            "displacement": (0.0, 0.0, -0.0),
+                            "rotation": [(1.0, 0.0, 0.0), (0.0, 1.0, -0.0), (-0.0, -0.0, 1.0)],
+                            "symmetry_related": [("Br", 1), ("Rb", 1)],
+                        },
+                        {
+                            "displacement": (0.0, 0.0, 0.0),
+                            "rotation": [(1.0, 0.0, 0.0), (0.0, 1.0, 0.0), (0.0, 0.0, 1.0)],
+                            "symmetry_related": [("Se", 1), ("Se", 2), ("Se", 3)],
+                        },
+                    ],
+                },
+            },
+        )
 
     def test_get_target_stress(self):
         test_text = io.StringIO("""
@@ -909,7 +1074,7 @@ Charge spilling parameter for spin component 2 = 0.44%
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'target_stress': [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]]})
+        self.assertEqual(test_dict, {"target_stress": [[1.0, 2.0, 3.0, 4.0, 5.0, 6.0]]})
 
     def test_delta_scf(self):
         test_text = io.StringIO("""
@@ -931,15 +1096,18 @@ Taking band from model   N2-base.check
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'delta_scf': {'file': 'N2-base.check',
-                                                   'states': [{'band': 5,
-                                                               'file': 'N2-modos.modos_state_5_1',
-                                                               'pop': 1.0,
-                                                               'spin': 1},
-                                                              {'band': 6,
-                                                               'file': 'N2-modos.modos_state_6_1',
-                                                               'pop': 0.0,
-                                                               'spin': 1}]}})
+        self.assertEqual(
+            test_dict,
+            {
+                "delta_scf": {
+                    "file": "N2-base.check",
+                    "states": [
+                        {"band": 5, "file": "N2-modos.modos_state_5_1", "pop": 1.0, "spin": 1},
+                        {"band": 6, "file": "N2-modos.modos_state_6_1", "pop": 0.0, "spin": 1},
+                    ],
+                }
+            },
+        )
 
     def test_get_scf(self):
         test_text = io.StringIO("""
@@ -954,18 +1122,33 @@ Initial  -8.43823694E+002  0.00000000E+000                         2.77  <-- SCF
         """)
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'scf': [[{'energy': -843.823694,
-                                               'energy_gain': None,
-                                               'fermi_energy': 0.0,
-                                               'time': 2.77},
-                                              {'energy': -855.962165,
-                                               'energy_gain': 1.51730885,
-                                               'fermi_energy': 6.11993396,
-                                               'time': 3.54},
-                                              {'energy': -855.990255,
-                                               'energy_gain': 0.0035112733,
-                                               'fermi_energy': 6.11946292,
-                                               'time': 4.5}]]})
+        self.assertEqual(
+            test_dict,
+            {
+                "scf": [
+                    [
+                        {
+                            "energy": -843.823694,
+                            "energy_gain": None,
+                            "fermi_energy": 0.0,
+                            "time": 2.77,
+                        },
+                        {
+                            "energy": -855.962165,
+                            "energy_gain": 1.51730885,
+                            "fermi_energy": 6.11993396,
+                            "time": 3.54,
+                        },
+                        {
+                            "energy": -855.990255,
+                            "energy_gain": 0.0035112733,
+                            "fermi_energy": 6.11946292,
+                            "time": 4.5,
+                        },
+                    ]
+                ]
+            },
+        )
 
         test_text = io.StringIO("""
 ------------------------------------------------------------------------ <-- SCF
@@ -983,24 +1166,41 @@ Total energy has converged after 11 SCF iterations.
         """)
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'scf': [[{'energy': -23.7153226,
-                                               'energy_gain': None,
-                                               'fermi_energy': 0.0,
-                                               'time': 0.17},
-                                              {'density_residual': None,
-                                               'energy': -32.3437859,
-                                               'energy_gain': 4.31423163,
-                                               'fermi_energy': -1.29587284,
-                                               'time': 0.17},
-                                              {'density_residual': 0.09145103723490297,
-                                               'energy': -32.3439432,
-                                               'energy_gain': 7.86354909e-05,
-                                               'fermi_energy': -1.29587691,
-                                               'time': 0.18},
-                                              {'energy': -32.0352173,
-                                               'energy_gain': -0.154362953,
-                                               'fermi_energy': -1.10248324,
-                                               'time': 0.18}]]})
+        self.assertEqual(
+            test_dict,
+            {
+                "scf": [
+                    [
+                        {
+                            "energy": -23.7153226,
+                            "energy_gain": None,
+                            "fermi_energy": 0.0,
+                            "time": 0.17,
+                        },
+                        {
+                            "density_residual": None,
+                            "energy": -32.3437859,
+                            "energy_gain": 4.31423163,
+                            "fermi_energy": -1.29587284,
+                            "time": 0.17,
+                        },
+                        {
+                            "density_residual": 0.09145103723490297,
+                            "energy": -32.3439432,
+                            "energy_gain": 7.86354909e-05,
+                            "fermi_energy": -1.29587691,
+                            "time": 0.18,
+                        },
+                        {
+                            "energy": -32.0352173,
+                            "energy_gain": -0.154362953,
+                            "fermi_energy": -1.10248324,
+                            "time": 0.18,
+                        },
+                    ]
+                ]
+            },
+        )
 
         test_text = io.StringIO("""
 ------------------------------------------------------------------------ <-- SCF
@@ -1054,46 +1254,57 @@ NB est. 0K energy (E-0.5TS)      =      -847.76870143045277928 eV
         """)
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'scf': [[{'energy': -845.018104,
-                                               'energy_gain': None,
-                                               'fermi_energy': 0.0,
-                                               'time': 3.81},
-                                              {'debug_info': {'contributions': {
-                                                  'apolar_correction': 0.0,
-                                                  'electronic_entropy_term_ts': -2.12e-15,
-                                                  'ewald_energy_const': -74.1082045250128,
-                                                  'exchange_correlation_energy': -232.32975595141912,
-                                                  'fermi_energy': -1.0921,
-                                                  'hartree_energy': 555.1912117485839,
-                                                  'hubbard_u_correction': 0.0,
-                                                  'kinetic_energy': 539.6822775381202,
-                                                  'local_pseudopotential_energy': -1615.3773885728504,
-                                                  'non_coulombic_energy_const': 6.361496575714284,
-                                                  'non_local_energy': 126.6514284153757,
-                                                  'potential_energy_total': -1446.3556994346502,
-                                                  'total_free_energy_e_ts': -847.7687014304528,
-                                                  'xc_correction': 65.01253419559009
-                                              },
-                                                              'eigenvalue': [[{'change': 0.6761,
-                                                                               'final': -28.57,
-                                                                               'initial': -27.89},
-                                                                              {'change': 0.2477,
-                                                                               'final': -20.19,
-                                                                               'initial': -19.95}],
-                                                                             [{'change': 0.7169,
-                                                                               'final': -28.61,
-                                                                               'initial': -27.89},
-                                                                              {'change': 0.2696,
-                                                                               'final': -20.22,
-                                                                               'initial': -19.95}]],
-                                                              'kinetic_eigenvalue': [19.929544,
-                                                                                     12.921903],
-                                                              'no_bands': 7},
-                                               'energy': -847.768701,
-                                               'energy_gain': 0.305621978,
-                                               'fermi_energy': -1.09214177,
-                                               'time': 3.84}]]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "scf": [
+                    [
+                        {
+                            "energy": -845.018104,
+                            "energy_gain": None,
+                            "fermi_energy": 0.0,
+                            "time": 3.81,
+                        },
+                        {
+                            "debug_info": {
+                                "contributions": {
+                                    "apolar_correction": 0.0,
+                                    "electronic_entropy_term_ts": -2.12e-15,
+                                    "ewald_energy_const": -74.1082045250128,
+                                    "exchange_correlation_energy": -232.32975595141912,
+                                    "fermi_energy": -1.0921,
+                                    "hartree_energy": 555.1912117485839,
+                                    "hubbard_u_correction": 0.0,
+                                    "kinetic_energy": 539.6822775381202,
+                                    "local_pseudopotential_energy": -1615.3773885728504,
+                                    "non_coulombic_energy_const": 6.361496575714284,
+                                    "non_local_energy": 126.6514284153757,
+                                    "potential_energy_total": -1446.3556994346502,
+                                    "total_free_energy_e_ts": -847.7687014304528,
+                                    "xc_correction": 65.01253419559009,
+                                },
+                                "eigenvalue": [
+                                    [
+                                        {"change": 0.6761, "final": -28.57, "initial": -27.89},
+                                        {"change": 0.2477, "final": -20.19, "initial": -19.95},
+                                    ],
+                                    [
+                                        {"change": 0.7169, "final": -28.61, "initial": -27.89},
+                                        {"change": 0.2696, "final": -20.22, "initial": -19.95},
+                                    ],
+                                ],
+                                "kinetic_eigenvalue": [19.929544, 12.921903],
+                                "no_bands": 7,
+                            },
+                            "energy": -847.768701,
+                            "energy_gain": 0.305621978,
+                            "fermi_energy": -1.09214177,
+                            "time": 3.84,
+                        },
+                    ]
+                ]
+            },
+        )
 
     def test_get_bsc_scf(self):
         test_text = io.StringIO("""
@@ -1153,41 +1364,62 @@ NB est. 0K energy (E-0.5TS)      =  -216.4682741546     eV
 
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'bsc_scf': [[{'energy': -216.330992,
-                                                   'energy_gain': None,
-                                                   'fermi_energy': 0.0,
-                                                   'time': 1.21},
-                                                  {'energy': -216.495167,
-                                                   'energy_gain': 0.0820874626,
-                                                   'fermi_energy': 4.14887478,
-                                                   'time': 1.33}],
-                                                 [{'energy': -216.419103,
-                                                   'energy_gain': None,
-                                                   'fermi_energy': 0.0,
-                                                   'time': 2.75},
-                                                  {'energy': -216.446853,
-                                                   'energy_gain': 0.0138746578,
-                                                   'fermi_energy': 4.3549876,
-                                                   'time': 2.86}]],
-                                     'bsc_energies': {'est_0K': [-216.4196574619,
-                                                                 -216.4463936449],
-                                                      'final_energy': [-216.419136477,
-                                                                       -216.4458405943],
-                                                      'free_energy': [-216.4201784468,
-                                                                      -216.4469466955]},
-                                     'dedlne': -0.749584,
-                                     'energies': {'est_0K': [-216.4682741546],
-                                                  'final_basis_set_corrected': [-216.469505],
-                                                  'final_energy': [-216.4677199357],
-                                                  'free_energy': [-216.4688283736]},
-                                     'scf': [{'energy': -216.445805,
-                                              'energy_gain': None,
-                                              'fermi_energy': 0.0,
-                                              'time': 3.63},
-                                             {'energy': -216.468756,
-                                              'energy_gain': 0.0114756678,
-                                              'fermi_energy': 4.35489704,
-                                              'time': 3.77}]})
+        self.assertEqual(
+            test_dict,
+            {
+                "bsc_scf": [
+                    [
+                        {
+                            "energy": -216.330992,
+                            "energy_gain": None,
+                            "fermi_energy": 0.0,
+                            "time": 1.21,
+                        },
+                        {
+                            "energy": -216.495167,
+                            "energy_gain": 0.0820874626,
+                            "fermi_energy": 4.14887478,
+                            "time": 1.33,
+                        },
+                    ],
+                    [
+                        {
+                            "energy": -216.419103,
+                            "energy_gain": None,
+                            "fermi_energy": 0.0,
+                            "time": 2.75,
+                        },
+                        {
+                            "energy": -216.446853,
+                            "energy_gain": 0.0138746578,
+                            "fermi_energy": 4.3549876,
+                            "time": 2.86,
+                        },
+                    ],
+                ],
+                "bsc_energies": {
+                    "est_0K": [-216.4196574619, -216.4463936449],
+                    "final_energy": [-216.419136477, -216.4458405943],
+                    "free_energy": [-216.4201784468, -216.4469466955],
+                },
+                "dedlne": -0.749584,
+                "energies": {
+                    "est_0K": [-216.4682741546],
+                    "final_basis_set_corrected": [-216.469505],
+                    "final_energy": [-216.4677199357],
+                    "free_energy": [-216.4688283736],
+                },
+                "scf": [
+                    {"energy": -216.445805, "energy_gain": None, "fermi_energy": 0.0, "time": 3.63},
+                    {
+                        "energy": -216.468756,
+                        "energy_gain": 0.0114756678,
+                        "fermi_energy": 4.35489704,
+                        "time": 3.77,
+                    },
+                ],
+            },
+        )
 
     def test_get_dipole_scf(self):
         test_text = io.StringIO("""
@@ -1203,19 +1435,34 @@ Initial  -3.02130061E+002  0.00000000E+000                         3.32  <-- SCF
         """)
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'scf': [[{'energy': -302.130061,
-                                               'energy_gain': None,
-                                               'fermi_energy': 0.0,
-                                               'time': 3.32},
-                                              {'energy': -343.042177,
-                                               'energy_gain': 20.4560579,
-                                               'fermi_energy': -7.89452039,
-                                               'time': 3.39},
-                                              {'dipole_corr_energy': 0.11814,
-                                               'energy': -343.046622,
-                                               'energy_gain': 0.00222269514,
-                                               'fermi_energy': -7.895364,
-                                               'time': 3.44}]]})
+        self.assertEqual(
+            test_dict,
+            {
+                "scf": [
+                    [
+                        {
+                            "energy": -302.130061,
+                            "energy_gain": None,
+                            "fermi_energy": 0.0,
+                            "time": 3.32,
+                        },
+                        {
+                            "energy": -343.042177,
+                            "energy_gain": 20.4560579,
+                            "fermi_energy": -7.89452039,
+                            "time": 3.39,
+                        },
+                        {
+                            "dipole_corr_energy": 0.11814,
+                            "energy": -343.046622,
+                            "energy_gain": 0.00222269514,
+                            "fermi_energy": -7.895364,
+                            "time": 3.44,
+                        },
+                    ]
+                ]
+            },
+        )
 
     def test_get_constrained_scf(self):
         test_text = io.StringIO("""
@@ -1233,20 +1480,35 @@ Initial  -8.74382993E+002 -9.34072274E+000                         3.41  <-- SCF
         """)
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'scf': [[{'energy': -874.382993,
-                                               'energy_gain': None,
-                                               'fermi_energy': -9.34072274,
-                                               'time': 3.41},
-                                              {'constraint_energy': 1.0839687043738317e-05,
-                                               'energy': -874.894712,
-                                               'energy_gain': 0.511719101,
-                                               'fermi_energy': -9.12958602,
-                                               'time': 12.16},
-                                              {'constraint_energy': 2.4886530082978212e-08,
-                                               'energy': -874.898726,
-                                               'energy_gain': 0.00401413122,
-                                               'fermi_energy': -9.14432144,
-                                               'time': 23.1}]]})
+        self.assertEqual(
+            test_dict,
+            {
+                "scf": [
+                    [
+                        {
+                            "energy": -874.382993,
+                            "energy_gain": None,
+                            "fermi_energy": -9.34072274,
+                            "time": 3.41,
+                        },
+                        {
+                            "constraint_energy": 1.0839687043738317e-05,
+                            "energy": -874.894712,
+                            "energy_gain": 0.511719101,
+                            "fermi_energy": -9.12958602,
+                            "time": 12.16,
+                        },
+                        {
+                            "constraint_energy": 2.4886530082978212e-08,
+                            "energy": -874.898726,
+                            "energy_gain": 0.00401413122,
+                            "fermi_energy": -9.14432144,
+                            "time": 23.1,
+                        },
+                    ]
+                ]
+            },
+        )
 
     def test_get_occupancy(self):
         test_text = io.StringIO("""
@@ -1265,12 +1527,17 @@ Have a nice day.
 
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'occupancies': [[{'band': 1,
-                                                       'eigenvalue': -10.3844,
-                                                       'occupancy': 1.0},
-                                                      {'band': 2,
-                                                       'eigenvalue': 0.32633,
-                                                       'occupancy': 1.11022e-16}]]})
+        self.assertEqual(
+            test_dict,
+            {
+                "occupancies": [
+                    [
+                        {"band": 1, "eigenvalue": -10.3844, "occupancy": 1.0},
+                        {"band": 2, "eigenvalue": 0.32633, "occupancy": 1.11022e-16},
+                    ]
+                ]
+            },
+        )
 
     def test_wvfn_get_line_min(self):
         test_text = io.StringIO("""
@@ -1287,10 +1554,19 @@ Have a nice day.
 
         test_dict = parse_castep_file(test_text, Filters.FULL)[0]
 
-        self.assertEqual(test_dict, {'wvfn_line_min': [{'gain': (0.1469, 0.1518),
-                                                        'init_de_dstep': -0.2376,
-                                                        'init_energy': -1031.551,
-                                                        'steps': (1.5, 1.276)}]})
+        self.assertEqual(
+            test_dict,
+            {
+                "wvfn_line_min": [
+                    {
+                        "gain": (0.1469, 0.1518),
+                        "init_de_dstep": -0.2376,
+                        "init_energy": -1031.551,
+                        "steps": (1.5, 1.276),
+                    }
+                ]
+            },
+        )
 
     def test_get_energies(self):
         test_text = io.StringIO("""
@@ -1308,20 +1584,26 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
  Total energy corrected for finite basis set =    -855.471052 eV
         """)
 
-# Dispersion corrected final energy*, Ecor          =  -1034.338872426     eV
-# Dispersion corrected final free energy* (Ecor-TS) =  -1134.338872426     eV
-# NB dispersion corrected est. 0K energy* (Ecor-0.5TS) =  -1234.338872426     eV
+        # Dispersion corrected final energy*, Ecor          =  -1034.338872426     eV
+        # Dispersion corrected final free energy* (Ecor-TS) =  -1134.338872426     eV
+        # NB dispersion corrected est. 0K energy* (Ecor-0.5TS) =  -1234.338872426     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'dedlne': -3.335211,
-                                     'energies': {'disperson_corrected': [-1268.3073245],
-                                                  'est_0K': [-855.4608344414],
-                                                  'final_basis_set_corrected': [-855.471052],
-                                                  'final_energy': [-1267.604578357,
-                                                                   -855.4591023999],
-                                                  'free_energy': [-855.462566483],
-                                                  'sedc_correction': [-0.702746]}})
+        self.assertEqual(
+            test_dict,
+            {
+                "dedlne": -3.335211,
+                "energies": {
+                    "disperson_corrected": [-1268.3073245],
+                    "est_0K": [-855.4608344414],
+                    "final_basis_set_corrected": [-855.471052],
+                    "final_energy": [-1267.604578357, -855.4591023999],
+                    "free_energy": [-855.462566483],
+                    "sedc_correction": [-0.702746],
+                },
+            },
+        )
 
     def test_get_forces(self):
         test_text = io.StringIO("""
@@ -1363,19 +1645,27 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces':
-                                     {'non_descript': [{
-                                         ('Si', 1): (-2.27362, -0.18351, -0.11133),
-                                         ('Si', 2): (-2.003, -0.71954, -0.89066),
-                                         ('Si', 3): (-1.83082, -0.17303, -0.91369)
-                                     }],
-                                      'fun': [{
-                                          ('Si', 1): (1.0, 1.0, 1.0),
-                                          ('Si', 2): (1.0, 1.0, 1.0),
-                                          ('Si', 3): (1.0, 1.0, 1.0)
-                                      }]
-                                      }
-                                     })
+        self.assertEqual(
+            test_dict,
+            {
+                "forces": {
+                    "non_descript": [
+                        {
+                            ("Si", 1): (-2.27362, -0.18351, -0.11133),
+                            ("Si", 2): (-2.003, -0.71954, -0.89066),
+                            ("Si", 3): (-1.83082, -0.17303, -0.91369),
+                        }
+                    ],
+                    "fun": [
+                        {
+                            ("Si", 1): (1.0, 1.0, 1.0),
+                            ("Si", 2): (1.0, 1.0, 1.0),
+                            ("Si", 3): (1.0, 1.0, 1.0),
+                        }
+                    ],
+                }
+            },
+        )
 
     def test_get_forces_constrained(self):
         test_text = io.StringIO("""
@@ -1394,12 +1684,16 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces':
-                                     {'constrained': [{
-                                         ('Si', 1): (1.0, 2.0, 3.0),
-                                         ('Si', 2): (0.00818, 0.26933, 0.30025)}
-                                                      ]}
-                                     })
+        self.assertEqual(
+            test_dict,
+            {
+                "forces": {
+                    "constrained": [
+                        {("Si", 1): (1.0, 2.0, 3.0), ("Si", 2): (0.00818, 0.26933, 0.30025)}
+                    ]
+                }
+            },
+        )
 
     def test_get_forces_labelled(self):
         test_text = io.StringIO("""
@@ -1417,9 +1711,16 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces': {'non_descript': [{('H [H1]', 1): (0.0, 0.0, -0.0647),
-                                                                  ('H [H2]', 2): (-0.0, -0.0, 0.0647)}]
-                                                }})
+        self.assertEqual(
+            test_dict,
+            {
+                "forces": {
+                    "non_descript": [
+                        {("H [H1]", 1): (0.0, 0.0, -0.0647), ("H [H2]", 2): (-0.0, -0.0, 0.0647)}
+                    ]
+                }
+            },
+        )
 
     def test_get_forces_mixed(self):
         test_text = io.StringIO("""
@@ -1438,12 +1739,21 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'forces':
-                                     {'symmetrised': [{('Ge', 1): (0.0, 0.0, 0.0),
-                                                      ('Ge', 2): (0.0, 0.0, 0.0),
-                                                      ('Si', 1): (0.0, 0.0, 0.0),
-                                                      ('Si', 2): (0.0, 0.0, 0.0)}]
-                                      }})
+        self.assertEqual(
+            test_dict,
+            {
+                "forces": {
+                    "symmetrised": [
+                        {
+                            ("Ge", 1): (0.0, 0.0, 0.0),
+                            ("Ge", 2): (0.0, 0.0, 0.0),
+                            ("Si", 1): (0.0, 0.0, 0.0),
+                            ("Si", 2): (0.0, 0.0, 0.0),
+                        }
+                    ]
+                }
+            },
+        )
 
     def test_get_stress(self):
         test_text = io.StringIO("""
@@ -1478,17 +1788,17 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'stresses':
-                                     {
-                                         'non_descript': [(10.491143, -1.300645, -2.326648,
-                                                          3.068913, -5.026993,
-                                                          6.215774)],
-                                         'fun': [(10.882675, 0.0, 0.0,
-                                                 10.882675, -0.0,
-                                                 10.882675)]
-                                     }
-                                     }
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "stresses": {
+                    "non_descript": [
+                        (10.491143, -1.300645, -2.326648, 3.068913, -5.026993, 6.215774)
+                    ],
+                    "fun": [(10.882675, 0.0, 0.0, 10.882675, -0.0, 10.882675)],
+                }
+            },
+        )
 
     def test_get_md_data(self):
         test_text = io.StringIO("""
@@ -1599,36 +1909,63 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'memory_estimate': [{'model_and_support_data': {'disk': 0.0, 'memory': 27.2},
-                                                          'molecular_dynamics_requirements': {'disk': 0.0, 'memory': 13.4}}],
-                                     'md': [
-                                         {'enthalpy': -854.758633,
-                                          'hamilt_energy': -854.677308,
-                                          'kinetic_energy': 0.673458,
-                                          'potential_energy': -855.432091,
-                                          'temperature': 651.262915,
-                                          'total_energy': -854.758633,
-                                          'energies': {'est_0K': [-855.4216728959],
-                                                       'final_energy': [-855.4197401755],
-                                                       'free_energy': [-855.4236056162]},
-                                          'forces': {'non_descript': [{('Si', 1): (-0.05358, -0.04038, 0.69168),
-                                                                       ('Si', 2): (0.72539, 0.3538, -1.12992)}]},
-                                          'cell': {'cell_angles': [90.0, 90.0, 90.0],
-                                                   'density_amu': 1.403372,
-                                                   'density_g': 2.330353,
-                                                   'lattice_parameters': [5.43, 5.43, 5.43],
-                                                   'real_lattice': [(5.43, 0.0, 0.0),
-                                                                    (0.0, 5.43, 0.0),
-                                                                    (0.0, 0.0, 5.43)],
-                                                   'recip_lattice': [(1.157124366, 0.0, 0.0),
-                                                                     (0.0, 1.157124366, 0.0),
-                                                                     (0.0, 0.0, 1.157124366)],
-                                                   'volume': 160.103007},
-                                          'positions': {('Si', 1): (0.001291, 0.00032, 0.001059),
-                                                        ('Si', 2): (0.000729, 0.504323, 0.520521)},
-                                          'stresses': {'non_descript': [(2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)]},
-                                          'time': 0.002}]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "memory_estimate": [
+                    {
+                        "model_and_support_data": {"disk": 0.0, "memory": 27.2},
+                        "molecular_dynamics_requirements": {"disk": 0.0, "memory": 13.4},
+                    }
+                ],
+                "md": [
+                    {
+                        "enthalpy": -854.758633,
+                        "hamilt_energy": -854.677308,
+                        "kinetic_energy": 0.673458,
+                        "potential_energy": -855.432091,
+                        "temperature": 651.262915,
+                        "total_energy": -854.758633,
+                        "energies": {
+                            "est_0K": [-855.4216728959],
+                            "final_energy": [-855.4197401755],
+                            "free_energy": [-855.4236056162],
+                        },
+                        "forces": {
+                            "non_descript": [
+                                {
+                                    ("Si", 1): (-0.05358, -0.04038, 0.69168),
+                                    ("Si", 2): (0.72539, 0.3538, -1.12992),
+                                }
+                            ]
+                        },
+                        "cell": {
+                            "cell_angles": [90.0, 90.0, 90.0],
+                            "density_amu": 1.403372,
+                            "density_g": 2.330353,
+                            "lattice_parameters": [5.43, 5.43, 5.43],
+                            "real_lattice": [(5.43, 0.0, 0.0), (0.0, 5.43, 0.0), (0.0, 0.0, 5.43)],
+                            "recip_lattice": [
+                                (1.157124366, 0.0, 0.0),
+                                (0.0, 1.157124366, 0.0),
+                                (0.0, 0.0, 1.157124366),
+                            ],
+                            "volume": 160.103007,
+                        },
+                        "positions": {
+                            ("Si", 1): (0.001291, 0.00032, 0.001059),
+                            ("Si", 2): (0.000729, 0.504323, 0.520521),
+                        },
+                        "stresses": {
+                            "non_descript": [
+                                (2.029699, 1.862602, 3.129082, -6.100259, 5.232356, -7.576534)
+                            ]
+                        },
+                        "time": 0.002,
+                    }
+                ],
+            },
+        )
 
     def test_get_pimd_data(self):
         test_text = io.StringIO("""
@@ -1731,25 +2068,33 @@ Species          Ion     s       p       d       f      Total   Charge (e)
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'mulliken_popn': {
-            ('Si', 1): {'spin_sep': False,
-                        's': 1.319,
-                        'p': 2.681,
-                        'd': 0.0,
-                        'f': 7.0,
-                        'total': 4.0,
-                        'charge': 0.0,
-                        'spin': None},
-            ('Si', 2): {'spin_sep': False,
-                        's': 1.319,
-                        'p': 2.681,
-                        'd': 3.0,
-                        'f': 0.0,
-                        'total': 4.0,
-                        'charge': 2.0,
-                        'spin': None}}
-                                     }
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "mulliken_popn": {
+                    ("Si", 1): {
+                        "spin_sep": False,
+                        "s": 1.319,
+                        "p": 2.681,
+                        "d": 0.0,
+                        "f": 7.0,
+                        "total": 4.0,
+                        "charge": 0.0,
+                        "spin": None,
+                    },
+                    ("Si", 2): {
+                        "spin_sep": False,
+                        "s": 1.319,
+                        "p": 2.681,
+                        "d": 3.0,
+                        "f": 0.0,
+                        "total": 4.0,
+                        "charge": 2.0,
+                        "spin": None,
+                    },
+                }
+            },
+        )
 
     def test_get_mulliken_spin(self):
         test_text = io.StringIO("""
@@ -1765,35 +2110,45 @@ Species          Ion Spin      s       p       d       f      Total   Charge(e) 
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'mulliken_popn':
-                                     {('Cr', 1): {'charge': -0.0,
-                                                  'dn_d': 1.735,
-                                                  'dn_f': 0.0,
-                                                  'dn_p': 0.097,
-                                                  'dn_s': 0.341,
-                                                  'dn_total': 2.174,
-                                                  'spin': 1.653,
-                                                  'spin_sep': True,
-                                                  'total': 6.0,
-                                                  'up_d': 3.391,
-                                                  'up_f': 0.0,
-                                                  'up_p': 0.037,
-                                                  'up_s': 0.398,
-                                                  'up_total': 3.826},
-                                      ('Cr', 2): {'charge': 0.0,
-                                                  'dn_d': 3.391,
-                                                  'dn_f': 0.0,
-                                                  'dn_p': 0.037,
-                                                  'dn_s': 0.398,
-                                                  'dn_total': 3.826,
-                                                  'spin': -1.653,
-                                                  'spin_sep': True,
-                                                  'total': 6.0,
-                                                  'up_d': 1.735,
-                                                  'up_f': 0.0,
-                                                  'up_p': 0.097,
-                                                  'up_s': 0.341,
-                                                  'up_total': 2.174}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "mulliken_popn": {
+                    ("Cr", 1): {
+                        "charge": -0.0,
+                        "dn_d": 1.735,
+                        "dn_f": 0.0,
+                        "dn_p": 0.097,
+                        "dn_s": 0.341,
+                        "dn_total": 2.174,
+                        "spin": 1.653,
+                        "spin_sep": True,
+                        "total": 6.0,
+                        "up_d": 3.391,
+                        "up_f": 0.0,
+                        "up_p": 0.037,
+                        "up_s": 0.398,
+                        "up_total": 3.826,
+                    },
+                    ("Cr", 2): {
+                        "charge": 0.0,
+                        "dn_d": 3.391,
+                        "dn_f": 0.0,
+                        "dn_p": 0.037,
+                        "dn_s": 0.398,
+                        "dn_total": 3.826,
+                        "spin": -1.653,
+                        "spin_sep": True,
+                        "total": 6.0,
+                        "up_d": 1.735,
+                        "up_f": 0.0,
+                        "up_p": 0.097,
+                        "up_s": 0.341,
+                        "up_total": 2.174,
+                    },
+                }
+            },
+        )
 
     def test_get_orbital_populations(self):
         test_text = io.StringIO("""
@@ -1815,14 +2170,16 @@ The total projected population is   19.999   0.000
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'orbital_popn':
-                                     {'total': 19.999,
-                                      ('N', 1): {'Px': 1.329,
-                                                 'Py': 0.979,
-                                                 'Pz': 1.284,
-                                                 'S': 1.39},
-                                      ('C', 2): {'S': 3.0,
-                                                 'Px': 2.0}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "orbital_popn": {
+                    "total": 19.999,
+                    ("N", 1): {"Px": 1.329, "Py": 0.979, "Pz": 1.284, "S": 1.39},
+                    ("C", 2): {"S": 3.0, "Px": 2.0},
+                }
+            },
+        )
 
     def test_get_bond(self):
         test_text = io.StringIO("""
@@ -1834,10 +2191,15 @@ The total projected population is   19.999   0.000
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'bonds': {(('C', 1), ('Si', 1)): {'length': 3.14159,
-                                                                       'population': 99.1},
-                                               (('Si', 1), ('Si', 2)): {'length': 2.33434,
-                                                                        'population': 3.06}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "bonds": {
+                    (("C", 1), ("Si", 1)): {"length": 3.14159, "population": 99.1},
+                    (("Si", 1), ("Si", 2)): {"length": 2.33434, "population": 3.06},
+                }
+            },
+        )
 
     def test_get_spin_bond(self):
         test_text = io.StringIO("""
@@ -1850,9 +2212,14 @@ The total projected population is   19.999   0.000
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'bonds': {(('Cr', 1), ('Cr', 2)): {'length': 2.48636,
-                                                                        'population': 1.66,
-                                                                        'spin': -0.15}}})
+        self.assertEqual(
+            test_dict,
+            {
+                "bonds": {
+                    (("Cr", 1), ("Cr", 2)): {"length": 2.48636, "population": 1.66, "spin": -0.15}
+                }
+            },
+        )
 
     def test_get_pair_params(self):
         test_text = io.StringIO("""
@@ -1916,38 +2283,55 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'pair_params': [{'DZ': {'A': 0.4,
-                                                             'B': 0.1,
-                                                             'C': 1.5,
-                                                             'CUT1': 1.4,
-                                                             'CUT2': 3.0,
-                                                             'D': 0.1,
-                                                             'EPS': 0.0002721139,
-                                                             'SIG': 4.0,
-                                                             'm': 18.0},
-                                                      'LJ': {'e': {('H', 'H'): 9e-05,
-                                                                   ('H', 'He'): 0.00017,
-                                                                   ('He', 'H'): 0.00017,
-                                                                   ('He', 'He'): 0.00017},
-                                                             'r': {('H', 'H'): 8.5125,
-                                                                   ('H', 'He'): 8.5125,
-                                                                   ('He', 'H'): 8.5125,
-                                                                   ('He', 'He'): 8.5125},
-                                                             's': {('H', 'H'): 1.0,
-                                                                   ('H', 'He'): 2.0,
-                                                                   ('He', 'H'): 2.0,
-                                                                   ('He', 'He'): 2.0}},
-                                                      'SW': {'C': {('H', 'H', 'H'): 0.0},
-                                                             'c': {('H', 'H', 'H'): 0.1},
-                                                             'e': 2.1682052121,
-                                                             'l': {('H', 'H', 'H'): 1.0},
-                                                             's': 0.1336587852}},
-                                                     {'SR_SHO': {'k': {('H',): 1.0},
-                                                                 'r': {('H',): 3.0},
-                                                                 'r_d': {('H',): 3.0}}},
-                                                     {'WL_SHO': {'k': {('H',): 1.0},
-                                                                 'r': {('H',): 3.0},
-                                                                 'r_d': {('H',): 3.0}}}]})
+        self.assertEqual(
+            test_dict,
+            {
+                "pair_params": [
+                    {
+                        "DZ": {
+                            "A": 0.4,
+                            "B": 0.1,
+                            "C": 1.5,
+                            "CUT1": 1.4,
+                            "CUT2": 3.0,
+                            "D": 0.1,
+                            "EPS": 0.0002721139,
+                            "SIG": 4.0,
+                            "m": 18.0,
+                        },
+                        "LJ": {
+                            "e": {
+                                ("H", "H"): 9e-05,
+                                ("H", "He"): 0.00017,
+                                ("He", "H"): 0.00017,
+                                ("He", "He"): 0.00017,
+                            },
+                            "r": {
+                                ("H", "H"): 8.5125,
+                                ("H", "He"): 8.5125,
+                                ("He", "H"): 8.5125,
+                                ("He", "He"): 8.5125,
+                            },
+                            "s": {
+                                ("H", "H"): 1.0,
+                                ("H", "He"): 2.0,
+                                ("He", "H"): 2.0,
+                                ("He", "He"): 2.0,
+                            },
+                        },
+                        "SW": {
+                            "C": {("H", "H", "H"): 0.0},
+                            "c": {("H", "H", "H"): 0.1},
+                            "e": 2.1682052121,
+                            "l": {("H", "H", "H"): 1.0},
+                            "s": 0.1336587852,
+                        },
+                    },
+                    {"SR_SHO": {"k": {("H",): 1.0}, "r": {("H",): 3.0}, "r_d": {("H",): 3.0}}},
+                    {"WL_SHO": {"k": {("H",): 1.0}, "r": {("H",): 3.0}, "r_d": {("H",): 3.0}}},
+                ]
+            },
+        )
 
     def test_get_vibrational_frequencies(self):
         test_text = io.StringIO("""
@@ -2026,117 +2410,145 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'phonons': [{'N': (1, 2, 5, 6),
-                                                  'char_table':
-                                                  [{'chars': (('E', 2),
-                                                              ("2'", 0),
-                                                              ('2', -2),
-                                                              ('4', 0),
-                                                              ('2"', 0),
-                                                              ('I', -2),
-                                                              ('m_v', 0),
-                                                              ('m_h', 2),
-                                                              ('-4', 0),
-                                                              ('m_v', 0)),
-                                                    'mul': 1,
-                                                    'name': 'Eu',
-                                                    'rep': 'a'},
-                                                   {'chars': (('E', 1),
-                                                              ("2'", -1),
-                                                              ('2', 1),
-                                                              ('4', 1),
-                                                              ('2"', -1),
-                                                              ('I', -1),
-                                                              ('m_v', 1),
-                                                              ('m_h', -1),
-                                                              ('-4', -1),
-                                                              ('m_v', 1)),
-                                                    'mul': 1,
-                                                    'name': 'A2u',
-                                                    'rep': 'b'},
-                                                   {'chars': (('E', 3),
-                                                              ("2'", -1),
-                                                              ('2', -1),
-                                                              ('4', -1),
-                                                              ('2"', 1),
-                                                              ('I', 3),
-                                                              ('m_v', -1),
-                                                              ('m_h', -1),
-                                                              ('-4', -1),
-                                                              ('m_v', 1)),
-                                                    'mul': 1,
-                                                    'name': 'Tg',
-                                                    'rep': 'c'}],
-                                                  'frequency': (-0.026685,
-                                                                -0.026685,
-                                                                523.060071,
-                                                                523.060071),
-                                                  'ir_active': ['N', 'N', 'N', 'N'],
-                                                  'ir_intensity': (0.0, 0.0, 0.0, 0.0),
-                                                  'irrep': ['a', 'a', 'c', 'c'],
-                                                  'qpt': (0.0, 0.0, 0.0),
-                                                  'raman_active': ['N', 'N', 'Y', 'Y']},
-                                                 {'N': (1, 2, 3),
-                                                  'char_table':
-                                                  [{'chars': (('E', 2),
-                                                              ('2', 0),
-                                                              ('2', -2),
-                                                              ('4', 0),
-                                                              ('2', 0),
-                                                              ('I', 0),
-                                                              ('m', 0),
-                                                              ('m', 0),
-                                                              ('-4', 0),
-                                                              ('m', 0)),
-                                                    'mul': 2,
-                                                    'rep': 'a'},
-                                                   {'chars': (('E', 2),
-                                                              ('2', 0),
-                                                              ('2', 2),
-                                                              ('4', 0),
-                                                              ('2', 0),
-                                                              ('I', 0),
-                                                              ('m', 0),
-                                                              ('m', 0),
-                                                              ('-4', 0),
-                                                              ('m', 2)),
-                                                    'mul': 1,
-                                                    'rep': 'b'}],
-                                                  'frequency': (151.96043, 151.96043, 416.931632),
-                                                  'irrep': ['a', 'a', 'b'],
-                                                  'qpt': (0.5, 0.5, 0.0)},
-                                                 {'N': (1, 2, 3),
-                                                  'char_table':
-                                                  [{'chars': (('E', 1),
-                                                              ('2', -1),
-                                                              ('m', -1),
-                                                              ('m', 1)),
-                                                    'mul': 4,
-                                                    'name': 'B1',
-                                                    'rep': 'a'},
-                                                   {'chars': (('E', 1),
-                                                              ('2', -1),
-                                                              ('m', 1),
-                                                              ('m', -1)),
-                                                    'mul': 4,
-                                                    'name': 'B2',
-                                                    'rep': 'b'},
-                                                   {'chars': (('E', 1),
-                                                              ('2', 1),
-                                                              ('m', 1),
-                                                              ('m', 1)),
-                                                    'mul': 4,
-                                                    'name': 'A1',
-                                                    'rep': 'c'}],
-                                                  'frequency': (-0.049572, -0.04047, -0.028618),
-                                                  'ir_active': ['N', 'N', 'N'],
-                                                  'ir_intensity': (0.0, 0.0, 0.0),
-                                                  'irrep': ['a', 'b', 'c'],
-                                                  'qpt': (4.0, 5.0, 6.0),
-                                                  'raman_active': ['N', 'N', 'Y'],
-                                                  'raman_intensity': (0.0217793,
-                                                                      0.4453475,
-                                                                      1.029811)}]})
+        self.assertEqual(
+            test_dict,
+            {
+                "phonons": [
+                    {
+                        "N": (1, 2, 5, 6),
+                        "char_table": [
+                            {
+                                "chars": (
+                                    ("E", 2),
+                                    ("2'", 0),
+                                    ("2", -2),
+                                    ("4", 0),
+                                    ('2"', 0),
+                                    ("I", -2),
+                                    ("m_v", 0),
+                                    ("m_h", 2),
+                                    ("-4", 0),
+                                    ("m_v", 0),
+                                ),
+                                "mul": 1,
+                                "name": "Eu",
+                                "rep": "a",
+                            },
+                            {
+                                "chars": (
+                                    ("E", 1),
+                                    ("2'", -1),
+                                    ("2", 1),
+                                    ("4", 1),
+                                    ('2"', -1),
+                                    ("I", -1),
+                                    ("m_v", 1),
+                                    ("m_h", -1),
+                                    ("-4", -1),
+                                    ("m_v", 1),
+                                ),
+                                "mul": 1,
+                                "name": "A2u",
+                                "rep": "b",
+                            },
+                            {
+                                "chars": (
+                                    ("E", 3),
+                                    ("2'", -1),
+                                    ("2", -1),
+                                    ("4", -1),
+                                    ('2"', 1),
+                                    ("I", 3),
+                                    ("m_v", -1),
+                                    ("m_h", -1),
+                                    ("-4", -1),
+                                    ("m_v", 1),
+                                ),
+                                "mul": 1,
+                                "name": "Tg",
+                                "rep": "c",
+                            },
+                        ],
+                        "frequency": (-0.026685, -0.026685, 523.060071, 523.060071),
+                        "ir_active": ["N", "N", "N", "N"],
+                        "ir_intensity": (0.0, 0.0, 0.0, 0.0),
+                        "irrep": ["a", "a", "c", "c"],
+                        "qpt": (0.0, 0.0, 0.0),
+                        "raman_active": ["N", "N", "Y", "Y"],
+                    },
+                    {
+                        "N": (1, 2, 3),
+                        "char_table": [
+                            {
+                                "chars": (
+                                    ("E", 2),
+                                    ("2", 0),
+                                    ("2", -2),
+                                    ("4", 0),
+                                    ("2", 0),
+                                    ("I", 0),
+                                    ("m", 0),
+                                    ("m", 0),
+                                    ("-4", 0),
+                                    ("m", 0),
+                                ),
+                                "mul": 2,
+                                "rep": "a",
+                            },
+                            {
+                                "chars": (
+                                    ("E", 2),
+                                    ("2", 0),
+                                    ("2", 2),
+                                    ("4", 0),
+                                    ("2", 0),
+                                    ("I", 0),
+                                    ("m", 0),
+                                    ("m", 0),
+                                    ("-4", 0),
+                                    ("m", 2),
+                                ),
+                                "mul": 1,
+                                "rep": "b",
+                            },
+                        ],
+                        "frequency": (151.96043, 151.96043, 416.931632),
+                        "irrep": ["a", "a", "b"],
+                        "qpt": (0.5, 0.5, 0.0),
+                    },
+                    {
+                        "N": (1, 2, 3),
+                        "char_table": [
+                            {
+                                "chars": (("E", 1), ("2", -1), ("m", -1), ("m", 1)),
+                                "mul": 4,
+                                "name": "B1",
+                                "rep": "a",
+                            },
+                            {
+                                "chars": (("E", 1), ("2", -1), ("m", 1), ("m", -1)),
+                                "mul": 4,
+                                "name": "B2",
+                                "rep": "b",
+                            },
+                            {
+                                "chars": (("E", 1), ("2", 1), ("m", 1), ("m", 1)),
+                                "mul": 4,
+                                "name": "A1",
+                                "rep": "c",
+                            },
+                        ],
+                        "frequency": (-0.049572, -0.04047, -0.028618),
+                        "ir_active": ["N", "N", "N"],
+                        "ir_intensity": (0.0, 0.0, 0.0),
+                        "irrep": ["a", "b", "c"],
+                        "qpt": (4.0, 5.0, 6.0),
+                        "raman_active": ["N", "N", "Y"],
+                        "raman_intensity": (0.0217793, 0.4453475, 1.029811),
+                    },
+                ]
+            },
+        )
 
     def test_phonon_symmetry_verbose(self):
         test_text = io.StringIO("""
@@ -2172,28 +2584,38 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict,
-                         {'phonon_symmetry_analysis': [{'mat': ((1, 0, 2, 3, 0, 4, 5, 0, 6, 7, 0, 8),
-                                                                (0, 9, 0, 0, 10, 0, 0, 11, 0, 0, 12, 0),
-                                                                (2, 0, 13, 14, 0, 15, 6, 0, 16, 17, 0, 18),
-                                                                (3, 0, 14, 19, 0, 20, 7, 0, 17, 21, 0, 22),
-                                                                (0, 10, 0, 0, 23, 0, 0, 12, 0, 0, 24, 0),
-                                                                (4, 0, 15, 20, 0, 25, 8, 0, 18, 22, 0, 26),
-                                                                (5, 0, 6, 7, 0, 8, 1, 0, 2, 3, 0, 4),
-                                                                (0, 11, 0, 0, 12, 0, 0, 9, 0, 0, 10, 0),
-                                                                (6, 0, 16, 17, 0, 18, 2, 0, 13, 14, 0, 15),
-                                                                (7, 0, 17, 21, 0, 22, 3, 0, 14, 19, 0, 20),
-                                                                (0, 12, 0, 0, 24, 0, 0, 10, 0, 0, 23, 0),
-                                                                (8, 0, 18, 22, 0, 26, 4, 0, 15, 20, 0, 25)),
-                                                        'title': 'Elements of D with same absolute magnitude'},
-                                                       {'mat': ((1, 0, 0),
-                                                                (0, 1, 0),
-                                                                (0, 0, 1)),
-                                                        'title': 'Elements of BEC with same absolute magnitude'},
-                                                       {'mat': ((0.0, 0.0, 0.0),
-                                                                (0.0, 0.0, 0.0),
-                                                                (0.0, 0.0, 0.0)),
-                                                        'title': 'Phase of Born Effective Charge elements'}]})
+        self.assertEqual(
+            test_dict,
+            {
+                "phonon_symmetry_analysis": [
+                    {
+                        "mat": (
+                            (1, 0, 2, 3, 0, 4, 5, 0, 6, 7, 0, 8),
+                            (0, 9, 0, 0, 10, 0, 0, 11, 0, 0, 12, 0),
+                            (2, 0, 13, 14, 0, 15, 6, 0, 16, 17, 0, 18),
+                            (3, 0, 14, 19, 0, 20, 7, 0, 17, 21, 0, 22),
+                            (0, 10, 0, 0, 23, 0, 0, 12, 0, 0, 24, 0),
+                            (4, 0, 15, 20, 0, 25, 8, 0, 18, 22, 0, 26),
+                            (5, 0, 6, 7, 0, 8, 1, 0, 2, 3, 0, 4),
+                            (0, 11, 0, 0, 12, 0, 0, 9, 0, 0, 10, 0),
+                            (6, 0, 16, 17, 0, 18, 2, 0, 13, 14, 0, 15),
+                            (7, 0, 17, 21, 0, 22, 3, 0, 14, 19, 0, 20),
+                            (0, 12, 0, 0, 24, 0, 0, 10, 0, 0, 23, 0),
+                            (8, 0, 18, 22, 0, 26, 4, 0, 15, 20, 0, 25),
+                        ),
+                        "title": "Elements of D with same absolute magnitude",
+                    },
+                    {
+                        "mat": ((1, 0, 0), (0, 1, 0), (0, 0, 1)),
+                        "title": "Elements of BEC with same absolute magnitude",
+                    },
+                    {
+                        "mat": ((0.0, 0.0, 0.0), (0.0, 0.0, 0.0), (0.0, 0.0, 0.0)),
+                        "title": "Phase of Born Effective Charge elements",
+                    },
+                ]
+            },
+        )
 
     def test_get_thermodynamics(self):
         test_text = io.StringIO("""
@@ -2215,13 +2637,19 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'thermodynamics':
-                                     {'zero_point_energy': 0.125987,
-                                      'cv': (0.0, 14.858, 30.902),
-                                      'e': (0.125987, 0.131824, 0.156189),
-                                      'f': (0.125987, 0.123323, 0.106755),
-                                      's': (0.0, 8.203, 23.849),
-                                      't': (0.0, 100.0, 200.0)}})
+        self.assertEqual(
+            test_dict,
+            {
+                "thermodynamics": {
+                    "zero_point_energy": 0.125987,
+                    "cv": (0.0, 14.858, 30.902),
+                    "e": (0.125987, 0.131824, 0.156189),
+                    "f": (0.125987, 0.123323, 0.106755),
+                    "s": (0.0, 8.203, 23.849),
+                    "t": (0.0, 100.0, 200.0),
+                }
+            },
+        )
 
     def test_get_dynamical_matrix(self):
         test_text = io.StringIO("""
@@ -2244,13 +2672,19 @@ WL ********************************************************************
   ------------------------------------------------------------------------------------------------------------------
         """)
         test_dict = parse_castep_file(test_text)[0]
-        self.assertEqual(test_dict, {'dynamical_matrix':
-                                     ((2+10j, 0j, 0j, 6, 3j, 0j),
-                                      (0j, 2+10j, 0j, -1j, 6, -1j),
-                                      (0j, 0j, 2+10j, 0j, 3j, 6),
-                                      (6+7j, 0j, 0j, -4+2j, 2j, 2j),
-                                      (0j, 6+7j, 0j, 2j, -4+2j, 2j),
-                                      (0j, 0j, 6+7j, 2j, 2j, -4+2j))})
+        self.assertEqual(
+            test_dict,
+            {
+                "dynamical_matrix": (
+                    (2 + 10j, 0j, 0j, 6, 3j, 0j),
+                    (0j, 2 + 10j, 0j, -1j, 6, -1j),
+                    (0j, 0j, 2 + 10j, 0j, 3j, 6),
+                    (6 + 7j, 0j, 0j, -4 + 2j, 2j, 2j),
+                    (0j, 6 + 7j, 0j, 2j, -4 + 2j, 2j),
+                    (0j, 0j, 6 + 7j, 2j, 2j, -4 + 2j),
+                )
+            },
+        )
 
     def test_get_optical_permittivity(self):
         test_text = io.StringIO("""
@@ -2265,12 +2699,21 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'dc_permittivity': ((4.6507, -0.0, -0.0),
-                                                         (-0.0, 4.6507, -0.0),
-                                                         (-0.0, -0.0, 4.6507)),
-                                     'optical_permittivity': ((2.63735, 0.0, 0.0),
-                                                              (0.0, 2.63735, 0.0),
-                                                              (0.0, 0.0, 2.63735))})
+        self.assertEqual(
+            test_dict,
+            {
+                "dc_permittivity": (
+                    (4.6507, -0.0, -0.0),
+                    (-0.0, 4.6507, -0.0),
+                    (-0.0, -0.0, 4.6507),
+                ),
+                "optical_permittivity": (
+                    (2.63735, 0.0, 0.0),
+                    (0.0, 2.63735, 0.0),
+                    (0.0, 0.0, 2.63735),
+                ),
+            },
+        )
 
         test_text = io.StringIO("""
  =======================================
@@ -2283,9 +2726,16 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'optical_permittivity': ((8.50261, 0.0, 0.0),
-                                                              (0.0, 8.50261, 0.0),
-                                                              (0.0, 0.0, 8.50261))})
+        self.assertEqual(
+            test_dict,
+            {
+                "optical_permittivity": (
+                    (8.50261, 0.0, 0.0),
+                    (0.0, 8.50261, 0.0),
+                    (0.0, 0.0, 8.50261),
+                )
+            },
+        )
 
     def test_get_polarisabilities(self):
         test_text = io.StringIO("""
@@ -2301,12 +2751,21 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'optical_polarisability': ((9.42606, 0.0, 0.0),
-                                                                (0.0, 9.42606, 0.0),
-                                                                (0.0, 0.0, 9.42606)),
-                                     'static_polarisability': ((21.01677, -0.0, -0.0),
-                                                               (-0.0, 21.01677, -0.0),
-                                                               (-0.0, -0.0, 21.01677))})
+        self.assertEqual(
+            test_dict,
+            {
+                "optical_polarisability": (
+                    (9.42606, 0.0, 0.0),
+                    (0.0, 9.42606, 0.0),
+                    (0.0, 0.0, 9.42606),
+                ),
+                "static_polarisability": (
+                    (21.01677, -0.0, -0.0),
+                    (-0.0, 21.01677, -0.0),
+                    (-0.0, -0.0, 21.01677),
+                ),
+            },
+        )
         test_text = io.StringIO("""
  =======================================
              Polarisability (A**3)
@@ -2319,9 +2778,16 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'optical_polarisability': ((24.17525, 0.0, 0.0),
-                                                                (0.0, 24.17525, 0.0),
-                                                                (0.0, 0.0, 24.17525))})
+        self.assertEqual(
+            test_dict,
+            {
+                "optical_polarisability": (
+                    (24.17525, 0.0, 0.0),
+                    (0.0, 24.17525, 0.0),
+                    (0.0, 0.0, 24.17525),
+                )
+            },
+        )
 
     def test_get_nlo(self):
         test_text = io.StringIO("""
@@ -2335,10 +2801,16 @@ WL ********************************************************************
             """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'nlo': ((-1.28186, 0.01823, 0.01838, 23.46304, 0.01828, 0.01832),
-                                             (0.01832, -1.2812, 0.0183, 0.01831, 23.46304, 0.01823),
-                                             (0.01828, 0.01831, -1.28185, 0.0183, 0.01838, 23.46304))
-                                     })
+        self.assertEqual(
+            test_dict,
+            {
+                "nlo": (
+                    (-1.28186, 0.01823, 0.01838, 23.46304, 0.01828, 0.01832),
+                    (0.01832, -1.2812, 0.0183, 0.01831, 23.46304, 0.01823),
+                    (0.01828, 0.01831, -1.28185, 0.0183, 0.01838, 23.46304),
+                )
+            },
+        )
 
     def test_get_born_charges(self):
         test_text = io.StringIO("""
@@ -2357,13 +2829,25 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'born': [{('Si [geoff]', 1): ((-2.01676, 0.0, -0.0),
-                                                                   (0.0, -3.01676, -0.0),
-                                                                   (0.0, -0.0, -4.01676)),
-                                               ('Si', 2): ((-5.01676, 0.0, -0.0),
-                                                           (0.0, -6.01676, -0.0),
-                                                           (0.0, -0.0, -7.01676))}]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "born": [
+                    {
+                        ("Si [geoff]", 1): (
+                            (-2.01676, 0.0, -0.0),
+                            (0.0, -3.01676, -0.0),
+                            (0.0, -0.0, -4.01676),
+                        ),
+                        ("Si", 2): (
+                            (-5.01676, 0.0, -0.0),
+                            (0.0, -6.01676, -0.0),
+                            (0.0, -0.0, -7.01676),
+                        ),
+                    }
+                ]
+            },
+        )
 
     def test_get_raman(self):
         test_text = io.StringIO("""
@@ -2384,19 +2868,31 @@ WL ********************************************************************
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'raman': [[{'ii': 0.0,
-                                                 'depolarisation': 0.749632,
-                                                 'tensor': ((-0.0, 0.0, -0.0),
-                                                            (0.0, 0.0, 0.0),
-                                                            (-0.0, 0.0, 0.0)),
-                                                 'trace': 0.0},
-                                                {'ii': 0.79384156,
-                                                 'depolarisation': 0.75,
-                                                 'tensor': ((0.0, -0.0, -0.0),
-                                                            (-0.0, -2.5, -1.3062),
-                                                            (-0.0, -1.3062, -1.0)),
-                                                 'trace': -3.5}]]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "raman": [
+                    [
+                        {
+                            "ii": 0.0,
+                            "depolarisation": 0.749632,
+                            "tensor": ((-0.0, 0.0, -0.0), (0.0, 0.0, 0.0), (-0.0, 0.0, 0.0)),
+                            "trace": 0.0,
+                        },
+                        {
+                            "ii": 0.79384156,
+                            "depolarisation": 0.75,
+                            "tensor": (
+                                (0.0, -0.0, -0.0),
+                                (-0.0, -2.5, -1.3062),
+                                (-0.0, -1.3062, -1.0),
+                            ),
+                            "trace": -3.5,
+                        },
+                    ]
+                ]
+            },
+        )
 
     def test_get_mol_dipole(self):
         test_text = io.StringIO("""
@@ -2423,12 +2919,19 @@ WL ********************************************************************
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'molecular_dipole': {'centre_electronic': (3.0848, 3.0848, 3.0848),
-                                                          'centre_positive': (3.0448, 3.0448, 3.0448),
-                                                          'dipole_direction': (0.57735, 0.57735, 0.57735),
-                                                          'dipole_magnitude': 2.66023,
-                                                          'total_ionic': 8.0,
-                                                          'total_valence': 8.0}})
+        self.assertEqual(
+            test_dict,
+            {
+                "molecular_dipole": {
+                    "centre_electronic": (3.0848, 3.0848, 3.0848),
+                    "centre_positive": (3.0448, 3.0448, 3.0448),
+                    "dipole_direction": (0.57735, 0.57735, 0.57735),
+                    "dipole_magnitude": 2.66023,
+                    "total_ionic": 8.0,
+                    "total_valence": 8.0,
+                }
+            },
+        )
 
     def test_get_spin_density(self):
         test_text = io.StringIO("""
@@ -2437,8 +2940,7 @@ Integrated |Spin Density|   =     3.07611     hbar/2
             """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'spin': [1.77099e-08],
-                                     'modspin': [3.07611]})
+        self.assertEqual(test_dict, {"spin": [1.77099e-08], "modspin": [3.07611]})
 
         test_text = io.StringIO("""
 2*Integrated Spin Density (Sx,Sy,Sz) =            -2.30995        2.30855        2.30970     hbar/2
@@ -2447,8 +2949,10 @@ Integrated |Spin Density|   =     3.07611     hbar/2
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'spin': [(-2.30995, 2.30855, 2.30970)],
-                                     'modspin': [(2.31007, 2.30867, 2.30982)]})
+        self.assertEqual(
+            test_dict,
+            {"spin": [(-2.30995, 2.30855, 2.30970)], "modspin": [(2.31007, 2.30867, 2.30982)]},
+        )
 
     def test_get_elf(self):
         test_text = io.StringIO("""
@@ -2461,7 +2965,7 @@ Integrated |Spin Density|   =     3.07611     hbar/2
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'elf': [0.506189, 0.506191, 0.506194]})
+        self.assertEqual(test_dict, {"elf": [0.506189, 0.506191, 0.506194]})
 
     def test_get_hirshfeld(self):
         test_text = io.StringIO("""
@@ -2475,9 +2979,7 @@ Species   Ion     Hirshfeld Charge (e)
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'hirshfeld': {('H', 1): -1.0,
-                                                   ('F', 1): 17.0}}
-                         )
+        self.assertEqual(test_dict, {"hirshfeld": {("H", 1): -1.0, ("F", 1): 17.0}})
 
     def test_geom_output(self):
         test_text = io.StringIO("""
@@ -2649,84 +3151,141 @@ Final energy =  -2293.681052478     eV
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'geom_opt':
-                                     {'final_configuration':
-                                      {'atoms': {('Si', 1): (-0.00619, -0.000628, -0.000628),
-                                                 ('Si', 2): (0.24619, 0.250628, 0.250628)},
-                                       'cell': {'cell_angles': [90.0, 90.0, 90.0],
-                                                'density_amu': 8.748104,
-                                                'density_g': 14.526569,
-                                                'lattice_parameters': [2.337223, 2.337223, 2.337223],
-                                                'real_lattice': [(2.3372228, 0.0, 0.0),
-                                                                 (0.0, 2.3372228, 0.0),
-                                                                 (0.0, 0.0, 2.3372228)],
-                                                'recip_lattice': [(2.688312529, 0.0, 0.0),
-                                                                  (0.0, 2.688312529, 0.0),
-                                                                  (0.0, 0.0, 2.688312529)],
-                                                'volume': 12.767337},
-                                       'final_bulk_modulus': 392.40598,
-                                       'final_enthalpy': -217.004345},
-                                      'iterations':
-                                      [{'enthalpy': [-2293.74356],
-                                        'minimisation': [{'smax': {'converged': False,
-                                                                   'tolerance': 0.25,
-                                                                   'value': 12.78436},
-                                                          'de_ion': {'converged': False,
-                                                                     'tolerance': 2.5e-05,
-                                                                     'value': 0.0},
-                                                          'f_max': {'converged': False,
-                                                                    'tolerance': 0.05,
-                                                                    'value': 0.4266993},
-                                                          'dr_max': {'converged': False,
-                                                                     'tolerance': 0.001,
-                                                                     'value': 0.0}}]},
-                                       {'cell': {'cell_angles': [90.0, 90.0, 90.0],
-                                                 'density_amu': 2.489923,
-                                                 'density_g': 4.134614,
-                                                 'lattice_parameters': [4.638636, 4.638636, 2.981428],
-                                                 'real_lattice': [(4.6386363, 0.0, 0.0),
-                                                                  (0.0, 4.6386363, 0.0),
-                                                                  (0.0, 0.0, 2.9814282)],
-                                                 'recip_lattice': [(1.354532869, 0.0, 0.0),
-                                                                   (0.0, 1.354532869, 0.0),
-                                                                   (0.0, 0.0, 2.107441421)],
-                                                 'volume': 64.151231},
-                                        'energies': {'final_energy': [-2293.681052478]},
-                                        'enthalpy': [-2293.75785],
-                                        'forces': {'symmetrised': [{('O', 1): (0.29759, 0.29759, -0.0),
-                                                                    ('Ti', 1): (0.0, 0.0, 0.0)}]},
-                                        'geom_opt': {'trial': [1.0]},
-                                        'memory_estimate':
-                                        [{'electronic_energy_minimisation_requirements': {'disk': 0.0, 'memory': 4.0},
-                                          'geometry_minimisation_requirements': {'disk': 0.0, 'memory': 4.6},
-                                          'model_and_support_data': {'disk': 0.0, 'memory': 64.3}}],
-                                        'minimisation': [{'previous': {'fdelta': 0.306114,
-                                                                       'enthalpy': -2293.743561,
-                                                                       'lambda': 0.0}},
-                                                         {'previous': {'fdelta': 0.306114,
-                                                                       'enthalpy': -2293.743561,
-                                                                       'lambda': 0.0},
-                                                          'trial step': {'fdelta': -0.064103,
-                                                                         'enthalpy': -2293.757852,
-                                                                         'lambda': 1.0}},
-                                                         {'smax': {'converged': True,
-                                                                   'tolerance': 0.1,
-                                                                   'value': 0.0},
-                                                          'de_ion': {'converged': True,
-                                                                     'tolerance': 2e-05,
-                                                                     'value': 0.0},
-                                                          'f_max': {'converged': True,
-                                                                    'tolerance': 0.05,
-                                                                    'value': 0.0},
-                                                          'dr_max': {'converged': True,
-                                                                     'tolerance': 0.001,
-                                                                     'value': 0.0}}],
-                                        'positions': {('O', 1): (0.299872, 0.299872, -0.0),
-                                                      ('Ti', 1): (0.0, 0.0, 0.0)},
-                                        'stresses': {'symmetrised': [(-1.624594, 0.0, 0.0,
-                                                                      -1.624594, 0.0, -0.176493)]
-                                                     }}]}}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "geom_opt": {
+                    "final_configuration": {
+                        "atoms": {
+                            ("Si", 1): (-0.00619, -0.000628, -0.000628),
+                            ("Si", 2): (0.24619, 0.250628, 0.250628),
+                        },
+                        "cell": {
+                            "cell_angles": [90.0, 90.0, 90.0],
+                            "density_amu": 8.748104,
+                            "density_g": 14.526569,
+                            "lattice_parameters": [2.337223, 2.337223, 2.337223],
+                            "real_lattice": [
+                                (2.3372228, 0.0, 0.0),
+                                (0.0, 2.3372228, 0.0),
+                                (0.0, 0.0, 2.3372228),
+                            ],
+                            "recip_lattice": [
+                                (2.688312529, 0.0, 0.0),
+                                (0.0, 2.688312529, 0.0),
+                                (0.0, 0.0, 2.688312529),
+                            ],
+                            "volume": 12.767337,
+                        },
+                        "final_bulk_modulus": 392.40598,
+                        "final_enthalpy": -217.004345,
+                    },
+                    "iterations": [
+                        {
+                            "enthalpy": [-2293.74356],
+                            "minimisation": [
+                                {
+                                    "smax": {
+                                        "converged": False,
+                                        "tolerance": 0.25,
+                                        "value": 12.78436,
+                                    },
+                                    "de_ion": {
+                                        "converged": False,
+                                        "tolerance": 2.5e-05,
+                                        "value": 0.0,
+                                    },
+                                    "f_max": {
+                                        "converged": False,
+                                        "tolerance": 0.05,
+                                        "value": 0.4266993,
+                                    },
+                                    "dr_max": {
+                                        "converged": False,
+                                        "tolerance": 0.001,
+                                        "value": 0.0,
+                                    },
+                                }
+                            ],
+                        },
+                        {
+                            "cell": {
+                                "cell_angles": [90.0, 90.0, 90.0],
+                                "density_amu": 2.489923,
+                                "density_g": 4.134614,
+                                "lattice_parameters": [4.638636, 4.638636, 2.981428],
+                                "real_lattice": [
+                                    (4.6386363, 0.0, 0.0),
+                                    (0.0, 4.6386363, 0.0),
+                                    (0.0, 0.0, 2.9814282),
+                                ],
+                                "recip_lattice": [
+                                    (1.354532869, 0.0, 0.0),
+                                    (0.0, 1.354532869, 0.0),
+                                    (0.0, 0.0, 2.107441421),
+                                ],
+                                "volume": 64.151231,
+                            },
+                            "energies": {"final_energy": [-2293.681052478]},
+                            "enthalpy": [-2293.75785],
+                            "forces": {
+                                "symmetrised": [
+                                    {("O", 1): (0.29759, 0.29759, -0.0), ("Ti", 1): (0.0, 0.0, 0.0)}
+                                ]
+                            },
+                            "geom_opt": {"trial": [1.0]},
+                            "memory_estimate": [
+                                {
+                                    "electronic_energy_minimisation_requirements": {
+                                        "disk": 0.0,
+                                        "memory": 4.0,
+                                    },
+                                    "geometry_minimisation_requirements": {
+                                        "disk": 0.0,
+                                        "memory": 4.6,
+                                    },
+                                    "model_and_support_data": {"disk": 0.0, "memory": 64.3},
+                                }
+                            ],
+                            "minimisation": [
+                                {
+                                    "previous": {
+                                        "fdelta": 0.306114,
+                                        "enthalpy": -2293.743561,
+                                        "lambda": 0.0,
+                                    }
+                                },
+                                {
+                                    "previous": {
+                                        "fdelta": 0.306114,
+                                        "enthalpy": -2293.743561,
+                                        "lambda": 0.0,
+                                    },
+                                    "trial step": {
+                                        "fdelta": -0.064103,
+                                        "enthalpy": -2293.757852,
+                                        "lambda": 1.0,
+                                    },
+                                },
+                                {
+                                    "smax": {"converged": True, "tolerance": 0.1, "value": 0.0},
+                                    "de_ion": {"converged": True, "tolerance": 2e-05, "value": 0.0},
+                                    "f_max": {"converged": True, "tolerance": 0.05, "value": 0.0},
+                                    "dr_max": {"converged": True, "tolerance": 0.001, "value": 0.0},
+                                },
+                            ],
+                            "positions": {
+                                ("O", 1): (0.299872, 0.299872, -0.0),
+                                ("Ti", 1): (0.0, 0.0, 0.0),
+                            },
+                            "stresses": {
+                                "symmetrised": [(-1.624594, 0.0, 0.0, -1.624594, 0.0, -0.176493)]
+                            },
+                        },
+                    ],
+                }
+            },
+        )
 
     def test_get_deloc_info(self):
         test_text = io.StringIO("""
@@ -2752,37 +3311,41 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'delocalised_internal':
-                                     {'constraint_mapping': {1: 15,
-                                                             2: 43},
-                                      'num_angles': 48,
-                                      'num_bonds': 16,
-                                      'num_dihedrals': 144,
-                                      'num_internals': 208},
-                                     'internal_constraints': [
-                                         {'constraints': {4: (0, 0, 0),
-                                                          5: (0, 0, -1)},
-                                          'current': 2.36,
-                                          'satisfied': True,
-                                          'target': None,
-                                          'type': 'Bond'},
-                                         {'constraints': {2: (1, 0, 0),
-                                                          3: (0, 0, 0),
-                                                          5: (0, 0, 0)},
-                                          'current': 109.47,
-                                          'satisfied': True,
-                                          'target': None,
-                                          'type': 'Angle'},
-                                         {'constraints': {2: (1, 0, 0),
-                                                          3: (0, 0, 0),
-                                                          4: (0, 0, 0),
-                                                          5: (0, 0, 0)},
-                                          'current': 99999.999,
-                                          'satisfied': False,
-                                          'target': 3.141,
-                                          'type': 'Torsion'},
-                                     ]
-                                     })
+        self.assertEqual(
+            test_dict,
+            {
+                "delocalised_internal": {
+                    "constraint_mapping": {1: 15, 2: 43},
+                    "num_angles": 48,
+                    "num_bonds": 16,
+                    "num_dihedrals": 144,
+                    "num_internals": 208,
+                },
+                "internal_constraints": [
+                    {
+                        "constraints": {4: (0, 0, 0), 5: (0, 0, -1)},
+                        "current": 2.36,
+                        "satisfied": True,
+                        "target": None,
+                        "type": "Bond",
+                    },
+                    {
+                        "constraints": {2: (1, 0, 0), 3: (0, 0, 0), 5: (0, 0, 0)},
+                        "current": 109.47,
+                        "satisfied": True,
+                        "target": None,
+                        "type": "Angle",
+                    },
+                    {
+                        "constraints": {2: (1, 0, 0), 3: (0, 0, 0), 4: (0, 0, 0), 5: (0, 0, 0)},
+                        "current": 99999.999,
+                        "satisfied": False,
+                        "target": 3.141,
+                        "type": "Torsion",
+                    },
+                ],
+            },
+        )
 
     def test_get_deloc_step(self):
         test_text = io.StringIO("""
@@ -2797,9 +3360,16 @@ Message: Generation of delocalized internals is successful
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'delocalised_internal': {'active_space_size': 19,
-                                                              'num_dof': 24,
-                                                              'num_primitive_internals': 67}})
+        self.assertEqual(
+            test_dict,
+            {
+                "delocalised_internal": {
+                    "active_space_size": 19,
+                    "num_dof": 24,
+                    "num_primitive_internals": 67,
+                }
+            },
+        )
 
     def test_get_tss_structure(self):
         test_text = io.StringIO("""
@@ -2828,10 +3398,13 @@ Message: Generation of delocalized internals is successful
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'product': {('H', 1): (0.0, 0.0, 0.0),
-                                                 ('H', 2): (-0.0, -0.0, 0.805)},
-                                     'reactant': {('H', 1): (0.0, 0.0, 0.0),
-                                                  ('H', 2): (-0.0, -0.0, 0.195)}})
+        self.assertEqual(
+            test_dict,
+            {
+                "product": {("H", 1): (0.0, 0.0, 0.0), ("H", 2): (-0.0, -0.0, 0.805)},
+                "reactant": {("H", 1): (0.0, 0.0, 0.0), ("H", 2): (-0.0, -0.0, 0.195)},
+            },
+        )
 
     def test_get_tss_info(self):
         test_text = io.StringIO("""
@@ -2925,21 +3498,31 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'bs':
-                                     [{'band': (1, 2, 3),
-                                       'energy': (-3.92389, 1.381011, 3.604213),
-                                       'kpgrp': 1,
-                                       'kx': -0.375,
-                                       'ky': -0.375,
-                                       'kz': -0.125,
-                                       'spin': 1},
-                                      {'band': (1, 2, 3),
-                                       'energy': (-4.014813, 0.312829, 5.232953),
-                                       'kpgrp': 1,
-                                       'kx': 0.375,
-                                       'ky': 0.375,
-                                       'kz': 0.375,
-                                       'spin': 1}]})
+        self.assertEqual(
+            test_dict,
+            {
+                "bs": [
+                    {
+                        "band": (1, 2, 3),
+                        "energy": (-3.92389, 1.381011, 3.604213),
+                        "kpgrp": 1,
+                        "kx": -0.375,
+                        "ky": -0.375,
+                        "kz": -0.125,
+                        "spin": 1,
+                    },
+                    {
+                        "band": (1, 2, 3),
+                        "energy": (-4.014813, 0.312829, 5.232953),
+                        "kpgrp": 1,
+                        "kx": 0.375,
+                        "ky": 0.375,
+                        "kz": 0.375,
+                        "spin": 1,
+                    },
+                ]
+            },
+        )
 
     def test_get_chem_shielding(self):
         test_text = io.StringIO("""
@@ -2955,20 +3538,19 @@ Message: Generation of delocalized internals is successful
             """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'magres':
-                                     [{'task': 'Chemical Shielding',
-                                      ('C', 1): {'cs_aniso': 175.31,
-                                                 'asym': 0.0,
-                                                 'cs_iso': 162.01},
-                                      ('C', 2): {'cs_aniso': 175.31,
-                                                 'asym': None,
-                                                 'cs_iso': 162.0},
-                                      ('C:tag', 2): {'cs_aniso': 175.31,
-                                                     'asym': 1.0,
-                                                     'cs_iso': 162.0}
-                                       }
-                                      ]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "magres": [
+                    {
+                        "task": "Chemical Shielding",
+                        ("C", 1): {"cs_aniso": 175.31, "asym": 0.0, "cs_iso": 162.01},
+                        ("C", 2): {"cs_aniso": 175.31, "asym": None, "cs_iso": 162.0},
+                        ("C:tag", 2): {"cs_aniso": 175.31, "asym": 1.0, "cs_iso": 162.0},
+                    }
+                ]
+            },
+        )
 
     def test_get_j_coupling(self):
         test_text = io.StringIO("""
@@ -2986,16 +3568,23 @@ Message: Generation of delocalized internals is successful
         test_dict = parse_castep_file(test_text)[0]
 
         pprint.pprint(test_dict)
-        self.assertEqual(test_dict, {'magres':
-                                     [{'task': '(An)Isotropic J-coupling',
-                                       ('C', 2): {'diamagnetic': -0.48,
-                                                  'fermi_contact': 128.25,
-                                                  'paramagnetic': -1.22,
-                                                  'spin_dipolar': 3.2,
-                                                  'total': 129.75}
-                                       }
-                                      ]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "magres": [
+                    {
+                        "task": "(An)Isotropic J-coupling",
+                        ("C", 2): {
+                            "diamagnetic": -0.48,
+                            "fermi_contact": 128.25,
+                            "paramagnetic": -1.22,
+                            "spin_dipolar": 3.2,
+                            "total": 129.75,
+                        },
+                    }
+                ]
+            },
+        )
 
     def test_get_chem_shielding_efg(self):
         test_text = io.StringIO("""
@@ -3011,26 +3600,37 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'magres':
-                                     [{'task': 'Chemical Shielding and Electric '
-                                       'Field Gradient',
-                                       ('H', 1): {'cs_aniso': 8.55,
-                                                  'asym': 0.11,
-                                                  'cq': 0.1968,
-                                                  'eta': 0.02,
-                                                  'cs_iso': 28.24},
-                                       ('H', 2): {'cs_aniso': 9.29,
-                                                  'asym': 0.22,
-                                                  'cq': 0.1932,
-                                                  'eta': 0.03,
-                                                  'cs_iso': 28.75},
-                                       ('H:T', 3): {'cs_aniso': 7.26,
-                                                    'asym': None,
-                                                    'cq': 0.1996,
-                                                    'eta': 0.01,
-                                                    'cs_iso': 28.71}}
-                                      ]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "magres": [
+                    {
+                        "task": "Chemical Shielding and Electric Field Gradient",
+                        ("H", 1): {
+                            "cs_aniso": 8.55,
+                            "asym": 0.11,
+                            "cq": 0.1968,
+                            "eta": 0.02,
+                            "cs_iso": 28.24,
+                        },
+                        ("H", 2): {
+                            "cs_aniso": 9.29,
+                            "asym": 0.22,
+                            "cq": 0.1932,
+                            "eta": 0.03,
+                            "cs_iso": 28.75,
+                        },
+                        ("H:T", 3): {
+                            "cs_aniso": 7.26,
+                            "asym": None,
+                            "cq": 0.1996,
+                            "eta": 0.01,
+                            "cs_iso": 28.71,
+                        },
+                    }
+                ]
+            },
+        )
 
     def test_get_efg(self):
         test_text = io.StringIO("""
@@ -3046,14 +3646,19 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'magres':
-                                     [{'task': 'Electric Field Gradient',
-                                       ('H', 1): {'asym': 0.02, 'cq': 0.1968},
-                                       ('H', 2): {'asym': 0.03, 'cq': 0.1932},
-                                       ('H:T', 3): {'asym': None, 'cq': 0.1996}}
-                                      ]
-                                     }
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "magres": [
+                    {
+                        "task": "Electric Field Gradient",
+                        ("H", 1): {"asym": 0.02, "cq": 0.1968},
+                        ("H", 2): {"asym": 0.03, "cq": 0.1932},
+                        ("H:T", 3): {"asym": None, "cq": 0.1996},
+                    }
+                ]
+            },
+        )
 
     def test_get_hft(self):
         test_text = io.StringIO("""
@@ -3067,12 +3672,9 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'magres':
-                                     [{'task': 'Hyperfine',
-                                       ('H', 1): {'hf_iso': -1227.0}}
-                                      ]
-                                     }
-                         )
+        self.assertEqual(
+            test_dict, {"magres": [{"task": "Hyperfine", ("H", 1): {"hf_iso": -1227.0}}]}
+        )
 
     def test_get_solvation(self):
         test_text = io.StringIO("""
@@ -3095,13 +3697,20 @@ Message: Generation of delocalized internals is successful
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'autosolvation': {'apolar_cavitation_energy': 0.23174076832973722,
-                                                       'apolar_dis_rep_energy': -0.16660423187145634,
-                                                       'free_energy_of_solvation': 0.01835035141161526,
-                                                       'total_apolar_solvation_energy': 0.0651365364582809,
-                                                       'total_energy_in_solvent': -30.701990109989108,
-                                                       'total_energy_in_vacuum': -30.720340461400724,
-                                                       'total_polar_solvation_energy': -0.04678618504666563}})
+        self.assertEqual(
+            test_dict,
+            {
+                "autosolvation": {
+                    "apolar_cavitation_energy": 0.23174076832973722,
+                    "apolar_dis_rep_energy": -0.16660423187145634,
+                    "free_energy_of_solvation": 0.01835035141161526,
+                    "total_apolar_solvation_energy": 0.0651365364582809,
+                    "total_energy_in_solvent": -30.701990109989108,
+                    "total_energy_in_vacuum": -30.720340461400724,
+                    "total_polar_solvation_energy": -0.04678618504666563,
+                }
+            },
+        )
 
     def test_get_tddft(self):
         test_text = io.StringIO("""
@@ -3121,19 +3730,16 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'tddft':
-                                     [
-                                         {'energy': 5.753504005347331,
-                                          'error': 3.6998800019e-07,
-                                          'type': 'spurious'},
-                                         {'energy': 6.402101261254828,
-                                          'error': 5.3503385576e-07,
-                                          'type': 'Singlet'},
-                                         {'energy': 6.402955563292028,
-                                          'error': 5.7075034009e-07,
-                                          'type': 'Singlet'}
-                                     ]}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "tddft": [
+                    {"energy": 5.753504005347331, "error": 3.6998800019e-07, "type": "spurious"},
+                    {"energy": 6.402101261254828, "error": 5.3503385576e-07, "type": "Singlet"},
+                    {"energy": 6.402955563292028, "error": 5.7075034009e-07, "type": "Singlet"},
+                ]
+            },
+        )
 
     def test_elastic_scf(self):
         test_text = io.StringIO("""
@@ -3184,19 +3790,29 @@ Ewald Contribution ::
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'elastic': {
-            '<psi^1|H^(1)|psi^0> Contribution': ((-0.01546697, -0.00212167, -0.00212167, 0.0, 0.0, 0.0),
-                                                 (-0.00212167, -0.01546697, -0.00212167, 0.0, 0.0, 0.0),
-                                                 (-0.00212167, -0.00212167, -0.01546697, 0.0, 0.0, 0.0),
-                                                 (0.0, 0.0, 0.0, -0.01407441, 0.0, 0.0),
-                                                 (0.0, 0.0, 0.0, 0.0, -0.01407441, 0.0),
-                                                 (0.0, 0.0, 0.0, 0.0, 0.0, -0.01407441)),
-            'Ewald Contribution': ((-0.0132765, 0.00132942, 0.00132942, 0.0, -0.0, 0.0),
-                                   (0.00132942, -0.0132765, 0.00132942, -0.0, -0.0, -0.0),
-                                   (0.00132942, 0.00132942, -0.0132765, -0.0, -0.0, 0.0),
-                                   (0.0, -0.0, -0.0, 0.01194708, 0.0, -0.0),
-                                   (-0.0, -0.0, -0.0, 0.0, 0.01194708, 0.0),
-                                   (0.0, -0.0, 0.0, -0.0, 0.0, 0.01194708))}})
+        self.assertEqual(
+            test_dict,
+            {
+                "elastic": {
+                    "<psi^1|H^(1)|psi^0> Contribution": (
+                        (-0.01546697, -0.00212167, -0.00212167, 0.0, 0.0, 0.0),
+                        (-0.00212167, -0.01546697, -0.00212167, 0.0, 0.0, 0.0),
+                        (-0.00212167, -0.00212167, -0.01546697, 0.0, 0.0, 0.0),
+                        (0.0, 0.0, 0.0, -0.01407441, 0.0, 0.0),
+                        (0.0, 0.0, 0.0, 0.0, -0.01407441, 0.0),
+                        (0.0, 0.0, 0.0, 0.0, 0.0, -0.01407441),
+                    ),
+                    "Ewald Contribution": (
+                        (-0.0132765, 0.00132942, 0.00132942, 0.0, -0.0, 0.0),
+                        (0.00132942, -0.0132765, 0.00132942, -0.0, -0.0, -0.0),
+                        (0.00132942, 0.00132942, -0.0132765, -0.0, -0.0, 0.0),
+                        (0.0, -0.0, -0.0, 0.01194708, 0.0, -0.0),
+                        (-0.0, -0.0, -0.0, 0.0, 0.01194708, 0.0),
+                        (0.0, -0.0, 0.0, -0.0, 0.0, 0.01194708),
+                    ),
+                }
+            },
+        )
 
     def test_get_atomic_displacements(self):
         test_text = io.StringIO("""
@@ -3216,11 +3832,18 @@ Ewald Contribution ::
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'atomic_displacements':
-                                     {'0.0': {('Si', 1): (0.002399, 0.002399, 0.002399, 0.0, 0.0, -0.0),
-                                              ('Si', 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)},
-                                      '100.0': {('Si', 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)}}}
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "atomic_displacements": {
+                    "0.0": {
+                        ("Si", 1): (0.002399, 0.002399, 0.002399, 0.0, 0.0, -0.0),
+                        ("Si", 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0),
+                    },
+                    "100.0": {("Si", 2): (0.003009, 0.003009, 0.003009, 0.0, -0.0, 0.0)},
+                }
+            },
+        )
 
     def test_elastic_constants_tensor(self):
         test_text = io.StringIO("""
@@ -3237,14 +3860,21 @@ Ewald Contribution ::
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'elastic':
-                                     {'elastic_constants': ((167.397133, 58.771201, 58.771201, 0.0, 0.0, -0.0),
-                                                            (58.771201, 167.397133, 58.771201, 0.0, 0.0, -0.0),
-                                                            (58.771201, 58.771201, 167.397133, 0.0, -0.0, -0.0),
-                                                            (0.0, 0.0, 0.0, 102.034195, -0.0, 0.0),
-                                                            (0.0, 0.0, -0.0, -0.0, 102.034195, 0.0),
-                                                            (-0.0, -0.0, -0.0, 0.0, 0.0, 102.034195))
-                                      }})
+        self.assertEqual(
+            test_dict,
+            {
+                "elastic": {
+                    "elastic_constants": (
+                        (167.397133, 58.771201, 58.771201, 0.0, 0.0, -0.0),
+                        (58.771201, 167.397133, 58.771201, 0.0, 0.0, -0.0),
+                        (58.771201, 58.771201, 167.397133, 0.0, -0.0, -0.0),
+                        (0.0, 0.0, 0.0, 102.034195, -0.0, 0.0),
+                        (0.0, 0.0, -0.0, -0.0, 102.034195, 0.0),
+                        (-0.0, -0.0, -0.0, 0.0, 0.0, 102.034195),
+                    )
+                }
+            },
+        )
 
     def test_elastic_compliance_matrix(self):
         test_text = io.StringIO("""
@@ -3260,14 +3890,21 @@ Ewald Contribution ::
  ===============================================================================
         """)
         test_dict = parse_castep_file(test_text)[0]
-        self.assertEqual(test_dict, {'elastic':
-                                     {'compliance_matrix': ((0.007307109, -0.001898796, -0.001898796, 0.0, -0.0, 0.0),
-                                                            (-0.001898796, 0.007307109, -0.001898796, -0.0, 0.0, 0.0),
-                                                            (-0.001898796, -0.001898796, 0.007307109, -0.0, 0.0, -0.0),
-                                                            (0.0, -0.0, -0.0, 0.009800636, 0.0, -0.0),
-                                                            (-0.0, 0.0, 0.0, 0.0, 0.009800636, -0.0),
-                                                            (0.0, 0.0, -0.0, -0.0, -0.0, 0.009800636))
-                                      }})
+        self.assertEqual(
+            test_dict,
+            {
+                "elastic": {
+                    "compliance_matrix": (
+                        (0.007307109, -0.001898796, -0.001898796, 0.0, -0.0, 0.0),
+                        (-0.001898796, 0.007307109, -0.001898796, -0.0, 0.0, 0.0),
+                        (-0.001898796, -0.001898796, 0.007307109, -0.0, 0.0, -0.0),
+                        (0.0, -0.0, -0.0, 0.009800636, 0.0, -0.0),
+                        (-0.0, 0.0, 0.0, 0.0, 0.009800636, -0.0),
+                        (0.0, 0.0, -0.0, -0.0, -0.0, 0.009800636),
+                    )
+                }
+            },
+        )
 
     def test_elastic_properties(self):
         test_text = io.StringIO("""
@@ -3306,16 +3943,24 @@ Ewald Contribution ::
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'elastic':
-                                     {'bulk_modulus': (94.979845, 94.979845, 94.979845),
-                                      'longitudinal_waves': 91.95017,
-                                      'poisson_ratios': (0.259856, 0.259856, 0.259856, 0.259856, 0.259856, 0.259856),
-                                      'shear_modulus': (82.945704, 75.499588, 79.222646),
-                                      'speed_of_sound': ((83.994377, 49.768951, 49.768951),
-                                                         (49.768951, 83.994377, 49.768951),
-                                                         (49.768951, 49.768951, 83.994377)),
-                                      'transverse_waves': 57.783105,
-                                      "young_s_modulus": (136.853034, 136.853034, 136.853034)}})
+        self.assertEqual(
+            test_dict,
+            {
+                "elastic": {
+                    "bulk_modulus": (94.979845, 94.979845, 94.979845),
+                    "longitudinal_waves": 91.95017,
+                    "poisson_ratios": (0.259856, 0.259856, 0.259856, 0.259856, 0.259856, 0.259856),
+                    "shear_modulus": (82.945704, 75.499588, 79.222646),
+                    "speed_of_sound": (
+                        (83.994377, 49.768951, 49.768951),
+                        (49.768951, 83.994377, 49.768951),
+                        (49.768951, 49.768951, 83.994377),
+                    ),
+                    "transverse_waves": 57.783105,
+                    "young_s_modulus": (136.853034, 136.853034, 136.853034),
+                }
+            },
+        )
 
     def test_get_continuation(self):
         test_text = io.StringIO("""
@@ -3324,7 +3969,7 @@ Reading continuation data from model file BN.check
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict, {'continuation': 'BN.check'})
+        self.assertEqual(test_dict, {"continuation": "BN.check"})
 
     def test_berry_phase(self):
         test_text = io.StringIO("""
@@ -3356,30 +4001,39 @@ Reading continuation data from model file BN.check
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict,
-                         {'berry_phase': {'elec': {'units': 'C/m^2',
-                                                   'val': (0.0, 0.0, -0.592465)},
-                                          'ionic': {'units': 'C/m^2',
-                                                    'val': (0.0, 0.0, 0.81725)},
-                                          'polarisation': {(0.0, 0.0, 1.0): {'elec': -0.5925,
-                                                                             'ionic': 0.8173,
-                                                                             'quantum': 2.1052,
-                                                                             'total': 0.2248,
-                                                                             'units': 'C/m^2'},
-                                                           (0.0, 1.0, 0.0): {'elec': 0.0,
-                                                                             'ionic': 0.0,
-                                                                             'quantum': 1.9803,
-                                                                             'total': 0.0,
-                                                                             'units': 'C/m^2'},
-                                                           (1.0, 0.0, 0.0): {'elec': 0.0,
-                                                                             'ionic': 0.0,
-                                                                             'quantum': 1.9803,
-                                                                             'total': 0.0,
-                                                                             'units': 'C/m^2'}},
-                                          'total': {'units': 'C/m^2',
-                                                    'val': (0.0, 0.0, 0.224785)}}},
-                         )
-
+        self.assertEqual(
+            test_dict,
+            {
+                "berry_phase": {
+                    "elec": {"units": "C/m^2", "val": (0.0, 0.0, -0.592465)},
+                    "ionic": {"units": "C/m^2", "val": (0.0, 0.0, 0.81725)},
+                    "polarisation": {
+                        (0.0, 0.0, 1.0): {
+                            "elec": -0.5925,
+                            "ionic": 0.8173,
+                            "quantum": 2.1052,
+                            "total": 0.2248,
+                            "units": "C/m^2",
+                        },
+                        (0.0, 1.0, 0.0): {
+                            "elec": 0.0,
+                            "ionic": 0.0,
+                            "quantum": 1.9803,
+                            "total": 0.0,
+                            "units": "C/m^2",
+                        },
+                        (1.0, 0.0, 0.0): {
+                            "elec": 0.0,
+                            "ionic": 0.0,
+                            "quantum": 1.9803,
+                            "total": 0.0,
+                            "units": "C/m^2",
+                        },
+                    },
+                    "total": {"units": "C/m^2", "val": (0.0, 0.0, 0.224785)},
+                }
+            },
+        )
 
     def test_berry_phase_verbose(self):
         test_text = io.StringIO("""
@@ -3513,47 +4167,77 @@ Total polarisation          0.000000    0.000000    0.224787
 
         test_dict = parse_castep_file(test_text)[0]
 
-        self.assertEqual(test_dict,
-                         {'berry_phase': {'elec': {'units': 'C/m^2',
-                                                   'val': (0.0, 0.0, -0.592464)},
-                                          'ionic': {'units': 'C/m^2',
-                                                    'val': (0.0, 0.0, 0.81725)},
-                                          'ionic_contribution_to_polarisation':
-                                          {'ions': {(1, 1): {'coords': (0.5, 0.5, -0.1352),
-                                                             'polarisation': (1.0, 1.0, -0.8112)},
-                                                    (1, 2): {'coords': (0.5, 0.0, 0.603),
-                                                             'polarisation': (1.0, 0.0, -0.382)},
-                                                    (1, 3): {'coords': (0.0, 0.5, 0.603),
-                                                             'polarisation': (0.0, 1.0, -0.382)},
-                                                    (2, 1): {'coords': (0.5, 0.5, 0.5293),
-                                                             'polarisation': (0.0, 0.0, 0.3516)},
-                                                    (3, 1): {'coords': (0.0, 0.0, 0.0),
-                                                             'polarisation': (0.0, 0.0, 0.0)}},
-                                           'total': (0.0, 0.0, 0.7764),
-                                           'units': 'phase'},
-                                          'polarisation': {(0.0, 0.0, 1.0): {'elec': -0.5925,
-                                                                             'ionic': 0.8173,
-                                                                             'quantum': 2.1052,
-                                                                             'total': 0.2248,
-                                                                             'units': 'C/m^2'},
-                                                           (0.0, 1.0, 0.0): {'elec': 0.0,
-                                                                             'ionic': 0.0,
-                                                                             'quantum': 1.9803,
-                                                                             'total': 0.0,
-                                                                             'units': 'C/m^2'},
-                                                           (1.0, 0.0, 0.0): {'elec': 0.0,
-                                                                             'ionic': 0.0,
-                                                                             'quantum': 1.9803,
-                                                                             'total': 0.0,
-                                                                             'units': 'C/m^2'}},
-                                          'total': {'units': 'C/m^2',
-                                                    'val': (0.0, 0.0, 0.224787)},
-                                          'volume_polarisation': {'Electronic': (0.0, 0.0, -0.592464),
-                                                                  'Ionic': (0.0, 0.0, 0.81725),
-                                                                  'Total': (0.0, 0.0, 0.224787),
-                                                                  'units': 'C/m^2'}}},
-                         )
+        self.assertEqual(
+            test_dict,
+            {
+                "berry_phase": {
+                    "elec": {"units": "C/m^2", "val": (0.0, 0.0, -0.592464)},
+                    "ionic": {"units": "C/m^2", "val": (0.0, 0.0, 0.81725)},
+                    "ionic_contribution_to_polarisation": {
+                        "ions": {
+                            (1, 1): {
+                                "coords": (0.5, 0.5, -0.1352),
+                                "polarisation": (1.0, 1.0, -0.8112),
+                            },
+                            (1, 2): {
+                                "coords": (0.5, 0.0, 0.603),
+                                "polarisation": (1.0, 0.0, -0.382),
+                            },
+                            (1, 3): {
+                                "coords": (0.0, 0.5, 0.603),
+                                "polarisation": (0.0, 1.0, -0.382),
+                            },
+                            (2, 1): {
+                                "coords": (0.5, 0.5, 0.5293),
+                                "polarisation": (0.0, 0.0, 0.3516),
+                            },
+                            (3, 1): {"coords": (0.0, 0.0, 0.0), "polarisation": (0.0, 0.0, 0.0)},
+                        },
+                        "total": (0.0, 0.0, 0.7764),
+                        "units": "phase",
+                    },
+                    "polarisation": {
+                        (0.0, 0.0, 1.0): {
+                            "elec": -0.5925,
+                            "ionic": 0.8173,
+                            "quantum": 2.1052,
+                            "total": 0.2248,
+                            "units": "C/m^2",
+                        },
+                        (0.0, 1.0, 0.0): {
+                            "elec": 0.0,
+                            "ionic": 0.0,
+                            "quantum": 1.9803,
+                            "total": 0.0,
+                            "units": "C/m^2",
+                        },
+                        (1.0, 0.0, 0.0): {
+                            "elec": 0.0,
+                            "ionic": 0.0,
+                            "quantum": 1.9803,
+                            "total": 0.0,
+                            "units": "C/m^2",
+                        },
+                    },
+                    "total": {"units": "C/m^2", "val": (0.0, 0.0, 0.224787)},
+                    "volume_polarisation": {
+                        "Electronic": (0.0, 0.0, -0.592464),
+                        "Ionic": (0.0, 0.0, 0.81725),
+                        "Total": (0.0, 0.0, 0.224787),
+                        "units": "C/m^2",
+                    },
+                }
+            },
+        )
 
 
-if __name__ == '__main__':
-    main()
+castep_path = os.environ.get("CASTEP_ROOT")
+castep_tests = (
+    Path(castep_path).glob("Test/**/benchmark.out.*") if castep_path is not None else (Path.cwd(),)
+)
+
+
+@pytest.mark.skipif(castep_path is None, reason="CASTEP_ROOT not provided.")
+@pytest.mark.parametrize("pth", castep_tests, ids=lambda x: x.stem)
+def test_castep_Tests(pth):
+    parse_castep_file(pth, filters=Filters.TESTING)
