@@ -1,0 +1,531 @@
+castep_bin: true
+cell:
+  atom_fix_spin: [false, false]
+  atom_init_magmom: false
+  atom_init_spin: false
+  atom_move: [true, true, true, true, true, true]
+  cell_version_number: 26.110000610351562
+  chemical_potential: [0.0, 0.0]
+  hubbard_alpha: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  hubbard_u: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  indx_mixture_atoms: [0, 0]
+  initial_magnetic_moment: [0.0, 0.0]
+  initial_magnetisation_dir: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  initial_nc_density: false
+  ion_pack_index: [1, 1]
+  ion_pack_species: [1, 2]
+  ionic_charge: [3, 5]
+  ionic_charge_real: [3.0, 5.0]
+  ionic_label: 'NULL                                                                                                                                                                                                                                                            NULL                                                                                                                                                                                                                                                            '
+  ionic_positions: [0.49999999999999994, 0.5, 0.5, 0.6231666666666665, 0.6231666666666666,
+    0.6231666666666668]
+  ionic_velocities: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  list_mixture_atoms: 0
+  list_mixture_atoms_size: [1, 1]
+  max_ions_in_species: 1
+  mixture_weight: [1.0, 1.0]
+  num_cells_in_supercell: 1
+  num_ions: 2
+  num_ions_in_species: [1, 1]
+  num_mixture_atoms: 0
+  num_species: 2
+  real_lattice: [11.338356756949846, 6.942741154994696e-16, 6.942741154994696e-16,
+    0.0, 11.338356756949846, 6.942741154994696e-16, 0.0, 0.0, 11.338356756949846]
+  recip_lattice: [0.5541530789572578, 0.0, 0.0, -3.3932089719132814e-17, 0.5541530789572578,
+    0.0, -3.3932089719132814e-17, -3.3932089719132814e-17, 0.5541530789572578]
+  species_efg_isotope: [11, 14]
+  species_gamma: [0.0004880945383329418, -0.00015422942808693675]
+  species_lcao_states: [0, 0]
+  species_mass: [19707.247404479604, 25532.725049507048]
+  species_pot: 'B_00.usp                                                                                                                                                                                                                                                        N_00.usp                                                                                                                                                                                                                                                        '
+  species_q: [1.4494952152622366e-09, 7.29925651637352e-10]
+  species_spin_isotope: [11, 15]
+  species_symbol: 'B       N       '
+  supercell_cell_index: [1, 1]
+  supercell_ion_index: [1, 2]
+  supercell_matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  supercell_origins: [0, 0, 0]
+  volume: 1457.6402543800493
+cell_global:
+  bs_kpoint_mp_grid: [1, 1, 1]
+  bs_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  bs_kpoint_mp_spacing: 0.0
+  bs_kpoint_weights: 1.0
+  bs_kpoints: [0.0, 0.0, 0.0]
+  cell_constraints: [0, 0, 0, 0, 0, 0]
+  cell_symmetry_ion_constraints: [1, 1, 1, 2, 2, 2]
+  cell_symmorphic: true
+  crystal_spacegroup: {arithmetic_crystal_class_number: 47, arithmetic_crystal_class_symbol: 3mR,
+    choice: H, hall_number: 450, hall_symbol: R 3 -2", international: R 3 m, international_full: R
+      3 m, international_short: R3m, number: 160, pointgroup_international: 3m, pointgroup_schoenflies: C3v,
+    schoenflies: C3v^5}
+  crystal_symmetry_disps: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  crystal_symmetry_equiv_atoms: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  crystal_symmetry_operations: [0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33,
+    0.9999999999999999, 0.0, 4.9496086150807124e-33, 4.9496086150807124e-33, 0.9999999999999999,
+    6.123233995736765e-17, 0.9999999999999999, 0.0, 6.123233995736765e-17, 4.9496086150807124e-33,
+    0.9999999999999999, 0.9999999999999999, -6.123233995736765e-17, -6.123233995736765e-17,
+    6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999, 0.9999999999999999,
+    -3.749399456654643e-33, -6.123233995736765e-17, 1.200209158426069e-33, 0.9999999999999999,
+    -6.123233995736765e-17, 6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999,
+    6.123233995736765e-17, 0.9999999999999999, -6.123233995736765e-17, 0.9999999999999999,
+    -6.123233995736765e-17, -6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999,
+    0.0, 0.9999999999999999, -6.123233995736765e-17, 0.0, 4.9496086150807124e-33,
+    4.9496086150807124e-33, 0.9999999999999999, 0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33,
+    6.123233995736765e-17, 0.9999999999999999, 1.200209158426069e-33, 0.9999999999999999,
+    -6.123233995736765e-17]
+  density: 31.036445596261142
+  devel_code: 'NULL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    '
+  elnes_kpoint_mp_grid: [1, 1, 1]
+  elnes_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  elnes_kpoint_mp_spacing: -1.0
+  elnes_kpoint_weights: 1.0
+  elnes_kpoints: [0.0, 0.0, 0.0]
+  external_bfield: [0.0, 0.0, 0.0]
+  external_efield: [0.0, 0.0, 0.0]
+  external_pressure: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  fix_all_cell: true
+  fix_all_ions: false
+  fix_com: true
+  fix_vol: false
+  input_permittivity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  ionic_constraints: [19707.247404479604, 0.0, 0.0, 25532.725049507048, 0.0, 0.0,
+    0.0, 19707.247404479604, 0.0, 0.0, 25532.725049507048, 0.0, 0.0, 0.0, 19707.247404479604,
+    0.0, 0.0, 25532.725049507048]
+  jcoupling_site: 0
+  jcoupling_species: 0
+  kpoint_mp_density: 0.0
+  kpoint_mp_grid: [1, 1, 1]
+  kpoint_mp_offset: [0.0, 0.0, 0.0]
+  kpoint_mp_spacing: -1.0
+  kpoint_weights: 1.0
+  kpoints: [0.0, 0.0, 0.0]
+  magres_kpoint_mp_grid: [1, 1, 1]
+  magres_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  magres_kpoint_mp_spacing: -1.0
+  magres_kpoint_weights: 1.0
+  magres_kpoints: [0.0, 0.0, 0.0]
+  nkpts: 1
+  nonlinear_constraints: []
+  nq_to_scf_global_nk: 1
+  nqpts: 1
+  num_bs_kpoints: 1
+  num_cell_constraints: 6
+  num_crystal_symmetry_operations: 6
+  num_elnes_kpoints: 1
+  num_ep_kpoint_pairs: 0
+  num_ionic_constraints: 3
+  num_magres_kpoints: 1
+  num_nonlinear_constraints: 0
+  num_optics_kpoints: 1
+  num_phonon_fine_kpoints: 1
+  num_phonon_gamma_directions: 0
+  num_phonon_kpoints: 1
+  num_scf_kpoints: 1
+  num_spectral_kpoints: 1
+  num_supercell_kpoints: 1
+  num_symmetry_operations: 6
+  optics_kpoint_mp_density: 0.0
+  optics_kpoint_mp_grid: [1, 1, 1]
+  optics_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  optics_kpoint_mp_spacing: 0.0
+  optics_kpoint_weights: 1.0
+  optics_kpoints: [0.0, 0.0, 0.0]
+  phonon_fine_kpoint_mp_grid: [1, 1, 1]
+  phonon_fine_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  phonon_fine_kpoint_mp_spacing: -1.0
+  phonon_fine_kpoint_weights: 1.0
+  phonon_fine_kpoints: [0.0, 0.0, 0.0]
+  phonon_kpoint_mp_grid: [1, 1, 1]
+  phonon_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  phonon_kpoint_mp_spacing: -1.0
+  phonon_kpoint_weights: 1.0
+  phonon_kpoints: [0.0, 0.0, 0.0]
+  phonon_supercell_matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  q_from_scf_k_sym_op: 0
+  qpoint_conjg: false
+  qpoint_weights: 1.0
+  qpoints: [0.0, 0.0, 0.0]
+  quantisation_axis: [0.0, 0.0, 0.0]
+  scf_kpoint_mp_grid: [1, 1, 1]
+  scf_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  scf_kpoint_mp_spacing: -1.0
+  scf_kpoint_weights: 1.0
+  scf_kpoints: [0.0, 0.0, 0.0]
+  spacegroup: {arithmetic_crystal_class_number: 47, arithmetic_crystal_class_symbol: 3mR,
+    choice: H, hall_number: 450, hall_symbol: R 3 -2", international: R 3 m, international_full: R
+      3 m, international_short: R3m, number: 160, pointgroup_international: 3m, pointgroup_schoenflies: C3v,
+    schoenflies: C3v^5}
+  spectral_kpoint_mp_grid: [1, 1, 1]
+  spectral_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  spectral_kpoint_mp_spacing: 0.0
+  spectral_kpoint_weights: 1.0
+  spectral_kpoints: [0.0, 0.0, 0.0]
+  supercell_kpoint_mp_grid: [-2, -2, -2]
+  supercell_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  supercell_kpoint_mp_spacing: 0.0
+  supercell_kpoint_weights: 1.0
+  supercell_kpoints: [0.0, 0.0, 0.0]
+  symmetry_disps: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0]
+  symmetry_equiv_atoms: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  symmetry_generate: true
+  symmetry_operations: [0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33, 0.9999999999999999,
+    0.0, 4.9496086150807124e-33, 4.9496086150807124e-33, 0.9999999999999999, 6.123233995736765e-17,
+    0.9999999999999999, 0.0, 6.123233995736765e-17, 4.9496086150807124e-33, 0.9999999999999999,
+    0.9999999999999999, -6.123233995736765e-17, -6.123233995736765e-17, 6.123233995736765e-17,
+    6.123233995736765e-17, 0.9999999999999999, 0.9999999999999999, -3.749399456654643e-33,
+    -6.123233995736765e-17, 1.200209158426069e-33, 0.9999999999999999, -6.123233995736765e-17,
+    6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999, 6.123233995736765e-17,
+    0.9999999999999999, -6.123233995736765e-17, 0.9999999999999999, -6.123233995736765e-17,
+    -6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999, 0.0, 0.9999999999999999,
+    -6.123233995736765e-17, 0.0, 4.9496086150807124e-33, 4.9496086150807124e-33, 0.9999999999999999,
+    0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33, 6.123233995736765e-17, 0.9999999999999999,
+    1.200209158426069e-33, 0.9999999999999999, -6.123233995736765e-17]
+  symmetry_tol: 0.0018897261261583078
+orig_cell:
+  atom_fix_spin: [false, false]
+  atom_init_magmom: false
+  atom_init_spin: false
+  atom_move: [true, true, true, true, true, true]
+  cell_version_number: 26.110000610351562
+  chemical_potential: [0.0, 0.0]
+  hubbard_alpha: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  hubbard_u: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  indx_mixture_atoms: [0, 0]
+  initial_magnetic_moment: [0.0, 0.0]
+  initial_magnetisation_dir: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  initial_nc_density: false
+  ion_pack_index: [1, 1]
+  ion_pack_species: [1, 2]
+  ionic_charge: [3, 5]
+  ionic_charge_real: [3.0, 5.0]
+  ionic_label: 'NULL                                                                                                                                                                                                                                                            NULL                                                                                                                                                                                                                                                            '
+  ionic_positions: [0.49999999999999994, 0.5, 0.5, 0.6231666666666665, 0.6231666666666666,
+    0.6231666666666668]
+  ionic_velocities: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  list_mixture_atoms: 0
+  list_mixture_atoms_size: [1, 1]
+  max_ions_in_species: 1
+  mixture_weight: [1.0, 1.0]
+  num_cells_in_supercell: 1
+  num_ions: 2
+  num_ions_in_species: [1, 1]
+  num_mixture_atoms: 0
+  num_species: 2
+  real_lattice: [11.338356756949846, 6.942741154994696e-16, 6.942741154994696e-16,
+    0.0, 11.338356756949846, 6.942741154994696e-16, 0.0, 0.0, 11.338356756949846]
+  recip_lattice: [0.5541530789572578, 0.0, 0.0, -3.3932089719132814e-17, 0.5541530789572578,
+    0.0, -3.3932089719132814e-17, -3.3932089719132814e-17, 0.5541530789572578]
+  species_efg_isotope: [11, 14]
+  species_gamma: [0.0004880945383329418, -0.00015422942808693675]
+  species_lcao_states: [0, 0]
+  species_mass: [19707.247404479604, 25532.725049507048]
+  species_pot: 'B_00.usp                                                                                                                                                                                                                                                        N_00.usp                                                                                                                                                                                                                                                        '
+  species_q: [1.4494952152622366e-09, 7.29925651637352e-10]
+  species_spin_isotope: [11, 15]
+  species_symbol: 'B       N       '
+  supercell_cell_index: [1, 1]
+  supercell_ion_index: [1, 2]
+  supercell_matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  supercell_origins: [0, 0, 0]
+  volume: 1457.6402543800493
+orig_cell_global:
+  bs_kpoint_mp_grid: [1, 1, 1]
+  bs_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  bs_kpoint_mp_spacing: 0.0
+  bs_kpoint_weights: 1.0
+  bs_kpoints: [0.0, 0.0, 0.0]
+  cell_constraints: [0, 0, 0, 0, 0, 0]
+  cell_symmetry_ion_constraints: [1, 1, 1, 2, 2, 2]
+  cell_symmorphic: true
+  crystal_spacegroup: {arithmetic_crystal_class_number: 47, arithmetic_crystal_class_symbol: 3mR,
+    choice: H, hall_number: 450, hall_symbol: R 3 -2", international: R 3 m, international_full: R
+      3 m, international_short: R3m, number: 160, pointgroup_international: 3m, pointgroup_schoenflies: C3v,
+    schoenflies: C3v^5}
+  crystal_symmetry_disps: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  crystal_symmetry_equiv_atoms: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  crystal_symmetry_operations: [0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33,
+    0.9999999999999999, 0.0, 4.9496086150807124e-33, 4.9496086150807124e-33, 0.9999999999999999,
+    6.123233995736765e-17, 0.9999999999999999, 0.0, 6.123233995736765e-17, 4.9496086150807124e-33,
+    0.9999999999999999, 0.9999999999999999, -6.123233995736765e-17, -6.123233995736765e-17,
+    6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999, 0.9999999999999999,
+    -3.749399456654643e-33, -6.123233995736765e-17, 1.200209158426069e-33, 0.9999999999999999,
+    -6.123233995736765e-17, 6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999,
+    6.123233995736765e-17, 0.9999999999999999, -6.123233995736765e-17, 0.9999999999999999,
+    -6.123233995736765e-17, -6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999,
+    0.0, 0.9999999999999999, -6.123233995736765e-17, 0.0, 4.9496086150807124e-33,
+    4.9496086150807124e-33, 0.9999999999999999, 0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33,
+    6.123233995736765e-17, 0.9999999999999999, 1.200209158426069e-33, 0.9999999999999999,
+    -6.123233995736765e-17]
+  density: 31.036445596261142
+  devel_code: 'NULL                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                    '
+  elnes_kpoint_mp_grid: [1, 1, 1]
+  elnes_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  elnes_kpoint_mp_spacing: -1.0
+  elnes_kpoint_weights: 1.0
+  elnes_kpoints: [0.0, 0.0, 0.0]
+  external_bfield: [0.0, 0.0, 0.0]
+  external_efield: [0.0, 0.0, 0.0]
+  external_pressure: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  fix_all_cell: true
+  fix_all_ions: false
+  fix_com: true
+  fix_vol: false
+  input_permittivity: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0]
+  ionic_constraints: [19707.247404479604, 0.0, 0.0, 25532.725049507048, 0.0, 0.0,
+    0.0, 19707.247404479604, 0.0, 0.0, 25532.725049507048, 0.0, 0.0, 0.0, 19707.247404479604,
+    0.0, 0.0, 25532.725049507048]
+  jcoupling_site: 0
+  jcoupling_species: 0
+  kpoint_mp_density: 0.0
+  kpoint_mp_grid: [1, 1, 1]
+  kpoint_mp_offset: [0.0, 0.0, 0.0]
+  kpoint_mp_spacing: -1.0
+  kpoint_weights: 1.0
+  kpoints: [0.0, 0.0, 0.0]
+  magres_kpoint_mp_grid: [1, 1, 1]
+  magres_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  magres_kpoint_mp_spacing: -1.0
+  magres_kpoint_weights: 1.0
+  magres_kpoints: [0.0, 0.0, 0.0]
+  nkpts: 1
+  nonlinear_constraints: []
+  nq_to_scf_global_nk: 1
+  nqpts: 1
+  num_bs_kpoints: 1
+  num_cell_constraints: 6
+  num_crystal_symmetry_operations: 6
+  num_elnes_kpoints: 1
+  num_ep_kpoint_pairs: 0
+  num_ionic_constraints: 3
+  num_magres_kpoints: 1
+  num_nonlinear_constraints: 0
+  num_optics_kpoints: 1
+  num_phonon_fine_kpoints: 1
+  num_phonon_gamma_directions: 0
+  num_phonon_kpoints: 1
+  num_scf_kpoints: 1
+  num_spectral_kpoints: 1
+  num_supercell_kpoints: 1
+  num_symmetry_operations: 6
+  optics_kpoint_mp_density: 0.0
+  optics_kpoint_mp_grid: [1, 1, 1]
+  optics_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  optics_kpoint_mp_spacing: 0.0
+  optics_kpoint_weights: 1.0
+  optics_kpoints: [0.0, 0.0, 0.0]
+  phonon_fine_kpoint_mp_grid: [1, 1, 1]
+  phonon_fine_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  phonon_fine_kpoint_mp_spacing: -1.0
+  phonon_fine_kpoint_weights: 1.0
+  phonon_fine_kpoints: [0.0, 0.0, 0.0]
+  phonon_kpoint_mp_grid: [1, 1, 1]
+  phonon_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  phonon_kpoint_mp_spacing: -1.0
+  phonon_kpoint_weights: 1.0
+  phonon_kpoints: [0.0, 0.0, 0.0]
+  phonon_supercell_matrix: [1, 0, 0, 0, 1, 0, 0, 0, 1]
+  q_from_scf_k_sym_op: 0
+  qpoint_conjg: false
+  qpoint_weights: 1.0
+  qpoints: [0.0, 0.0, 0.0]
+  quantisation_axis: [0.0, 0.0, 0.0]
+  scf_kpoint_mp_grid: [1, 1, 1]
+  scf_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  scf_kpoint_mp_spacing: -1.0
+  scf_kpoint_weights: 1.0
+  scf_kpoints: [0.0, 0.0, 0.0]
+  spacegroup: {arithmetic_crystal_class_number: 47, arithmetic_crystal_class_symbol: 3mR,
+    choice: H, hall_number: 450, hall_symbol: R 3 -2", international: R 3 m, international_full: R
+      3 m, international_short: R3m, number: 160, pointgroup_international: 3m, pointgroup_schoenflies: C3v,
+    schoenflies: C3v^5}
+  spectral_kpoint_mp_grid: [1, 1, 1]
+  spectral_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  spectral_kpoint_mp_spacing: 0.0
+  spectral_kpoint_weights: 1.0
+  spectral_kpoints: [0.0, 0.0, 0.0]
+  supercell_kpoint_mp_grid: [-2, -2, -2]
+  supercell_kpoint_mp_offset: [0.0, 0.0, 0.0]
+  supercell_kpoint_mp_spacing: 0.0
+  supercell_kpoint_weights: 1.0
+  supercell_kpoints: [0.0, 0.0, 0.0]
+  symmetry_disps: [0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
+    0.0, 0.0, 0.0, 0.0, 0.0]
+  symmetry_equiv_atoms: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1]
+  symmetry_generate: true
+  symmetry_operations: [0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33, 0.9999999999999999,
+    0.0, 4.9496086150807124e-33, 4.9496086150807124e-33, 0.9999999999999999, 6.123233995736765e-17,
+    0.9999999999999999, 0.0, 6.123233995736765e-17, 4.9496086150807124e-33, 0.9999999999999999,
+    0.9999999999999999, -6.123233995736765e-17, -6.123233995736765e-17, 6.123233995736765e-17,
+    6.123233995736765e-17, 0.9999999999999999, 0.9999999999999999, -3.749399456654643e-33,
+    -6.123233995736765e-17, 1.200209158426069e-33, 0.9999999999999999, -6.123233995736765e-17,
+    6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999, 6.123233995736765e-17,
+    0.9999999999999999, -6.123233995736765e-17, 0.9999999999999999, -6.123233995736765e-17,
+    -6.123233995736765e-17, 6.123233995736765e-17, 0.9999999999999999, 0.0, 0.9999999999999999,
+    -6.123233995736765e-17, 0.0, 4.9496086150807124e-33, 4.9496086150807124e-33, 0.9999999999999999,
+    0.9999999999999999, 0.0, 0.0, 4.9496086150807124e-33, 6.123233995736765e-17, 0.9999999999999999,
+    1.200209158426069e-33, 0.9999999999999999, -6.123233995736765e-17]
+  symmetry_tol: 0.0018897261261583078
+params:
+  band_structure: {bs_eigenvalue_tol: 3.6749322165936796e-08, bs_max_CG_steps: 25,
+    bs_max_iter: 60, bs_nbands: 23, bs_re_est_k_scrn: false, bs_write_eigenvalues: true,
+    bs_xc_definition: 'LDA 1.0                                                                                                                                                                                                                                                         ',
+    bs_xc_functional: 'LDA                                                                                                                                                                                                                                                             '}
+  basis: {basis_de_dloge: 0.0, basis_precision: 'FINE      ', cut_off_energy: 9.1873305414842,
+    fft_max_prime_factor: 5, fine_gmax: 7.501493155805099, fine_grid_scale: 1.75,
+    finite_basis_corr: 0, finite_basis_npoints: 3, finite_basis_spacing: 0.183746610829684,
+    fixed_npw: false, grid_scale: 1.75}
+  deltascf: {calculate_deltascf: false, calculate_modos: false, deltascf_checkpoint: '                                                                                                                                                                                                                                                                ',
+    deltascf_constraints: '                                                                                                                                                                                                                                                                ',
+    deltascf_dftu_checkpoint: '                                                                                                                                                                                                                                                                ',
+    deltascf_excite: true, deltascf_mode: 1, deltascf_net_spin_1: 0.0, deltascf_net_spin_2: 0.0,
+    deltascf_overlap_cutoff: 0.01, deltascf_smearing: 0.000367493221659368, modos_checkpoint: '                                                                                                                                                                                                                                                                ',
+    modos_states: '                                                                                                                                                                                                                                                                '}
+  density_mixing: {mix_charge_amp: 0.2, mix_charge_gmax: 0.7937658157107685, mix_cut_off_energy: -1.0,
+    mix_history_length: 20, mix_ked_charge_amp: 0.2, mix_ked_charge_gmax: 0.7937658157107685,
+    mix_ked_spin_amp: 2.0, mix_ked_spin_gmax: 0.7937658157107685, mix_metric_q: -1.0,
+    mix_spin_amp: 2.0, mix_spin_gmax: 0.7937658157107685, mixing_scheme: 'PULAY          '}
+  devel: {devel_block: '                                                                                                                                                                                                                                                                ',
+    devel_code: '                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        '}
+  efield: {efield_calc_ion_permittivity: true, efield_calculate_nonlinear: 'NONE                ',
+    efield_convergence_win: 2, efield_dfpt_method: 'ALLBANDS    ', efield_energy_tol: 6.748334511018749e-05,
+    efield_freq_spacing: 4.556335251707113e-06, efield_ignore_molec_modes: 'CRYSTAL             ',
+    efield_max_CG_steps: 0, efield_max_cycles: 50, efield_oscillator_Q: 50.0, excited_state_scissors: 0.0}
+  elastic: {elastic_calc_deformation_pot: false, elastic_calc_elastic_ion_corr: true,
+    elastic_calc_piezo: true, elastic_calc_piezo_ion_corr: true, elastic_convergence_win: 3,
+    elastic_dfpt_method: 'DM          ', elastic_energy_tol: 3.6749322165936803e-07,
+    elastic_finite_strain: 0.001, elastic_ignore_molec_modes: 'CRYSTAL             ',
+    elastic_max_CG_steps: 0, elastic_max_cycles: 50, elastic_method: 'LINEARRESPONSE      ',
+    internal_strain_force_response: true, internal_strain_sum_rule: true}
+  electronic: {charge: 0.0, elec_temp: 0.0, electronic_minimizer: 'CG        ', nbands: 8,
+    ndown: 4.0, nelectrons: 8.0, nup: 4.0, spin: 0.0, spin_polarized: false, spin_treatment: 'NONE                '}
+  electronic_minimisation: {dipole_correction: 'SELFCONSISTENT      ', dipole_dir: A,
+    efermi_tol: 1e-15, elec_convergence_win: 3, elec_dump_file: 'BN-dipole-sc.wvfn                                                                                                                                                                                                                                               ',
+    elec_eigenvalue_tol: 1.8374661082968398e-08, elec_energy_tol: 3.6749322165936796e-08,
+    elec_force_tol: -1.0, elec_restore_file: 'NULL                                                                                                                                                                                                                                                            ',
+    fix_occupancy: false, max_CG_steps: 4, max_DIIS_steps: 0, max_SCF_cycles: 100,
+    max_SD_steps: 1, metals_method: 'DM  ', num_dump_cycles: 0, num_occ_cycles: 6,
+    smearing_scheme: 'GAUSSIAN            ', smearing_width: 0.00734986443318736,
+    spin_fix: 10}
+  elnes: {elnes_eigenvalue_tol: 3.6749322165936796e-08, elnes_nbands: 23, elnes_xc_definition: 'LDA
+      1.0                                                                                                                                                                                                                                                         ',
+    elnes_xc_functional: 'LDA                                                                                                                                                                                                                                                             '}
+  ga: {ga_bulk_slice: true, ga_fixed_N: true, ga_max_gens: 6, ga_mutate_amp: 1.8897261261583078,
+    ga_mutate_rate: 0.15, ga_pop_size: 2, ga_run_time: 0, ga_spin_mutate_amp: 1.0,
+    ga_spin_mutate_rate: 0.15}
+  general: {backup_interval: 0, bfield_unit: 'TESLA                         ', calc_molecular_dipole: true,
+    calculate_densdiff: false, calculate_elf: false, calculate_hirshfeld: false, calculate_polarisation: false,
+    calculate_stress: false, charge_unit: 'E                             ', checkpoint: 'BN-dipole-sc.check                                                                                                                                                                                                                                              ',
+    cml_output: false, comment: '                                                                                ',
+    continuation: 'NULL                                                                                                                                                                                                                                                            ',
+    data_distribution: 'DEFAULT   ', dipole_unit: 'DEBYE                         ',
+    efield_chi2_unit: 'PM/V                          ', efield_unit: 'EV/ANG/E                      ',
+    energy_unit: 'EV                            ', entropy_unit: 'J/MOL/K                       ',
+    force_constant_unit: 'EV/ANG**2                     ', force_unit: 'EV/ANG                        ',
+    frequency_unit: 'CM-1                          ', hirshfeld_max_iter: 20, hirshfeld_pop_tol: 0.001,
+    inv_length_unit: '1/ANG                         ', iprint: 1, ir_intensity_unit: 'DEBYE**2/ANG**2/AMU           ',
+    iterative_hirshfeld: false, length_unit: 'ANG                           ', mass_unit: 'AMU                           ',
+    message_size: -1, num_backup_iter: 5, num_farms_requested: 1, num_proc_in_smp: 1,
+    num_proc_in_smp_fine: 1, opt_strategy: 'DEFAULT   ', opt_strategy_bias: 0, page_wvfns: 0,
+    pressure_unit: 'GPA                           ', print_clock: true, print_memory_usage: true,
+    rand_seed: 200907741, requested_seed: 200907741, reuse: 'NULL                                                                                                                                                                                                                                                            ',
+    run_time: 0, seedname: 'BN-dipole-sc                                                                                                                                                                                                                                                    ',
+    spin_unit: 'HBAR/2                        ', task: 'SINGLEPOINT                   ',
+    time_unit: 'PS                            ', velocity_unit: 'ANG/PS                        ',
+    verbosity: 'NORMAL    ', volume_unit: 'ANG**3                        ', write_bands: true,
+    write_bib: true, write_cell_structure: false, write_checkpoint: 'ALL                                                                             ',
+    write_cif_structure: false, write_cst_esp: true, write_formatted_density: false,
+    write_formatted_elf: false, write_formatted_potential: false, write_geom: true,
+    write_md: true, write_none: false, write_orbitals: false, write_otfg: true}
+  geometry_optimisation: {geom_convergence_win: 2, geom_disp_tol: 0.0018897261261583078,
+    geom_energy_tol: 7.349864433187361e-07, geom_force_tol: 0.0009723451895287552,
+    geom_frequency_est: 0.0075991492282756375, geom_lbfgs_max_updates: 0, geom_linmin_tol: 0.4,
+    geom_max_iter: 30, geom_method: 'LBFGS          ', geom_modulus_est: 0.016994654562874516,
+    geom_precon_exp_A: 3.0, geom_precon_exp_c_stab: 0.1, geom_precon_exp_mu: 0.0,
+    geom_precon_exp_r_NN: 0.0, geom_precon_exp_r_cut: 0.0, geom_precon_ff_c_stab: 0.001029085830024979,
+    geom_precon_ff_r_cut: 3.2125344144691232, geom_precon_scale_cell: false, geom_preconditioner: NONE,
+    geom_run_time: 0, geom_spin_fix: 0, geom_stress_tol: 3.398930912574903e-06, geom_tpsd_init_stepsize: 0.0,
+    geom_tpsd_iterchange: 0, geom_use_linmin: true}
+  koopmans: {koopmans_LR_method: 'FD                  ', koopmans_method: 'HUBBARD             '}
+  magres: {dfpt_convergence_win: 2, dfpt_eigenvalue_tol: 3.67493221659368e-14, dfpt_residual_norm: 3.67493221659368e-14,
+    magres_jcoupling_task: 'ALL            ', magres_max_CG_steps: 250, magres_max_sc_cycles: 20,
+    magres_method: 'CRYSTAL   ', magres_task: 'SHIELDING           ', magres_write_response: false,
+    magres_xc_definition: 'LDA 1.0                                                                                                                                                                                                                                                         ',
+    magres_xc_functional: 'LDA                                                                                                                                                                                                                                                             '}
+  md: {md_barostat: 'ANDERSEN-HOOVER     ', md_cell_damp_ringing: false, md_cell_t: 4134.137334611427,
+    md_damping_reset: 30, md_damping_scheme: 'INDEPENDENT     ', md_delta_t: 41.341373346114274,
+    md_elec_convergence_win: 3, md_elec_eigenvalue_tol: 1.8374661082968398e-08, md_elec_energy_tol: 3.6749322165936796e-08,
+    md_elec_force_tol: -1.0, md_ensemble: NVE, md_eqm_cell_t: 4134.137334611427, md_eqm_ion_t: 413.4137334611427,
+    md_eqm_method: 'NONE      ', md_eqm_t: 0.0, md_extrap: 'FIRST ', md_extrap_fit: true,
+    md_hug_compression: 1.0, md_hug_dir: 'ISO       ', md_hug_method: 'NONE      ',
+    md_hug_t: 2067.068667305714, md_ion_t: 413.4137334611427, md_nhc_length: 5, md_num_beads: 1,
+    md_num_iter: 100, md_opt_damped_delta_t: false, md_pathint_init: 'GAUSSIAN  ',
+    md_pathint_num_stages: 1, md_pathint_staging: true, md_sample_iter: 0, md_temperature: 0.0009500434687679389,
+    md_thermostat: NOSE-HOOVER, md_use_pathint: false, md_use_plumed: false, md_xlbomd: false,
+    md_xlbomd_history: 0}
+  nonscf: {nonscf_eigenvalue_tol: 1.8374661082968398e-08, nonscf_max_iter: 240, nonscf_max_steps_per_iter: 5,
+    nonscf_residual_norm: -1.0}
+  optics: {optics_nbands: 23, optics_xc_definition: 'LDA 1.0                                                                                                                                                                                                                                                         ',
+    optics_xc_functional: 'LDA                                                                                                                                                                                                                                                             '}
+  phonon: {born_charge_sum_rule: true, calculate_born_charges: true, calculate_raman: false,
+    phonon_calc_lo_to_splitting: true, phonon_calculate_dos: false, phonon_convergence_win: 3,
+    phonon_dfpt_method: 'DM          ', phonon_dos_limit: 0.022781676258535565, phonon_dos_spacing: 4.556335251707113e-06,
+    phonon_energy_tol: 1.029085830024979e-07, phonon_fine_cutoff_method: 'CUMULANT  ',
+    phonon_fine_method: 'NONE                ', phonon_finite_disp: 0.01, phonon_force_constant_cut_scale: 1.0,
+    phonon_force_constant_cutoff: 0.0, phonon_max_CG_steps: 0, phonon_max_cycles: 50,
+    phonon_method: 'LINEARRESPONSE      ', phonon_preconditioner: 'TPA     ', phonon_sum_rule: true,
+    phonon_sum_rule_method: 'RECIPROCAL      ', phonon_use_kpoint_symmetry: true,
+    phonon_write_dynamical: false, phonon_write_force_constants: false, raman_method: 'DFPT                ',
+    raman_range_high: 0.0367493221659368, raman_range_low: 0.0, raman_sum_rule: true}
+  population_analysis: {pdos_calculate_weights: false, popn_bond_cutoff: 5.669178378474923,
+    popn_calculate: true, popn_write: 'MINIMAL   '}
+  pspot: {pspot_beta_phi_type: RECIPROCAL, pspot_nonlocal_type: RECIPROCAL, spin_orbit_coupling: false,
+    spinors_spin_polarized: false}
+  sockets: {socket_host: 'localhost                                                                                                                                                                                                                                                      ',
+    socket_port: 3141}
+  solvent: {boundary_type: 'PPP                           ', dielec_emb_bulk_permittivity: 1.0,
+    dielec_emb_cavity_type: 'FIXED               ', dielec_emb_func_method: 'UNIFORM   ',
+    dielec_emb_param_set: 'DEFAULT             ', implicit_solvent_apolar_factor: 0.281075,
+    implicit_solvent_apolar_term: false, implicit_solvent_rescale_apolar: true, implicit_solvent_surface_tension: 4.7624e-05,
+    mg_fd_order: 8, mg_padding: -1, use_smeared_ions: false, write_formatted_dielec_perm: false}
+  spectral: {spectral_eigenvalue_tol: 3.6749322165936796e-08, spectral_max_iter: 60,
+    spectral_max_steps_per_iter: 5, spectral_nbands: 23, spectral_re_est_k_scrn: false,
+    spectral_restart: "\0\0\0\0", spectral_task: 'BANDSTRUCTURE                 ',
+    spectral_theory: 'DFT       ', spectral_write_eigenvalues: true, spectral_xc_definition: 'LDA
+      1.0                                                                                                                                                                                                                                                         ',
+    spectral_xc_functional: 'LDA                                                                                                                                                                                                                                                             '}
+  tddft: {tddft_approximation: 'TAMM-DANCOFF        ', tddft_convergence_win: 2, tddft_eigenvalue_method: 'DAVIDSON            ',
+    tddft_eigenvalue_tol: 3.6749322165936796e-08, tddft_max_iter: 50, tddft_method: 'HUTTER              ',
+    tddft_nextra_states: 1, tddft_num_states: 0, tddft_on: false, tddft_position_method: 'MOLECULAR ',
+    tddft_selected_state: 0, tddft_xc_definition: 'LDA 1.0                                                                                                                                                                                                                                                         ',
+    tddft_xc_functional: 'LDA                                                                                                                                                                                                                                                             '}
+  thermodynamics: {thermo_calculate_helmholtz: true, thermo_t_npoints: 1, thermo_t_spacing: 0.0,
+    thermo_t_start: 0.0009437098456428193, thermo_t_stop: 0.0009437098456428193}
+  tssearch: {tssearch_CG_max_iter: 20, tssearch_NEB_climbing: false, tssearch_NEB_max_iter: 20,
+    tssearch_NEB_method: 'ODE12R    ', tssearch_NEB_normed: false, tssearch_NEB_spring_constant: 0.001029085830024979,
+    tssearch_NEB_tangent_mode: 'SPLINE    ', tssearch_disp_tol: 0.0018897261261583078,
+    tssearch_energy_tol: 7.349864433187361e-07, tssearch_force_tol: 0.0009723451895287552,
+    tssearch_lstqst_protocol: 'LSTMAXIMUM       ', tssearch_max_path_points: 20, tssearch_method: LSTQST,
+    tssearch_qst_max_iter: 5}
+  wannier: {wannier_SD_step: 1.0, wannier_ion_cmoments: false, wannier_ion_cut: false,
+    wannier_ion_cut_fraction: 0.999, wannier_ion_cut_tol: 1e-05, wannier_ion_moments: false,
+    wannier_ion_rmax: 2.0, wannier_max_SD_steps: 10000, wannier_min_algor: 'SD        ',
+    wannier_print_cube: 0, wannier_restart: 'NONE      ', wannier_spread_tol: 1e-08,
+    wannier_spread_type: VANDERBILT}
+  xc: {nlxc_calc_full_ex_pot: false, nlxc_div_corr_S_width: 2.25, nlxc_div_corr_npts_step: 6,
+    nlxc_div_corr_on: false, nlxc_div_corr_tol: 0.01, nlxc_exchange_fraction: -1.0,
+    nlxc_exchange_reflect_kpts: true, nlxc_exchange_screening: -1.0, nlxc_impose_trs: false,
+    nlxc_k_scrn_averaging_scheme: 'HEG_DEN                       ', nlxc_k_scrn_den_function: 'THOMAS-FERMI                  ',
+    nlxc_method: 'FULL      ', nlxc_page_ex_pot: 0, nlxc_ppd_integral: true, nlxc_ppd_size_x: 8,
+    nlxc_ppd_size_y: 8, nlxc_ppd_size_z: 8, nlxc_re_est_k_scrn: false, relativistic_treatment: KOELLING-HARMON,
+    sedc_a1_XDM: 0.0, sedc_a2_XDM: 0.0, sedc_apply: false, sedc_c9_XDM: false, sedc_d_G06: 0.0,
+    sedc_d_JCHS: 0.0, sedc_d_TS: 0.0, sedc_lambda_OBS: 0.0, sedc_n_OBS: 0.0, sedc_s6_G06: 0.0,
+    sedc_s6_JCHS: 0.0, sedc_sc_XDM: 0.0, sedc_scheme: 'NONE      ', sedc_sr_JCHS: 0.0,
+    sedc_sr_TS: 0.0, xc_definition: 'LDA 1.0                                                                                                                                                                                                                                                         ',
+    xc_functional: 'LDA                                                                                                                                                                                                                                                             ',
+    xc_vxc_deriv_epsilon: -1.0}
+version: [26, 1]
+version_str: '26.110    '
