@@ -4,9 +4,12 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from .cst_esp_file_parser import parse_cst_esp_file
+from .castep_bin_file_parser import parse_check_castep_bin_file
 
 #: Dictionary of available parsers.
 PARSERS: dict[str, Callable] = {
+    "castep_bin": parse_check_castep_bin_file,
+    "check": parse_check_castep_bin_file,
     "cst_esp": parse_cst_esp_file,
 }
 

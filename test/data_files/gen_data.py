@@ -32,6 +32,7 @@ ALL_SETS = (
     "tddft",
     "err",
     "epme",
+    "castep_bin",
     ("pp-md", "castep"),
     ("si8-md", "castep"),
 )

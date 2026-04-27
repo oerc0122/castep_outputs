@@ -42,6 +42,12 @@ class FortranBinaryReader:
 
     def __init__(self, file: BinaryIO) -> None:
         self.file = file
+        self._lineno = 0
+
+    @property
+    def lineno(self) -> int:
+        """Current record."""
+        return self._lineno
 
     def __iter__(self) -> Iterator[bytes]:
         return self
@@ -54,6 +60,7 @@ class FortranBinaryReader:
 
         size = int.from_bytes(bin_size, "big")
         data = self.file.read(size)
+        self._lineno += 1
         self.file.read(4)
         return data
 
