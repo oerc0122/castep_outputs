@@ -220,8 +220,13 @@ def parse_castep_file(castep_file_in: TextIO,
             curr_run["time_started"] = normalise_string(line.split(":", 1)[1])
 
         # Finalisation
-        elif block := Block.from_re(line, castep_file, "Initialisation time", REs.EMPTY,
+        elif block := Block.from_re(line, castep_file, "Initialisation time", f"{REs.EMPTY}|<",
                                     eof_possible=True):
+
+            # External files present
+            if "<" in block[-1]:
+                block.remove_bounds(0, 1)
+                castep_file.rewind()
 
             if Filters.SYS_INFO not in to_parse:
                 continue

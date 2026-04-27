@@ -226,7 +226,7 @@ def normalise(obj, mapping):
     Returns
     -------
     Any
-        Normmalised data.
+        Normalised data.
     """
     if isinstance(obj, (tuple, list)):
         obj = tuple(normalise(v, mapping) for v in obj)
@@ -326,7 +326,8 @@ def flatten_dict(
     """
     items: list[tuple[Any, Any]] = []
     for key, value in dictionary.items():
-        new_key = str(parent_key) + separator + key if parent_key else key
+        # Temporary hack because `None` used as key in species_pot
+        new_key = str(parent_key) + separator + str(key) if parent_key else key
         if isinstance(value, collections.abc.MutableMapping):
             items.extend(flatten_dict(value, new_key, separator).items())
         elif isinstance(value, (list, tuple)):
