@@ -41,6 +41,15 @@ ang    # angstrom units
                                                                (0.0, 0.0, 6.3145)],
                                                       "units": "ang"}})
 
+    def test_parse_multiword(self):
+        test_text = io.StringIO("""
+        comment: This is a multi word comment.
+        """)
+        test_dict = parse_cell_param_file(test_text)[0]
+        pprint.pprint(test_dict)
+
+        self.assertEqual(test_dict, {"comment": "This is a multi word comment."})
+
     def test_parse_mixture(self):
         test_text = io.StringIO("""
 %BLOCK POSITIONS_FRAC

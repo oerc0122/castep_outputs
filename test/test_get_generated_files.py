@@ -1,5 +1,8 @@
 """Test get_generated_files."""
 
+import os
+from pathlib import Path
+
 import pytest
 
 from castep_outputs.tools.get_generated_files import get_generated_files
@@ -297,3 +300,12 @@ def test_cli_like(seedname: str, expected: list[str]) -> None:
 )
 def test_expected_files(cell, param, expected) -> None:
     assert expected == set(get_generated_files(param_data=param, cell_data=cell))
+
+
+castep_path = os.environ.get("CASTEP_ROOT")
+castep_tests = Path(castep_path).glob("Test/**/*.cell") if castep_path is not None else (Path.cwd(),)
+
+@pytest.mark.skipif(castep_path is None, reason="CASTEP_ROOT not provided.")
+@pytest.mark.parametrize("pth", castep_tests, ids=lambda x: x.stem)
+def test_get_generated_files_castep(pth):
+    get_generated_files(seedname=pth.parent / pth.stem)

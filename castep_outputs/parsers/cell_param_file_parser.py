@@ -10,17 +10,16 @@ from functools import partial
 from typing import Any, Literal, TextIO, TypedDict
 
 import castep_outputs.utilities.castep_res as REs
-
-from ..utilities.constants import SHELLS
-from ..utilities.datatypes import (
+from castep_outputs.utilities.constants import SHELLS
+from castep_outputs.utilities.datatypes import (
     AtomIndex,
     MaybeSequence,
     PSPotStrInfo,
     ThreeByThreeMatrix,
     ThreeVector,
 )
-from ..utilities.filewrapper import Block
-from ..utilities.utility import (
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.utility import (
     atreg_to_index,
     determine_type,
     file_or_path,
@@ -76,7 +75,8 @@ DevelElem = MaybeSequence[str | float | dict[str, str | float]]
 DevelBlock = dict[str, DevelElem | dict[str, DevelElem]]
 HubbardU = dict[str | AtomIndex, str | dict[str, float]]
 CellParamData = dict[
-    str, str | float | tuple[float, str] | dict[str, Any] | HubbardU | DevelBlock | XCDef,
+    str,
+    str | float | tuple[float, str] | dict[str, Any] | HubbardU | DevelBlock | XCDef,
 ]
 GeneralBlock = dict[
     str,
@@ -147,14 +147,18 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[CellParamData]:
             curr[block_title] = _PARSERS.get(block_title, _parse_general)(block)
 
         elif match := REs.PARAM_VALUE_RE.match(line):
+
             key, val, unit = match.group("key", "val", "unit")
             key = key.strip().lower()
             logger("Found param %s", key)
 
-            if " " in val.strip():
+            if determine_type(val) is str:
+                val = val.strip()
+            elif " " in val.strip():
                 val = to_type(val.split(), determine_type(val))
             else:
                 val = to_type(val, determine_type(val))
+
             if unit:
                 unit = unit.strip()
                 curr[key] = (val, unit)
@@ -532,10 +536,13 @@ def _parse_species_pot(block: Block) -> dict[str, str | PSPotStrInfo]:
     block.remove_bounds(fore=0, back=1)
 
     for line in block:
-        spec, pot = line.split(maxsplit=1)
-        if REs.PSPOT_RE.search(pot):  # We have pspot definition
-            pot = _parse_pspot_string(pot)
-        block_data[spec] = pot
+        match line.split(maxsplit=1):
+            case [spec]:
+                block_data[None] = spec
+            case [spec, pot]:
+                if REs.PSPOT_RE.search(pot):  # We have pspot definition
+                    pot = _parse_pspot_string(pot)
+                block_data[spec] = pot
 
     return block_data
 
@@ -592,12 +599,14 @@ _PARSERS: dict[str, Callable] = {
     "devel_code": _parse_devel_code_block,
     "ionic_constraints": _parse_ionic_constraints,
     "nonlinear_constraints": _parse_nonlinear_constraints,
-    "positions_abs": _parse_positions_abs,
     "positions_frac": _parse_positions_frac,
-    "positions_abs_intermediate": _parse_positions,
     "positions_frac_intermediate": _parse_positions,
-    "positions_abs_product": _parse_positions,
     "positions_frac_product": _parse_positions,
+    "positions_abs": _parse_positions_abs,
+    "positions_abs_intermediate": _parse_positions,
+    "positions_abs_product": _parse_positions,
+    "positions_aspectral_intermediate": _parse_positions,
+    "positions_aspectral_product": _parse_positions,
     "species_pot": _parse_species_pot,
     "sedc_custom_params": _parse_sedc,
     "hubbard_u": _parse_hubbard_u,
