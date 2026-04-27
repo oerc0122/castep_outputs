@@ -149,14 +149,18 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[CellParamData]:
             curr[block_title] = _PARSERS.get(block_title, _parse_general)(block)
 
         elif match := REs.PARAM_VALUE_RE.match(line):
+            if match["str"] is not None:
+                key, val = match.group("key", "str")
+                curr[key.strip().lower()] = to_type(val.strip(), determine_type(val))
+
+                logger("Found param %s", key)
+                continue
 
             key, val, unit = match.group("key", "val", "unit")
             key = key.strip().lower()
             logger("Found param %s", key)
 
-            if determine_type(val) is str:
-                val = val.strip()
-            elif " " in val.strip():
+            if " " in val.strip():
                 val = to_type(val.split(), determine_type(val))
             else:
                 val = to_type(val, determine_type(val))

@@ -601,8 +601,11 @@ PARAM_VALUE_RE = re.compile(
     rf"""
 ^\s*(?P<key>[a-z_]+)
 \s*[ \t:=]\s*
-(?P<val>(?:\s*{NUMBER_RE.pattern})+|(?:\s*\S)+)
-(?P<unit>\s\S*\w\S*)?
+    (?:(?P<val>(?:\s*{NUMBER_RE.pattern})+)|
+    # String starts with anything which is NOT digit,+,-,. or space.
+    (?P<str>[^-+\d\s.](?:\s*\S+)*))
+    # If numeric value, chance of unit
+    (?(val)(?P<unit>\s\S+)?)
 \s*$
 """,
     re.IGNORECASE | re.VERBOSE,
