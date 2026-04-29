@@ -4231,6 +4231,46 @@ Total polarisation          0.000000    0.000000    0.224787
         )
 
 
+def test_external_files():
+    test_text = io.StringIO("""
+
+Initialisation time =     24.02 s
+Calculation time    =     50.26 s
+Finalisation time   =    260.34 s
+Total time          =    334.62 s
+Peak Memory Use     = 1703440 kB
+<BEGIN xrd_sf>
+   h   k   l   Re(F_PAW)   Im(F_PAW)   Re(F_IAM)   Im(F_IAM)    Re(F_PP)    Im(F_PP)  Re(F_core)  Im(F_core)  Re(F_soft)  Im(F_soft)   Re(F_aug)   Im(F_aug)
+   0   0   0  112.000000    0.000000  112.000000    0.000000  112.000000    0.000000   80.000000    0.000000   32.345904    0.000000   -0.345904    0.000000
+   1   1   1   42.458193  -42.458196   41.764535  -41.764535   42.447674  -42.447678   37.403844  -37.403844    5.136414   -5.136414   -0.082065    0.082062
+<END xrd_sf>
+""")
+
+    test_dict = parse_castep_file(test_text, filters=Filters.SYS_INFO | Filters.TESTING)[0]
+
+    pprint.pprint(test_dict)
+    assert test_dict == {
+        'calculation_time': 50.26,
+        'external_files': {'xrd_sf': {'f_aug': [(-0.345904+0j),
+                                                (-0.082065+0.082062j)],
+                                      'f_core': [(80+0j),
+                                                 (37.403844-37.403844j)],
+                                      'f_iam': [(112+0j),
+                                                (41.764535-41.764535j)],
+                                      'f_paw': [(112+0j),
+                                                (42.458193-42.458196j)],
+                                      'f_pp': [(112+0j),
+                                               (42.447674-42.447678j)],
+                                      'f_soft': [(32.345904+0j),
+                                                 (5.136414-5.136414j)],
+                                      'qvec': [(0, 0, 0),
+                                               (1, 1, 1)]}},
+        'finalisation_time': 260.34,
+        'initialisation_time': 24.02,
+        'peak_memory_use': 1703440.0,
+        'total_time': 334.62}
+
+
 castep_path = os.environ.get("CASTEP_ROOT")
 castep_tests = (
     Path(castep_path).glob("Test/**/benchmark.out.*") if castep_path is not None else (Path.cwd(),)

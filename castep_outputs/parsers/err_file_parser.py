@@ -32,7 +32,7 @@ def parse_err_file(err_file: TextIO) -> ErrFileInfo:
     """
     accum: ErrFileInfo = {"message": "", "stack": []}
 
-    while "Current trace stack" not in (line := err_file.readline()):
+    while "Current trace stack" not in (line := next(err_file)):
         accum["message"] += line
     accum["message"] = accum["message"].strip()
 

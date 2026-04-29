@@ -140,7 +140,7 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
         else:
             logger("Invalid md/geom file: no 'END header'.", level="error")
             raise ValueError("Invalid md/geom file: no 'END header'.")
-        md_geom_file.readline()
+        next(md_geom_file)
     else:
         logger("Non-standard md/geom file: missing header.", level="warning")
 
