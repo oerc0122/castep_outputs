@@ -61,7 +61,7 @@ def test_binary_file_reader(fake_file, data_types, raw_data):
 
 def test_actual_read():
     """Test reading a castep `.cst_esp` file elements."""
-    dtypes = ((int, 1), (int, (16, 16, 16)))
+    dtypes = ((int, 1), ((int, ...), (16, 16, 16)))
 
     with (DATA_FILES / "test.cst_esp").open("rb") as file:
         reader = FortranBinaryReader(file)
@@ -70,10 +70,10 @@ def test_actual_read():
 
         for n, datum in enumerate(reader):
             x, y = divmod(n, 16)
-            ind = to_type(datum[:8], int)
+            ind = to_type(datum[:8], (int, ...))
             print(ind, (x + 1, y + 1))
             assert ind == (x + 1, y + 1)  # 1 indexed
-            res = to_type(datum[8:], complex)
+            res = to_type(datum[8:], (complex, ...))
             assert len(res) == dtypes[1][1][2]
 
 

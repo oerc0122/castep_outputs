@@ -35,7 +35,7 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     ESPData
         Parsed data.
     """
-    dtypes = {"n_spins": int, "grid": int}
+    dtypes = {"n_spins": int, "grid": (int, ...)}
 
     reader = FortranBinaryReader(cst_esp_file)
     accum: dict[str, Any] = reader.get_dtype_dict(dtypes)
@@ -44,11 +44,11 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     curr = []
     accum["esp"] = []
     for datum in reader:
-        nx, _ny = to_type(datum[:8], int)
+        nx, _ny = to_type(datum[:8], (int, ...))
         if prev_nx != nx and curr:
             accum["esp"].append(curr)
             curr = []
-        curr.append(to_type(datum[8:], complex))
+        curr.append(to_type(datum[8:], (complex, ...)))
         prev_nx = nx
 
     accum["esp"].append(curr)

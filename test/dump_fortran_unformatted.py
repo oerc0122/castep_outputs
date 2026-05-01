@@ -14,7 +14,9 @@ T = TypeVar("T")
 def _get_type(elem: T | Sequence[T]) -> type[T]:
     if isinstance(elem, Sequence):
         val = next(iter(elem), None)
-        return int if val is None else type(val)
+        if isinstance(val, str):
+            return str
+        return (int, ...) if val is None else (type(val), ...)
     return type(elem)
 
 @pytest.fixture

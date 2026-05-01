@@ -8,13 +8,14 @@ import functools
 import logging
 import re
 from collections import defaultdict
-from collections.abc import Callable, Iterable
+from collections.abc import Callable, Iterable, Mapping
 from copy import copy
 from fractions import Fraction
-from functools import partial, singledispatch, wraps
+from functools import singledispatch, wraps
 from itertools import filterfalse
 from pathlib import Path
 from struct import unpack
+from types import EllipsisType
 from typing import (
     IO,
     TYPE_CHECKING,
@@ -495,7 +496,7 @@ def determine_type(data: str) -> type:
     return str
 
 
-def parse_int_or_float(numbers: Iterable[str]) -> int | float:
+def parse_int_or_float(numbers: Iterable[str]) -> tuple[int | float, ...]:
     """
     Parse numbers to `int` if all elements ints or `float` otherwise.
 
@@ -522,7 +523,7 @@ def parse_int_or_float(numbers: Iterable[str]) -> int | float:
     return to_type(numbers, float)
 
 
-def _parse_float_or_rational(val: str) -> float:
+def _parse_float_or_rational(val: str) -> tuple[float]:
     """
     Parse a float or rational to float.
 
@@ -539,14 +540,14 @@ def _parse_float_or_rational(val: str) -> float:
     Examples
     --------
     >>> _parse_float_or_rational("0.5")
-    0.5
+    (0.5,)
     >>> _parse_float_or_rational("1/2")
-    0.5
+    (0.5,)
     """
-    return float(Fraction(val))
+    return (float(Fraction(val)),)
 
 
-def _parse_logical(val: str) -> bool:
+def _parse_logical(val: str) -> tuple[bool]:
     """
     Parse a logical to a bool.
 
@@ -567,18 +568,18 @@ def _parse_logical(val: str) -> bool:
     Examples
     --------
     >>> _parse_logical("T")
-    True
+    (True,)
     >>> _parse_logical("TrUe")
-    True
+    (True,)
     >>> _parse_logical("1")
-    True
+    (True,)
     >>> _parse_logical("F")
-    False
+    (False,)
     """
-    return val.title() in {"T", "True", "1"}
+    return (val.title() in {"T", "True", "1"},)
 
 
-def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
+def _parse_float_bytes(val: bytes) -> tuple[float, ...]:
     r"""Parse (big-endian) bytes to float.
 
     Parameters
@@ -588,7 +589,7 @@ def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
 
     Returns
     -------
-    float | Sequence[float]
+    tuple[float, ...]
         Parsed value or list of values.
 
     Examples
@@ -596,17 +597,16 @@ def _parse_float_bytes(val: bytes) -> float | Sequence[float]:
     >>> one = b"?\xf0\x00\x00\x00\x00\x00\x00"
     >>> zero = b"\x00\x00\x00\x00\x00\x00\x00\x00"
     >>> _parse_float_bytes(zero)
-    0.0
+    (0.0,)
     >>> _parse_float_bytes(one)
-    1.0
+    (1.0,)
     >>> _parse_float_bytes(one*3)
     (1.0, 1.0, 1.0)
     """
-    result = unpack(f">{len(val) // 8}d", val)
-    return result if len(result) != 1 else result[0]
+    return unpack(f">{len(val) // 8}d", val)
 
 
-def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
+def _parse_int_bytes(val: bytes) -> tuple[int, ...]:
     r"""Parse (big-endian) bytes to int.
 
     Parameters
@@ -616,7 +616,7 @@ def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
 
     Returns
     -------
-    int | Sequence[int]
+    tuple[int, ...]
         Parsed value or list of values.
 
     Examples
@@ -624,17 +624,16 @@ def _parse_int_bytes(val: bytes) -> int | Sequence[int]:
     >>> one = b"\x00\x00\x00\x01"
     >>> zero = b"\x00\x00\x00\x00"
     >>> _parse_int_bytes(zero)
-    0
+    (0,)
     >>> _parse_int_bytes(one)
-    1
+    (1,)
     >>> _parse_int_bytes(one*3)
     (1, 1, 1)
     """
-    result = unpack(f">{len(val) // 4}i", val)
-    return result if len(result) != 1 else result[0]
+    return unpack(f">{len(val) // 4}i", val)
 
 
-def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
+def _parse_bool_bytes(val: bytes) -> tuple[bool, ...]:
     r"""Parse (big-endian) bytes to bool.
 
     Parameters
@@ -644,7 +643,7 @@ def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
 
     Returns
     -------
-    bool | Sequence[bool]
+    tuple[bool, ...]
         Parsed value or list of values.
 
     Examples
@@ -652,17 +651,44 @@ def _parse_bool_bytes(val: bytes) -> bool | Sequence[bool]:
     >>> one = b"\x00\x00\x00\x01"
     >>> zero = b"\x00\x00\x00\x00"
     >>> _parse_bool_bytes(zero)
-    False
+    (False,)
     >>> _parse_bool_bytes(one)
-    True
+    (True,)
     >>> _parse_bool_bytes(one*3)
     (True, True, True)
     """
-    result = tuple(map(bool, unpack(f">{len(val) // 4}i", val)))
-    return result if len(result) != 1 else result[0]
+    return tuple(map(bool, unpack(f">{len(val) // 4}i", val)))
 
 
-def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
+def _parse_complex_bytes(val: bytes) -> tuple[complex, ...]:
+    r"""Parse (big-endian) bytes to complex.
+
+    Parameters
+    ----------
+    val : bytes
+        Values to parse.
+
+    Returns
+    -------
+    tuple[complex, ...]
+        Parsed value or list of values.
+
+    Examples
+    --------
+    >>> one = b"?\xf0\x00\x00\x00\x00\x00\x00"
+    >>> zero = b"\x00\x00\x00\x00\x00\x00\x00\x00"
+    >>> _parse_complex_bytes(zero + one)
+    (1j,)
+    >>> _parse_complex_bytes(one + zero)
+    ((1+0j),)
+    >>> _parse_complex_bytes((one+one)*3)
+    ((1+1j), (1+1j), (1+1j))
+    """
+    tmp = unpack(f">{len(val) // 8}d", val)
+    return tuple(map(complex, tmp[::2], tmp[1::2]))
+
+
+def _parse_str_bytes(val: bytes) -> tuple[str, ...]:
     r"""Parse (big-endian) bytes to complex.
 
     Parameters
@@ -677,32 +703,41 @@ def _parse_complex_bytes(val: bytes) -> complex | Sequence[complex]:
 
     Examples
     --------
-    >>> one = b"?\xf0\x00\x00\x00\x00\x00\x00"
-    >>> zero = b"\x00\x00\x00\x00\x00\x00\x00\x00"
-    >>> _parse_complex_bytes(zero + one)
-    1j
-    >>> _parse_complex_bytes(one + zero)
-    (1+0j)
-    >>> _parse_complex_bytes((one+one)*3)
-    ((1+1j), (1+1j), (1+1j))
+    >>> a = b"Hello"
+    >>> _parse_str_bytes(a)
+    ('Hello',)
     """
-    tmp = unpack(f">{len(val) // 8}d", val)
-    result = tuple(map(complex, tmp[::2], tmp[1::2]))
-    return result if len(result) != 1 else result[0]
+    return (str(val, encoding="ascii"),)
 
 
-_TYPE_PARSERS: dict[type, Callable] = {float: _parse_float_or_rational, bool: _parse_logical}
-_BYTE_PARSERS: dict[type, Callable] = {
+_TYPE_PARSERS: dict[type, Callable[[str], tuple]] = {
+    complex: lambda x: (complex(x),),
+    float: _parse_float_or_rational,
+    int: lambda x: (int(x),),
+    bool: _parse_logical,
+    str: lambda x: (str(x),),
+}
+_BYTE_PARSERS: dict[type, Callable[[bytes], tuple]] = {
     complex: _parse_complex_bytes,
     float: _parse_float_bytes,
     bool: _parse_bool_bytes,
     int: _parse_int_bytes,
-    str: partial(str, encoding="ascii"),
+    str: _parse_str_bytes,
 }
+ToTypeTuple: TypeAlias = tuple[type[T], EllipsisType]
 
 
-@functools.singledispatch
-def to_type(data_in: T, _typ: type) -> T:
+@overload
+def to_type(data_in: T, typ: Any) -> T: ...
+@overload
+def to_type(data_in: str | bytes, typ: type[T]) -> T: ...
+@overload
+def to_type(data_in: str | bytes, typ: ToTypeTuple) -> tuple[T, ...]: ...
+@overload
+def to_type(data_in: Iterable[str | bytes], typ: type[T]) -> tuple[T, ...]: ...
+@overload
+def to_type(data_in: Iterable[str | bytes], typ: ToTypeTuple) -> tuple[tuple[T, ...], ...]: ...
+def to_type(data_in, typ):
     """
     Convert types to `typ` regardless of if data_in is iterable or otherwise.
 
@@ -710,35 +745,42 @@ def to_type(data_in: T, _typ: type) -> T:
     ----------
     data_in : str or ~collections.abc.Sequence
         Data to convert.
-    _typ : type
+    typ : type
         Type to convert to.
 
     Returns
     -------
     `typ` or tuple[`typ`, ...]
         Converted data.
+
+    Raises
+    ------
+    TypeError
+        Invalid type form passed.
     """
-    return data_in
+    match data_in:
+        case str():
+            parsers = _TYPE_PARSERS
+        case bytes():
+            parsers = _BYTE_PARSERS
+        case Mapping():
+            return {key: to_type(val, typ) for key, val in data_in.items()}
+        case Iterable():
+            return tuple(to_type(x, typ) for x in data_in)
+        case _:
+            return data_in
 
+    match typ:
+        case (type() as type_, EllipsisType()):
+            parser = parsers[type_]
+            out = parser(data_in)
+        case type() as type_:
+            parser = parsers[type_]
+            out = get_only(parser(data_in))
+        case _:
+            raise TypeError(f"Cannot handle converting to {typ!r}.")
 
-@to_type.register(str)
-def _(data_in: str, typ: type[T]) -> T:
-    parser: Callable[[str], T] = _TYPE_PARSERS.get(typ, typ)
-    return parser(data_in)
-
-
-@to_type.register(tuple)
-@to_type.register(list)
-def _(data_in: Any, typ: type[T]) -> tuple[T, ...]:
-    parse_dict = _BYTE_PARSERS if data_in and isinstance(data_in[0], bytes) else _TYPE_PARSERS
-    parser: Callable[[str], T] = parse_dict.get(typ, typ)
-    return tuple(parser(x) for x in data_in)
-
-
-@to_type.register(bytes)
-def _(data_in: Any, typ: type[T]) -> T | tuple[T, ...]:
-    parser: Callable[[bytes], T] = _BYTE_PARSERS.get(typ, typ)
-    return parser(data_in)
+    return out
 
 
 def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]) -> None:
