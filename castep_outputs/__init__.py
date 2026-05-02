@@ -1,7 +1,7 @@
 """Module to parse miscellaneous castep files."""
 
 __author__ = "Jacob Wilkins"
-__version__ = "0.3.0"
+__version__ = "0.3.2"
 
 from .cli.castep_outputs_main import parse_single  # noqa: F401
 from .parsers import *  # noqa: F403
