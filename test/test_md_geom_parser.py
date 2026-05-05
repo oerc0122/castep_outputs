@@ -1,14 +1,18 @@
 import io
 import pytest
 
-from castep_outputs import parse_md_geom_file
+from castep_outputs.parsers.md_geom_file_parser import parse_header, parse_md_geom_file
 
 
-FAKE_FILE = """
-    BEGIN header
+HEADER = """\
+BEGIN header
 
-    END header
+  Fakest file ever.
 
+END header
+
+"""
+FAKE_DATA = """\
                   0.0000000000000000E+000
                  -3.1438056609022318E+001   -3.1376043990507860E+001    2.5277616819407205E-002  <-- E
                   2.1064680682839339E-003                                                        <-- T
@@ -30,6 +34,7 @@ Si              1   -4.7485150541330739E-003   -6.4256923548756568E-003    6.272
 Si              2    7.3746443515239476E-003    6.2703809926870444E-003   -1.9171200407951994E-002  <-- F
 
     """
+FAKE_FILE = HEADER + FAKE_DATA
 
 
 def test_md_geom_parser():
@@ -97,6 +102,12 @@ def test_md_geom_parser():
     ]
 
 
+def test_parse_header():
+    test_text = io.StringIO(HEADER)
+
+    assert parse_header(test_text) == "Fakest file ever."
+
+
 def test_md_geom_empty():
     test_text = io.StringIO("")
 
@@ -105,13 +116,13 @@ def test_md_geom_empty():
 
 
 def test_md_geom_invalid():
-    test_text = io.StringIO(FAKE_FILE.replace("END header", ""))
-    with pytest.raises(ValueError, match=r"Invalid md/geom file: no 'END header'."):
+    test_text = io.StringIO(HEADER.replace("END header", "") + FAKE_DATA)
+    with pytest.raises(OSError, match=r"Unexpected end of file."):
         parse_md_geom_file(test_text)
 
 
 def test_md_geom_no_header(caplog):
-    test_text = io.StringIO(FAKE_FILE.replace("END header", "").replace("BEGIN header", ""))
+    test_text = io.StringIO(FAKE_DATA)
 
     parse_md_geom_file(test_text)
 

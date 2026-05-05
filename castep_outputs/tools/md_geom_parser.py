@@ -9,6 +9,7 @@ from typing import overload
 
 from castep_outputs.parsers.md_geom_file_parser import (
     MDGeomTimestepInfo,
+    parse_header,
     parse_md_geom_frame,
 )
 from castep_outputs.utilities.filewrapper import Block, FileWrapper
@@ -39,13 +40,8 @@ class MDGeomParser:
         self._handle = FileWrapper(self._raw_handle)
         self.logger = log_factory(self._handle)
 
-        for line in self._handle:
-            if "END header" in line:
-                break
-        else:
-            raise ValueError(f'"END header" not in file ({self._handle.name}).')
+        self.comment = parse_header(self._handle)
 
-        next(self._handle)
         self._start = self._handle.tell()
         self._start_line = self._handle.lineno
 
