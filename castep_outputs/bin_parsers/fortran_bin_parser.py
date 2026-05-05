@@ -1,7 +1,6 @@
 """General parser for the Fortran Unformatted file format."""
 
 from collections.abc import Iterable, Iterator, Mapping
-from functools import singledispatchmethod
 from itertools import count
 from os import SEEK_CUR
 from typing import BinaryIO, TypeVar, overload
@@ -115,47 +114,31 @@ class FortranBinaryReader:
         return parse_bytes(next(self), typ)
 
     @overload
-    def get_dtype_cycle(
-        self,
-        dtypes: tuple[type[T], ...],
-        *,
-        n: int | None,
-    ) -> Iterator[tuple[T, ...]]: ...
+    def get_dtype_cycle(self, dtypes: tuple[type[T], ...]) -> Iterator[tuple[T, ...]]: ...
     @overload
     def get_dtype_cycle(
         self,
         dtypes: tuple[ToTypeTuple, ...],
-        *,
-        n: int | None,
     ) -> Iterator[tuple[tuple[T, ...], ...]]: ...
     @overload
     def get_dtype_cycle(
         self,
         dtypes: tuple[type[T] | ToTypeTuple, ...],
-        *,
-        n: int | None,
     ) -> Iterator[tuple[T | tuple[T, ...], ...]]: ...
     @overload
-    def get_dtype_cycle(
-        self,
-        dtypes: Mapping[K, type[T]],
-        *,
-        n: int | None,
-    ) -> Iterator[dict[K, T]]: ...
+    def get_dtype_cycle(self, dtypes: Mapping[K, type[T]]) -> Iterator[dict[K, T]]: ...
     @overload
     def get_dtype_cycle(
         self,
         dtypes: Mapping[K, ToTypeTuple],
-        *,
-        n: int | None,
     ) -> Iterator[dict[K, tuple[T, ...]]]: ...
     @overload
     def get_dtype_cycle(
         self,
         dtypes: Mapping[K, type[T] | ToTypeTuple],
-        *,
-        n: int | None,
     ) -> Iterator[dict[K, T | tuple[T, ...]]]: ...
+    @overload
+    def get_dtype_cycle(self, _, *, n: int | None = None): ...  # noqa: ANN201, ANN001
     def get_dtype_cycle(self, dtypes, *, n=None):
         """Get iterator over values reading dtypes each cycle.
 
@@ -170,6 +153,11 @@ class FortranBinaryReader:
         ------
         :
             Loaded data.
+
+        See Also
+        --------
+        get_dtype_iter :
+        get_dtype_dict :
         """
         ind = count() if n is None else range(n)
 

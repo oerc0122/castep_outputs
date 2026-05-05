@@ -82,9 +82,9 @@ def _check_header(reader: FortranBinaryReader, test: bytes) -> None:
 
     Parameters
     ----------
-    reader : FortranBinaryReader
+    reader
         Reader to check.
-    test : bytes
+    test
         Value to check against.
 
     Raises
@@ -114,9 +114,9 @@ def _parse_header(reader: FortranBinaryReader, accum: dict) -> None:
 
     Parameters
     ----------
-    reader : FortranBinaryReader
+    reader
         Reader
-    accum : dict
+    accum
         Data destination.
     """
     accum.update(filter_underscore(reader.get_dtype_dict(HEADER_DTYPES)))
@@ -127,18 +127,18 @@ def _parse_atoms(reader: FortranBinaryReader, accum: dict) -> None:
 
     Parameters
     ----------
-    reader : FortranBinaryReader
+    reader
         Reader
-    accum : dict
+    accum
         Data destination.
     """
     _check_header(reader, b"ATOM")
 
     n_ion = accum["n_ions"] = reader.get(int)
-    accum["real_lattice"] = reader.get(float)
+    accum["real_lattice"] = reader.get((float, ...))
     accum["ions"] = {}
 
-    for ind, spec, pos in reader.get_dtype_cycle((int, str, float), n=n_ion):
+    for ind, spec, pos in reader.get_dtype_cycle((int, str, (float, ...)), n=n_ion):
         accum["ions"][spec.strip(), ind] = pos
 
 
@@ -147,9 +147,9 @@ def _parse_kpoint(reader: FortranBinaryReader, accum: dict) -> None:
 
     Parameters
     ----------
-    reader : FortranBinaryReader
+    reader
         Reader
-    accum : dict
+    accum
         Data destination.
     """
     _check_header(reader, b"KPOINT")
@@ -164,8 +164,8 @@ def _parse_kpoint(reader: FortranBinaryReader, accum: dict) -> None:
         "nk": int,
         "n_bands": int,
         "min_band": int,
-        "eigenvalues": float,
-        "velocities": float,
+        "eigenvalues": (float, ...),
+        "velocities": (float, ...),
     }
 
     for data in reader.get_dtype_cycle(dtypes, n=total):
@@ -179,9 +179,9 @@ def _parse_phonons(reader: FortranBinaryReader, accum: dict) -> None:
 
     Parameters
     ----------
-    reader : FortranBinaryReader
+    reader
         Reader
-    accum : dict
+    accum
         Data destination.
 
     Raises
@@ -194,23 +194,23 @@ def _parse_phonons(reader: FortranBinaryReader, accum: dict) -> None:
     n_kpoint_pairs = reader.get(int)
     n_bands = isqrt(reader.get(int))
 
-    if "n_kpoint_pairs" in accum and n_kpoint_pairs != accum["n_kpoint_pairs"]:
-        raise ValueError("Number of kpoint pairs doesn't match between EPCOUPLING and KPOINTS.")
-
-    if "n_bands" in accum and n_bands != accum["n_bands"]:
-        raise ValueError("Number of bands doesn't match between EPCOUPLING and KPOINTS.")
-
     accum.setdefault("n_kpoint_pairs", n_kpoint_pairs)
     accum.setdefault("n_bands", n_bands)
+
+    if n_kpoint_pairs != accum["n_kpoint_pairs"]:
+        raise ValueError("Number of kpoint pairs doesn't match between EPCOUPLING and KPOINTS.")
+
+    if n_bands != accum["n_bands"]:
+        raise ValueError("Number of bands doesn't match between EPCOUPLING and KPOINTS.")
 
     dtypes = {
         "_nq": int,
         "_nb": int,
         "_nb2": int,
-        "kpts": int,
-        "frequencies": float,
-        "modes": complex,
-        "matrix_elements": complex,
+        "kpts": (int, ...),
+        "frequencies": (float, ...),
+        "modes": (complex, ...),
+        "matrix_elements": (complex, ...),
     }
 
     accum["phonons"] = [
@@ -224,12 +224,12 @@ def parse_epme_bin_file(epme_file: BinaryIO) -> EPMEBinData:
 
     Parameters
     ----------
-    epme_file : BinaryIO
+    epme_file
         File to parse.
 
     Returns
     -------
-    EPMEBinData
+    :
         Parsed data.
     """
     reader = FortranBinaryReader(epme_file)
