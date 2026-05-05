@@ -8,7 +8,7 @@ from typing import TextIO, TypedDict
 from castep_outputs.utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers
 from castep_outputs.utilities.constants import FST_D, TAG_ALIASES
 from castep_outputs.utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
-from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.filewrapper import Block, FileWrapper
 from castep_outputs.utilities.type_conv import to_type
 from castep_outputs.utilities.utility import add_aliases, atreg_to_index, file_or_path, log_factory
 
@@ -108,6 +108,37 @@ def parse_md_geom_frame(block: Block) -> MDGeomTimestepInfo:
     return curr
 
 
+def parse_header(md_geom_file: TextIO | FileWrapper | Block) -> str:
+    """Parse header of md/geom file.
+
+    Parameters
+    ----------
+    md_geom_file : TextIO
+        File to parse.
+
+    Returns
+    -------
+    str
+        Comment from header.
+    """
+    logger = log_factory(md_geom_file)
+
+    line = ""
+    for line in md_geom_file:
+        if line.strip():
+            break
+
+    if block := Block.from_re(line, md_geom_file, "BEGIN header", "END header"):
+        block.remove_bounds(1, 1)
+        comment = str(block).strip()
+        next(md_geom_file)
+    else:
+        comment = ""
+        logger("Non-standard md/geom file: missing header.", level="warning")
+
+    return comment
+
+
 @file_or_path(mode="r")
 def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     """
@@ -130,21 +161,8 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
     """
     logger = log_factory(md_geom_file)
 
-    line = ""
-    for line in md_geom_file:
-        if line.strip():
-            break
-
-    if line.strip() and line.strip() == "BEGIN header":
-        for line in md_geom_file:
-            if "END header" in line:
-                break
-        else:
-            logger("Invalid md/geom file: no 'END header'.", level="error")
-            raise ValueError("Invalid md/geom file: no 'END header'.")
-        next(md_geom_file)
-    else:
-        logger("Non-standard md/geom file: missing header.", level="warning")
+    # Comment currently discarded due to output format.
+    _comment = parse_header(md_geom_file)
 
     steps = []
     while block := Block.from_re("", md_geom_file, "", "^$", eof_possible=True):
