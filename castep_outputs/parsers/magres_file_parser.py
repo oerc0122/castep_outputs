@@ -6,16 +6,14 @@ from collections import defaultdict
 from typing import Literal, TextIO, TypedDict
 
 import castep_outputs.utilities.castep_res as REs
-
-from ..utilities.castep_res import get_numbers
-from ..utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
-from ..utilities.filewrapper import Block
-from ..utilities.utility import (
+from castep_outputs.utilities.castep_res import get_numbers
+from castep_outputs.utilities.datatypes import AtomIndex, ThreeByThreeMatrix, ThreeVector
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import determine_type, to_type
+from castep_outputs.utilities.utility import (
     add_aliases,
-    determine_type,
     file_or_path,
     normalise_key,
-    to_type,
 )
 
 

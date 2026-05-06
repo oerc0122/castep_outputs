@@ -1,16 +1,18 @@
 """Parse castep .phonon_dos files."""
+
 from __future__ import annotations
 
 import re
 from collections import defaultdict
 from typing import TextIO, TypedDict
 
-from ..utilities import castep_res as REs
-from ..utilities.castep_res import labelled_floats
-from ..utilities.datatypes import StandardHeader, ThreeVector
-from ..utilities.filewrapper import Block
-from ..utilities.utility import file_or_path, fix_data_types, log_factory, stack_dict
-from .parse_utilities import parse_regular_header
+from castep_outputs.parsers.parse_utilities import parse_regular_header
+from castep_outputs.utilities import castep_res as REs
+from castep_outputs.utilities.castep_res import labelled_floats
+from castep_outputs.utilities.datatypes import StandardHeader, ThreeVector
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import fix_data_types
+from castep_outputs.utilities.utility import file_or_path, log_factory, stack_dict
 
 
 class GradientInfo(TypedDict, total=False):

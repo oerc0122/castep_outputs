@@ -1,13 +1,16 @@
 """Parse castep .bands files."""
+
 from __future__ import annotations
 
 import re
 from typing import Literal, TextIO, TypedDict
 
-from ..utilities import castep_res as REs
-from ..utilities.datatypes import ThreeVector
-from ..utilities.filewrapper import Block
-from ..utilities.utility import file_or_path, to_type
+from castep_outputs.utilities import castep_res as REs
+from castep_outputs.utilities.datatypes import ThreeVector
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import file_or_path
+
 from .parse_utilities import parse_regular_header
 
 

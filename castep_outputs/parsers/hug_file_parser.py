@@ -1,12 +1,14 @@
 """Parse castep .hug files."""
+
 from __future__ import annotations
 
 import re
 from collections import defaultdict
 from typing import TextIO, TypedDict
 
-from ..utilities.castep_res import labelled_floats
-from ..utilities.utility import file_or_path, fix_data_types, stack_dict
+from castep_outputs.utilities.castep_res import labelled_floats
+from castep_outputs.utilities.type_conv import fix_data_types
+from castep_outputs.utilities.utility import file_or_path, stack_dict
 
 
 class HugFileInfo(TypedDict):

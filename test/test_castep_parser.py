@@ -605,7 +605,7 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
                                     O  my_pot.usp
         """)
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
+
         self.assertEqual(
             test_dict,
             {
@@ -3185,14 +3185,14 @@ Final energy =  -2293.681052478     eV
                             "enthalpy": [-2293.74356],
                             "minimisation": [
                                 {
-                                    "smax": {
-                                        "converged": False,
-                                        "tolerance": 0.25,
-                                        "value": 12.78436,
-                                    },
                                     "de_ion": {
                                         "converged": False,
                                         "tolerance": 2.5e-05,
+                                        "value": 0.0,
+                                    },
+                                    "dr_max": {
+                                        "converged": False,
+                                        "tolerance": 0.001,
                                         "value": 0.0,
                                     },
                                     "f_max": {
@@ -3200,10 +3200,10 @@ Final energy =  -2293.681052478     eV
                                         "tolerance": 0.05,
                                         "value": 0.4266993,
                                     },
-                                    "dr_max": {
+                                    "smax": {
                                         "converged": False,
-                                        "tolerance": 0.001,
-                                        "value": 0.0,
+                                        "tolerance": 0.25,
+                                        "value": 12.78436,
                                     },
                                 }
                             ],
@@ -3567,7 +3567,6 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        pprint.pprint(test_dict)
         self.assertEqual(
             test_dict,
             {
@@ -4248,7 +4247,6 @@ Peak Memory Use     = 1703440 kB
 
     test_dict = parse_castep_file(test_text, filters=Filters.SYS_INFO | Filters.TESTING)[0]
 
-    pprint.pprint(test_dict)
     assert test_dict == {
         'calculation_time': 50.26,
         'external_files': {'xrd_sf': {'f_aug': [(-0.345904+0j),

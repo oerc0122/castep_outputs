@@ -4,9 +4,10 @@ from __future__ import annotations
 
 from typing import TextIO, TypedDict
 
-from ..utilities.castep_res import get_numbers
-from ..utilities.datatypes import ThreeVector
-from ..utilities.utility import file_or_path, log_factory, to_type
+from castep_outputs.utilities.castep_res import get_numbers
+from castep_outputs.utilities.datatypes import ThreeVector
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import file_or_path, log_factory
 
 
 class EPMEData(TypedDict):

@@ -1,9 +1,11 @@
 """Parser for cst_esp files."""
+
 from __future__ import annotations
 
 from typing import Any, BinaryIO, TypedDict, cast
 
-from castep_outputs.utilities.utility import file_or_path, to_type
+from castep_outputs.utilities.type_conv import parse_bytes
+from castep_outputs.utilities.utility import file_or_path
 
 from .fortran_bin_parser import FortranBinaryReader
 
@@ -44,11 +46,11 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
     curr = []
     accum["esp"] = []
     for datum in reader:
-        nx, _ny = to_type(datum[:8], (int, ...))
+        nx, _ny = parse_bytes(datum[:8], (int, ...))
         if prev_nx != nx and curr:
             accum["esp"].append(curr)
             curr = []
-        curr.append(to_type(datum[8:], (complex, ...)))
+        curr.append(parse_bytes(datum[8:], (complex, ...)))
         prev_nx = nx
 
     accum["esp"].append(curr)

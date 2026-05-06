@@ -1,19 +1,19 @@
 # pylint: disable=too-many-lines, too-many-branches, too-many-statements
 """Functions generally used in parsing castep files."""
+
 from __future__ import annotations
 
 import re
 from collections import defaultdict
 from collections.abc import Sequence
 
-from ..utilities import castep_res as REs
-from ..utilities.castep_res import get_numbers
-from ..utilities.filewrapper import Block
-from ..utilities.utility import (
+from castep_outputs.utilities import castep_res as REs
+from castep_outputs.utilities.castep_res import get_numbers
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import fix_data_types, to_type
+from castep_outputs.utilities.utility import (
     atreg_to_index,
-    fix_data_types,
     stack_dict,
-    to_type,
 )
 
 

@@ -6,13 +6,15 @@ Parse the following castep outputs.
 - .pot_fmt
 - .den_fmt
 """
+
 from __future__ import annotations
 
 import re
 from collections import defaultdict
 from typing import TextIO, TypedDict, cast
 
-from ..utilities.utility import file_or_path, stack_dict, to_type
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import file_or_path, stack_dict
 
 
 class ElfFileInfo(TypedDict, total=False):
