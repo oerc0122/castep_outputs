@@ -384,7 +384,13 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
         devel_code_parsed[key] = to_type(val, typ)
 
     # Catch present components
-    for par in re.finditer(r"(?<![:=])\b[A-Za-z_-]+\b(?![:=])", main_block):
+    present_code_re = re.compile(r"""
+        (?<![:=])        # Does not follow : or =
+        \b[A-Za-z_-]+\b  # One "word"
+        (?![:=])         # Not followed by : or =
+    """, re.VERBOSE)
+
+    for par in re.finditer(present_code_re, main_block):
         key = normalise_key(par.group(0))
 
         if key in devel_code_parsed:  # Var has same name as block
