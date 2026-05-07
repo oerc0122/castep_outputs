@@ -10,9 +10,11 @@ from castep_outputs.utilities.datatypes import AtomIndex, ThreeByThreeMatrix, Th
 from castep_outputs.utilities.filewrapper import Block
 from castep_outputs.utilities.type_conv import determine_type, to_type
 from castep_outputs.utilities.utility import (
+    add_aliases,
     atreg_to_index,
     deep_merge_dict,
     file_or_path,
+    log_factory,
 )
 
 if TYPE_CHECKING:
@@ -48,6 +50,42 @@ MAGRES_DEFAULT_UNITS = {
     "isc_orbital_d": "10^19.T^2.J^-1",
     "hf": "au",
 }
+
+
+class MagresAtoms(TypedDict):
+    """Atom block information."""
+
+    units: dict[str, str]
+    coords: dict[AtomIndex, ThreeVector]
+    lattice: ThreeByThreeMatrix
+
+
+class MagresOldIons(TypedDict):
+    """Ions data from magres old blocks."""
+
+    units: dict[str, str]
+    coords: dict[AtomIndex, ThreeVector]
+
+
+class MagresOldMagresData(TypedDict, total=False):
+    """Magres data from magres old blocks."""
+
+    ms: ThreeByThreeMatrix
+    efg: ThreeByThreeMatrix
+    hf: ThreeByThreeMatrix
+    isc: list[list[ThreeByThreeMatrix]]
+    isc_fc: list[list[ThreeByThreeMatrix]]
+    isc_spin: list[list[ThreeByThreeMatrix]]
+    isc_orbital_p: list[list[ThreeByThreeMatrix]]
+    isc_orbital_d: list[list[ThreeByThreeMatrix]]
+    units: dict[str, str]
+
+
+class MagresOld(TypedDict):
+    """Magres old block information."""
+
+    ions: MagresOldIons
+    magres: MagresOldMagresData
 
 
 class AtomsInfo(TypedDict):
@@ -144,7 +182,7 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
     :
         Parsed info.
     """
-    # pylint: disable=too-many-branches
+    logger = log_factory(magres_file)
 
     accum = defaultdict(dict)
     magres_old = {}
@@ -153,15 +191,18 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
         if block := Block.from_re(line, magres_file, r"^\s*\[\w+\]\s*$", r"^\s*\[/\w+\]\s*$"):
             block_name = next(block).strip().strip("[").strip("]")
 
-            if block_name == "calculation":
-                accum["calc"] = _process_calculation_block(block)
-                version = int(accum["calc"]["code_version"].split(".")[0])
-            elif block_name == "atoms":
-                accum["ions"] = _process_atoms_block(block)
-            elif block_name == "magres":
-                accum["magres"] = _process_magres_block(block, version)
-            elif block_name == "magres_old":
-                magres_old = _process_magres_old_block(block)
+            match block_name:
+                case "calculation":
+                    accum["calc"] = _process_calculation_block(block)
+                    version = int(accum["calc"]["code_version"].split(".")[0])
+                case "atoms":
+                    accum["ions"] = _process_atoms_block(block)
+                case "magres":
+                    accum["magres"] = _process_magres_block(block, version)
+                case "magres_old":
+                    magres_old = _process_magres_old_block(block)
+                case _:
+                    logger("Unrecognised block: %s", block_name, level="warning")
 
     # Accum takes priority
     return cast("MagresInfo", deep_merge_dict(magres_old, accum))
@@ -193,7 +234,7 @@ def _process_calculation_block(block: Block) -> dict[str, str]:
     return calc
 
 
-def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
+def _process_atoms_block(block: Block) -> MagresAtoms:
     """
     Process the atoms block.
 
@@ -207,14 +248,14 @@ def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
     :
         Processed data.
     """
-    accum = {"units": {}, "coords": {}}
+    accum: MagresAtoms = {"units": {}, "coords": {}}
     for line in block:
         if line.startswith("lattice"):
             key, *val = line.split()
             accum[key] = _list_to_threebythree(val)
 
         elif line.startswith("atom"):
-            key, _, spec, ind, *pos = line.split()
+            _key, _, spec, ind, *pos = line.split()
             accum["coords"][spec, int(ind)] = to_type(pos, float)
 
         elif line.startswith("units"):
@@ -259,11 +300,13 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
             key, speca, inda, specb, indb, *val = words
             accum[key][(speca, int(inda)), (specb, int(indb))] = _list_to_threebythree(val)
 
-    # add_aliases(accum, MAGRES_ALIASES, replace=True)
+    add_aliases(accum, MAGRES_ALIASES)
+    add_aliases(accum["units"], MAGRES_ALIASES)
+
     return accum
 
 
-def _process_magres_old_block(block: Block) -> dict[str, dict]:
+def _process_magres_old_block(block: Block) -> MagresOld:
     """
     Process the magres_old block.
 
@@ -292,11 +335,10 @@ def _process_magres_old_block(block: Block) -> dict[str, dict]:
         (
             atreg_to_index(match)
             for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block))
-            if match.group(1) == " Perturbing Atom"
+            if match["at"] == " Perturbing Atom"
         ),
         None,
     )
-    print(perturbing_index)
 
     # The magres_old blocks have data in these atom blocks
     for match in REs.MAGRES_OLD_RE["atom"].finditer(str(block)):
@@ -308,7 +350,8 @@ def _process_magres_old_block(block: Block) -> dict[str, dict]:
         _process_jcoupling_tensors(sub_blk, index, perturbing_index, data)
 
     # Aliases
-    # add_aliases(data["magres"], MAGRES_ALIASES, replace=True)
+    add_aliases(data["magres"], MAGRES_ALIASES)
+    add_aliases(data["magres"]["units"], MAGRES_ALIASES)
     return data
 
 

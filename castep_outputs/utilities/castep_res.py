@@ -576,7 +576,7 @@ MAGRES_OLD_RE = {
     # Atom lines
     "atom": re.compile(
         r"=+\s+"
-        rf"( Perturbing Atom|Atom): {ATOM_RE}[\r\n]+"
+        rf"(?P<at> Perturbing Atom|Atom): {ATOM_RE}[\r\n]+"
         r"=+[\r\n]+"
         r"(?P<blk>[^=]+)\s+",
         re.MULTILINE | re.DOTALL,

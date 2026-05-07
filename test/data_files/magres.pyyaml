@@ -64,10 +64,10 @@ ions:
     lattice: Angstrom
 magres:
   efg:
-    ? !!python/tuple
+    ? &id001 !!python/tuple
     - C
     - 1
-    : !!python/tuple
+    : &id002 !!python/tuple
     - !!python/tuple
       - -0.0109
       - -0.0164
@@ -80,10 +80,10 @@ magres:
       - -0.0074
       - 0.0276
       - 0.0046
-    ? !!python/tuple
+    ? &id003 !!python/tuple
     - O1
     - 1
-    : !!python/tuple
+    : &id004 !!python/tuple
     - !!python/tuple
       - -0.19041829766798665
       - 0.6104163731347472
@@ -96,7 +96,10 @@ magres:
       - 0.19578076029786481
       - 0.38892450814606666
       - -0.3860250245805815
-  hf:
+  electric_field_gradient:
+    *id001: *id002
+    *id003: *id004
+  hf: &id005
     ? !!python/tuple
     - H
     - 1
@@ -113,15 +116,16 @@ magres:
       - 1.2937
       - 1.2937
       - -1226.9372
-  isc:
-    ? !!python/tuple
+  hyperfine: *id005
+  indirect_spin_spin_coupling:
+    ? &id009 !!python/tuple
     - !!python/tuple
       - C
       - 1
     - !!python/tuple
       - H
       - 1
-    : !!python/tuple
+    : &id010 !!python/tuple
     - !!python/tuple
       - 31.121211965443827
       - -1.74343327206184
@@ -134,14 +138,14 @@ magres:
       - -5.877818900195689
       - -1.296740051737653
       - 34.28635619655186
-    ? !!python/tuple
-    - &id001 !!python/tuple
+    ? &id011 !!python/tuple
+    - &id006 !!python/tuple
       - H
       - 1
-    - &id002 !!python/tuple
+    - &id007 !!python/tuple
       - H
       - 1
-    : !!python/tuple
+    : &id012 !!python/tuple
     - !!python/tuple
       - -33.6506
       - -3.2523
@@ -154,12 +158,12 @@ magres:
       - 2.9608
       - 2.6516
       - -26.5894
-    ? !!python/tuple
-    - *id001
-    - &id003 !!python/tuple
+    ? &id013 !!python/tuple
+    - *id006
+    - &id008 !!python/tuple
       - H
       - 2
-    : !!python/tuple
+    : &id014 !!python/tuple
     - !!python/tuple
       - -0.4143
       - 0.1515
@@ -172,11 +176,11 @@ magres:
       - 0.2864
       - -0.2066
       - -0.4832
-  isc_fc:
-    ? !!python/tuple
-    - *id001
-    - *id002
-    : !!python/tuple
+  indirect_spin_spin_coupling_fc:
+    ? &id015 !!python/tuple
+    - *id006
+    - *id007
+    : &id016 !!python/tuple
     - !!python/tuple
       - 1.0
       - 2.0
@@ -189,10 +193,10 @@ magres:
       - 7.0
       - 8.0
       - 9.0
-    ? !!python/tuple
-    - *id001
-    - *id003
-    : !!python/tuple
+    ? &id017 !!python/tuple
+    - *id006
+    - *id008
+    : &id018 !!python/tuple
     - !!python/tuple
       - -0.3145
       - 0.1078
@@ -205,15 +209,15 @@ magres:
       - 0.1351
       - 0.0123
       - -0.4068
-  isc_orbital_d:
-    ? !!python/tuple
+  indirect_spin_spin_coupling_orbital_d:
+    ? &id019 !!python/tuple
     - !!python/tuple
       - C
       - 1
     - !!python/tuple
       - H
       - 1
-    : !!python/tuple
+    : &id020 !!python/tuple
     - !!python/tuple
       - 0.668266485393984
       - 0.2181817247164324
@@ -226,10 +230,10 @@ magres:
       - 0.8902244889825984
       - 0.1442349386633732
       - 0.1188087555215481
-    ? !!python/tuple
-    - *id001
-    - *id002
-    : !!python/tuple
+    ? &id021 !!python/tuple
+    - *id006
+    - *id007
+    : &id022 !!python/tuple
     - !!python/tuple
       - 27.5777
       - -3.0495
@@ -242,10 +246,10 @@ magres:
       - 1.5686
       - 2.087
       - 33.8743
-    ? !!python/tuple
-    - *id001
-    - *id003
-    : !!python/tuple
+    ? &id023 !!python/tuple
+    - *id006
+    - *id008
+    : &id024 !!python/tuple
     - !!python/tuple
       - -0.1862
       - -0.0928
@@ -258,15 +262,15 @@ magres:
       - 0.3408
       - -0.1331
       - -0.0404
-  isc_orbital_p:
-    ? !!python/tuple
+  indirect_spin_spin_coupling_orbital_p:
+    ? &id025 !!python/tuple
     - !!python/tuple
       - C
       - 1
     - !!python/tuple
       - H
       - 1
-    : !!python/tuple
+    : &id026 !!python/tuple
     - !!python/tuple
       - -0.9961893413237277
       - -0.712025692821465
@@ -279,10 +283,10 @@ magres:
       - -2.491061861318791
       - -0.4579985788753889
       - 0.49410364016155023
-    ? !!python/tuple
-    - *id001
-    - *id002
-    : !!python/tuple
+    ? &id027 !!python/tuple
+    - *id006
+    - *id007
+    : &id028 !!python/tuple
     - !!python/tuple
       - -0.7709
       - 0.1267
@@ -295,10 +299,10 @@ magres:
       - 0.4276
       - 0.0935
       - -1.0017
-    ? !!python/tuple
-    - *id001
-    - *id003
-    : !!python/tuple
+    ? &id029 !!python/tuple
+    - *id006
+    - *id008
+    : &id030 !!python/tuple
     - !!python/tuple
       - 0.1748
       - 0.0256
@@ -311,15 +315,15 @@ magres:
       - -0.2755
       - 0.028
       - 0.072
-  isc_spin:
-    ? !!python/tuple
+  indirect_spin_spin_coupling_spin:
+    ? &id031 !!python/tuple
     - !!python/tuple
       - C
       - 1
     - !!python/tuple
       - H
       - 1
-    : !!python/tuple
+    : &id032 !!python/tuple
     - !!python/tuple
       - -5.186497037057761
       - -2.3097136251452794
@@ -332,10 +336,10 @@ magres:
       - -8.511599772614124
       - -1.7681537893100934
       - -0.27176534774632727
-    ? !!python/tuple
-    - *id001
-    - *id002
-    : !!python/tuple
+    ? &id033 !!python/tuple
+    - *id006
+    - *id007
+    : &id034 !!python/tuple
     - !!python/tuple
       - -2.0003
       - 0.0393
@@ -348,10 +352,10 @@ magres:
       - 0.1641
       - 0.0282
       - -2.1084
-    ? !!python/tuple
-    - *id001
-    - *id003
-    : !!python/tuple
+    ? &id035 !!python/tuple
+    - *id006
+    - *id008
+    : &id036 !!python/tuple
     - !!python/tuple
       - -0.0884
       - 0.1109
@@ -364,11 +368,30 @@ magres:
       - 0.0859
       - -0.1138
       - -0.1081
-  ms:
-    ? !!python/tuple
+  isc:
+    *id009: *id010
+    *id011: *id012
+    *id013: *id014
+  isc_fc:
+    *id015: *id016
+    *id017: *id018
+  isc_orbital_d:
+    *id019: *id020
+    *id021: *id022
+    *id023: *id024
+  isc_orbital_p:
+    *id025: *id026
+    *id027: *id028
+    *id029: *id030
+  isc_spin:
+    *id031: *id032
+    *id033: *id034
+    *id035: *id036
+  magnetic_shielding:
+    ? &id037 !!python/tuple
     - H
     - 1
-    : !!python/tuple
+    : &id038 !!python/tuple
     - !!python/tuple
       - 11.0
       - 12.0
@@ -381,10 +404,10 @@ magres:
       - 31.0
       - 32.0
       - 33.0
-    ? !!python/tuple
+    ? &id039 !!python/tuple
     - H2
     - 10000
-    : !!python/tuple
+    : &id040 !!python/tuple
     - !!python/tuple
       - 1.0
       - 2.0
@@ -397,12 +420,23 @@ magres:
       - 7.0
       - 8.0
       - 9.0
+  ms:
+    *id037: *id038
+    *id039: *id040
   units:
     efg: au
+    electric_field_gradient: au
     hf: au
+    hyperfine: au
+    indirect_spin_spin_coupling: 10^19.T^2.J^-1
+    indirect_spin_spin_coupling_fc: 10^19.T^2.J^-1
+    indirect_spin_spin_coupling_orbital_d: 10^19.T^2.J^-1
+    indirect_spin_spin_coupling_orbital_p: 10^19.T^2.J^-1
+    indirect_spin_spin_coupling_spin: 10^19.T^2.J^-1
     isc: 10^19.T^2.J^-1
     isc_fc: 10^19.T^2.J^-1
     isc_orbital_d: 10^19.T^2.J^-1
     isc_orbital_p: 10^19.T^2.J^-1
     isc_spin: 10^19.T^2.J^-1
+    magnetic_shielding: ppm
     ms: ppm
