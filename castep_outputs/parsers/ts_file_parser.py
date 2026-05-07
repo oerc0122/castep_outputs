@@ -1,15 +1,22 @@
 """Parse castep .ts files."""
+
 from __future__ import annotations
 
 import re
 from collections import defaultdict
 from typing import TextIO, TypedDict
 
-from ..utilities.castep_res import ATOMIC_DATA_TAG, TAG_RE, get_numbers, labelled_floats
-from ..utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
-from ..utilities.datatypes import ThreeByThreeMatrix
-from ..utilities.filewrapper import Block
-from ..utilities.utility import add_aliases, atreg_to_index, file_or_path, to_type
+from castep_outputs.utilities.castep_res import (
+    ATOMIC_DATA_TAG,
+    TAG_RE,
+    get_numbers,
+    labelled_floats,
+)
+from castep_outputs.utilities.constants import FST_D, TAG_ALIASES, TS_TYPES
+from castep_outputs.utilities.datatypes import ThreeByThreeMatrix
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import add_aliases, atreg_to_index, file_or_path
 
 
 class TSStructInfo(TypedDict, total=False):

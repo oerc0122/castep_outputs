@@ -1,13 +1,20 @@
 """Parse castep .phonon files."""
+
 from __future__ import annotations
 
 from collections import defaultdict
 from typing import TextIO
 
-from ..utilities.datatypes import ComplexThreeVector, QData, StandardHeader, ThreeVector
-from ..utilities.filewrapper import Block
-from ..utilities.utility import file_or_path, log_factory, to_type
-from .parse_utilities import parse_regular_header
+from castep_outputs.parsers.parse_utilities import parse_regular_header
+from castep_outputs.utilities.datatypes import (
+    ComplexThreeVector,
+    QData,
+    StandardHeader,
+    ThreeVector,
+)
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import file_or_path, log_factory
 
 
 class PhononFileQPoint(QData, total=False):

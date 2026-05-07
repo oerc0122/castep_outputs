@@ -4,7 +4,7 @@ from collections.abc import Iterable, Iterator, Mapping
 from os import SEEK_CUR
 from typing import BinaryIO, TypeVar
 
-from castep_outputs.utilities.utility import to_type
+from castep_outputs.utilities.type_conv import parse_bytes
 
 T = TypeVar("T")
 K = TypeVar("K")
@@ -106,7 +106,7 @@ class FortranBinaryReader:
         T
             Value as type.
         """
-        return to_type(next(self), typ)
+        return parse_bytes(next(self), typ)
 
     # TypeVarTuple 3.11+
     def get_dtype_cycle(self, dtypes: tuple[type[T], ...]) -> Iterator[tuple[T, ...]]:
@@ -156,6 +156,6 @@ class FortranBinaryReader:
         """
         accum: dict[K, T] = {}
         for (key, typ), datum in zip(dtypes.items(), self, strict=False):
-            accum[key] = to_type(datum, typ)
+            accum[key] = parse_bytes(datum, typ)
 
         return accum

@@ -15,10 +15,26 @@ from collections.abc import Callable, Iterator
 from enum import Flag, auto
 from typing import Any, TextIO, cast
 
-from ..utilities import castep_res as REs
-from ..utilities.castep_res import gen_table_re, get_numbers, labelled_floats
-from ..utilities.constants import SHELLS
-from ..utilities.datatypes import (
+from castep_outputs.parsers.bands_file_parser import parse_bands_file
+from castep_outputs.parsers.cell_param_file_parser import (
+    _parse_devel_code_block,
+    _parse_pspot_string,
+)
+from castep_outputs.parsers.efield_file_parser import parse_efield_file
+from castep_outputs.parsers.elastic_file_parser import parse_elastic_file
+from castep_outputs.parsers.hug_file_parser import parse_hug_file
+from castep_outputs.parsers.parse_fmt_files import (
+    parse_chdiff_fmt_file,
+    parse_den_fmt_file,
+    parse_elf_fmt_file,
+    parse_pot_fmt_file,
+)
+from castep_outputs.parsers.phonon_dos_file_parser import parse_phonon_dos_file
+from castep_outputs.parsers.xrd_sf_file_parser import parse_xrd_sf_file
+from castep_outputs.utilities import castep_res as REs
+from castep_outputs.utilities.castep_res import gen_table_re, get_numbers, labelled_floats
+from castep_outputs.utilities.constants import SHELLS
+from castep_outputs.utilities.datatypes import (
     AtomIndex,
     AtomPropBlock,
     BandStructure,
@@ -56,35 +72,24 @@ from ..utilities.datatypes import (
     ThreeVector,
     WvfnLineMin,
 )
-from ..utilities.filewrapper import Block, FileWrapper
-from ..utilities.utility import (
+from castep_outputs.utilities.filewrapper import Block, FileWrapper
+from castep_outputs.utilities.type_conv import (
+    determine_type,
+    fix_data_types,
+    parse_int_or_float,
+    to_type,
+)
+from castep_outputs.utilities.utility import (
     Logger,
     add_aliases,
     atreg_to_index,
-    determine_type,
     file_or_path,
-    fix_data_types,
     get_only,
     log_factory,
     normalise_key,
     normalise_string,
-    parse_int_or_float,
     stack_dict,
-    to_type,
 )
-from .bands_file_parser import parse_bands_file
-from .cell_param_file_parser import _parse_devel_code_block, _parse_pspot_string
-from .efield_file_parser import parse_efield_file
-from .elastic_file_parser import parse_elastic_file
-from .hug_file_parser import parse_hug_file
-from .parse_fmt_files import (
-    parse_chdiff_fmt_file,
-    parse_den_fmt_file,
-    parse_elf_fmt_file,
-    parse_pot_fmt_file,
-)
-from .phonon_dos_file_parser import parse_phonon_dos_file
-from .xrd_sf_file_parser import parse_xrd_sf_file
 
 # Reduced set of parsers needed for .castep test extras
 PARSERS: dict[str, Callable] = {

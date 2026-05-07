@@ -20,16 +20,14 @@ from castep_outputs.utilities.datatypes import (
     ThreeVector,
 )
 from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import determine_type, fix_data_types, to_type
 from castep_outputs.utilities.utility import (
     atreg_to_index,
-    determine_type,
     file_or_path,
-    fix_data_types,
     log_factory,
     normalise_key,
     strip_comments,
     strip_nones,
-    to_type,
 )
 
 

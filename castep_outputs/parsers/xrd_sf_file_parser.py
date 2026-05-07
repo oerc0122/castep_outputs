@@ -1,14 +1,16 @@
 """Parse castep .xrd_sf files."""
+
 from __future__ import annotations
 
 import re
 from collections import defaultdict
 from typing import TextIO, TypedDict
 
-from ..utilities import castep_res as REs
-from ..utilities.castep_res import labelled_floats
-from ..utilities.datatypes import ThreeVector
-from ..utilities.utility import file_or_path, stack_dict, to_type
+from castep_outputs.utilities import castep_res as REs
+from castep_outputs.utilities.castep_res import labelled_floats
+from castep_outputs.utilities.datatypes import ThreeVector
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import file_or_path, stack_dict
 
 
 class XRDSFFileInfo(TypedDict):

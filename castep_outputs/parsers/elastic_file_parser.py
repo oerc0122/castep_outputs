@@ -1,13 +1,19 @@
 """Parse castep .elastic files."""
+
 from __future__ import annotations
 
 from collections import defaultdict
 from typing import TextIO
 
-from ..utilities.castep_res import ELASTIC_BLOCK_RE, ELASTIC_INTERNAL_STRAIN_RE, get_numbers
-from ..utilities.filewrapper import Block
-from ..utilities.utility import atreg_to_index, file_or_path, normalise_key, to_type
-from .parse_utilities import parse_regular_header
+from castep_outputs.parsers.parse_utilities import parse_regular_header
+from castep_outputs.utilities.castep_res import (
+    ELASTIC_BLOCK_RE,
+    ELASTIC_INTERNAL_STRAIN_RE,
+    get_numbers,
+)
+from castep_outputs.utilities.filewrapper import Block
+from castep_outputs.utilities.type_conv import to_type
+from castep_outputs.utilities.utility import atreg_to_index, file_or_path, normalise_key
 
 
 @file_or_path(mode="r")

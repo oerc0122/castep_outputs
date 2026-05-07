@@ -605,7 +605,7 @@ TS: Warning - a minimum between Reactant-TS was found for image   3
                                     O  my_pot.usp
         """)
         test_dict = parse_castep_file(test_text)[0]
-        pprint.pprint(test_dict)
+
         self.assertEqual(
             test_dict,
             {
@@ -1398,16 +1398,16 @@ NB est. 0K energy (E-0.5TS)      =  -216.4682741546     eV
                     ],
                 ],
                 "bsc_energies": {
-                    "est_0K": [-216.4196574619, -216.4463936449],
-                    "final_energy": [-216.419136477, -216.4458405943],
-                    "free_energy": [-216.4201784468, -216.4469466955],
+                    "est_0K": (-216.4196574619, -216.4463936449),
+                    "final_energy": (-216.419136477, -216.4458405943),
+                    "free_energy": (-216.4201784468, -216.4469466955),
                 },
                 "dedlne": -0.749584,
                 "energies": {
-                    "est_0K": [-216.4682741546],
-                    "final_basis_set_corrected": [-216.469505],
-                    "final_energy": [-216.4677199357],
-                    "free_energy": [-216.4688283736],
+                    "est_0K": (-216.4682741546,),
+                    "final_basis_set_corrected": (-216.469505,),
+                    "final_energy": (-216.4677199357,),
+                    "free_energy": (-216.4688283736,),
                 },
                 "scf": [
                     {"energy": -216.445805, "energy_gain": None, "fermi_energy": 0.0, "time": 3.63},
@@ -1595,12 +1595,12 @@ NB est. 0K energy (E-0.5TS)      =  -855.4608344414     eV
             {
                 "dedlne": -3.335211,
                 "energies": {
-                    "disperson_corrected": [-1268.3073245],
-                    "est_0K": [-855.4608344414],
-                    "final_basis_set_corrected": [-855.471052],
-                    "final_energy": [-1267.604578357, -855.4591023999],
-                    "free_energy": [-855.462566483],
-                    "sedc_correction": [-0.702746],
+                    "disperson_corrected": (-1268.3073245,),
+                    "est_0K": (-855.4608344414,),
+                    "final_basis_set_corrected": (-855.471052,),
+                    "final_energy": (-1267.604578357, -855.4591023999,),
+                    "free_energy": (-855.462566483,),
+                    "sedc_correction": (-0.702746,),
                 },
             },
         )
@@ -1927,9 +1927,9 @@ NB est. 0K energy (E-0.5TS)      =  -855.4216728959     eV
                         "temperature": 651.262915,
                         "total_energy": -854.758633,
                         "energies": {
-                            "est_0K": [-855.4216728959],
-                            "final_energy": [-855.4197401755],
-                            "free_energy": [-855.4236056162],
+                            "est_0K": (-855.4216728959,),
+                            "final_energy": (-855.4197401755,),
+                            "free_energy": (-855.4236056162,),
                         },
                         "forces": {
                             "non_descript": [
@@ -3185,14 +3185,14 @@ Final energy =  -2293.681052478     eV
                             "enthalpy": [-2293.74356],
                             "minimisation": [
                                 {
-                                    "smax": {
-                                        "converged": False,
-                                        "tolerance": 0.25,
-                                        "value": 12.78436,
-                                    },
                                     "de_ion": {
                                         "converged": False,
                                         "tolerance": 2.5e-05,
+                                        "value": 0.0,
+                                    },
+                                    "dr_max": {
+                                        "converged": False,
+                                        "tolerance": 0.001,
                                         "value": 0.0,
                                     },
                                     "f_max": {
@@ -3200,10 +3200,10 @@ Final energy =  -2293.681052478     eV
                                         "tolerance": 0.05,
                                         "value": 0.4266993,
                                     },
-                                    "dr_max": {
+                                    "smax": {
                                         "converged": False,
-                                        "tolerance": 0.001,
-                                        "value": 0.0,
+                                        "tolerance": 0.25,
+                                        "value": 12.78436,
                                     },
                                 }
                             ],
@@ -3226,7 +3226,7 @@ Final energy =  -2293.681052478     eV
                                 ],
                                 "volume": 64.151231,
                             },
-                            "energies": {"final_energy": [-2293.681052478]},
+                            "energies": {"final_energy": (-2293.681052478,)},
                             "enthalpy": [-2293.75785],
                             "forces": {
                                 "symmetrised": [
@@ -3567,7 +3567,6 @@ Message: Generation of delocalized internals is successful
         """)
         test_dict = parse_castep_file(test_text)[0]
 
-        pprint.pprint(test_dict)
         self.assertEqual(
             test_dict,
             {
@@ -4248,7 +4247,6 @@ Peak Memory Use     = 1703440 kB
 
     test_dict = parse_castep_file(test_text, filters=Filters.SYS_INFO | Filters.TESTING)[0]
 
-    pprint.pprint(test_dict)
     assert test_dict == {
         'calculation_time': 50.26,
         'external_files': {'xrd_sf': {'f_aug': [(-0.345904+0j),
