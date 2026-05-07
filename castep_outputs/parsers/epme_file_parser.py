@@ -57,12 +57,12 @@ def _parse_epme_header(epme_file: TextIO) -> EPMEFileInfo:
 
     Parameters
     ----------
-    epme_file : TextIO
+    epme_file
         File to parse.
 
     Returns
     -------
-    EPMEFileInfo
+    :
         Prepared EPME data with header.
     """
     epme_data: EPMEFileInfo = {}
@@ -89,7 +89,7 @@ def parse_epme_file(epme_file: TextIO) -> EPMEFileInfo:
 
     Returns
     -------
-    EPMEFileInfo
+    :
         Parsed data.
     """
     logger = log_factory(epme_file)

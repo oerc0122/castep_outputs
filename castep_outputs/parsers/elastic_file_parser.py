@@ -28,7 +28,7 @@ def parse_elastic_file(elastic_file: TextIO) -> dict[str, list[list[float]]]:
 
     Returns
     -------
-    dict[str, list[list[float]]]
+    :
         Parsed info.
     """
     accum = {}

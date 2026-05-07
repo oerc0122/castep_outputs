@@ -55,12 +55,12 @@ def parse_efield_file(efield_file: TextIO) -> EFieldInfo:
 
     Parameters
     ----------
-    efield_file : ~typing.TextIO
+    efield_file
         Open handle to file to parse.
 
     Returns
     -------
-    EFieldInfo
+    :
         Parsed info.
     """
     # pylint: disable=too-many-branches,redefined-outer-name

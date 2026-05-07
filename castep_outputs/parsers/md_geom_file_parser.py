@@ -41,7 +41,7 @@ class MDGeomTimestepInfo(TypedDict, total=False):
 
     #: Elapsed MD Time.
     time: float
-    #: Current energies: total, potential, kinetic.
+    #: Current energies꞉ total, potential, kinetic.
     energy: tuple[float, float, float]
     #: Instantaneous temperature.
     temperature: tuple[float]
@@ -81,7 +81,7 @@ def parse_md_geom_frame(block: Block) -> MDGeomTimestepInfo:
 
     Returns
     -------
-    MDGeomTimestepInfo
+    :
         Parsed frame of data.
     """
     curr: MDGeomTimestepInfo = defaultdict(list)
@@ -120,7 +120,7 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
 
     Returns
     -------
-    list[MDGeomTimestepInfo]
+    :
         Step-by-step Parsed info.
 
     Raises

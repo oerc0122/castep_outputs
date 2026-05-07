@@ -31,7 +31,7 @@ def parse_regular_header(block: Block,
 
     Returns
     -------
-    dict[str, float | int]
+    :
         Parsed header block.
     """
     data = {}

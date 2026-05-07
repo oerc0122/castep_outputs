@@ -49,7 +49,7 @@ def parse_single(in_file: str | Path | TextIO,
 
     Returns
     -------
-    dict
+    :
         Parsed data.
 
     Raises
@@ -145,7 +145,7 @@ def run(args: argparse.Namespace) -> None:
 
     Parameters
     ----------
-    args : argparse.Namespace
+    args
         Run arguments.
     """
     dict_args = extract_parsables(args)

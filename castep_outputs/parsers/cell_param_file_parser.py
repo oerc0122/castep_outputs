@@ -100,7 +100,7 @@ def _get_block_units(block: Block, default: str) -> str:
 
     Returns
     -------
-    str
+    :
         Units.
     """
     test = next(block)
@@ -125,7 +125,7 @@ def parse_cell_param_file(cell_param_file: TextIO) -> list[CellParamData]:
 
     Returns
     -------
-    list[dict[str, str | dict[str, str]]]
+    :
         Parsed info.
     """
     logger = log_factory(cell_param_file)
@@ -183,12 +183,12 @@ def _parse_beta_function(string: str, *, debug: bool = False) -> PSPotBFG:
 
     Parameters
     ----------
-    string : str
+    string
         Input beta_function group.
 
     Returns
     -------
-    PSPotBFG
+    :
         Parsed data.
 
     Raises
@@ -246,14 +246,14 @@ def _parse_pspot_string(string: str, *, debug: bool = False) -> PSPotStrInfo:
 
     Parameters
     ----------
-    string : str
+    string
         String to be parsed.
-    debug : bool
+    debug
         Whether to maintain ``None`` s in unmatched output.
 
     Returns
     -------
-    PSPotStrInfo
+    :
         Processed information.
 
     Raises
@@ -336,7 +336,7 @@ def _parse_devel_code_block(in_block: Block) -> DevelBlock:
 
     Returns
     -------
-    dict[str, str | float]
+    :
         Parsed info.
     """
     main_block = " ".join(map(str.strip, in_block))
@@ -412,7 +412,7 @@ def _parse_ionic_constraints(block: Block) -> dict[AtomIndex, Sequence[ThreeVect
 
     Returns
     -------
-    dict[AtomIndex, ThreeVector]
+    :
         Parsed info.
     """
     accum = defaultdict(list)
@@ -437,7 +437,7 @@ def _parse_nonlinear_constraints(block: Block) -> list[NonLinearConstraint]:
 
     Returns
     -------
-    dict[AtomIndex, ThreeVector]
+    :
         Parsed info.
     """
     accum = []
@@ -470,7 +470,7 @@ def _parse_positions(block: Block, *, absolute: bool = False) -> dict[AtomIndex,
 
     Returns
     -------
-    dict[AtomIndex, ThreeVector]
+    :
         Parsed info.
     """
     accum = {}
@@ -513,7 +513,7 @@ def _parse_hubbard_u(block: Block) -> HubbardU:
 
     Returns
     -------
-    dict[str | AtomIndex, dict[str, float]]
+    :
         Parsed info.
     """
     accum: HubbardU = {"units": _get_block_units(block, "eV")}
@@ -544,7 +544,7 @@ def _parse_sedc(block: Block) -> dict[str, dict[str, float]]:
 
     Returns
     -------
-    dict[str, dict[str, float]]
+    :
         Parsed info.
     """
     accum = {}
@@ -584,7 +584,7 @@ def _parse_symops(block: Block) -> list[dict[str, ThreeByThreeMatrix | ThreeVect
 
     Returns
     -------
-    list[dict[str, ThreeByThreeMatrix | ThreeVector]]
+    :
         Parsed info.
     """
     tmp = [to_type(numbers, float) for line in block if (numbers := REs.FLOAT_RAT_RE.findall(line))]
@@ -609,7 +609,7 @@ def _parse_xc_definition(block: Block) -> dict[str, float]:
 
     Returns
     -------
-    dict[str, float]
+    :
         Parsed info.
     """
     block_data = {"xc": {}, "params": {}}
@@ -636,12 +636,12 @@ def _parse_species_pot(block: Block) -> dict[str, str | PSPotStrInfo]:
 
     Parameters
     ----------
-    block : Block
+    block
         Input block to parse.
 
     Returns
     -------
-    dict[str, str | PSPotStrInfo]
+    :
         Processed block if PSPot string, otherwise bare string.
     """
     block_data = {}
@@ -670,7 +670,7 @@ def _parse_general(block: Block) -> GeneralBlock:
 
     Returns
     -------
-    dict[str, str | float]
+    :
         Parsed info.
     """
     block_data: GeneralBlock = {"data": []}

@@ -54,7 +54,7 @@ def parse_bands_file(bands_file: TextIO) -> BandsFileInfo:
 
     Returns
     -------
-    BandsFileInfo
+    :
         Parsed info.
     """
     bands_info: BandsFileInfo = {"bands": []}

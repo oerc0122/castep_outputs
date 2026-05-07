@@ -33,13 +33,13 @@ ruamel = ["ruamel.yaml>=0.17.22,<0.19"]
 yaml = ["pyYAML>=3.13"]
 
 [dependency-groups]
-docs = ["sphinx<8.2", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0", "sphinx-autodoc-typehints", "myst-nb", "sphinxcontrib-bibtex"]
+docs = ["sphinx~=8.1", "sphinx-book-theme>=0.3.3", "sphinx-argparse>=0.4.0", "myst-nb", "sphinxcontrib-bibtex"]
 lint = ["ruff==0.14.14"]
 test = ["pytest==8.3.4", "pytest-cov==5.0.0"]
 dev = [
     {include-group="docs"},
     {include-group="lint"},
-    {include-group="test"}
+    {include-group="test"},
 ]
 
 [project.scripts]
@@ -118,7 +118,7 @@ ignore = [
     "RUF067",   # Require empty init
     "LOG015",   # Call to base logger
 ]
-allowed-confusables = ["α", "β", "γ"]
+allowed-confusables = ["α", "β", "γ", "꞉"]
 
 [tool.ruff.lint.pydocstyle]
 convention = "numpy"

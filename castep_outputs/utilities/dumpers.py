@@ -104,7 +104,7 @@ def get_dumpers(dump_fmt: str) -> Dumper:
 
     Returns
     -------
-    Dumper
+    :
         Dumping function.
 
     Raises
