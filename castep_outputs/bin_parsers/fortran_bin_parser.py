@@ -2,9 +2,9 @@
 
 from collections.abc import Iterable, Iterator, Mapping
 from os import SEEK_CUR
-from typing import BinaryIO, TypeVar
+from typing import BinaryIO, TypeVar, overload
 
-from castep_outputs.utilities.type_conv import parse_bytes
+from castep_outputs.utilities.type_conv import ToTypeTuple, parse_bytes
 
 T = TypeVar("T")
 K = TypeVar("K")
@@ -93,7 +93,11 @@ class FortranBinaryReader:
                 size = int.from_bytes(self.file.read(4), "big")
                 self.file.seek(size + 4, SEEK_CUR)
 
-    def get(self, typ: type[T]) -> T:
+    @overload
+    def get(self, typ: type[T]) -> T: ...
+    @overload
+    def get(self, typ: ToTypeTuple) -> tuple[T, ...]: ...
+    def get(self, typ):
         """Get next value as ``typ``.
 
         Parameters
@@ -109,7 +113,19 @@ class FortranBinaryReader:
         return parse_bytes(next(self), typ)
 
     # TypeVarTuple 3.11+
-    def get_dtype_cycle(self, dtypes: tuple[type[T], ...]) -> Iterator[tuple[T, ...]]:
+    @overload
+    def get_dtype_cycle(self, dtypes: tuple[type[T], ...]) -> Iterator[tuple[T, ...]]: ...
+    @overload
+    def get_dtype_cycle(
+        self,
+        dtypes: tuple[ToTypeTuple, ...],
+    ) -> Iterator[tuple[tuple[T, ...], ...]]: ...
+    @overload
+    def get_dtype_cycle(
+        self,
+        dtypes: tuple[type[T] | ToTypeTuple, ...],
+    ) -> Iterator[tuple[T | tuple[T, ...], ...]]: ...
+    def get_dtype_cycle(self, dtypes):
         """Get iterator over values reading dtypes each cycle.
 
         Parameters
@@ -119,13 +135,22 @@ class FortranBinaryReader:
 
         Yields
         ------
-        tuple[T, ...]
+        T or tuple[T, ...]
             Loaded data.
         """
         while True:
             yield tuple(self.get(dtype) for dtype in dtypes)
 
-    def get_dtype_iter(self, dtypes: Iterable[type[T]]) -> Iterator[T]:
+    @overload
+    def get_dtype_iter(self, dtypes: Iterable[type[T]]) -> Iterator[T]: ...
+    @overload
+    def get_dtype_iter(self, dtypes: Iterable[ToTypeTuple]) -> Iterator[tuple[T, ...]]: ...
+    @overload
+    def get_dtype_iter(
+        self,
+        dtypes: Iterable[type[T] | ToTypeTuple],
+    ) -> Iterator[T | tuple[T, ...]]: ...
+    def get_dtype_iter(self, dtypes):
         """Get next values as types in ``dtypes``.
 
         Parameters
@@ -135,13 +160,22 @@ class FortranBinaryReader:
 
         Yields
         ------
-        T
+        T or tuple[T, ...]
             Loaded data.
         """
         for dtype in dtypes:
             yield self.get(dtype)
 
-    def get_dtype_dict(self, dtypes: Mapping[K, type[T]]) -> dict[K, T]:
+    @overload
+    def get_dtype_dict(self, dtypes: Mapping[K, type[T]]) -> dict[K, T]: ...
+    @overload
+    def get_dtype_dict(self, dtypes: Mapping[K, ToTypeTuple]) -> dict[K, tuple[T, ...]]: ...
+    @overload
+    def get_dtype_dict(
+        self,
+        dtypes: Mapping[K, type[T] | ToTypeTuple],
+    ) -> dict[K, T | tuple[T, ...]]: ...
+    def get_dtype_dict(self, dtypes: Mapping[K, type[T] | ToTypeTuple]):
         """Get from a dictionary of dtypes to read.
 
         Parameters
@@ -154,8 +188,7 @@ class FortranBinaryReader:
         dict[K, T]
             Loaded data.
         """
-        accum: dict[K, T] = {}
-        for (key, typ), datum in zip(dtypes.items(), self, strict=False):
-            accum[key] = parse_bytes(datum, typ)
-
-        return accum
+        return {
+            key: parse_bytes(datum, typ)
+            for (key, typ), datum in zip(dtypes.items(), self, strict=False)
+        }
