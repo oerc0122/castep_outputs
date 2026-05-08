@@ -657,3 +657,28 @@ def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:
         return func
 
     return inner
+
+
+def filter_underscore(x: Mapping[str, T], /) -> dict[str, T]:
+    """Remove underscored keys from dict.
+
+    Parameters
+    ----------
+    x
+        Mapping to filter.
+
+    Returns
+    -------
+    :
+        New dict with "_"-prefixed values removed.
+
+    Examples
+    --------
+    >>> x = {"_val": 1, "other": 2}
+    >>> filter_underscore(x)
+    {'other': 2}
+    """
+    return {
+        key: val for key, val in x.items()
+        if not key.startswith("_")
+    }
