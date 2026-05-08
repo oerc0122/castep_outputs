@@ -23,7 +23,7 @@ def get_numbers(line: str) -> list[str]:
 
     Returns
     -------
-    list[str]
+    :
         All numbers found in `line`.
 
     See Also
@@ -60,7 +60,7 @@ def labelled_floats(
 
     Returns
     -------
-    str
+    :
         Regular expression to match floats with given labels.
 
     Raises
@@ -118,7 +118,7 @@ def gen_table_re(
 
     Returns
     -------
-    str
+    :
         RegEx pattern to match line(s).
 
     Examples
@@ -162,7 +162,7 @@ def get_atom_parts(spec: str) -> dict[str, str]:
 
     Returns
     -------
-    dict[str, str]
+    :
         Dictionary detailing separate parts of atom name.
 
     Examples

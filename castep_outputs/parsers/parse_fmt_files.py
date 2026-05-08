@@ -66,12 +66,12 @@ def _parse_kpt_info(
 
     Parameters
     ----------
-    inp : TextIO
+    inp
         File to parse.
 
     Returns
     -------
-    dict[str, list[int | float]]
+    :
         Parsed data.
     """
     # Skip header
@@ -106,12 +106,12 @@ def parse_elf_fmt_file(elf_file: TextIO) -> ElfFileInfo:
 
     Parameters
     ----------
-    elf_file : ~typing.TextIO
+    elf_file
         Open handle to file to parse.
 
     Returns
     -------
-    ElfFileInfo
+    :
         Parsed info.
     """
     return cast(ElfFileInfo, _parse_kpt_info(elf_file))
@@ -123,12 +123,12 @@ def parse_chdiff_fmt_file(chdiff_file: TextIO) -> ChDiffFileInfo:
 
     Parameters
     ----------
-    chdiff_file : ~typing.TextIO
+    chdiff_file
         Open handle to file to parse.
 
     Returns
     -------
-    ChDiffFileInfo
+    :
         Parsed info.
     """
     return cast(ChDiffFileInfo, _parse_kpt_info(chdiff_file))
@@ -140,12 +140,12 @@ def parse_pot_fmt_file(pot_file: TextIO) -> PotFileInfo:
 
     Parameters
     ----------
-    pot_file : ~typing.TextIO
+    pot_file
         Open handle to file to parse.
 
     Returns
     -------
-    PotFileInfo
+    :
         Parsed info.
     """
     return cast(PotFileInfo, _parse_kpt_info(pot_file))
@@ -157,12 +157,12 @@ def parse_den_fmt_file(den_file: TextIO) -> DenFileInfo:
 
     Parameters
     ----------
-    den_file : ~typing.TextIO
+    den_file
         Open handle to file to parse.
 
     Returns
     -------
-    DenFileInfo
+    :
         Parsed info.
     """
     return cast(DenFileInfo, _parse_kpt_info(den_file))

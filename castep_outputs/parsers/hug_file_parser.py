@@ -36,7 +36,7 @@ def parse_hug_file(hug_file: TextIO) -> HugFileInfo:
 
     Returns
     -------
-    HugFileInfo
+    :
         Parsed info.
     """
     cols = ("compression", "temperature", "pressure", "energy")

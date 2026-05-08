@@ -48,7 +48,7 @@ def parse_xrd_sf_file(xrd_sf_file: TextIO) -> XRDSFFileInfo:
 
     Returns
     -------
-    XRDSFFileInfo
+    :
         Parsed info.
     """
     # Get headers from first line

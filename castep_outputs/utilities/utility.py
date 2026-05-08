@@ -70,7 +70,7 @@ def normalise_string(string: str) -> str:
 
     Returns
     -------
-    str
+    :
         Normalised string.
 
     Examples
@@ -98,7 +98,7 @@ def normalise_key(string: str) -> str:
 
     Returns
     -------
-    str
+    :
         Normalised string.
 
     Examples
@@ -123,11 +123,11 @@ def strip_nones(
 
     Parameters
     ----------
-    data : dict[K, Any]
+    data
         Dataset to filter.
-    include : Iterable[K] or None
+    include
         Values to include (or all if None)
-    exclude : Iterable[K]
+    exclude
         Keys/indices to ignore.
 
     Examples
@@ -161,9 +161,9 @@ def atreg_to_index(dict_in: dict[str, str] | re.Match, *, clear: bool = True) ->
 
     Returns
     -------
-    species : str
+    str
         Atomic species.
-    ind : int
+    int
         Internal index.
 
     Examples
@@ -218,7 +218,7 @@ def normalise(obj, mapping):
 
     Returns
     -------
-    Any
+    :
         Normalised data.
     """
     if isinstance(obj, (tuple, list)):
@@ -254,7 +254,7 @@ def json_safe(obj):
 
     Returns
     -------
-    Any
+    :
         Safe datatype.
 
     Examples
@@ -303,7 +303,7 @@ def flatten_dict(
 
     Returns
     -------
-    dict[str, Any]
+    :
         A flattened dictionary.
 
     Notes
@@ -371,7 +371,7 @@ def add_aliases(
 
     Returns
     -------
-    dict[str, Any]
+    :
         `in_dict` with keys substituted.
 
     Examples
@@ -398,12 +398,12 @@ def log_factory(file: TextIO | fileinput.FileInput | FileWrapper) -> Logger:
 
     Parameters
     ----------
-    file : ~typing.TextIO or ~fileinput.FileInput or FileWrapper
+    file
         File to apply logging for.
 
     Returns
     -------
-    Callable
+    :
         Function for logging data.
     """
     if hasattr(file, "name"):
@@ -561,7 +561,7 @@ def strip_comments(
 
     Returns
     -------
-    Block
+    :
         Block of data without comments.
 
     Notes
@@ -613,7 +613,7 @@ def get_only(seq: Sequence[T]) -> T:
 
     Returns
     -------
-    Any
+    :
         The sole element of the sequence.
 
     Raises
@@ -633,12 +633,12 @@ def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:
 
     Parameters
     ----------
-    mode : Literal["r", "rb"]
+    mode
         Open mode if passed a :class:`~pathlib.Path` or :class:`str`.
 
     Returns
     -------
-    Callable
+    :
         Wrapped function able to handle open files or paths invisibly.
     """
 

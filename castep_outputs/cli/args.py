@@ -21,7 +21,7 @@ def get_parser() -> argparse.ArgumentParser:
 
     Returns
     -------
-    argparse.ArgumentParser
+    :
         castep_outputs argument parser.
     """
     arg_parser = argparse.ArgumentParser(
@@ -71,7 +71,7 @@ def parse_args(to_parse: Sequence[str] = ()) -> argparse.Namespace:
 
     Returns
     -------
-    argparse.Namespace
+    :
         Parsed args.
 
     Examples
@@ -119,7 +119,7 @@ def extract_parsables(args: argparse.Namespace) -> dict[str, list[str]]:
 
     Returns
     -------
-    dict[str, list[str]]
+    :
         Files to parse.
     """
     return {typ: getattr(args, typ) for typ in ALL_NAMES}

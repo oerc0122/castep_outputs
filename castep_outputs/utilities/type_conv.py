@@ -66,7 +66,7 @@ def determine_type(data: str) -> type:
 
     Returns
     -------
-    type
+    :
         Best type to attempt.
 
     Examples
@@ -114,7 +114,7 @@ def parse_int_or_float(numbers):
 
     Returns
     -------
-    int or float
+    :
         Parsed numerical value.
 
     Examples
@@ -141,7 +141,7 @@ def _parse_float_or_rational(val: str) -> float:
 
     Returns
     -------
-    float
+    :
         Parsed value.
 
     Examples
@@ -165,7 +165,7 @@ def _parse_logical(val: str) -> bool:
 
     Returns
     -------
-    bool
+    :
         Parsed value.
 
     Notes
@@ -191,12 +191,12 @@ def _parse_float_bytes(val: bytes) -> tuple[float, ...]:
 
     Parameters
     ----------
-    val : bytes
+    val
         Values to parse.
 
     Returns
     -------
-    tuple[float, ...]
+    :
         Parsed value or list of values.
 
     Examples
@@ -218,12 +218,12 @@ def _parse_int_bytes(val: bytes) -> tuple[int, ...]:
 
     Parameters
     ----------
-    val : bytes
+    val
         Values to parse.
 
     Returns
     -------
-    tuple[int, ...]
+    :
         Parsed value or list of values.
 
     Examples
@@ -245,12 +245,12 @@ def _parse_bool_bytes(val: bytes) -> tuple[bool, ...]:
 
     Parameters
     ----------
-    val : bytes
+    val
         Values to parse.
 
     Returns
     -------
-    tuple[bool, ...]
+    :
         Parsed value or list of values.
 
     Examples
@@ -272,12 +272,12 @@ def _parse_complex_bytes(val: bytes) -> tuple[complex, ...]:
 
     Parameters
     ----------
-    val : bytes
+    val
         Values to parse.
 
     Returns
     -------
-    tuple[complex, ...]
+    :
         Parsed value or list of values.
 
     Examples
@@ -300,12 +300,12 @@ def _parse_str_bytes(val: bytes) -> tuple[str, ...]:
 
     Parameters
     ----------
-    val : bytes
+    val
         Values to parse.
 
     Returns
     -------
-    complex | Sequence[complex]
+    :
         Parsed value or list of values.
 
     Examples
@@ -343,14 +343,14 @@ def parse_bytes(data_in, typ):
 
     Parameters
     ----------
-    data_in : bytes
+    data_in
         Data to convert.
-    typ : type | tuple[type, "..."]
+    typ
         Type to convert to.
 
     Returns
     -------
-    T or tuple[T, ...]
+    :
         Processed value.
 
     Raises
@@ -398,14 +398,14 @@ def to_type(data_in, typ):
 
     Parameters
     ----------
-    data_in : str or ~collections.abc.Sequence
+    data_in
         Data to convert.
-    typ : type
+    typ
         Type to convert to.
 
     Returns
     -------
-    `typ` or tuple[`typ`, ...]
+    :
         Converted data.
     """
     match data_in:

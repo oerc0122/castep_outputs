@@ -15,7 +15,7 @@ class FortranBinaryReader:
 
     Parameters
     ----------
-    file : BinaryIO
+    file
         Open file to get binary data from.
 
     Yields
@@ -62,7 +62,7 @@ class FortranBinaryReader:
 
         Parameters
         ----------
-        n : int
+        n
             How many elements to rewind.
         """
         self.skip(-n)
@@ -72,7 +72,7 @@ class FortranBinaryReader:
 
         Parameters
         ----------
-        n : int
+        n
             Number of elements to skip.
         """
         if n == 0:
@@ -102,12 +102,12 @@ class FortranBinaryReader:
 
         Parameters
         ----------
-        typ : type[T]
+        typ
             Type to retrieve.
 
         Returns
         -------
-        T
+        :
             Value as type.
         """
         return parse_bytes(next(self), typ)
@@ -130,7 +130,7 @@ class FortranBinaryReader:
 
         Parameters
         ----------
-        dtypes : tuple[type[T], ...]
+        dtypes
             Dtypes to load simultaneously.
 
         Yields
@@ -155,7 +155,7 @@ class FortranBinaryReader:
 
         Parameters
         ----------
-        dtypes : Iterable[type[T]]
+        dtypes
             Types of data to read.
 
         Yields
@@ -180,12 +180,12 @@ class FortranBinaryReader:
 
         Parameters
         ----------
-        dtypes : dict[K, type[T]]
+        dtypes
             Dictionary mapping key names to dtype to read.
 
         Returns
         -------
-        dict[K, T]
+        :
             Loaded data.
         """
         return {

@@ -31,7 +31,7 @@ class AtomLabel(NamedTuple):
 
         Returns
         -------
-        AtomLabel
+        :
             Processed string.
         """
         return cls(**get_atom_parts(string))

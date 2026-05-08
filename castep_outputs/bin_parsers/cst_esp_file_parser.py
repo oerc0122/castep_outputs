@@ -29,12 +29,12 @@ def parse_cst_esp_file(cst_esp_file: BinaryIO) -> ESPData:
 
     Parameters
     ----------
-    cst_esp_file : BinaryIO
+    cst_esp_file
         File to parse.
 
     Returns
     -------
-    ESPData
+    :
         Parsed data.
     """
     dtypes = {"n_spins": int, "grid": (int, ...)}

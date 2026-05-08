@@ -132,16 +132,16 @@ def get_spectral_files(
 
     Parameters
     ----------
-    param_data : CellParamData
+    param_data
         Dict containing parameters.
-    seedname : str
+    seedname
         Current seedname.
-    is_nlxc : bool
+    is_nlxc
         Whether XC functional is non-local.
 
     Returns
     -------
-    set[str]
+    :
         Files generated in spectral task.
 
     Raises
@@ -214,12 +214,12 @@ def get_xc_info(param_data: CellParamData) -> set[str]:
 
     Parameters
     ----------
-    param_data : CellParamData
+    param_data
         Param file data containing functional definition.
 
     Returns
     -------
-    set[str]
+    :
         Active xc functionals.
 
     Examples
@@ -267,20 +267,20 @@ def get_generated_files(
 
     Parameters
     ----------
-    seedname : Path | str, optional
+    seedname
         Seedname of files to parse.
-    param_file : Path | str, optional
+    param_file
         Param file to parse.
-    cell_file : Path | str, optional
+    cell_file
         Cell file to parse.
-    param_data : CellParamData, optional
+    param_data
         Pre-parsed param file.
-    cell_data : CellParamData, optional
+    cell_data
         Pre-parsed cell file.
 
     Returns
     -------
-    list[str]
+    :
         Files which would be produced.
 
     Notes

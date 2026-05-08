@@ -27,7 +27,7 @@ def parse_err_file(err_file: TextIO) -> ErrFileInfo:
 
     Returns
     -------
-    ErrFileInfo
+    :
         Parsed info.
     """
     accum: ErrFileInfo = {"message": "", "stack": []}

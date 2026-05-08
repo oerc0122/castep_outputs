@@ -23,7 +23,7 @@ class MDGeomParser:
 
     Parameters
     ----------
-    md_geom_file : Path or str
+    md_geom_file
         File to parse.
     """
 
@@ -83,12 +83,12 @@ While iteration should work, extracting particular frames may not.
 
         Parameters
         ----------
-        frame : int
+        frame
             Frame to compute.
 
         Returns
         -------
-        int
+        :
             Position in bytes into file to get given frame.
         """
         return self._start + (self._frame_bytes * frame)
@@ -105,12 +105,12 @@ While iteration should work, extracting particular frames may not.
 
         Parameters
         ----------
-        frame : int
+        frame
             Frame to retrieve.
 
         Returns
         -------
-        MDGeomTimestepInfo
+        :
             Parsed frame.
 
         Raises
@@ -134,7 +134,7 @@ While iteration should work, extracting particular frames may not.
 
         Returns
         -------
-        int
+        :
             Number of frames.
         """
         return self._len
@@ -161,7 +161,7 @@ While iteration should work, extracting particular frames may not.
 
         Returns
         -------
-        MDGeomTimestepInfo
+        :
             Information about the next frame.
 
         Raises
@@ -185,12 +185,12 @@ While iteration should work, extracting particular frames may not.
 
         Parameters
         ----------
-        frame : int or Iterable or slice
+        frame
             Frame(s) to extract.
 
         Returns
         -------
-        list[MDGeomTimestepInfo] or MDGeomTimestepInfo
+        :
             Requested frames.
         """
         raise NotImplementedError(f"Can't get {frame}th frame.")

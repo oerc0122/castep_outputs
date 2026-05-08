@@ -179,7 +179,7 @@ def parse_castep_file(castep_file_in: TextIO,
 
     Returns
     -------
-    list[dict[str, Any]]
+    :
         Parsed data.
 
     Raises
@@ -1475,12 +1475,12 @@ def _process_hirshfeld(block: Block) -> dict[AtomIndex, float]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    dict[AtomIndex, float]
+    :
         Hirshfeld charges.
     """
     return {
@@ -1494,12 +1494,12 @@ def _process_thermodynamics(block: Block) -> Thermodynamics:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    Thermodynamics
+    :
         Thermodynamics data.
     """
     accum: Thermodynamics = defaultdict(list)
@@ -1522,12 +1522,12 @@ def _process_atom_disp(block: Block) -> dict[str, dict[AtomIndex, SixVector]]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    dict[str, dict[AtomIndex, SixVector]]
+    :
         Atom displacements information.
     """
     accum: dict[str, dict[AtomIndex, SixVector]] = defaultdict(dict)
@@ -1548,9 +1548,9 @@ def _process_3_6_matrix(
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
-    split : bool
+    split
         Whether to try to split 3x6 values into two 3x3 matrices.
 
     Returns
@@ -1611,12 +1611,12 @@ def _process_params(block: Block) -> dict[str, dict[str, str | tuple[Any, ...]]]
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    dict[str, dict[str, str | tuple[Any, ...]]]
+    :
         Parsed info.
     """
     opt: dict[str, Any] = {}
@@ -1812,12 +1812,12 @@ def _process_initial_spins(block: Block) -> dict[AtomIndex, InitialSpin]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    dict[AtomIndex, InitialSpin]
+    :
         Parsed info.
     """
     accum: dict[AtomIndex, InitialSpin] = {}
@@ -1838,12 +1838,12 @@ def _process_born(block: Block) -> dict[AtomIndex, ThreeByThreeMatrix]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    dict[AtomIndex, ThreeByThreeMatrix]
+    :
         Parsed info.
     """
     born_accum = {}
@@ -1865,12 +1865,12 @@ def _process_raman(block: Block) -> list[RamanReport]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    list[RamanReport]
+    :
         Parsed info.
     """
     next(block)  # Skip first captured line
@@ -1911,12 +1911,12 @@ def _process_mulliken(block: Block) -> dict[AtomIndex, MullikenInfo]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    dict[AtomIndex, MullikenInfo]
+    :
         Parsed info.
 
     Raises
@@ -1961,12 +1961,12 @@ def _process_band_structure(block: Block) -> list[BandStructure]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to parse.
 
     Returns
     -------
-    list[BandStructure]
+    :
         Parsed info.
     """
     def fdt(qdat: dict) -> None:
@@ -2006,12 +2006,12 @@ def _process_qdata(qdata: dict[str, str | list[str]]) -> QData:
 
     Parameters
     ----------
-    qdata : dict[str, str | list[str]]
+    qdata
         Dictionary containing q-data.
 
     Returns
     -------
-    QData
+    :
         Corrected q-data
     """
     qdata = {key: val
@@ -2033,14 +2033,14 @@ def _parse_magres_block(task: int, inp: Block) -> dict[str | AtomIndex,
 
     Parameters
     ----------
-    task : int
+    task
         Current magres task.
-    inp : Block
+    inp
         Block to parse.
 
     Returns
     -------
-    dict[str | AtomIndex, str | dict[str, float | None]]
+    :
         Parsed info.
     """
     data: dict[str | AtomIndex, str | dict[str, float | None]] = {}
@@ -2727,7 +2727,7 @@ def _process_delta_scf(block: Block) -> DeltaSCFReport:
 
     Returns
     -------
-    DeltaSCFReport
+    :
         Processed data.
     """
     accum: DeltaSCFReport = {"states": []}

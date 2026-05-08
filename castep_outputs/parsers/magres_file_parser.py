@@ -79,7 +79,7 @@ def parse_magres_file(magres_file: TextIO) -> MagresInfo:
 
     Returns
     -------
-    MagresInfo
+    :
         Parsed info.
     """
     # pylint: disable=too-many-branches
@@ -111,12 +111,12 @@ def _process_calculation_block(block: Block) -> dict[str, str]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to process
 
     Returns
     -------
-    dict[str, str]
+    :
         Processed data.
     """
     calc = {}
@@ -137,12 +137,12 @@ def _process_atoms_block(block: Block) -> dict[AtomIndex, ThreeVector]:
 
     Parameters
     ----------
-    block : Block
+    block
         Block to process
 
     Returns
     -------
-    dict[str, str]
+    :
         Processed data.
     """
     accum = {"units": {}, "coords": {}}
@@ -167,12 +167,12 @@ def _process_magres_block(block: Block, version: int) -> dict[str, str | ThreeBy
 
     Parameters
     ----------
-    block : Block
+    block
         Block to process
 
     Returns
     -------
-    dict[str, str]
+    :
         Processed data.
     """
     accum = defaultdict(dict)
@@ -225,7 +225,7 @@ def _process_magres_old_block(
 
     Parameters
     ----------
-    block : Block
+    block
         Block to process.
 
     Returns

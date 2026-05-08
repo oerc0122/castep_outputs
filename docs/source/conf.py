@@ -23,10 +23,28 @@ extensions = [
     "sphinx.ext.viewcode",
     "sphinx.ext.doctest",
     "sphinxarg.ext",
-    "sphinx_autodoc_typehints",
     "sphinxcontrib.bibtex",
     "myst_nb",
 ]
+
+autodoc_typehints = "description"
+autodoc_default_options = {
+    "members": True,
+    "inherited-members": False,
+    "private-members": False,
+    "show-inheritance": True,
+}
+autodoc_type_aliases = {
+    "AtomIndex": "castep_outputs.utilities.datatypes.AtomIndex",
+    "ThreeVector": "castep_outputs.utilities.datatypes.ThreeVector",
+    "SixVector": "castep_outputs.utilities.datatypes.SixVector",
+    "ThreeByThreeMatrix": "castep_outputs.utilities.datatypes.ThreeByThreeMatrix",
+    "AtomPropBlock": "castep_outputs.utilities.datatypes.AtomPropBlock",
+}
+autodoc_member_order = "groupwise"
+
+autosummary_generate = True
+autoclass_content = "both"
 
 templates_path = ["_templates"]
 exclude_patterns = ["example_data/*"]
@@ -36,22 +54,6 @@ bibtex_bibfiles = ["references.bib"]
 add_module_names = True
 napoleon_include_special_with_doc = True
 napoleon_use_param = True
-autosummary_generate = True
-autoclass_content = "both"
-autodoc_default_options = {
-    "members": True,
-    "inherited-members": False,
-    "private-members": False,
-    "show-inheritance": True,
-}
-
-autodoc_type_aliases = {
-    "AtomIndex": "castep_outputs.utilities.datatypes.AtomIndex",
-    "ThreeVector": "castep_outputs.utilities.datatypes.ThreeVector",
-    "SixVector": "castep_outputs.utilities.datatypes.SixVector",
-    "ThreeByThreeMatrix": "castep_outputs.utilities.datatypes.ThreeByThreeMatrix",
-    "AtomPropBlock": "castep_outputs.utilities.datatypes.AtomPropBlock",
-}
 intersphinx_mapping = {
     "python": ("https://docs.python.org/3/", None),
 }

@@ -63,7 +63,7 @@ class FileWrapper:
 
         Returns
         -------
-        ~typing.TextIO
+        :
             Underlying file.
         """
         return self._file
@@ -75,7 +75,7 @@ class FileWrapper:
 
         Returns
         -------
-        int
+        :
             Current line number in file.
         """
         return self._lineno
@@ -87,7 +87,7 @@ class FileWrapper:
 
         Returns
         -------
-        str
+        :
             Name if name is known otherwise "unknown".
         """
         return self.file.name if hasattr(self.file, "name") else "unknown"
@@ -97,7 +97,7 @@ class FileWrapper:
 
         Returns
         -------
-        int
+        :
             Position of file.
         """
         return self.file.tell()
@@ -136,7 +136,7 @@ class Block:
         n_lines: int,
         *,
         eof_possible: bool = False,
-    ) -> Block:
+    ) -> Self:
         r"""
         Read the next `n_lines` from `in_file` and return the block.
 
@@ -149,7 +149,7 @@ class Block:
 
         Returns
         -------
-        Block
+        :
             Read data.
 
         Raises
@@ -193,7 +193,7 @@ class Block:
         *,
         n_end: int = 1,
         eof_possible: bool = False,
-    ) -> Block:
+    ) -> Self:
         """
         Check if line is the start of a block and return the block if it is.
 
@@ -214,7 +214,7 @@ class Block:
 
         Returns
         -------
-        Block
+        :
             Recovered block of data matching prereqs.
 
         Raises
@@ -267,7 +267,7 @@ class Block:
 
         Returns
         -------
-        Self
+        :
             Block from an iterable.
 
         Examples
@@ -305,7 +305,7 @@ class Block:
 
         Returns
         -------
-        ~io.StringIO
+        :
             Block data as StringIO
         """
         return StringIO(str(self))
@@ -316,7 +316,7 @@ class Block:
 
         Returns
         -------
-        list[str]
+        :
             Block as list of lines.
         """
         return list(self._data)
@@ -372,7 +372,7 @@ class Block:
 
         Returns
         -------
-        str
+        :
             Name if name is known otherwise "unknown".
         """
         return self._name
@@ -384,7 +384,7 @@ class Block:
 
         Returns
         -------
-        int
+        :
             Current line number in file.
         """
         return self._lineno + self._i

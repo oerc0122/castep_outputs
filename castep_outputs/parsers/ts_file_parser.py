@@ -63,7 +63,7 @@ def parse_ts_file(ts_file: TextIO) -> TSFileInfo:
 
     Returns
     -------
-    TSFileInfo
+    :
         Parsed info.
     """
     accum = defaultdict(list)

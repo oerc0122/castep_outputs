@@ -73,7 +73,7 @@ def parse_phonon_dos_file(phonon_dos_file: TextIO) -> PhononDosFileInfo:
 
     Returns
     -------
-    PhononDosFileInfo
+    :
         Parsed info.
     """
     # pylint: disable=too-many-branches,redefined-outer-name

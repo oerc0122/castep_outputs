@@ -52,7 +52,7 @@ def parse_tddft_file(tddft_file: TextIO) -> TDDFTFileInfo:
 
     Returns
     -------
-    TDDFTFileInfo
+    :
         Parsed info.
     """
     tddft_info = {}

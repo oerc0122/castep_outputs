@@ -52,7 +52,7 @@ def parse_phonon_file(phonon_file: TextIO) -> PhononFileInfo:
 
     Returns
     -------
-    PhononFileInfo
+    :
         Parsed data.
 
     Raises
