@@ -4,12 +4,16 @@ from __future__ import annotations
 from collections.abc import Callable
 
 from .cst_esp_file_parser import parse_cst_esp_file
+from .dome_bin_file_parser import parse_dome_bin_file
 from .epme_bin_parser import parse_epme_bin_file
+from .ome_bin_file_parser import parse_ome_bin_file
 
 #: Dictionary of available parsers.
 PARSERS: dict[str, Callable] = {
     "cst_esp": parse_cst_esp_file,
     "epme_bin": parse_epme_bin_file,
+    "dome_bin": parse_dome_bin_file,
+    "ome_bin": parse_ome_bin_file,
 }
 
 #: Names of parsers/parsable file extensions (without ``"."``).

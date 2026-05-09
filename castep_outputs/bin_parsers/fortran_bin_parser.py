@@ -161,12 +161,15 @@ class FortranBinaryReader:
         """
         ind = count() if n is None else range(n)
 
-        if isinstance(dtypes, dict):
-            for _ in ind:
-                yield self.get_dtype_dict(dtypes)
-        else:
-            for _ in ind:
-                yield tuple(self.get_dtype_iter(dtypes))
+        try:
+            if isinstance(dtypes, dict):
+                for _ in ind:
+                    yield self.get_dtype_dict(dtypes)
+            else:
+                for _ in ind:
+                    yield tuple(self.get_dtype_iter(dtypes))
+        except RuntimeError:
+            return
 
     @overload
     def get_dtype_iter(self, dtypes: Iterable[type[T]]) -> Iterator[T]: ...
