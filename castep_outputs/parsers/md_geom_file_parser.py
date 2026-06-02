@@ -108,12 +108,12 @@ def parse_md_geom_frame(block: Block) -> MDGeomTimestepInfo:
     return curr
 
 
-def parse_header(md_geom_file: TextIO | FileWrapper | Block) -> str:
+def parse_header(md_geom_file: FileWrapper | Block) -> str:
     """Parse header of md/geom file.
 
     Parameters
     ----------
-    md_geom_file : TextIO
+    md_geom_file : FileWrapper | Block
         File to parse.
 
     Returns
@@ -131,16 +131,19 @@ def parse_header(md_geom_file: TextIO | FileWrapper | Block) -> str:
     if block := Block.from_re(line, md_geom_file, "BEGIN header", "END header"):
         block.remove_bounds(1, 1)
         comment = str(block).strip()
-        next(md_geom_file)
+
+        if next(md_geom_file).strip():  # If we don't have blank line go back.
+            md_geom_file.rewind()       # Otherwise skip it.
     else:
         comment = ""
         logger("Non-standard md/geom file: missing header.", level="warning")
+        md_geom_file.rewind()
 
     return comment
 
 
 @file_or_path(mode="r")
-def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
+def parse_md_geom_file(md_geom_file: TextIO | FileWrapper | Block) -> list[MDGeomTimestepInfo]:
     """
     Parse standard .md and .geom files.
 
@@ -160,6 +163,9 @@ def parse_md_geom_file(md_geom_file: TextIO) -> list[MDGeomTimestepInfo]:
         Potentially invalid MD/Geom file provided.
     """
     logger = log_factory(md_geom_file)
+
+    if not isinstance(md_geom_file, (FileWrapper, Block)):
+        md_geom_file = FileWrapper(md_geom_file)
 
     # Comment currently discarded due to output format.
     _comment = parse_header(md_geom_file)
