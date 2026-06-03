@@ -165,7 +165,7 @@ class Filters(Flag):
 
 
 @file_or_path(mode="r")
-def parse_castep_file(castep_file_in: TextIO,
+def parse_castep_file(castep_file_in: TextIO | FileWrapper | Block,
                       filters: Filters = Filters.HIGH) -> list[dict[str, Any]]:
     """
     Parse castep file into lists of dicts ready to JSONise.
