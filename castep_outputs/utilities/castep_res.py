@@ -570,7 +570,7 @@ MAGRES_TASK = (
 # Regexp to identify block in .phonon or .phonon_dos file
 FRACCOORDS_RE = re.compile(
     rf"\s*(?P<index>{INTNUMBER_RE}){labelled_floats(('u', 'v', 'w'))}"
-    rf"\s*(?P<spec>{SPECIES_RE}){labelled_floats(('mass',))}",
+    rf"\s*(?P<spec>{ATOM_NAME_RE}){labelled_floats(('mass',))}",
 )
 
 PHONON_PHONON_RE = re.compile(
