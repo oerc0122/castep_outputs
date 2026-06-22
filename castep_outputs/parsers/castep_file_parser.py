@@ -22,6 +22,7 @@ from castep_outputs.parsers.cell_param_file_parser import (
 )
 from castep_outputs.parsers.efield_file_parser import parse_efield_file
 from castep_outputs.parsers.elastic_file_parser import parse_elastic_file
+from castep_outputs.parsers.err_file_parser import parse_err_file
 from castep_outputs.parsers.hug_file_parser import parse_hug_file
 from castep_outputs.parsers.parse_fmt_files import (
     parse_chdiff_fmt_file,
@@ -1388,6 +1389,26 @@ def parse_castep_file(castep_file_in: TextIO | FileWrapper | Block,
             block.remove_bounds(1, 1)
 
             val = PARSERS[key](block)
+            curr_run["external_files"][key] = val
+
+        elif block := Block.from_re(  # Special case for err block (0001.err)
+            line, castep_file,
+            r"<BEGIN \d+\.err>",
+            r"<END \d+\.err>",
+        ):
+
+            if Filters.TEST_EXTRA_DATA not in to_parse:
+                continue
+
+            key = "err"
+
+            logger("Found %s block", key)
+
+            curr_run.setdefault("external_files", {})
+
+            block.remove_bounds(1, 1)
+
+            val = parse_err_file(block)
             curr_run["external_files"][key] = val
 
     if curr_run:
