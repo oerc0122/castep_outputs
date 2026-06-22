@@ -628,7 +628,7 @@ def get_only(seq: Sequence[T]) -> T:
     return val
 
 
-def file_or_path(*, mode: Literal["r", "rb"], **open_kwargs: Any) -> Callable:
+def file_or_path(*, mode: Literal["r", "rb", "w", "wb"], **open_kwargs: Any) -> Callable:
     """Decorate to allow a parser to accept either a path or open file.
 
     Parameters
