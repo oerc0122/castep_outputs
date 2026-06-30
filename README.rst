@@ -1,7 +1,7 @@
 castep_outputs
 ==============
 
-.. image:: https://img.shields.io/badge/version-0.3.3-blue
+.. image:: https://img.shields.io/badge/version-0.3.4-blue
    :alt: Version
 
 Parser for CASTEP output files
