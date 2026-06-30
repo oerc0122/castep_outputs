@@ -2,7 +2,7 @@ branches: 6
 coords:
   index: [1, 2]
   mass: [10.811, 14.00674]
-  spec: [B, N]
+  spec: [B, 'N:Tag']
   u: [0.0, 0.25]
   v: [0.0, 0.25]
   w: [0.0, 0.25]
