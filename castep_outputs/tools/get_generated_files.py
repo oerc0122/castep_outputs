@@ -162,29 +162,25 @@ def get_spectral_files(
 
     if param_data.get("write_orbitals") or raw_task == "BANDSTRUCTURE":
         out_files.add(f"{seedname}.orbitals")
-    if spectral_theory is SpectralTheory.TDDFT:
-        if spectral_task is SpectralTask.OPTICS:
+
+    match (spectral_theory, spectral_task):
+        case (SpectralTheory.TDDFT, SpectralTask.OPTICS):
             spec_calc = {"elnes": False, "ome": False, "dome": True}
-        elif spectral_task in {SpectralTask.DOS, SpectralTask.BANDSTRUCTURE}:
+        case (SpectralTheory.TDDFT, SpectralTask.DOS | SpectralTask.BANDSTRUCTURE):
             spec_calc = {"elnes": False, "ome": False, "dome": False}
-        elif spectral_task is SpectralTask.ALL:
+        case (SpectralTheory.TDDFT, SpectralTask.ALL):
             spec_calc = {"elnes": False, "ome": False, "dome": True}
-        else:
-            raise KeyError("Invalid param file")
-    else:  # noqa: PLR5501
-        if spectral_task is SpectralTask.CORELOSS:
-            if is_nlxc:
-                raise KeyError("Invalid param file")
+        case (SpectralTheory.DFT, SpectralTask.CORELOSS) if not is_nlxc:
             spec_calc = {"elnes": True, "ome": True, "dome": False}
-        elif spectral_task is SpectralTask.OPTICS:
+        case (SpectralTheory.DFT, SpectralTask.OPTICS):
             spec_calc = {"elnes": False, "ome": False, "dome": True}
-        elif spectral_task is SpectralTask.DOS:
+        case (SpectralTheory.DFT, SpectralTask.DOS):
             spec_calc = {"elnes": False, "ome": not is_nlxc, "dome": False}
-        elif spectral_task is SpectralTask.BANDSTRUCTURE:
+        case (SpectralTheory.DFT, SpectralTask.BANDSTRUCTURE):
             spec_calc = {"elnes": False, "ome": False, "dome": False}
-        elif spectral_task is SpectralTask.ALL:
+        case (SpectralTheory.DFT, SpectralTask.ALL):
             spec_calc = {"elnes": not is_nlxc, "ome": not is_nlxc, "dome": not is_nlxc}
-        else:
+        case _:
             raise KeyError("Invalid param file")
 
     spectral_devel = devel_code.get("spectral", {})

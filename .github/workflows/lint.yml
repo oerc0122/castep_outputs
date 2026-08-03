@@ -11,7 +11,7 @@ jobs:
       with:
         src: "./castep_outputs"
         args: "check"
-        version: "0.15.10"
+        version: "0.16.1"
 
   readme:
     runs-on: ubuntu-latest

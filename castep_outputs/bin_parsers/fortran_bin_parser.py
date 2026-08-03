@@ -3,7 +3,7 @@
 from collections.abc import Iterable, Iterator, Mapping
 from itertools import count
 from os import SEEK_CUR
-from typing import BinaryIO, TypeVar, overload
+from typing import Any, BinaryIO, TypeVar, overload
 
 from castep_outputs.utilities.type_conv import ToTypeTuple, parse_bytes
 
@@ -138,7 +138,7 @@ class FortranBinaryReader:
         dtypes: Mapping[K, type[T] | ToTypeTuple],
     ) -> Iterator[dict[K, T | tuple[T, ...]]]: ...
     @overload
-    def get_dtype_cycle(self, _, *, n: int | None = None): ...  # noqa: ANN201, ANN001
+    def get_dtype_cycle(self, _: Any, *, n: int | None = None) -> Iterator: ...
     def get_dtype_cycle(self, dtypes, *, n=None):
         """Get iterator over values reading dtypes each cycle.
 
