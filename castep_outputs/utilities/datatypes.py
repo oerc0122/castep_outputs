@@ -221,6 +221,8 @@ class QData(TypedDict, total=False):
     raman_active: tuple[Literal["Y", "N"], ...]
     #: Raman intensities.
     raman_intensity: tuple[float, ...]
+    #: LO-Shifted
+    lo_shifted: tuple[Literal["LO"] | None, ...]
 
 
 class PhononSymmetryReport(TypedDict):
