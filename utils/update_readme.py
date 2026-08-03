@@ -1,3 +1,6 @@
+"""Script to update readme."""
+# ruff: file-ignore[print]
+
 import os
 import sys
 from difflib import unified_diff
