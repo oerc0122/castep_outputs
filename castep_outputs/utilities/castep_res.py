@@ -453,6 +453,7 @@ PROCESS_PHONON_RE = re.compile(
     (?P<N>\d+)\s+
     (?P<frequency>{FNUMBER_RE})\s*
     (?P<irrep>[a-zA-V])?\s*
+    (?P<lo_shifted>LO)?\s*
     (?P<ir_intensity>{FNUMBER_RE})?\s*
     (?P<ir_active>[YN])?\s*
     (?P<raman_intensity>{FNUMBER_RE})?\s*
