@@ -34,6 +34,7 @@ from castep_outputs.parsers.phonon_dos_file_parser import parse_phonon_dos_file
 from castep_outputs.parsers.xrd_sf_file_parser import parse_xrd_sf_file
 from castep_outputs.utilities import castep_res as REs
 from castep_outputs.utilities.castep_res import gen_table_re, get_numbers, labelled_floats
+from castep_outputs.utilities.compat import is_not_none
 from castep_outputs.utilities.constants import SHELLS
 from castep_outputs.utilities.datatypes import (
     AtomIndex,
@@ -84,6 +85,7 @@ from castep_outputs.utilities.utility import (
     Logger,
     add_aliases,
     atreg_to_index,
+    deep,
     file_or_path,
     get_only,
     log_factory,
@@ -2042,6 +2044,7 @@ def _process_qdata(qdata: dict[str, str | list[str]]) -> QData:
                    {"qpt": float,
                     "N": int,
                     "frequency": float,
+                    "lo_shifted": deep(is_not_none),
                     "ir_intensity": float,
                     "raman_intensity": float,
                     })
