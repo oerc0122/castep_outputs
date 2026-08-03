@@ -678,7 +678,91 @@ def filter_underscore(x: Mapping[str, T], /) -> dict[str, T]:
     >>> filter_underscore(x)
     {'other': 2}
     """
-    return {
-        key: val for key, val in x.items()
-        if not key.startswith("_")
-    }
+    return {key: val for key, val in x.items() if not key.startswith("_")}
+
+
+DFunc: TypeAlias = Callable[Concatenate[In, P], Out]
+
+
+@singledispatch
+def applydeep(datum: In, f: DFunc, *args: P.args, **kwargs: P.kwargs) -> Out:
+    """Apply function recursing into structure.
+
+    Parameters
+    ----------
+    datum : In | Mapping[K, In] | Sequence[In]
+        Data to apply to.
+    f : Callable[[In, P], Out]
+        Function to apply.
+
+    Returns
+    -------
+    Out | dict[K, Out] | tuple[Out, ...]
+        Transformed data.
+
+    Examples
+    --------
+    >>> add_one = lambda x: x + 1
+    >>> applydeep(1, add_one)
+    2
+    >>> applydeep([1, 2, 3], add_one)
+    (2, 3, 4)
+    >>> applydeep({"a": 1, "b": 2}, add_one)
+    {'a': 2, 'b': 3}
+    """
+    return f(datum, *args, **kwargs)
+
+
+@applydeep.register(str)
+def _(datum: str, f: DFunc, *args: P.args, **kwargs: P.kwargs) -> Out:
+    return f(datum, *args, **kwargs)
+
+
+@applydeep.register(Iterable)
+def _(datum: Iterable[In], f: DFunc, *args: P.args, **kwargs: P.kwargs) -> tuple[Out, ...]:
+    return tuple(applydeep(x, f, *args, **kwargs) for x in datum)
+
+
+@applydeep.register(Mapping)
+def _(datum: Mapping[K, In], f: DFunc, *args: P.args, **kwargs: P.kwargs) -> dict[K, Out]:
+    return {key: applydeep(val, f, *args, **kwargs) for key, val in datum.items()}
+
+
+def deep(
+    f: DFunc,
+    *args: P.args,
+    **kwargs: P.kwargs,
+) -> Callable[[In | Mapping[K, In] | Iterable[In]], Out]:
+    """Decorator/wrapper for deep functions.
+
+    Parameters
+    ----------
+    f : DFunc
+        Function to apply.
+
+    Returns
+    -------
+    Callable[[In | Mapping[K, In] | Iterable[In]], Out]
+        Deep function.
+
+    See Also
+    --------
+    applydeep : Core function mapping deep.
+
+    Examples
+    --------
+    >>> add_one = lambda x: x + 1
+    >>> func = deep(add_one)
+    >>> func(1)
+    2
+    >>> func([1, 2, 3])
+    (2, 3, 4)
+    >>> func({"a": 1, "b": 2})
+    {'a': 2, 'b': 3}
+    """
+
+    @wraps(f)
+    def inner(datum: In | Mapping[K, In] | Iterable[In]) -> Out:
+        return applydeep(datum, f, *args, **kwargs)
+
+    return inner

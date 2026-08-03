@@ -20,7 +20,10 @@ U = TypeVar("U")
 K = TypeVar("K")
 
 
-def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]) -> None:
+def fix_data_types(
+    in_dict: MutableMapping[str, Any],
+    type_dict: dict[str, type | Callable],
+) -> None:
     """
     Apply correct types to elements of `in_dict` by mapping given in `type_dict`.
 
@@ -43,14 +46,25 @@ def fix_data_types(in_dict: MutableMapping[str, Any], type_dict: dict[str, type]
     --------
     >>> my_dict = {"int": "7", "float": "3.141", "bool": "T",
     ...            "vector": ["3", "4", "5"], "blank": "Hello"}
-    >>> type_map = {"int": int, "float": float, "bool": bool, "vector": float}
+    >>> type_map = {"int": int, "float": float, "bool": bool,
+    ...             "vector": float}
     >>> fix_data_types(my_dict, type_map)
     >>> print(my_dict)
     {'int': 7, 'float': 3.141, 'bool': True, 'vector': (3.0, 4.0, 5.0), 'blank': 'Hello'}
+
+    You can also pass functions:
+    >>> from castep_outputs.utilities.compat import is_not_none
+    >>> my_dict = {"null": None, "full": 1}
+    >>> fix_data_types(my_dict, {"null": is_not_none, "full": is_not_none})
+    >>> print(my_dict)
+    {'null': False, 'full': True}
     """
-    for key, typ in type_dict.items():
+    for key, conv in type_dict.items():
         if key in in_dict:
-            in_dict[key] = to_type(in_dict[key], typ)
+            if isinstance(conv, type):
+                in_dict[key] = to_type(in_dict[key], conv)
+            else:
+                in_dict[key] = conv(in_dict[key])
 
 
 def determine_type(data: str) -> type:
