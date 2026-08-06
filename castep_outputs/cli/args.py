@@ -44,6 +44,8 @@ def get_parser() -> argparse.ArgumentParser:
 
     arg_parser.add_argument("-t", "--testing", action="store_true",
                             help="Set testing mode to produce flat outputs")
+    arg_parser.add_argument("-m", "--always-filename", action="store_true",
+                            help="Always output dict{filename: data}")
 
     arg_parser.add_argument("-A", "--inc-all", action="store_true",
                             help="Extract all available information")
