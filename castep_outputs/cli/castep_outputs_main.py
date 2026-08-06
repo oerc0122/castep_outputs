@@ -101,6 +101,7 @@ def parse_all(
         *,
         loglevel: int = logging.WARNING,
         testing: bool = False,
+        always_dict: bool = False,
         **files: Sequence[Path],
 ) -> None:
     """
@@ -127,7 +128,7 @@ def parse_all(
         for path in paths:
             data[path] = parse_single(path, parser, out_format, loglevel=loglevel, testing=testing)
 
-    if len(data) == 1:
+    if not always_dict and len(data) == 1:
         data = data.popitem()[1]
 
     if output is None:
@@ -154,6 +155,7 @@ def run(args: argparse.Namespace) -> None:
               loglevel=getattr(logging, args.log.upper()),
               testing=args.testing,
               out_format=args.out_format,
+              always_dict=args.always_filename,
               **dict_args)
 
 
