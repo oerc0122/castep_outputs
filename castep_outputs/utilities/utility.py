@@ -11,7 +11,7 @@ from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping, Sequence
 from copy import copy
 from functools import singledispatch, wraps
-from itertools import filterfalse
+from itertools import filterfalse, product
 from pathlib import Path
 from typing import (
     IO,
@@ -682,3 +682,24 @@ def filter_underscore(x: Mapping[str, T], /) -> dict[str, T]:
         key: val for key, val in x.items()
         if not key.startswith("_")
     }
+
+
+def mass_product(*ranges: int) -> Iterator[tuple[int, ...]]:
+    """Yield from Cartesian product of [0:n) for each range.
+
+    Parameters
+    ----------
+    *ranges
+        Max values of range.
+
+    Yields
+    ------
+    :
+        Element of cart. prod.
+
+    Examples
+    --------
+    >>> list(mass_product(2, 2))
+    [(0, 0), (0, 1), (1, 0), (1, 1)]
+    """
+    yield from product(*map(range, ranges))
