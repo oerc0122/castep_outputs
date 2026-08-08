@@ -42,7 +42,7 @@ files can be passed using longname arguments. castep_outputs can parse
 most human-readable castep outputs including:
 ``.bands``, ``.castep``, ``.cell``, ``.chdiff_fmt``, ``.cst_esp``, ``.den_fmt``,
 ``.efield``, ``.elastic``, ``.elf_fmt``, ``.epme``, ``.epme_bin``, ``.err``,
-``.geom``, ``.hug``, ``.magres``, ``.md``, ``.param``, ``.phonon``,
+``.geom``, ``.hug``, ``.magres``, ``.md``, ``.param``, ``.pes``, ``.phonon``,
 ``.phonon_dos``, ``.pot_fmt``, ``.tddft``, ``.ts``, ``.xrd_sf``.
 
 to run in basic mode:
@@ -142,6 +142,7 @@ The available parsing functions for parsing the given format are:
  - magres: ``parse_magres_file``
  - geom: ``parse_md_geom_file``
  - md: ``parse_md_geom_file``
+ - pes: ``parse_pes_file``
  - phonon_dos: ``parse_phonon_dos_file``
  - phonon: ``parse_phonon_file``
  - pot_fmt: ``parse_pot_fmt_file``
@@ -167,12 +168,12 @@ Full usage
                          [--inc-elf_fmt] [--inc-chdiff_fmt] [--inc-pot_fmt]
                          [--inc-den_fmt] [--inc-elastic] [--inc-ts]
                          [--inc-magres] [--inc-tddft] [--inc-err]
-                         [--inc-phonon] [--inc-epme] [--inc-cst_esp]
-                         [--inc-epme_bin] [--castep [CASTEP ...]]
-                         [--cell [CELL ...]] [--param [PARAM ...]]
-                         [--geom [GEOM ...]] [--md [MD ...]]
-                         [--bands [BANDS ...]] [--hug [HUG ...]]
-                         [--phonon_dos [PHONON_DOS ...]]
+                         [--inc-phonon] [--inc-epme] [--inc-pes]
+                         [--inc-cst_esp] [--inc-epme_bin]
+                         [--castep [CASTEP ...]] [--cell [CELL ...]]
+                         [--param [PARAM ...]] [--geom [GEOM ...]]
+                         [--md [MD ...]] [--bands [BANDS ...]]
+                         [--hug [HUG ...]] [--phonon_dos [PHONON_DOS ...]]
                          [--efield [EFIELD ...]] [--xrd_sf [XRD_SF ...]]
                          [--elf_fmt [ELF_FMT ...]]
                          [--chdiff_fmt [CHDIFF_FMT ...]]
@@ -180,8 +181,8 @@ Full usage
                          [--elastic [ELASTIC ...]] [--ts [TS ...]]
                          [--magres [MAGRES ...]] [--tddft [TDDFT ...]]
                          [--err [ERR ...]] [--phonon [PHONON ...]]
-                         [--epme [EPME ...]] [--cst_esp [CST_ESP ...]]
-                         [--epme_bin [EPME_BIN ...]]
+                         [--epme [EPME ...]] [--pes [PES ...]]
+                         [--cst_esp [CST_ESP ...]] [--epme_bin [EPME_BIN ...]]
                          ...
 
    Attempts to find all files for seedname, filtered by `inc` args (default:
@@ -189,7 +190,7 @@ Full usage
    can parse most castep outputs including: .castep, .cell, .param, .geom,
    .md, .bands, .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt,
    .pot_fmt, .den_fmt, .elastic, .ts, .magres, .tddft, .err, .phonon, .epme,
-   .cst_esp, .epme_bin
+   .pes, .cst_esp, .epme_bin
 
    positional arguments:
      seedname              Seed name for data
@@ -225,6 +226,7 @@ Full usage
      --inc-err             Extract .err information
      --inc-phonon          Extract .phonon information
      --inc-epme            Extract .epme information
+     --inc-pes             Extract .pes information
      --inc-cst_esp         Extract .cst_esp information
      --inc-epme_bin        Extract .epme_bin information
      --castep [CASTEP ...]
@@ -259,6 +261,7 @@ Full usage
      --phonon [PHONON ...]
                            Extract from PHONON as .phonon type
      --epme [EPME ...]     Extract from EPME as .epme type
+     --pes [PES ...]       Extract from PES as .pes type
      --cst_esp [CST_ESP ...]
                            Extract from CST_ESP as .cst_esp type
      --epme_bin [EPME_BIN ...]
@@ -284,6 +287,7 @@ Current Parsers:
 - ``.magres``
 - ``.md``
 - ``.param``
+- ``.pes``
 - ``.phonon``
 - ``.phonon_dos``
 - ``.pot_fmt``
