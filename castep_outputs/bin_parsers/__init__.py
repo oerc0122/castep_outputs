@@ -5,11 +5,13 @@ from collections.abc import Callable
 
 from .cst_esp_file_parser import parse_cst_esp_file
 from .epme_bin_parser import parse_epme_bin_file
+from .pdos_bin_file_parser import parse_pdos_bin_file
 
 #: Dictionary of available parsers.
 PARSERS: dict[str, Callable] = {
     "cst_esp": parse_cst_esp_file,
     "epme_bin": parse_epme_bin_file,
+    "pdos_bin": parse_pdos_bin_file,
 }
 
 #: Names of parsers/parsable file extensions (without ``"."``).
