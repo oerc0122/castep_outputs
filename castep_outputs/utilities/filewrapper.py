@@ -197,6 +197,14 @@ class Block:
         """
         Check if line is the start of a block and return the block if it is.
 
+        This first checks whether `init_line` matches the `start` pattern:
+        - If it does, it reads the file until `n_end` instances of `end` have
+        been matched.
+        - Otherwise it immediately returns a falsy empty Block.
+
+        If `eof_possible` is `False`, it will raise an error if no more lines
+        exist in `in_file`.
+
         Parameters
         ----------
         init_line
