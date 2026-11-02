@@ -23,10 +23,25 @@ parser = get_parser()
 
 file_formats = fill(", ".join(f"``.{ft}``" for ft in sorted(ALL_NAMES)), width=80)
 
-parse_functions = "\n".join(
-    f" - {fmt}: ``{parser.__name__}``"
+max_cols = (
+    max((len(ft) for ft in ALL_PARSERS), default=len("Filetype")),
+    max((len(fn.__name__) for fn in ALL_PARSERS.values()), default=len("Function")),
+)
+
+hl = f"{'':=<{max_cols[0]}} {'':=<{max_cols[1]}s}"
+col = f"{{:<{max_cols[0]}}} {{:<{max_cols[1]}}}"
+
+parse_functions = f"""\
+{hl}
+{col}
+{hl}
+""".format("Filetype", "Function")
+
+parse_functions += "\n".join(
+    col.format(fmt, parser.__name__)
     for fmt, parser in sorted(ALL_PARSERS.items(), key=lambda x: x[1].__name__)
 )
+parse_functions += "\n" + hl
 
 usage = indent(parser.format_help(), "   ")
 
