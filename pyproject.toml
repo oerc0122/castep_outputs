@@ -10,7 +10,7 @@ requires-python = ">= 3.10"
 readme = "README.rst"
 description = "A package for extracting information from castep outputs"
 keywords = ["castep", "dft", "parser"]
-license = {text = "BSD-3-Clause"}
+license = "BSD-3-Clause"
 
 classifiers = [
   "Development Status :: 4 - Beta",
@@ -19,10 +19,7 @@ classifiers = [
   "Topic :: File Formats :: JSON",
   "Topic :: Scientific/Engineering :: Physics",
 
-  "License :: OSI Approved :: BSD License",
-
   "Programming Language :: Python :: 3",
-  "Programming Language :: Python :: 3.9",
   "Programming Language :: Python :: 3.10",
   "Programming Language :: Python :: 3.11",
   "Programming Language :: Python :: 3.12",
