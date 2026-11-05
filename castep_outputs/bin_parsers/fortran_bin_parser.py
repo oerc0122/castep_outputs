@@ -1,5 +1,7 @@
 """General parser for the Fortran Unformatted file format."""
 
+from __future__ import annotations
+
 from collections.abc import Iterable, Iterator, Mapping
 from itertools import count
 from os import SEEK_CUR

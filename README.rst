@@ -40,10 +40,11 @@ When run as a commandline tool, it attempts to find all files for the
 given seedname, filtered by ``inc`` args (default: all). Explicit
 files can be passed using longname arguments. castep_outputs can parse
 most human-readable castep outputs including:
-``.bands``, ``.castep``, ``.cell``, ``.chdiff_fmt``, ``.cst_esp``, ``.den_fmt``,
-``.efield``, ``.elastic``, ``.elf_fmt``, ``.epme``, ``.epme_bin``, ``.err``,
-``.geom``, ``.hug``, ``.magres``, ``.md``, ``.param``, ``.phonon``,
-``.phonon_dos``, ``.pot_fmt``, ``.tddft``, ``.ts``, ``.xrd_sf``.
+``.bands``, ``.castep``, ``.castep_bin``, ``.cell``, ``.chdiff_fmt``,
+``.check``, ``.cst_esp``, ``.den_fmt``, ``.efield``, ``.elastic``, ``.elf_fmt``,
+``.epme``, ``.epme_bin``, ``.err``, ``.geom``, ``.hug``, ``.magres``, ``.md``,
+``.param``, ``.phonon``, ``.phonon_dos``, ``.pot_fmt``, ``.tddft``, ``.ts``,
+``.xrd_sf``.
 
 to run in basic mode:
 
@@ -130,6 +131,8 @@ The available parsing functions for parsing the given format are:
  - cell: ``parse_cell_param_file``
  - param: ``parse_cell_param_file``
  - chdiff_fmt: ``parse_chdiff_fmt_file``
+ - castep_bin: ``parse_check_castep_bin_file``
+ - check: ``parse_check_castep_bin_file``
  - cst_esp: ``parse_cst_esp_file``
  - den_fmt: ``parse_den_fmt_file``
  - efield: ``parse_efield_file``
@@ -167,12 +170,12 @@ Full usage
                          [--inc-elf_fmt] [--inc-chdiff_fmt] [--inc-pot_fmt]
                          [--inc-den_fmt] [--inc-elastic] [--inc-ts]
                          [--inc-magres] [--inc-tddft] [--inc-err]
-                         [--inc-phonon] [--inc-epme] [--inc-cst_esp]
-                         [--inc-epme_bin] [--castep [CASTEP ...]]
-                         [--cell [CELL ...]] [--param [PARAM ...]]
-                         [--geom [GEOM ...]] [--md [MD ...]]
-                         [--bands [BANDS ...]] [--hug [HUG ...]]
-                         [--phonon_dos [PHONON_DOS ...]]
+                         [--inc-phonon] [--inc-epme] [--inc-castep_bin]
+                         [--inc-check] [--inc-cst_esp] [--inc-epme_bin]
+                         [--castep [CASTEP ...]] [--cell [CELL ...]]
+                         [--param [PARAM ...]] [--geom [GEOM ...]]
+                         [--md [MD ...]] [--bands [BANDS ...]]
+                         [--hug [HUG ...]] [--phonon_dos [PHONON_DOS ...]]
                          [--efield [EFIELD ...]] [--xrd_sf [XRD_SF ...]]
                          [--elf_fmt [ELF_FMT ...]]
                          [--chdiff_fmt [CHDIFF_FMT ...]]
@@ -180,7 +183,8 @@ Full usage
                          [--elastic [ELASTIC ...]] [--ts [TS ...]]
                          [--magres [MAGRES ...]] [--tddft [TDDFT ...]]
                          [--err [ERR ...]] [--phonon [PHONON ...]]
-                         [--epme [EPME ...]] [--cst_esp [CST_ESP ...]]
+                         [--epme [EPME ...]] [--castep_bin [CASTEP_BIN ...]]
+                         [--check [CHECK ...]] [--cst_esp [CST_ESP ...]]
                          [--epme_bin [EPME_BIN ...]]
                          ...
 
@@ -189,7 +193,7 @@ Full usage
    can parse most castep outputs including: .castep, .cell, .param, .geom,
    .md, .bands, .hug, .phonon_dos, .efield, .xrd_sf, .elf_fmt, .chdiff_fmt,
    .pot_fmt, .den_fmt, .elastic, .ts, .magres, .tddft, .err, .phonon, .epme,
-   .cst_esp, .epme_bin
+   .castep_bin, .check, .cst_esp, .epme_bin
 
    positional arguments:
      seedname              Seed name for data
@@ -225,6 +229,8 @@ Full usage
      --inc-err             Extract .err information
      --inc-phonon          Extract .phonon information
      --inc-epme            Extract .epme information
+     --inc-castep_bin      Extract .castep_bin information
+     --inc-check           Extract .check information
      --inc-cst_esp         Extract .cst_esp information
      --inc-epme_bin        Extract .epme_bin information
      --castep [CASTEP ...]
@@ -259,6 +265,9 @@ Full usage
      --phonon [PHONON ...]
                            Extract from PHONON as .phonon type
      --epme [EPME ...]     Extract from EPME as .epme type
+     --castep_bin [CASTEP_BIN ...]
+                           Extract from CASTEP_BIN as .castep_bin type
+     --check [CHECK ...]   Extract from CHECK as .check type
      --cst_esp [CST_ESP ...]
                            Extract from CST_ESP as .cst_esp type
      --epme_bin [EPME_BIN ...]
@@ -269,8 +278,10 @@ Current Parsers:
 
 - ``.bands``
 - ``.castep``
+- ``.castep_bin``
 - ``.cell``
 - ``.chdiff_fmt``
+- ``.check``
 - ``.cst_esp``
 - ``.den_fmt``
 - ``.efield``
