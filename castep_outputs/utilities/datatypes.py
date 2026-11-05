@@ -551,7 +551,7 @@ class PSPotTableInfo(TypedDict, total=False):
     #: Spin quantum number.
     j: int
     #: Angular momentum quantum number.
-    l: int  # noqa: E741
+    l: int  # ruff: ignore[ambiguous-variable-name]
     #: 1=Norm-conserving, 0=Ultrasoft
     norm: Literal[0, 1]
     #: Pseudisation scheme.

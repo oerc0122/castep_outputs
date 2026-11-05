@@ -71,7 +71,7 @@ While iteration should work, extracting particular frames may not.
 
     @property
     def next_frame(self) -> int | None:
-        """Get index of next frame to be read, or None if at file end."""
+        """Index of next frame to be read, or None if at file end."""
         return self._next_frame
 
     def _get_index(self, frame: int) -> int:
