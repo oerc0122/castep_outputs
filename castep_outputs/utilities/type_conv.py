@@ -410,10 +410,15 @@ def to_type(data_in, typ):
     """
     match data_in:
         case str():
-            return _TYPE_PARSERS[typ](data_in)
+            pass
+        case None:
+            return None
         case Mapping():
             return {key: to_type(val, typ) for key, val in data_in.items()}
         case Iterable():
             return tuple(to_type(x, typ) for x in data_in)
-        case _:
-            return data_in
+
+    try:
+        return _TYPE_PARSERS[typ](data_in)
+    except ValueError:
+        return data_in
