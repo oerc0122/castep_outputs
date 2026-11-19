@@ -199,11 +199,10 @@ class Block:
 
         This first checks whether `init_line` matches the `start` pattern:
         - If it does, it reads the file until `n_end` instances of `end` have
-        been matched.
+        been matched, or end-of-file (EOF) is reached.
         - Otherwise it immediately returns a falsy empty Block.
 
-        If `eof_possible` is `False`, it will raise an error if no more lines
-        exist in `in_file`.
+        If `eof_possible` is `False` and EOF was reached, an error is raised.
 
         Parameters
         ----------
