@@ -165,7 +165,7 @@ Full usage
 
    usage: castep_outputs [-h] [-V] [-L {DEBUG,INFO,WARNING,ERROR,CRITICAL}]
                          [-o OUTPUT] [-f {json,ruamel,pyyaml,pprint,print}]
-                         [-t] [-m] [-A] [--inc-castep] [--inc-cell]
+                         [-t] [-s] [-A] [--inc-castep] [--inc-cell]
                          [--inc-param] [--inc-geom] [--inc-md] [--inc-bands]
                          [--inc-hug] [--inc-phonon_dos] [--inc-efield]
                          [--inc-xrd_sf] [--inc-elf_fmt] [--inc-chdiff_fmt]
@@ -207,8 +207,9 @@ Full usage
      -f, --out-format {json,ruamel,pyyaml,pprint,print}
                            Output format
      -t, --testing         Set testing mode to produce flat outputs
-     -m, --always-filename
-                           Always output dict{filename: data}
+     -s, --single-file     Legacy format: doesn't return dict{file: data} for
+                           single files, instead returning data. Still returns
+                           dict for multiple files.
      -A, --inc-all         Extract all available information
      --inc-castep          Extract .castep information
      --inc-cell            Extract .cell information

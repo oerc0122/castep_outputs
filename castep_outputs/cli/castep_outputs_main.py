@@ -101,7 +101,7 @@ def parse_all(
         *,
         loglevel: int = logging.WARNING,
         testing: bool = False,
-        always_dict: bool = False,
+        always_dict: bool = True,
         **files: Sequence[Path],
 ) -> None:
     """
@@ -155,7 +155,7 @@ def run(args: argparse.Namespace) -> None:
               loglevel=getattr(logging, args.log.upper()),
               testing=args.testing,
               out_format=args.out_format,
-              always_dict=args.always_filename,
+              always_dict=not args.single_file,
               **dict_args)
 
 
