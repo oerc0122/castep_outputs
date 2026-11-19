@@ -125,29 +125,33 @@ logging via the `logging
 
 The available parsing functions for parsing the given format are:
 
- - bands: ``parse_bands_file``
- - castep: ``parse_castep_file``
- - cell: ``parse_cell_param_file``
- - param: ``parse_cell_param_file``
- - chdiff_fmt: ``parse_chdiff_fmt_file``
- - cst_esp: ``parse_cst_esp_file``
- - den_fmt: ``parse_den_fmt_file``
- - efield: ``parse_efield_file``
- - elastic: ``parse_elastic_file``
- - elf_fmt: ``parse_elf_fmt_file``
- - epme_bin: ``parse_epme_bin_file``
- - epme: ``parse_epme_file``
- - err: ``parse_err_file``
- - hug: ``parse_hug_file``
- - magres: ``parse_magres_file``
- - geom: ``parse_md_geom_file``
- - md: ``parse_md_geom_file``
- - phonon_dos: ``parse_phonon_dos_file``
- - phonon: ``parse_phonon_file``
- - pot_fmt: ``parse_pot_fmt_file``
- - tddft: ``parse_tddft_file``
- - ts: ``parse_ts_file``
- - xrd_sf: ``parse_xrd_sf_file``
+========== =====================
+Filetype   Function             
+========== =====================
+bands      parse_bands_file     
+castep     parse_castep_file    
+cell       parse_cell_param_file
+param      parse_cell_param_file
+chdiff_fmt parse_chdiff_fmt_file
+cst_esp    parse_cst_esp_file   
+den_fmt    parse_den_fmt_file   
+efield     parse_efield_file    
+elastic    parse_elastic_file   
+elf_fmt    parse_elf_fmt_file   
+epme_bin   parse_epme_bin_file  
+epme       parse_epme_file      
+err        parse_err_file       
+hug        parse_hug_file       
+magres     parse_magres_file    
+geom       parse_md_geom_file   
+md         parse_md_geom_file   
+phonon_dos parse_phonon_dos_file
+phonon     parse_phonon_file    
+pot_fmt    parse_pot_fmt_file   
+tddft      parse_tddft_file     
+ts         parse_ts_file        
+xrd_sf     parse_xrd_sf_file    
+========== =====================
 
 Which return processed ``list``\ s of ``dict``\ s of data ready for use
 in other applications.
