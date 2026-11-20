@@ -9,7 +9,7 @@ import logging
 import re
 from collections import defaultdict
 from collections.abc import Callable, Iterable, Iterator, Mapping, MutableMapping, Sequence
-from copy import copy
+from copy import copy, deepcopy
 from functools import singledispatch, wraps
 from itertools import filterfalse
 from pathlib import Path
@@ -346,13 +346,62 @@ def stack_dict(out_dict: Mapping[Any, list[T]], in_dict: Mapping[Any, T]) -> Non
         out_dict[key].append(val)
 
 
-def add_aliases(
-    in_dict: dict[str, Any],
-    alias_dict: dict[str, str],
-    *,
-    replace: bool = False,
-    inplace: bool = True,
-) -> dict[str, Any]:
+def deep_merge_dict(d1: dict, d2: dict) -> dict:
+    """Recursively merge nested dictionaries.
+
+    Parameters
+    ----------
+    d1 : dict
+        Dict to merge into.
+    d2 : dict
+        Dict to merge in.
+
+    Returns
+    -------
+    dict
+        Merged dictionaries.
+
+    Notes
+    -----
+        When both dictionaries contain the same key:
+
+        - If both values are dictionaries, they are merged recursively
+        - Otherwise, the value from `d2` overwrites the value from `d1`
+
+        The original dictionaries are not modified.
+
+    Examples
+    --------
+        >>> d1 = {'a': 1, 'b': {'x': 10, 'y': 20}}
+        >>> d2 = {'b': {'y': 30, 'z': 40}, 'c': 3}
+        >>> deep_merge_dict(d1, d2)
+        {'a': 1, 'b': {'x': 10, 'y': 30, 'z': 40}, 'c': 3}
+
+        >>> d1 = {'config': {'debug': True, 'level': 1}}
+        >>> d2 = {'config': {'level': 2, 'verbose': False}}
+        >>> deep_merge_dict(d1, d2)
+        {'config': {'debug': True, 'level': 2, 'verbose': False}}
+
+        >>> d1 = {'a': [1, 2, 3]}
+        >>> d2 = {'a': [4, 5, 6]}
+        >>> deep_merge_dict(d1, d2)  # Non-dict values are replaced
+        {'a': [4, 5, 6]}
+    """
+    result = deepcopy(d1)
+    for key, value in d2.items():
+        if (key in result and isinstance(result[key], dict)
+            and isinstance(value, dict)):
+            result[key] = deep_merge_dict(result[key], value)
+        else:
+            result[key] = deepcopy(value)
+    return result
+
+
+def add_aliases(in_dict: dict[str, Any],
+                alias_dict: dict[str, str],
+                *,
+                replace: bool = False,
+                inplace: bool = True) -> dict[str, Any]:
     """
     Add aliases of known names into dictionary.
 
