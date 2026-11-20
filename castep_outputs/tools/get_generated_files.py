@@ -16,11 +16,10 @@ from itertools import combinations_with_replacement
 from pathlib import Path
 from string import ascii_lowercase as lower
 from string import ascii_uppercase as upper
-from typing import Any, TypeVar
+from typing import Any, Self
 
 from castep_outputs.parsers.cell_param_file_parser import CellParamData, parse_cell_param_file
 
-Self = TypeVar("Self", bound="UCEnum")
 TRANS_TABLE = str.maketrans(lower, upper, "+ ")
 
 

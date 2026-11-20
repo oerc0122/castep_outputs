@@ -1,10 +1,8 @@
 """Module to assist processing of parsed outputs."""
 
-from typing import NamedTuple, TypeVar
+from typing import NamedTuple, Self
 
 from ..utilities.castep_res import get_atom_parts
-
-Self = TypeVar("Self", bound="AtomLabel")
 
 
 class AtomLabel(NamedTuple):
