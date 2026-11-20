@@ -11,7 +11,7 @@ from __future__ import annotations
 import itertools
 import re
 from collections import defaultdict
-from collections.abc import Callable, Iterator
+from collections.abc import Callable
 from enum import Flag, auto
 from typing import Any, TextIO, cast
 
@@ -2406,9 +2406,6 @@ def _process_phonon(block: Block, logger: Logger) -> list[QData]:
                                          r"Rep\s+Mul", gen_table_re("[-=]+", r"\+"),
                                          eof_possible=True):
             headers = next(char_table).split()[4:]
-
-            # Until 3.11+ Self
-            char_table = cast("Iterator[str]", char_table)
 
             next(char_table)
             char: list[CharTable] = []

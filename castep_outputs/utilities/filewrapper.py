@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import re
 from io import StringIO
-from typing import TYPE_CHECKING, NoReturn, TextIO, TypeVar, overload
+from typing import TYPE_CHECKING, NoReturn, Self, TextIO, overload
 
 if TYPE_CHECKING:
     from collections.abc import Iterable
@@ -21,8 +21,6 @@ class FileWrapper:
     file
         File to wrap and control.
     """
-
-    Self = TypeVar("Self", bound="FileWrapper")
 
     def __init__(self, file: TextIO) -> None:
         self._file = file
@@ -116,8 +114,6 @@ class Block:
 
     Emulates the properties of both a file, and sequence.
     """
-
-    Self = TypeVar("Self", bound="Block")
 
     def __init__(self, parent: TextIO | FileWrapper | Block | None) -> None:
         if isinstance(parent, (FileWrapper, Block)):
