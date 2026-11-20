@@ -44,6 +44,11 @@ def get_parser() -> argparse.ArgumentParser:
 
     arg_parser.add_argument("-t", "--testing", action="store_true",
                             help="Set testing mode to produce flat outputs")
+    arg_parser.add_argument("-s", "--single-file", action="store_true",
+                            help=(
+                                "Legacy format: doesn't return dict{file: data} for single files, "
+                                "instead returning data. Still returns dict for multiple files."
+                            ))
 
     arg_parser.add_argument("-A", "--inc-all", action="store_true",
                             help="Extract all available information")

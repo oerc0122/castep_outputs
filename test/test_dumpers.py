@@ -71,7 +71,7 @@ def test_dump(file, typ, ref, out_format):
 
     # Check produced data files identical
     test = io.StringIO()
-    parse_all(test, out_format=out_format, **{typ: [file]})
+    parse_all(test, out_format=out_format, always_dict=False, **{typ: [file]})
     test.seek(0)
 
     comp_dict = loader(test)
