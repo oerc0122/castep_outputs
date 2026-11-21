@@ -11,14 +11,33 @@ name: Upload Python Package
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Dummy version to simulate releasing'
+        required: true
+        type: string
 
 permissions:
   contents: read
 
 jobs:
+  check_version:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Check version
+      run: |
+        ver=$(sed -n -r 's/__version__ = "([^"]+)"/\1/p' castep_outputs/__init__.py)
+        echo $GITHUB_REF $ver
+        [[ "refs/tags/v$ver" == $GITHUB_REF ]]
+
   deploy:
 
     runs-on: ubuntu-latest
+    needs: check_version
+    if: github.event_name == 'release'
 
     steps:
     - uses: actions/checkout@v4
